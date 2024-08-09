@@ -4081,6 +4081,13 @@ export const API_LIST = {
                                 ROLE.PUBLIC,
                                ],
         },
+        '/proxies/v8/mentoring/v1/entity/list': {
+                               checksNeeded: [CHECK.ROLE],
+                               // tslint:disable-next-line: object-literal-sort-keys
+                               ROLE_CHECK: [
+                                ROLE.PUBLIC,
+                               ],
+        },
     },
     URL_PATTERN:
         [
@@ -4609,5 +4616,6 @@ export const API_LIST = {
             '/proxies/v8/contentpartner/v1/search',
             '/proxies/v8/contentpartner/v1/delete/:id',
             '/proxies/v8/mentoring/v1/entity-type/read',
+            '/proxies/v8/mentoring/v1/entity/list',
            ],
 }
