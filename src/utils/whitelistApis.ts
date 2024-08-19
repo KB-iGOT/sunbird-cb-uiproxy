@@ -3617,7 +3617,7 @@ export const API_LIST = {
                         ROLE.PUBLIC,
                     ],
          },
-        '/proxies/v8/mentoring/v1/sessions/update': {
+        '/proxies/v8/mentoring/v1/sessions/update/:id': {
                     checksNeeded: [CHECK.ROLE],
                     // tslint:disable-next-line: object-literal-sort-keys
                     ROLE_CHECK: [
