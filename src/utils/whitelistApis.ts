@@ -4553,7 +4553,7 @@ export const API_LIST = {
             '/proxies/v8/mentoring/v1/mentors/list',
             '/proxies/v8/mentoring/v1/mentors/details/:id',
             '/proxies/v8/mentoring/v1/form/read',
-            '/proxies/v8/mentoring/v1/sessions/update',
+            '/proxies/v8/mentoring/v1/sessions/update/:id',
             '/proxies/v8/mentoring/v1/sessions/list',
             '/proxies/v8/mentoring/v1/sessions/details/:id',
             '/proxies/v8/mentoring/v1/sessions/share/:id',
