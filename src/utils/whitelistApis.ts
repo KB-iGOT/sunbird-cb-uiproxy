@@ -3625,7 +3625,7 @@ export const API_LIST = {
                         ROLE.PUBLIC,
                     ],
          },
-        '/proxies/v8/mentoring/v1/sessions/update': {
+        '/proxies/v8/mentoring/v1/sessions/update/:id': {
                     checksNeeded: [CHECK.ROLE],
                     // tslint:disable-next-line: object-literal-sort-keys
                     ROLE_CHECK: [
@@ -4083,6 +4083,13 @@ export const API_LIST = {
                                ],
         },
         '/proxies/v8/mentoring/v1/entity-type/read': {
+                               checksNeeded: [CHECK.ROLE],
+                               // tslint:disable-next-line: object-literal-sort-keys
+                               ROLE_CHECK: [
+                                ROLE.PUBLIC,
+                               ],
+        },
+        '/proxies/v8/mentoring/v1/entity/list': {
                                checksNeeded: [CHECK.ROLE],
                                // tslint:disable-next-line: object-literal-sort-keys
                                ROLE_CHECK: [
@@ -4555,7 +4562,7 @@ export const API_LIST = {
             '/proxies/v8/mentoring/v1/mentors/list',
             '/proxies/v8/mentoring/v1/mentors/details/:id',
             '/proxies/v8/mentoring/v1/form/read',
-            '/proxies/v8/mentoring/v1/sessions/update',
+            '/proxies/v8/mentoring/v1/sessions/update/:id',
             '/proxies/v8/mentoring/v1/sessions/list',
             '/proxies/v8/mentoring/v1/sessions/details/:id',
             '/proxies/v8/mentoring/v1/sessions/share/:id',
@@ -4618,5 +4625,6 @@ export const API_LIST = {
             '/proxies/v8/contentpartner/v1/search',
             '/proxies/v8/contentpartner/v1/delete/:id',
             '/proxies/v8/mentoring/v1/entity-type/read',
+            '/proxies/v8/mentoring/v1/entity/list',
            ],
 }
