@@ -4096,7 +4096,7 @@ export const API_LIST = {
                                 ROLE.PUBLIC,
                                ],
         },
-        '/proxies/v8/data/v2/system/settings/get/cadreConfig': {
+        '/proxies/v8/data/v2/system/settings/get/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -4633,6 +4633,6 @@ export const API_LIST = {
             '/proxies/v8/contentpartner/v1/delete/:id',
             '/proxies/v8/mentoring/v1/entity-type/read',
             '/proxies/v8/mentoring/v1/entity/list',
-            '/proxies/v8/data/v2/system/settings/get/cadreConfig',
+            '/proxies/v8/data/v2/system/settings/get/:id',
            ],
 }
