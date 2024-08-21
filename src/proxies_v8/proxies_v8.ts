@@ -25,6 +25,7 @@ import {
   scormProxyCreatorRoute
 } from '../utils/proxyCreator'
 import { extractUserIdFromRequest, extractUserToken } from '../utils/requestExtract'
+import { frameworks } from './frameworks'
 
 const API_END_POINTS = {
   batchParticipantsApi: `${CONSTANTS.KONG_API_BASE}/course/v1/batch/participants/list`,
@@ -275,8 +276,6 @@ proxiesV8.use('/halloffame/top/learners/*',
   // tslint:disable-next-line: max-line-length
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
-
-
 
 proxiesV8.get(['/api/user/v2/read', '/api/user/v2/read/:id'], async (req, res) => {
   const host = req.get('host')
@@ -960,9 +959,7 @@ proxiesV8.use('/tenders/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
-proxiesV8.use('/framework/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+proxiesV8.use('/framework/*', frameworks)
 
 proxiesV8.use('/v1/search/competenciesByOrg',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
