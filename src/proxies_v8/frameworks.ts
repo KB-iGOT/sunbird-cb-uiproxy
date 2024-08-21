@@ -5,10 +5,10 @@ import { CONSTANTS } from '../utils/env'
 import { logError, logInfo } from '../utils/logger'
 import { extractUserIdFromRequest, extractUserToken } from '../utils/requestExtract'
 
-export const frameworks = express.Router()
+export const frameworksApi = express.Router()
 const _ = require('lodash')
 
-frameworks.use('/framework/*', async (req, res) => {
+frameworksApi.use('/', async (req, res) => {
   try {
     const url = removePrefix('/proxies/v8', req.url)
     const userRoleData = _.get(req, 'session.userRoles')
