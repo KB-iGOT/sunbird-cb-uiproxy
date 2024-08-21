@@ -10,7 +10,6 @@ const _ = require('lodash')
 
 frameworksApi.use('/*', async (req, res) => {
   try {
-    logInfo(req.originalUrl)
     const url = removePrefix('/proxies/v8', req.originalUrl)
     logInfo(`The url is... ${url} : rootOrgId: ${req.originalUrl}`)
     const userRoleData = _.get(req, 'session.userRoles')
@@ -33,6 +32,8 @@ frameworksApi.use('/*', async (req, res) => {
     }
 
     if (url.includes('/publish/') || url.includes('/create/') || url.includes('/update/')) {
+      logInfo(`The value is ${orgId}`)
+      logInfo(`The value is ${isNaN(Number(orgId))}`)
       if (orgId && !isNaN(Number(orgId))) {
         if (masterFrameworkCategory.includes(orgId)) {
           const hasRole = userRoleData.some((role: string) => allowedRoles.includes(role))
