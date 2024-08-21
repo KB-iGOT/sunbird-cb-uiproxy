@@ -311,6 +311,7 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
                 ROLE.PROGRAM_COORDINATOR,
                 ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER,
             ],
         },
         '/proxies/v8/dashboard/analytics/getDashboardConfig/Karmayogi/:comp': {
@@ -3253,7 +3254,7 @@ export const API_LIST = {
                 ROLE_CHECK: [
                 ROLE.SPV_ADMIN,
             ],
-        },      
+        },
         '/proxies/v8/user/assessment/v5/result': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
