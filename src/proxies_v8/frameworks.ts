@@ -92,7 +92,7 @@ const sendFrameworkAPIRequest = async (req: express.Request, res: express.Respon
         'x-authenticated-user-token': extractUserToken(req),
       },
       method,
-      url: `${CONSTANTS.KONG_API_BASE} + ${url}`, // Construct the full URL
+      url: `${CONSTANTS.KONG_API_BASE}${url}`,
     })
 
     res.status(response.status).send(response.data)
