@@ -8,9 +8,10 @@ import { extractUserIdFromRequest, extractUserToken } from '../utils/requestExtr
 export const frameworksApi = express.Router()
 const _ = require('lodash')
 
-frameworksApi.use('/', async (req, res) => {
+frameworksApi.use('/*', async (req, res) => {
   try {
     const url = removePrefix('/proxies/v8', req.url)
+    logInfo(`The url is... ${url} : rootOrgId: ${req.url}`)
     const userRoleData = _.get(req, 'session.userRoles')
     const userRootOrgId = _.get(req, 'session.rootOrgId')
     logInfo(`Framework API call: Users Roles are... ${userRoleData} : rootOrgId: ${userRootOrgId}`)
@@ -77,7 +78,7 @@ const extractPublishId = (url: string): string | null => {
 // Generic function to send the API request
 const sendFrameworkAPIRequest = async (req: express.Request, res: express.Response, url: string, userRootOrgId: string) => {
   try {
-    logInfo(`sendFrameworkAPIRequest the url is... ${url} : rootOrgId: ${userRootOrgId} :::: http://kong:8000${url}`)
+    logInfo(`sendFrameworkAPIRequest the url is... ${url} : rootOrgId: ${userRootOrgId} :::: ${CONSTANTS.KONG_API_BASE} + ${url}`)
     const method: Method = req.method as Method
     logInfo(method)
     const response = await axios({
@@ -90,7 +91,7 @@ const sendFrameworkAPIRequest = async (req: express.Request, res: express.Respon
         'x-authenticated-user-token': extractUserToken(req),
       },
       method,
-      url: `http://kong:8000${url}`, // Construct the full URL
+      url: `${CONSTANTS.KONG_API_BASE} + ${url}`, // Construct the full URL
     })
 
     res.status(response.status).send(response.data)
