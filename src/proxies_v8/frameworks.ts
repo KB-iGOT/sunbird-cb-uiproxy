@@ -10,7 +10,7 @@ const _ = require('lodash')
 
 frameworksApi.use('/*', async (req, res) => {
   try {
-    logInfo(JSON.stringify(req))
+    logInfo(req.originalUrl)
     const url = removePrefix('/proxies/v8', req.originalUrl)
     logInfo(`The url is... ${url} : rootOrgId: ${req.originalUrl}`)
     const userRoleData = _.get(req, 'session.userRoles')
