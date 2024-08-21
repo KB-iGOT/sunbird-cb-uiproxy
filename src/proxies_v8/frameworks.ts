@@ -77,7 +77,9 @@ const extractPublishId = (url: string): string | null => {
 // Generic function to send the API request
 const sendFrameworkAPIRequest = async (req: express.Request, res: express.Response, url: string, userRootOrgId: string) => {
   try {
+    logInfo(`sendFrameworkAPIRequest the url is... ${url} : rootOrgId: ${userRootOrgId} :::: http://kong:8000${url}`)
     const method: Method = req.method as Method
+    logInfo(method)
     const response = await axios({
       ...axiosRequestConfig,
       data: req.body,
