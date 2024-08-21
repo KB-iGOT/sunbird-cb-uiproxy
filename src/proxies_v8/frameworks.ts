@@ -34,7 +34,7 @@ frameworksApi.use('/*', async (req, res) => {
     if (url.includes('/publish/') || url.includes('/create/') || url.includes('/update/')) {
       logInfo(`The value is ${orgId}`)
       logInfo(`The value is ${isNaN(Number(orgId))}`)
-      if (orgId && !isNaN(Number(orgId))) {
+      if (orgId && isNaN(Number(orgId))) {
         if (masterFrameworkCategory.includes(orgId)) {
           const hasRole = userRoleData.some((role: string) => allowedRoles.includes(role))
           if (!hasRole) {
@@ -66,7 +66,7 @@ const extractFrameworkId = (url: string): string => {
   if (framework) {
     const parts = framework.split('_')
     logInfo(`FrameworkParts: ${parts}`)
-    return parts.length > 1 && isNaN(Number(parts[0])) ? parts[0] : framework
+    return parts.length > 1 && !isNaN(Number(parts[0])) ? parts[0] : framework
   }
   return ''
 }
