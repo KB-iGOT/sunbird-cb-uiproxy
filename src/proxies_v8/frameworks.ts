@@ -1,4 +1,4 @@
-import axios, {Method} from 'axios'
+import axios, { Method } from 'axios'
 import express from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
@@ -10,8 +10,9 @@ const _ = require('lodash')
 
 frameworksApi.use('/*', async (req, res) => {
   try {
-    const url = removePrefix('/proxies/v8', req.url)
-    logInfo(`The url is... ${url} : rootOrgId: ${req.url}`)
+    logInfo(JSON.stringify(req))
+    const url = removePrefix('/proxies/v8', req.originalUrl)
+    logInfo(`The url is... ${url} : rootOrgId: ${req.originalUrl}`)
     const userRoleData = _.get(req, 'session.userRoles')
     const userRootOrgId = _.get(req, 'session.rootOrgId')
     logInfo(`Framework API call: Users Roles are... ${userRoleData} : rootOrgId: ${userRootOrgId}`)
