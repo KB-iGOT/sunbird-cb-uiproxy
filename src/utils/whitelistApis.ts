@@ -4114,6 +4114,15 @@ export const API_LIST = {
                         ROLE.MENTOR,
                     ],
          },
+        '/proxies/v8/ciosIntegration/v1/file/info': {
+                   checksNeeded: [CHECK.ROLE],
+                   // tslint:disable-next-line: object-literal-sort-keys
+                   ROLE_CHECK: [
+                     ROLE.SPV_ADMIN,
+                     ROLE.MDO_ADMIN,
+                     ROLE.CBP_ADMIN,
+                   ],
+        },
     },
     URL_PATTERN:
         [
@@ -4645,6 +4654,7 @@ export const API_LIST = {
             '/proxies/v8/mentoring/v1/entity-type/read',
             '/proxies/v8/mentoring/v1/entity/list',
             '/proxies/v8/data/v2/system/settings/get/:id',
-            '/proxies/v8/mentoring/v1/sessions/update'
+            '/proxies/v8/mentoring/v1/sessions/update',
+            '/proxies/v8/ciosIntegration/v1/file/info'
            ],
 }
