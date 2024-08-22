@@ -33,8 +33,7 @@ frameworksApi.use('/*', async (req, res) => {
 
     if (url.includes('/publish/') || url.includes('/create/') || url.includes('/update/')) {
       logInfo(`The value is ${orgId}`)
-      logInfo(`The value is ${isNaN(Number(orgId))}`)
-      if (orgId && masterFrameworkCategory.includes(orgId)) {
+      if (orgId && masterFrameworkCategory.includes(orgId)) { // To check the value from masterFrameworkCategory
           const hasRole = userRoleData.some((role: string) => allowedRoles.includes(role))
           if (!hasRole) {
             return res.status(401).send('User does not have the required role to update the framework')
@@ -43,8 +42,6 @@ frameworksApi.use('/*', async (req, res) => {
         return res.status(401).send(`You are not authorized to perform the action for org: ${userRootOrgId}`)
       }
     }
-
-    logInfo(`Extracted Framework or Publish ID: ${orgId}`)
 
     // Proceed with the API request if all conditions are met
     await sendFrameworkAPIRequest(req, res, url, userRootOrgId)
@@ -56,14 +53,12 @@ frameworksApi.use('/*', async (req, res) => {
   }
 })
 
-// Function to extract framework ID and handle the integer after the underscore
 const extractFrameworkId = (url: string): string => {
   const urlParams = new URLSearchParams(url.split('?')[1])
   const framework = urlParams.get('framework')
 
   if (framework) {
     const parts = framework.split('_')
-    logInfo(`FrameworkParts: ${parts}`)
     return parts.length > 1 && !isNaN(Number(parts[0])) ? parts[0] : framework
   }
   return ''
@@ -75,16 +70,14 @@ const extractPublishId = (url: string): string => {
   if (publishMatch && publishMatch[1]) {
     const publishId = publishMatch[1]
     const parts = publishId.split('_')
-    logInfo(`FrameworkParts: ${parts}`)
     return parts.length > 1 && !isNaN(Number(parts[0])) ? parts[0] : publishId
   }
   return ''
 }
 
-// Generic function to send the API request
 const sendFrameworkAPIRequest = async (req: express.Request, res: express.Response, url: string, userRootOrgId: string) => {
   try {
-    logInfo(`sendFrameworkAPIRequest the url is... ${url} : rootOrgId: ${userRootOrgId} :::: ${CONSTANTS.KONG_API_BASE} + ${url}`)
+    logInfo(`sendFrameworkAPIRequest the url is... ${CONSTANTS.KONG_API_BASE}${url}}`)
     const method: Method = req.method as Method
     logInfo(method)
     const response = await axios({
