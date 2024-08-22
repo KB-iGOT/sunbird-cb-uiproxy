@@ -34,15 +34,13 @@ frameworksApi.use('/*', async (req, res) => {
     if (url.includes('/publish/') || url.includes('/create/') || url.includes('/update/')) {
       logInfo(`The value is ${orgId}`)
       logInfo(`The value is ${isNaN(Number(orgId))}`)
-      if (orgId && isNaN(Number(orgId))) {
-        if (masterFrameworkCategory.includes(orgId)) {
+      if (orgId && masterFrameworkCategory.includes(orgId)) {
           const hasRole = userRoleData.some((role: string) => allowedRoles.includes(role))
           if (!hasRole) {
-            return res.status(403).send('User does not have the required role to update the framework')
+            return res.status(401).send('User does not have the required role to update the framework')
           }
-        }
       } else if (orgId && orgId !== userRootOrgId) {
-        return res.status(403).send('orgId does not match rootOrgId')
+        return res.status(401).send(`You are not authorized to perform the action for org: ${userRootOrgId}`)
       }
     }
 
@@ -72,9 +70,15 @@ const extractFrameworkId = (url: string): string => {
 }
 
 // Function to handle publish URL and extract the ID
-const extractPublishId = (url: string): string | null => {
-  const publishMatch = url.match(/\/publish\/([^_]+)/)
-  return publishMatch ? publishMatch[1] : null
+const extractPublishId = (url: string): string => {
+  const publishMatch = url.match(/\/publish\/([^/]+)/)
+  if (publishMatch && publishMatch[1]) {
+    const publishId = publishMatch[1]
+    const parts = publishId.split('_')
+    logInfo(`FrameworkParts: ${parts}`)
+    return parts.length > 1 && !isNaN(Number(parts[0])) ? parts[0] : publishId
+  }
+  return ''
 }
 
 // Generic function to send the API request
@@ -88,6 +92,7 @@ const sendFrameworkAPIRequest = async (req: express.Request, res: express.Respon
       data: req.body,
       headers: {
         Authorization: CONSTANTS.SB_API_KEY,
+        'X-Channel-Id': userRootOrgId,
         'x-authenticated-user-id': extractUserIdFromRequest(req),
         'x-authenticated-user-orgid': userRootOrgId,
         'x-authenticated-user-token': extractUserToken(req),
