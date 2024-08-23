@@ -990,6 +990,10 @@ proxiesV8.use('/competencySubTheme/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
+proxiesV8.use('/halloffame/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
 export interface IUserProfile {
   channel: string
   firstName: string
