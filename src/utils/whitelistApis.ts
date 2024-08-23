@@ -4661,6 +4661,6 @@ export const API_LIST = {
             '/proxies/v8/data/v2/system/settings/get/:id',
             '/proxies/v8/mentoring/v1/sessions/update',
             '/proxies/v8/halloffame/v1/mdoleaderboard',
-            '/proxies/v8/halloffame/v1/userleaderboard/:id'
+            '/proxies/v8/halloffame/v1/userleaderboard/:id',
            ],
 }
