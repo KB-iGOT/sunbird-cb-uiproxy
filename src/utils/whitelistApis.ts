@@ -4122,6 +4122,37 @@ export const API_LIST = {
                      ROLE.MDO_ADMIN,
                      ROLE.CBP_ADMIN,
                    ],
+        '/proxies/v8/cqfquestionset/v2/create': {
+                  ROLE_CHECK: [
+                      ROLE.SPV_PUBLISHER
+                  ],
+                  checksNeeded: [CHECK.ROLE],
+        },
+        '/proxies/v8/cqfquestionset/v2/review/:id': {
+                  ROLE_CHECK: [
+                      ROLE.SPV_PUBLISHER
+                  ],
+                  checksNeeded: [CHECK.ROLE],
+        },
+        '/proxies/v8/cqfquestionset/v2/hierarchy/update': {
+                  ROLE_CHECK: [
+                      ROLE.SPV_PUBLISHER
+                  ],
+                  checksNeeded: [CHECK.ROLE],
+        },
+        '/proxies/v8/halloffame/v1/mdoleaderboard': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                    ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/halloffame/v1/userleaderboard/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                    ROLE.PUBLIC,
+            ],
         },
     },
     URL_PATTERN:
@@ -4656,5 +4687,10 @@ export const API_LIST = {
             '/proxies/v8/data/v2/system/settings/get/:id',
             '/proxies/v8/mentoring/v1/sessions/update',
             '/proxies/v8/ciosIntegration/v1/file/info',
+            '/proxies/v8/cqfquestionset/v2/create',
+            '/proxies/v8/cqfquestionset/v2/review/:id',
+            '/proxies/v8/cqfquestionset/v2/hierarchy/update',
+            '/proxies/v8/halloffame/v1/mdoleaderboard',
+            '/proxies/v8/halloffame/v1/userleaderboard/:id',
            ],
 }
