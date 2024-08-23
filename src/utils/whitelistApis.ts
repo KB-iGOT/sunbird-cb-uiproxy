@@ -4146,6 +4146,15 @@ export const API_LIST = {
                     ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/ciosIntegration/v1/file/info': {
+                   checksNeeded: [CHECK.ROLE],
+                   // tslint:disable-next-line: object-literal-sort-keys
+                   ROLE_CHECK: [
+                     ROLE.SPV_ADMIN,
+                     ROLE.MDO_ADMIN,
+                     ROLE.CBP_ADMIN,
+                   ],
+        },
     },
     URL_PATTERN:
         [
@@ -4683,5 +4692,6 @@ export const API_LIST = {
             '/proxies/v8/cqfquestionset/v2/hierarchy/update',
             '/proxies/v8/halloffame/v1/mdoleaderboard',
             '/proxies/v8/halloffame/v1/userleaderboard/:id',
+            '/proxies/v8/ciosIntegration/v1/file/info',
            ],
 }
