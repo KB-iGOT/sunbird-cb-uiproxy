@@ -4655,6 +4655,6 @@ export const API_LIST = {
             '/proxies/v8/mentoring/v1/entity/list',
             '/proxies/v8/data/v2/system/settings/get/:id',
             '/proxies/v8/mentoring/v1/sessions/update',
-            '/proxies/v8/ciosIntegration/v1/file/info'
+            '/proxies/v8/ciosIntegration/v1/file/info',
            ],
 }
