@@ -4730,8 +4730,8 @@ export const API_LIST = {
             '/proxies/v8/halloffame/v1/userleaderboard/:id',
             '/proxies/v8/ciosIntegration/v1/file/info/:partnerId',
             '/proxies/v8/cqf/v1/createEntry',
-            '/proxies/v8/cqf/v1/readEntry',
-            '/proxies/v8/cqf/v1/updateEntry',
+            '/proxies/v8/cqf/v1/readEntry/:cqfAssessmentIdentifier',
+            '/proxies/v8/cqf/v1/updateEntry/:cqfAssessmentIdentifier',
             '/proxies/v8/cqf/v1/listEntry',
            ],
 }
