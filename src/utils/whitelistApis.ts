@@ -422,6 +422,7 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
                 ROLE.PROGRAM_COORDINATOR,
                 ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER
             ],
         },
         '/proxies/v8/v1/content/retire': {
