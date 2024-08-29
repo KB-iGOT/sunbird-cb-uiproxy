@@ -4164,7 +4164,7 @@ export const API_LIST = {
             ],
             checksNeeded: [CHECK.ROLE],
         },
-        '/proxies/v8/cqf/v1/readEntry/:cqfAssessmentIdentifier': {
+        '/proxies/v8/cqf/v1/readEntry': {
             ROLE_CHECK: [
                 ROLE.SPV_PUBLISHER,
                 ROLE.CONTENT_CREATOR,
@@ -4173,7 +4173,7 @@ export const API_LIST = {
             ],
             checksNeeded: [CHECK.ROLE],
         },
-        '/proxies/v8/cqf/v1/updateEntry/:cqfAssessmentIdentifier': {
+        '/proxies/v8/cqf/v1/updateEntry': {
             ROLE_CHECK: [
                 ROLE.SPV_PUBLISHER,
                 ROLE.CONTENT_CREATOR,
