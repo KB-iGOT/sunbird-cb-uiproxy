@@ -422,6 +422,7 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
                 ROLE.PROGRAM_COORDINATOR,
                 ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER,
                 ROLE.SPV_PUBLISHER
             ],
         },
@@ -4094,6 +4095,18 @@ export const API_LIST = {
                                 ROLE.PUBLIC,
                                ],
         },
+        '/protected/v8/workflowhandler/profileApprovalSearch': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.WAT_MEMBER,
+                ROLE.CBC_ADMIN,
+                ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
+            ],
+        },
         '/proxies/v8/mentoring/v1/entity/list': {
                                checksNeeded: [CHECK.ROLE],
                                // tslint:disable-next-line: object-literal-sort-keys
@@ -4117,19 +4130,19 @@ export const API_LIST = {
          },
         '/proxies/v8/cqfquestionset/v2/create': {
                   ROLE_CHECK: [
-                      ROLE.SPV_PUBLISHER
+                      ROLE.SPV_PUBLISHER,
                   ],
                   checksNeeded: [CHECK.ROLE],
         },
         '/proxies/v8/cqfquestionset/v2/review/:id': {
                   ROLE_CHECK: [
-                      ROLE.SPV_PUBLISHER
+                      ROLE.SPV_PUBLISHER,
                   ],
                   checksNeeded: [CHECK.ROLE],
         },
         '/proxies/v8/cqfquestionset/v2/hierarchy/update': {
                   ROLE_CHECK: [
-                      ROLE.SPV_PUBLISHER
+                      ROLE.SPV_PUBLISHER,
                   ],
                   checksNeeded: [CHECK.ROLE],
         },
@@ -4155,6 +4168,13 @@ export const API_LIST = {
                      ROLE.MDO_ADMIN,
                      ROLE.CBP_ADMIN,
                    ],
+        },
+        '/protected/v8/user/evaluate/assessment/submit/v6': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
         },
         '/proxies/v8/ciosIntegration/v1/deleteContent': {
             checksNeeded: [CHECK.ROLE],
@@ -4822,6 +4842,7 @@ export const API_LIST = {
             '/proxies/v8/contentpartner/v1/search',
             '/proxies/v8/contentpartner/v1/delete/:id',
             '/proxies/v8/mentoring/v1/entity-type/read',
+            '/protected/v8/workflowhandler/profileApprovalSearch',
             '/proxies/v8/mentoring/v1/entity/list',
             '/proxies/v8/data/v2/system/settings/get/:id',
             '/proxies/v8/mentoring/v1/sessions/update',
@@ -4831,6 +4852,7 @@ export const API_LIST = {
             '/proxies/v8/halloffame/v1/mdoleaderboard',
             '/proxies/v8/halloffame/v1/userleaderboard/:id',
             '/proxies/v8/ciosIntegration/v1/file/info/:partnerId',
+            '/protected/v8/user/evaluate/assessment/submit/v6',
             '/proxies/v8/ciosIntegration/v1/deleteContent',
             '/proxies/v8/storage/v1/uploadCiosIcon',
             '/proxies/v8/storage/v1/uploadCiosContract',
