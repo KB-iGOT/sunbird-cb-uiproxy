@@ -4709,6 +4709,6 @@ export const API_LIST = {
             '/proxies/v8/halloffame/v1/userleaderboard/:id',
             '/proxies/v8/ciosIntegration/v1/file/info/:partnerId',
             '/protected/v8/user/evaluate/assessment/submit/v6',
-            '/proxies/v8/searchBy/v2/competency'
+            '/proxies/v8/searchBy/v2/competency',
            ],
 }
