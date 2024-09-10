@@ -4313,6 +4313,13 @@ export const API_LIST = {
                      ROLE.PUBLIC,
                   ],
         },
+        '/proxies/v8/searchBy/v2/competency': {
+                          checksNeeded: [CHECK.ROLE],
+                          // tslint:disable-next-line: object-literal-sort-keys
+                           ROLE_CHECK: [
+                                ROLE.PUBLIC,
+                           ],
+        }
     },
     URL_PATTERN:
         [
@@ -4870,5 +4877,6 @@ export const API_LIST = {
             '/proxies/v8/comment/v1/delete/:commentId',
             '/proxies/v8/comment/v1/setStatusToResolved',
             '/proxies/v8/comment/v1/resolve/:commentId',
+            '/proxies/v8/searchBy/v2/competency'
            ],
 }
