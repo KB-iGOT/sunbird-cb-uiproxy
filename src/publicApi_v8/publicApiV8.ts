@@ -72,6 +72,8 @@ publicApiV8.use('/halloffame/read', proxyCreatorRoute(express.Router(), CONSTANT
 
 publicApiV8.use('/playlist', youtubePlaylist)
 
+publicApiV8.use('template/api/v1/download/sampleTemplate', proxyCreatorRoute(express.Router(), CONSTANTS.KONG_API_BASE + 'template/api/v1/download/sampleTemplate'))
+
 publicApiV8.get('/careers/list', async (_, res) => {
    await fetchList('Jobs', res)
  })
@@ -79,8 +81,6 @@ publicApiV8.get('/careers/list', async (_, res) => {
 publicApiV8.get('/tenders/list', async (_, res) => {
    await fetchList('Tenders', res)
  })
-
- publicApiV8.use('template/api/v1/download/sampleTemplate', proxyCreatorRoute(express.Router(), CONSTANTS.KONG_API_BASE + 'template/api/v1/download/sampleTemplate'))
 
 const fetchList = async (resourceCategoryString: string, res: express.Response) => {
   const reqBody = {
