@@ -73,7 +73,7 @@ publicApiV8.use('/halloffame/read', proxyCreatorRoute(express.Router(), CONSTANT
 
 publicApiV8.use('/playlist', youtubePlaylist)
 
-publicApiV8.use('template/api/v1/download/sampleTemplate', proxyCreatorRoute(express.Router(), API_END_POINTS.kongDownloadSample))
+publicApiV8.use('/template/api/v1/download/sampleTemplate', proxyCreatorRoute(express.Router(), API_END_POINTS.kongDownloadSample))
 
 publicApiV8.get('/careers/list', async (_, res) => {
    await fetchList('Jobs', res)
