@@ -423,7 +423,7 @@ export const API_LIST = {
                 ROLE.PROGRAM_COORDINATOR,
                 ROLE.SPV_ADMIN,
                 ROLE.SPV_PUBLISHER,
-                ROLE.SPV_PUBLISHER
+                ROLE.SPV_PUBLISHER,
             ],
         },
         '/proxies/v8/v1/content/retire': {
@@ -4328,18 +4328,24 @@ export const API_LIST = {
          '/proxies/v8/cqfquestionset/submit': {
             ROLE_CHECK: [
                 ROLE.SPV_PUBLISHER,
+                ROLE.CONTENT_CREATOR,
+                ROLE.CONTENT_REVIEWER,
             ],
             checksNeeded: [CHECK.ROLE],
          },
          '/proxies/v8/cqfquestionset/result': {
             ROLE_CHECK: [
                 ROLE.SPV_PUBLISHER,
+                ROLE.CONTENT_CREATOR,
+                ROLE.CONTENT_REVIEWER,
             ],
             checksNeeded: [CHECK.ROLE],
          },
          '/proxies/v8/cqfquestionset/read/:assessmentIdentifier/:contentId/:versionKey': {
             ROLE_CHECK: [
                 ROLE.SPV_PUBLISHER,
+                ROLE.CONTENT_CREATOR,
+                ROLE.CONTENT_REVIEWER,
             ],
             checksNeeded: [CHECK.ROLE],
          },
@@ -4349,7 +4355,7 @@ export const API_LIST = {
             ],
             checksNeeded: [CHECK.ROLE],
         },
-         
+
     },
     URL_PATTERN:
         [
