@@ -4313,6 +4313,37 @@ export const API_LIST = {
                      ROLE.PUBLIC,
                   ],
         },
+        '/proxies/v8/cqfquestionset/questionset/create': {
+            ROLE_CHECK: [
+                ROLE.SPV_PUBLISHER,
+            ],
+            checksNeeded: [CHECK.ROLE],
+         },
+         '/proxies/v8/cqfquestionset/questionset/update': {
+            ROLE_CHECK: [
+                ROLE.SPV_PUBLISHER,
+            ],
+            checksNeeded: [CHECK.ROLE],
+         },
+         '/proxies/v8/cqfquestionset/submit': {
+            ROLE_CHECK: [
+                ROLE.SPV_PUBLISHER,
+            ],
+            checksNeeded: [CHECK.ROLE],
+         },
+         '/proxies/v8/cqfquestionset/result': {
+            ROLE_CHECK: [
+                ROLE.SPV_PUBLISHER,
+            ],
+            checksNeeded: [CHECK.ROLE],
+         },
+         '/proxies/v8/cqfquestionset/read/:assessmentIdentifier/:contentId/:versionKey': {
+            ROLE_CHECK: [
+                ROLE.SPV_PUBLISHER,
+            ],
+            checksNeeded: [CHECK.ROLE],
+         },
+         
     },
     URL_PATTERN:
         [
@@ -4870,5 +4901,10 @@ export const API_LIST = {
             '/proxies/v8/comment/v1/delete/:commentId',
             '/proxies/v8/comment/v1/setStatusToResolved',
             '/proxies/v8/comment/v1/resolve/:commentId',
+            '/proxies/v8/cqfquestionset/questionset/create',
+            '/proxies/v8/cqfquestionset/submit',
+            '/proxies/v8/cqfquestionset/result',
+            '/proxies/v8/cqfquestionset/questionset/update',
+            '/proxies/v8/cqfquestionset/read/:assessmentIdentifier/:contentId/:versionKey'
            ],
 }
