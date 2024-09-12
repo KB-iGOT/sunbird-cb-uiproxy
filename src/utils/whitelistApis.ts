@@ -4370,6 +4370,62 @@ export const API_LIST = {
             ],
             checksNeeded: [CHECK.ROLE],
          },
+        '/proxies/v8/private/mlsurvey/api/v1/surveys/createSolutionTemplate': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/private/mlsurvey/api/v1/questions/bulkCreate': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/private/mlsurvey/api/v1/surveys/importSurveryTemplateToSolution/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/private/mlsurvey/api/v1/surveys/mapSurverySolutionToProgram/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/private/mlsurvey/api/v1/solutions/importFromSolution': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/private/mlsurvey/api/v1/programs/list': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/private/mlsurvey/api/v1/solutions/list': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/private/mlsurvey/api/v1/admin/dbFind/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -4935,5 +4991,13 @@ export const API_LIST = {
             '/proxies/v8/questionset/autoPublish/:id',
             '/proxies/v8/searchBy/:version/:key',
             '/proxies/v8/cqfquestionset/question/list',
+            '/proxies/v8/private/mlsurvey/api/v1/surveys/createSolutionTemplate',
+            '/proxies/v8/private/mlsurvey/api/v1/questions/bulkCreate',
+            '/proxies/v8/private/mlsurvey/api/v1/surveys/importSurveryTemplateToSolution/:id',
+            '/proxies/v8/private/mlsurvey/api/v1/surveys/mapSurverySolutionToProgram/:id',
+            '/proxies/v8/private/mlsurvey/api/v1/solutions/importFromSolution',
+            '/proxies/v8/private/mlsurvey/api/v1/programs/list',
+            '/proxies/v8/private/mlsurvey/api/v1/admin/dbFind/:id',
+            '/proxies/v8/private/mlsurvey/api/v1/solutions/list',
            ],
 }
