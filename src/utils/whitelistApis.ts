@@ -4362,6 +4362,14 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/cqfquestionset/question/list': {
+            ROLE_CHECK: [
+                ROLE.SPV_PUBLISHER,
+                ROLE.CONTENT_CREATOR,
+                ROLE.CONTENT_REVIEWER,
+            ],
+            checksNeeded: [CHECK.ROLE],
+         },
     },
     URL_PATTERN:
         [
@@ -4926,5 +4934,6 @@ export const API_LIST = {
             '/proxies/v8/cqfquestionset/read/:assessmentIdentifier/:contentId/:versionKey',
             '/proxies/v8/questionset/autoPublish/:id',
             '/proxies/v8/searchBy/:version/:key',
+            '/proxies/v8/cqfquestionset/question/list',
            ],
 }
