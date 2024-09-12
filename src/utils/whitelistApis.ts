@@ -3505,7 +3505,7 @@ export const API_LIST = {
               ROLE.CBP_ADMIN,
             ],
         },
-        '/proxies/v8/ciosIntegration/v1/loadContentFromExcel/:partnerName': {
+        '/proxies/v8/ciosIntegration/v1/loadContentFromExcel/:partnercode': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -3771,7 +3771,7 @@ export const API_LIST = {
                         ROLE.PUBLIC,
                     ],
          },
-        '/proxies/v8/ciosIntegration/v1/loadContentProgressFromExcel': {
+        '/proxies/v8/ciosIntegration/v1/loadContentProgressFromExcel/:partnercode': {
                     checksNeeded: [CHECK.ROLE],
                     // tslint:disable-next-line: object-literal-sort-keys
                     ROLE_CHECK: [
@@ -4808,7 +4808,7 @@ export const API_LIST = {
             '/proxies/v8/cios/v1/content/read/:contentId',
             '/proxies/v8/cios/v1/search/content',
             '/proxies/v8/cios/v1/content/delete/:contentId',
-            '/proxies/v8/ciosIntegration/v1/loadContentFromExcel/:partnerName',
+            '/proxies/v8/ciosIntegration/v1/loadContentFromExcel/:partnercode',
             '/proxies/v8/ciosIntegration/v1/readAllContentFromDb',
             '/proxies/v8/tenders/v4/read/:do_id',
             '/proxies/v8/tenders/v4/publish/:do_id',
@@ -4848,7 +4848,7 @@ export const API_LIST = {
             '/proxies/v8/mentoring/v1/cloud-services/getSignedUrl',
             '/proxies/v8/mentoring/v1/mentees/homeFeed',
             '/proxies/v8/mentoring/v1/users/list',
-            '/proxies/v8/ciosIntegration/v1/loadContentProgressFromExcel',
+            '/proxies/v8/ciosIntegration/v1/loadContentProgressFromExcel/:partnercode',
             '/proxies/v8/cios-enroll/v1/create',
             '/proxies/v8/cios-enroll/v1/courselist/byuserid',
             '/proxies/v8/cios-enroll/v1/readby/useridcourseid/:courseid',
