@@ -4405,26 +4405,32 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/private/mlsurvey/api/v1/programs/list': {
+        '/proxies/v8/private/mlcore/api/v1/programs/list': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/private/mlsurvey/api/v1/solutions/list': {
+        '/proxies/v8/private/mlcore/api/v1/solutions/list': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/private/mlsurvey/api/v1/admin/dbFind/:id': {
+        '/proxies/v8/private/mlsurvey/api/v1/admin/dbFind/solutions': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
             ],
+        },
+        '/proxies/v8/cqfquestionset/listEntry': {
+                  ROLE_CHECK: [
+                      ROLE.SPV_PUBLISHER,
+                  ],
+                  checksNeeded: [CHECK.ROLE],
         },
     },
     URL_PATTERN:
@@ -4996,8 +5002,9 @@ export const API_LIST = {
             '/proxies/v8/private/mlsurvey/api/v1/surveys/importSurveryTemplateToSolution/:id',
             '/proxies/v8/private/mlsurvey/api/v1/surveys/mapSurverySolutionToProgram/:id',
             '/proxies/v8/private/mlsurvey/api/v1/solutions/importFromSolution',
-            '/proxies/v8/private/mlsurvey/api/v1/programs/list',
-            '/proxies/v8/private/mlsurvey/api/v1/admin/dbFind/:id',
-            '/proxies/v8/private/mlsurvey/api/v1/solutions/list',
+            '/proxies/v8/private/mlcore/api/v1/programs/list',
+            '/proxies/v8/private/mlcore/api/v1/admin/dbFind/solutions',
+            '/proxies/v8/private/mlcore/api/v1/solutions/list',
+            '/proxies/v8/cqfquestionset/listEntry',
            ],
 }
