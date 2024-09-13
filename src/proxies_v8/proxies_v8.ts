@@ -1083,3 +1083,7 @@ proxiesV8.use('/comment/*',
 proxiesV8.use('/private/mlsurvey/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/private/mlcore/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
