@@ -4437,6 +4437,42 @@ export const API_LIST = {
                   ],
                   checksNeeded: [CHECK.ROLE],
         },
+        '/proxies/v8/organisation/v1/getCompetencyDesignationMappingFile/:frameworkId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+                ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/organisation/v1/competencyDesignationMappings/bulkUpload/:frameworkId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+                ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/organisation/v1/competencyDesignationMappings/bulkUpload/details/:orgId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+                ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/organisation/v1/competencyDesignationMappings/download/:fileName': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+                ROLE.SPV_ADMIN,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -5011,5 +5047,9 @@ export const API_LIST = {
             '/proxies/v8/private/mlcore/api/v1/admin/dbFind/solutions',
             '/proxies/v8/private/mlcore/api/v1/solutions/list',
             '/proxies/v8/cqfquestionset/listEntry',
+            '/proxies/v8/organisation/v1/getCompetencyDesignationMappingFile/:frameworkId',
+            '/proxies/v8/organisation/v1/competencyDesignationMappings/bulkUpload/:frameworkId',
+            '/proxies/v8/organisation/v1/competencyDesignationMappings/bulkUpload/details/:orgId',
+            '/proxies/v8/organisation/v1/competencyDesignationMappings/download/:fileName',
            ],
 }
