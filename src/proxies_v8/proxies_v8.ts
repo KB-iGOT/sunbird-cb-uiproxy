@@ -1095,3 +1095,8 @@ proxiesV8.use('/template/*',
 proxiesV8.use('/organisation/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/national/learning/week/insights',
+  // tslint:disable-next-line: max-line-length
+  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/national/learning/week/insights`)
+)

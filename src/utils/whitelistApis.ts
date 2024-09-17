@@ -4521,6 +4521,13 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
             ],
         },
+        '/proxies/v8/national/learning/week/insights': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                 ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -5105,5 +5112,6 @@ export const API_LIST = {
             '/proxies/v8/organisation/v1/competencyDesignationMappings/bulkUpload/:frameworkId',
             '/proxies/v8/organisation/v1/competencyDesignationMappings/bulkUpload/details/:orgId',
             '/proxies/v8/organisation/v1/competencyDesignationMappings/download/:fileName',
+            '/proxies/v8/national/learning/week/insights',
            ],
 }
