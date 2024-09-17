@@ -4437,6 +4437,54 @@ export const API_LIST = {
                   ],
                   checksNeeded: [CHECK.ROLE],
         },
+        '/proxies/v8/template/api/v1/download/sampleTemplate': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/template/api/v1/upload': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/template/api/v1/validate': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/template/api/v1/survey/create': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/template/api/v1/survey/getSolutions': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/template/api/v1/survey/downloadSolutions': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+                ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -5011,5 +5059,11 @@ export const API_LIST = {
             '/proxies/v8/private/mlcore/api/v1/admin/dbFind/solutions',
             '/proxies/v8/private/mlcore/api/v1/solutions/list',
             '/proxies/v8/cqfquestionset/listEntry',
+            '/proxies/v8/template/api/v1/download/sampleTemplate',
+            '/proxies/v8/template/api/v1/upload',
+            '/proxies/v8/template/api/v1/validate',
+            '/proxies/v8/template/api/v1/survey/create',
+            '/proxies/v8/template/api/v1/survey/getSolutions',
+            '/proxies/v8/template/api/v1/survey/downloadSolutions',
            ],
 }
