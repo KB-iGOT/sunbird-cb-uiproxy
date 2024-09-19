@@ -4158,7 +4158,7 @@ export const API_LIST = {
                     ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/halloffame/v1/userleaderboard/:id': {
+        '/proxies/v8/halloffame/v1/userleaderboard': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -5072,7 +5072,7 @@ export const API_LIST = {
             '/proxies/v8/cqfquestionset/v2/review/:id',
             '/proxies/v8/cqfquestionset/v2/hierarchy/update',
             '/proxies/v8/halloffame/v1/mdoleaderboard',
-            '/proxies/v8/halloffame/v1/userleaderboard/:id',
+            '/proxies/v8/halloffame/v1/userleaderboard',
             '/proxies/v8/ciosIntegration/v1/file/info/:partnerId',
             '/protected/v8/user/evaluate/assessment/submit/v6',
             '/proxies/v8/ciosIntegration/v1/deleteContent',
