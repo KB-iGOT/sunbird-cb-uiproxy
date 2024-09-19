@@ -424,6 +424,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
                 ROLE.SPV_PUBLISHER,
                 ROLE.SPV_PUBLISHER,
+
             ],
         },
         '/proxies/v8/v1/content/retire': {
