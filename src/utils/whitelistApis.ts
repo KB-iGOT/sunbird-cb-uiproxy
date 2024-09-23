@@ -5187,9 +5187,9 @@ export const API_LIST = {
             '/proxies/v8/designation/v1/orgMapping/bulkUpload/:frameworkId',
             '/proxies/v8/designation/v1/orgMapping/bulkUpload/progress/details/:orgId',
             '/proxies/v8/designation/v1/orgMapping/download/:fileName',
-            '/proxies/v8/ciosIntegration/v1/read/content/:partnercode/:externalid'
-            '/proxies/v8/ciosIntegration/v1/search/content'
-            '/proxies/v8/ciosIntegration/v1/update/content'
-            '/proxies/v8/contentpartner/v1/readbypartnercode/:partnercode'
+            '/proxies/v8/ciosIntegration/v1/read/content/:partnercode/:externalid',
+            '/proxies/v8/ciosIntegration/v1/search/content',
+            '/proxies/v8/ciosIntegration/v1/update/content',
+            '/proxies/v8/contentpartner/v1/readbypartnercode/:partnercode',
            ],
 }
