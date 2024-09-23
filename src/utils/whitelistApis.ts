@@ -4566,6 +4566,38 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
             ],
         },
+        '/proxies/v8/ciosIntegration/v1/read/content/:partnercode/:externalid': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+              ROLE.SPV_ADMIN,
+              ROLE.MDO_ADMIN,
+              ROLE.CBP_ADMIN,
+            ],
+        },
+        '/proxies/v8/ciosIntegration/v1/search/content': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+              ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/ciosIntegration/v1/update/content': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+              ROLE.SPV_ADMIN,
+              ROLE.MDO_ADMIN,
+              ROLE.CBP_ADMIN,
+            ],
+        },
+        '/proxies/v8/contentpartner/readbypartnercode/:partnercode': {
+                checksNeeded: [CHECK.ROLE],
+                // tslint:disable-next-line: object-literal-sort-keys
+                ROLE_CHECK: [
+                  ROLE.PUBLIC,
+                ],
+        },
     },
     URL_PATTERN:
         [
@@ -5155,5 +5187,9 @@ export const API_LIST = {
             '/proxies/v8/designation/v1/orgMapping/bulkUpload/:frameworkId',
             '/proxies/v8/designation/v1/orgMapping/bulkUpload/progress/details/:orgId',
             '/proxies/v8/designation/v1/orgMapping/download/:fileName',
+            '/proxies/v8/ciosIntegration/v1/read/content/:partnercode/:externalid'
+            '/proxies/v8/ciosIntegration/v1/search/content'
+            '/proxies/v8/ciosIntegration/v1/update/content'
+            '/proxies/v8/contentpartner/readbypartnercode/:partnercode'
            ],
 }
