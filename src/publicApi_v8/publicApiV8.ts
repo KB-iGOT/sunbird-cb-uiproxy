@@ -15,9 +15,9 @@ const API_END_POINTS = {
   kongCompositeSearch: `${CONSTANTS.KONG_API_BASE}/composite/v4/search`,
   publicAssessmentV1QuestionList: `${CONSTANTS.KONG_API_BASE}/public/assessment/v1/question/list`,
   publicAssessmentV1Read: `${CONSTANTS.KONG_API_BASE}/public/assessment/v1/read/:id`,
+  publicAssessmentV4Submit: `${CONSTANTS.KONG_API_BASE}/public/assessment/v4/assessment/submit`,
   publicAssessmentV5QuestionList: `${CONSTANTS.KONG_API_BASE}/public/assessment/v5/question/list`,
   publicAssessmentV5Read: `${CONSTANTS.KONG_API_BASE}/public/assessment/v5/read/:id`,
-  publicAssessmentV4Submit: `${CONSTANTS.KONG_API_BASE}/public/assessment/v4/assessment/submit`,
   publicAssessmentV5Submit: `${CONSTANTS.KONG_API_BASE}/public/assessment/v5/assessment/submit`,
 }
 
@@ -77,7 +77,6 @@ publicApiV8.use('/parichay', parichayAuth)
 publicApiV8.use('/halloffame/read', proxyCreatorRoute(express.Router(), CONSTANTS.KONG_API_BASE + '/halloffame/read'))
 
 publicApiV8.use('/playlist', youtubePlaylist)
-
 
 publicApiV8.use('/public/assessment/v1/question/list', proxyCreatorRoute(express.Router(), API_END_POINTS.publicAssessmentV1QuestionList))
 
