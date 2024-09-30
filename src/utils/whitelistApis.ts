@@ -5220,6 +5220,6 @@ export const API_LIST = {
             '/proxies/v8/public/assessment/v5/assessment/submit',
             '/proxies/v8/public/assessment/v4/assessment/submit',
             '/proxies/v8/public/assessment/v5/result',
-            '/protected/v8/operationalreports/v2/download/:rootOrgId',
+            '/proxies/v8/operationalreports/v2/download/:rootOrgId',
            ],
 }
