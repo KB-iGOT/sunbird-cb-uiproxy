@@ -4345,6 +4345,7 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
                 ROLE.CONTENT_CREATOR,
                 ROLE.CONTENT_REVIEWER,
+                ROLE.CONTENT_PUBLISHER,
             ],
             checksNeeded: [CHECK.ROLE],
          },
