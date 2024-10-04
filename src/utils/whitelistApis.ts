@@ -4337,6 +4337,7 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
                 ROLE.CONTENT_CREATOR,
                 ROLE.CONTENT_REVIEWER,
+                ROLE.CONTENT_PUBLISHER,
             ],
             checksNeeded: [CHECK.ROLE],
          },
@@ -4354,6 +4355,7 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
                 ROLE.CONTENT_CREATOR,
                 ROLE.CONTENT_REVIEWER,
+                ROLE.CONTENT_PUBLISHER,
             ],
             checksNeeded: [CHECK.ROLE],
          },
@@ -4375,6 +4377,7 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
                 ROLE.CONTENT_CREATOR,
                 ROLE.CONTENT_REVIEWER,
+                ROLE.CONTENT_PUBLISHER,
             ],
             checksNeeded: [CHECK.ROLE],
          },
@@ -4599,7 +4602,7 @@ export const API_LIST = {
                 ROLE_CHECK: [
                   ROLE.PUBLIC,
                 ],
-
+        },
         '/proxies/v8/public/assessment/v1/question/list': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
