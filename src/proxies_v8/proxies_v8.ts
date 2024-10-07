@@ -1071,32 +1071,3 @@ proxiesV8.use('/cios-enroll/*',
 proxiesV8.use('/contentpartner/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
-
-proxiesV8.use('/serviceregistry/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/comment/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/private/mlsurvey/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/private/mlcore/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/template/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/organisation/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/national/learning/week/insights',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/national/learning/week/insights`)
-)
