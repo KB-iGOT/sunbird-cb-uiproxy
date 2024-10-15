@@ -1101,6 +1101,6 @@ proxiesV8.use('/national/learning/week/insights',
   proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/national/learning/week/insights`)
 )
 
-proxiesV8.use('/event-progres/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}/eventprogress/v1/event/state/update`)
+proxiesV8.use('/eventprogress/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
