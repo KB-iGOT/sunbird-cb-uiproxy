@@ -4694,7 +4694,7 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/event-progres/:eventId': {
+        '/proxies/v8/eventprogress/v1/event/state/update': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -5320,7 +5320,7 @@ export const API_LIST = {
             '/proxies/v8/storage/v1/downloadCiosLogs/:fileName',
             '/proxies/v8/user/events/list/:uid',
             '/proxies/v8/event/batch/enroll',
-            '/proxies/v8/event-progres/:eventId',
+            '/proxies/v8/eventprogress/v1/event/state/update',
             '/proxies/v8/user/event/read/:id',
             '/proxies/v8/user/event/state/read',
            ],
