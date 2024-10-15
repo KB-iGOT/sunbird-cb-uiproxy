@@ -4679,6 +4679,13 @@ export const API_LIST = {
                        ROLE.CBP_ADMIN,
                    ],
         },
+        '/proxies/v8/user/events/list/:uid': {
+                   checksNeeded: [CHECK.ROLE],
+                   // tslint:disable-next-line: object-literal-sort-keys
+                   ROLE_CHECK: [
+                       ROLE.PUBLIC,
+                   ],
+        },
     },
     URL_PATTERN:
         [
@@ -5282,5 +5289,6 @@ export const API_LIST = {
             '/proxies/v8/operationalreports/v2/download/:rootOrgId',
             '/proxies/v8/storage/v1/uploadCiosLogsFile',
             '/proxies/v8/storage/v1/downloadCiosLogs/:fileName',
+            '/proxies/v8/user/events/list/:uid',
            ],
 }
