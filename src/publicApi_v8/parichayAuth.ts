@@ -61,6 +61,14 @@ parichayAuth.get('/callback', async (req, res) => {
         })
 
         logInfo('User information from Parichay : ' + JSON.stringify(userDetailResponse.data))
+        const loginId = userDetailResponse.data.loginId
+        if (!loginId) {
+          const errorMessage = 'Login failed. Please select email on the consent form to login to IGOT.'
+          // Redirect to the logout page with an error message
+          res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
+          return
+        }
+
         let result: { errMessage: string, rootOrgId: string, userExist: boolean, }
         result =  await fetchUserByEmailId(userDetailResponse.data.loginId)
         logInfo('For Parichay emailId ? ' + userDetailResponse.data.loginId + ', isUserExist ? ' + result.userExist
@@ -69,13 +77,12 @@ parichayAuth.get('/callback', async (req, res) => {
         if (result.errMessage === '') {
             let createResult: { errMessage: string, userCreated: boolean, userId: string }
             if (!result.userExist) {
-                logInfo('Sunbird User does not exist for Parichay email: ' + userDetailResponse.data.loginId)
-                const loginId = userDetailResponse.data.loginId
+                logInfo('iGOT User does not exist for Parichay email: ' + userDetailResponse.data.loginId)
                 const mobileNo = userDetailResponse.data.MobileNo
 
                 if (!loginId || !mobileNo) {
-                   const errorMessage = 'Login failed. Both your email address and mobile number are required for registration to iGOT.'
-                   + 'Please review the consent form to ensure you have provided this information.'
+                   const errorMessage = 'Parichay user registration failed. You must allow Email id and Mobile number on the consent form'
+                          + 'Please logout from Parichay and try iGOT Login with Parichay again.'
                     // Redirect to the logout page with an error message
                    res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
                    return
