@@ -63,7 +63,8 @@ parichayAuth.get('/callback', async (req, res) => {
         logInfo('User information from Parichay : ' + JSON.stringify(userDetailResponse.data))
         const loginId = userDetailResponse.data.loginId
         if (!loginId) {
-          const errorMessage = 'Login failed. Please select email on the consent form to login to IGOT.'
+          const errorMessage = 'iGOT login failed. You must allow Email id on the consent form for Login'
+            + 'Please logout from Parichay and try iGOT Login with Parichay again.'
           // Redirect to the logout page with an error message
           res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
           return
