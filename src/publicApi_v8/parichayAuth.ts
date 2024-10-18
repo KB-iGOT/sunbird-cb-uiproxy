@@ -63,7 +63,7 @@ parichayAuth.get('/callback', async (req, res) => {
         logInfo('User information from Parichay : ' + JSON.stringify(userDetailResponse.data))
         const loginId = userDetailResponse.data.loginId
         if (!loginId) {
-          const errorMessage = 'iGOT login failed. You must allow Email id on the consent form for Login'
+          const errorMessage = 'iGOT login failed. You must allow Email id on the consent form for Login. '
             + 'Please logout from Parichay and try iGOT Login with Parichay again.'
           // Redirect to the logout page with an error message
           res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
@@ -82,7 +82,7 @@ parichayAuth.get('/callback', async (req, res) => {
                 const mobileNo = userDetailResponse.data.MobileNo
 
                 if (!loginId || !mobileNo) {
-                   const errorMessage = 'Parichay user registration failed. You must allow Email id and Mobile number on the consent form'
+                   const errorMessage = 'Parichay user registration failed. You must allow Email id and Mobile number on the consent form. '
                           + 'Please logout from Parichay and try iGOT Login with Parichay again.'
                     // Redirect to the logout page with an error message
                    res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
