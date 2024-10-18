@@ -4729,6 +4729,20 @@ export const API_LIST = {
                       ROLE.PUBLIC,
                    ],
         },
+        '/proxies/v8/comment/v1/like': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                     ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/comment/v1/like/read': {
+                   checksNeeded: [CHECK.ROLE],
+                   // tslint:disable-next-line: object-literal-sort-keys
+                   ROLE_CHECK: [
+                      ROLE.PUBLIC,
+                   ],
+        },
     },
     URL_PATTERN:
         [
@@ -5339,5 +5353,7 @@ export const API_LIST = {
             '/proxies/v8/user/event/state/read',
             '/proxies/v8/comment/search',
             '/proxies/v8/comment/list',
+            '/proxies/v8/comment/v1/like',
+            '/proxies/v8/comment/v1/like/read',
            ],
 }
