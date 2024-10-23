@@ -22,9 +22,11 @@ parichayAuth.get('/auth', async (req, res) => {
 
 parichayAuth.get('/callback', async (req, res) => {
     const host = req.get('host')
-    if (!req.query.code) {
+    if (req.query.code) {
+        logInfo('Received host : ' + host)
+        const authRedirectUrl = 'https://' + host + CONSTANTS.PARICHAY_AUTH_REDIRECT_URL
         logError('No authorization code found. Redirecting to /auth')
-        res.redirect('/auth')
+        res.redirect(authRedirectUrl)
         return
     }
     let resRedirectUrl = `https://${host}/page/home`
