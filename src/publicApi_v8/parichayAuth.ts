@@ -24,7 +24,7 @@ parichayAuth.get('/callback', async (req, res) => {
     const host = req.get('host')
     if (!req.query.code) {
         logInfo('Received host : ' + host)
-        logError('No authorization code found. Redirecting to /logout')
+        logError('Failed to login in Parichay, authorization code is missing. Redirecting to /error')
         const errorMessage = 'Failed to login using Parichay. Your Parichay session has expired.'
                           + ' Please logoff from Parichay and retry [Login with Parichay] option on iGOT Portal Login page.'
                           + ' If issue persists, then please try the same in incognito/private window.'
