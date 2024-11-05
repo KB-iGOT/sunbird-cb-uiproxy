@@ -4775,6 +4775,14 @@ export const API_LIST = {
                       ROLE.CBP_ADMIN,
                   ],
         },
+        '/proxies/v8/serviceregistry/config/read/:id': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                      ROLE.SPV_ADMIN,
+                      ROLE.CBP_ADMIN,
+                  ],
+        },
     },
     URL_PATTERN:
         [
@@ -5391,5 +5399,6 @@ export const API_LIST = {
             '/proxies/v8/comment/report',
             '/proxies/v8/comment/delete/reported',
             '/proxies/v8/serviceregistry/config/update',
+            '/proxies/v8/serviceregistry/config/read/:id',
            ],
 }
