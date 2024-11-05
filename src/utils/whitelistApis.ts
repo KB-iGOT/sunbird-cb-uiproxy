@@ -5390,5 +5390,6 @@ export const API_LIST = {
             '/proxies/v8/comment/v1/like/read',
             '/proxies/v8/comment/report',
             '/proxies/v8/comment/delete/reported',
+            '/proxies/v8/serviceregistry/config/update',
            ],
 }
