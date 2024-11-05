@@ -4767,6 +4767,14 @@ export const API_LIST = {
                       ROLE.MDO_ADMIN,
                    ],
         },
+        '/proxies/v8/serviceregistry/config/update': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                      ROLE.SPV_ADMIN,
+                      ROLE.CBP_ADMIN,
+                  ],
+        },
     },
     URL_PATTERN:
         [
@@ -5382,5 +5390,6 @@ export const API_LIST = {
             '/proxies/v8/comment/v1/like/read',
             '/proxies/v8/comment/report',
             '/proxies/v8/comment/delete/reported',
+            '/proxies/v8/serviceregistry/config/update',
            ],
 }
