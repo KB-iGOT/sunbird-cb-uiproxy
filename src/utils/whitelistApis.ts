@@ -4044,6 +4044,8 @@ export const API_LIST = {
                                  ROLE_CHECK: [
                                   ROLE.MDO_ADMIN,
                                   ROLE.MDO_LEADER,
+                                  ROLE.SPV_ADMIN,
+                                  ROLE.SPV_PUBLISHER,
                                  ],
         },
         '/proxies/v8/user/v3/search': {
