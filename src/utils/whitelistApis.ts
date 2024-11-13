@@ -3583,6 +3583,7 @@ export const API_LIST = {
                   // tslint:disable-next-line: object-literal-sort-keys
                    ROLE_CHECK: [
                         ROLE.SPV_ADMIN,
+                        ROLE.SPV_PUBLISHER,
                         ROLE.MDO_ADMIN,
                         ROLE.MDO_LEADER,
                    ],
@@ -3592,6 +3593,7 @@ export const API_LIST = {
                   // tslint:disable-next-line: object-literal-sort-keys
                    ROLE_CHECK: [
                         ROLE.SPV_ADMIN,
+                        ROLE.SPV_PUBLISHER,
                         ROLE.PUBLIC,
                    ],
         },
@@ -3833,7 +3835,9 @@ export const API_LIST = {
                   checksNeeded: [CHECK.ROLE],
                   // tslint:disable-next-line: object-literal-sort-keys
                    ROLE_CHECK: [
-                    ROLE.PUBLIC,
+                    ROLE.PUBLIC,    
+                    ROLE.SPV_ADMIN,
+                    ROLE.SPV_PUBLISHER,
                    ],
         },
         '/proxies/v8/framework/v1/copy/:id': {
@@ -4030,6 +4034,7 @@ export const API_LIST = {
                            ROLE_CHECK: [
                             ROLE.MDO_ADMIN,
                             ROLE.SPV_ADMIN,
+                            ROLE.SPV_PUBLISHER,
                             ROLE.MDO_LEADER,
                            ],
         },
