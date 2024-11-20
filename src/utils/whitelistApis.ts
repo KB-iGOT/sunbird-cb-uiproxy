@@ -4827,6 +4827,48 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
             ],
         },
+        '/proxies/v8/discussionFeed/create': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/discussionFeed/update': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/discussionFeed/read/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/discussionFeed/delete/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/discussionFeed/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/discussionFeed/upvote': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -5447,6 +5489,12 @@ export const API_LIST = {
             '/proxies/v8/bp/v1/bpreport/status',
             '/proxies/v8/bp/v1/generate/report',
             '/proxies/v8/bp/v1/bpreport/download/:orgId/:courseId/:batchId/:fileName',
-            '/proxies/v8/customselfregistration'
+            '/proxies/v8/customselfregistration',
+            '/proxies/v8/discussionFeed/create',
+            '/proxies/v8/discussionFeed/update',
+            '/proxies/v8/discussionFeed/read/:id',
+            '/proxies/v8/discussionFeed/delete/:id',
+            '/proxies/v8/discussionFeed/search',
+            '/proxies/v8/discussionFeed/upvote',
            ],
 }
