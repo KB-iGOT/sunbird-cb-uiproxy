@@ -1115,6 +1115,6 @@ proxiesV8.use('/customselfregistration',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
-proxiesV8.use('/discussionFeed/*',
+proxiesV8.use('/feedDiscussion/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )

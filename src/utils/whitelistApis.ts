@@ -4827,42 +4827,42 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
             ],
         },
-        '/proxies/v8/discussionFeed/create': {
+        '/proxies/v8/feedDiscussion/create': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/discussionFeed/update': {
+        '/proxies/v8/feedDiscussion/update': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/discussionFeed/read/:id': {
+        '/proxies/v8/feedDiscussion/read/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/discussionFeed/delete/:id': {
+        '/proxies/v8/feedDiscussion/delete/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/discussionFeed/search': {
+        '/proxies/v8/feedDiscussion/search': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/discussionFeed/upvote': {
+        '/proxies/v8/feedDiscussion/upvote': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -5490,11 +5490,11 @@ export const API_LIST = {
             '/proxies/v8/bp/v1/generate/report',
             '/proxies/v8/bp/v1/bpreport/download/:orgId/:courseId/:batchId/:fileName',
             '/proxies/v8/customselfregistration',
-            '/proxies/v8/discussionFeed/create',
-            '/proxies/v8/discussionFeed/update',
-            '/proxies/v8/discussionFeed/read/:id',
-            '/proxies/v8/discussionFeed/delete/:id',
-            '/proxies/v8/discussionFeed/search',
-            '/proxies/v8/discussionFeed/upvote',
+            '/proxies/v8/feedDiscussion/create',
+            '/proxies/v8/feedDiscussion/update',
+            '/proxies/v8/feedDiscussion/read/:id',
+            '/proxies/v8/feedDiscussion/delete/:id',
+            '/proxies/v8/feedDiscussion/search',
+            '/proxies/v8/feedDiscussion/upvote',
            ],
 }
