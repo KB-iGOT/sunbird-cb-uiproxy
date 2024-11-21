@@ -4869,6 +4869,14 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/org/ext/v1/update': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -5496,5 +5504,6 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/delete/:id',
             '/proxies/v8/feedDiscussion/search',
             '/proxies/v8/feedDiscussion/upvote',
+            '/proxies/v8/org/ext/v1/update',
            ],
 }
