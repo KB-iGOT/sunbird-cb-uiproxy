@@ -1118,3 +1118,8 @@ proxiesV8.use('/customselfregistration',
 proxiesV8.use('/feedDiscussion/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/customselfregistration/listallqrs',
+  // tslint:disable-next-line: max-line-length
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
