@@ -4877,6 +4877,16 @@ export const API_LIST = {
                 ROLE.STATE_ADMIN,
             ],
         },
+        '/proxies/v8/customselfregistration/listallqrs': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -5505,5 +5515,6 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/search',
             '/proxies/v8/feedDiscussion/upvote',
             '/proxies/v8/org/ext/v1/update',
+            '/proxies/v8/customselfregistration/listallqrs',
            ],
 }
