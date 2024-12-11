@@ -4921,6 +4921,38 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
             ],
         },
+        '/proxies/v8/community/v1/create': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                     ROLE.SPV_ADMIN,
+                      ROLE.MDO_ADMIN,
+                  ],
+        },
+        '/proxies/v8/community/v1/update': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                     ROLE.SPV_ADMIN,
+                      ROLE.MDO_ADMIN,
+                  ],
+        },
+        '/proxies/v8/community/v1/read/:communityId': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                     ROLE.SPV_ADMIN,
+                      ROLE.MDO_ADMIN,
+                  ],
+        },
+        '/proxies/v8/community/v1/delete/:communityId': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                     ROLE.SPV_ADMIN,
+                      ROLE.MDO_ADMIN,
+                  ],
+        },
     },
     URL_PATTERN:
         [
@@ -5553,5 +5585,9 @@ export const API_LIST = {
             '/proxies/v8/comment/v1/likedComments',
             '/proxies/v8/customselfregistration/upload/logo/gcpcontainer',
             '/proxies/v8/customselfregistration/isregistrationqractive',
+            '/proxies/v8/community/v1/create',
+            '/proxies/v8/community/v1/update',
+            '/proxies/v8/community/v1/read/:communityId',
+            '/proxies/v8/community/v1/delete/:communityId',
            ],
 }
