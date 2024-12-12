@@ -4869,7 +4869,7 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/feedDiscussion/upvote': {
+        '/proxies/v8/feedDiscussion/upVote/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -4952,6 +4952,20 @@ export const API_LIST = {
                      ROLE.SPV_ADMIN,
                       ROLE.MDO_ADMIN,
                   ],
+        },
+        '/proxies/v8/feedDiscussion/answerPosts': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/feedDiscussion/downVote/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
         },
     },
     URL_PATTERN:
@@ -5579,7 +5593,7 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/read/:id',
             '/proxies/v8/feedDiscussion/delete/:id',
             '/proxies/v8/feedDiscussion/search',
-            '/proxies/v8/feedDiscussion/upvote',
+            '/proxies/v8/feedDiscussion/upVote/:id',
             '/proxies/v8/org/ext/v1/update',
             '/proxies/v8/customselfregistration/listallqrs',
             '/proxies/v8/comment/v1/likedComments',
@@ -5589,5 +5603,7 @@ export const API_LIST = {
             '/proxies/v8/community/v1/update',
             '/proxies/v8/community/v1/read/:communityId',
             '/proxies/v8/community/v1/delete/:communityId',
+            '/proxies/v8/feedDiscussion/answerPosts',
+            '/proxies/v8/feedDiscussion/downVote/:id',
            ],
 }
