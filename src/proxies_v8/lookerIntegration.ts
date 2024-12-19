@@ -40,7 +40,7 @@ lookerDashboard.use('/*', async (req, res) => {
     permissions: ['see_user_dashboards', 'see_lookml_dashboards', 'access_data', 'see_looks'],
     secret: CONSTANTS.LOOKER_SECRET,
     session_length: fifteenMinutes,
-    user_attributes: { example_attribute: 'attribute_value' },
+    user_attributes: { user_id: req.query.externalUserId || '31fa43e8-8123-43b9-997c-5c46d381ef7c' },
   }
 
   try {
