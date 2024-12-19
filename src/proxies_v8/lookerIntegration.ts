@@ -110,7 +110,6 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
   logInfo(`The signature: ${signature}`)
   const queryParams = {
     access_filters: JSON.stringify(access_filters),
-    embed_path: embedPath,
     external_group_id,
     external_user_id,
     first_name,
@@ -126,5 +125,6 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
     user_attributes: JSON.stringify(user_attributes),
   }
 
+  logInfo(`queryParams : ${queryParams}`)
   return `https://${host}${embedPath}?${querystring.stringify(queryParams)}`
 }
