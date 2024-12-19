@@ -99,13 +99,15 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
     JSON.stringify(user_attributes),
     JSON.stringify(access_filters),
   ].join('\n')
-
+  logInfo(`The stringToSign: ${stringToSign}`)
+  logInfo(`Secret Key: ${secret}`)
   const signature = crypto
     .createHmac('sha1', secret)
     .update(forceUnicodeEncoding(stringToSign))
     .digest('base64')
     .trim()
 
+  logInfo(`The signature: ${signature}`)
   const queryParams = {
     access_filters: JSON.stringify(access_filters),
     embed_path: embedPath,
