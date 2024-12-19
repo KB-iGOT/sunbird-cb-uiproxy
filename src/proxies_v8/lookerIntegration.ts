@@ -45,10 +45,9 @@ lookerDashboard.use('/*', async (req, res) => {
 
   try {
     const signedUrl = createSignedEmbedUrl(lookerOptions)
-    const encodedUrl = encodeURIComponent(signedUrl)
 
     logInfo(`Generated Looker dashboard URL: ${signedUrl}`)
-    res.status(200).json({ encodedUrl })
+    res.status(200).json({ signedUrl })
   } catch (err) {
     logError('Error generating Looker dashboard URL:', err)
     res.status(500).json({ error: 'Failed to generate Looker dashboard URL' })
@@ -56,13 +55,28 @@ lookerDashboard.use('/*', async (req, res) => {
 })
 
 function createSignedEmbedUrl(options: ILookerOptions): string {
-  const { secret, host, external_user_id, first_name, last_name, group_ids, external_group_id,
-    permissions, models, access_filters, user_attributes, session_length, embed_url,
-    force_logout_login } = options
+  const {
+    secret,
+    host,
+    external_user_id,
+    first_name,
+    last_name,
+    group_ids,
+    external_group_id,
+    permissions,
+    models,
+    access_filters,
+    user_attributes,
+    session_length,
+    embed_url,
+    force_logout_login,
+  } = options
 
   const nonce = () => {
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    return Array.from({ length: 16 }, () => possible.charAt(Math.floor(Math.random() * possible.length))).join('')
+    return Array.from({ length: 16 }, () =>
+      possible.charAt(Math.floor(Math.random() * possible.length))
+    ).join('')
   }
 
   const forceUnicodeEncoding = (str: string) => decodeURIComponent(encodeURIComponent(str))
@@ -86,7 +100,11 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
     JSON.stringify(access_filters),
   ].join('\n')
 
-  const signature = crypto.createHmac('sha1', secret).update(forceUnicodeEncoding(stringToSign)).digest('base64').trim()
+  const signature = crypto
+    .createHmac('sha1', secret)
+    .update(forceUnicodeEncoding(stringToSign))
+    .digest('base64')
+    .trim()
 
   const queryParams = {
     access_filters: JSON.stringify(access_filters),
@@ -106,5 +124,5 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
     user_attributes: JSON.stringify(user_attributes),
   }
 
-  return `${host}${embedPath}?${querystring.stringify(queryParams)}`
+  return `https://${host}${embedPath}?${querystring.stringify(queryParams)}`
 }
