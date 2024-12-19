@@ -23,7 +23,7 @@ interface ILookerOptions {
   user_attributes: Record<string, string>
 }
 
-lookerDashboard.get('/looker/*', async (req, res) => {
+lookerDashboard.use('/*', async (req, res) => {
   const fifteenMinutes = 15 * 60
 
   const lookerOptions: ILookerOptions = {
