@@ -1,6 +1,6 @@
 import axios from 'axios'
 import crypto from 'crypto'
-import express from 'express'
+import express, { Request, Response } from 'express'
 import { CONSTANTS } from '../utils/env'
 import { logError, logInfo } from '../utils/logger'
 
@@ -16,18 +16,18 @@ interface IUser {
   user_attributes: Record<string, string>
   group_ids: number[]
   external_group_id: string
-  host?: string  // Added host to IUser interface if it's needed in the user object
+  host?: string // Optional, in case it's needed in the user object
 }
 
 class SignedCookie {
-  private looker: { host: string, secret: string }
+  private looker: { host: string; secret: string }
   private user: IUser
   private sessionLength: number
   private nonce = '' // Default value
   private time = 0   // Default value
   private signature = '' // Default value
 
-  constructor(looker: { host: string, secret: string }, user: IUser, sessionLength: number) {
+  constructor(looker: { host: string; secret: string }, user: IUser, sessionLength: number) {
     this.looker = looker
     this.user = user
     this.sessionLength = sessionLength
@@ -87,21 +87,21 @@ class SignedCookie {
   }
 }
 
-lookerDashboard.use('/*', async (req, res) => {
+lookerDashboard.use('/*', async (req: Request, res: Response) => {
   const fifteenMinutes = 15 * 60
 
   const user: IUser = {
-  access_filters: { fake_model: { id: 1 } },
-  external_group_id: '5',
-  external_user_id: req.query.externalUserId || '31fa43e8-8123-43b9-997c-5c46d381ef7c',
-  first_name: req.query.firstName || 'Sahil',
-  group_ids: [4, 5],
-  host: CONSTANTS.LOOKER_HOST,
-  last_name: req.query.lastName || 'Chaudhary',
-  models: ['employee_enrolment', 'igot'],
-  permissions: ['see_user_dashboards', 'see_lookml_dashboards', 'access_data', 'see_looks'],
-  user_attributes: { example_attribute: 'attribute_value' },
-}
+    access_filters: { fake_model: { id: 1 } },
+    external_group_id: '5',
+    external_user_id: req.query.externalUserId as string || '31fa43e8-8123-43b9-997c-5c46d381ef7c',
+    first_name: req.query.firstName as string || 'Sahil',
+    group_ids: [4, 5],
+    host: CONSTANTS.LOOKER_HOST,
+    last_name: req.query.lastName as string || 'Chaudhary',
+    models: ['employee_enrolment', 'igot'],
+    permissions: ['see_user_dashboards', 'see_lookml_dashboards', 'access_data', 'see_looks'],
+    user_attributes: { example_attribute: 'attribute_value' },
+  }
 
   const lookerOptions = {
     host: CONSTANTS.LOOKER_HOST,
@@ -111,7 +111,7 @@ lookerDashboard.use('/*', async (req, res) => {
   try {
     const signedCookie = new SignedCookie(lookerOptions, user, fifteenMinutes).generateCookie()
 
-    logInfo(`Generated signed cookie for Looker embed` + signedCookie)
+    logInfo(`Generated signed cookie for Looker embed: ${signedCookie}`)
     res.cookie('looker_auth', signedCookie, { httpOnly: true, secure: true })
 
     const dashboardUrl = `https://${CONSTANTS.LOOKER_HOST}/dashboards/9`
