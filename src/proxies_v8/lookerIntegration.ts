@@ -83,14 +83,14 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
 
   const embedPath = `/login/embed/${encodeURIComponent(embed_url)}`
   const time = Math.floor(Date.now() / 1000)
-  const jsonNonce = nonce()
+  const jsonNonce = nonce(16)
 
   const stringToSign = [
     host,
     embedPath,
-    jsonNonce,
-    time,
-    session_length,
+    JSON.stringify(jsonNonce),
+    JSON.stringify(time),
+    JSON.stringify(session_length),
     JSON.stringify(external_user_id),
     JSON.stringify(permissions),
     JSON.stringify(models),
@@ -110,18 +110,18 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
   logInfo(`The signature: ${signature}`)
   const queryParams = {
     access_filters: JSON.stringify(access_filters),
-    external_group_id,
+    external_group_id: JSON.stringify(external_group_id),
     external_user_id: JSON.stringify(external_user_id),
-    first_name,
-    force_logout_login,
+    first_name: JSON.stringify(external_group_id),
+    force_logout_login : JSON.stringify(force_logout_login),
     group_ids: JSON.stringify(group_ids),
-    last_name,
+    last_name: JSON.stringify(last_name),
     models: JSON.stringify(models),
-    nonce: jsonNonce,
+    nonce: JSON.stringify(jsonNonce),
     permissions: JSON.stringify(permissions),
-    session_length,
+    session_length: JSON.stringify(session_length),
     signature,
-    time,
+    time : JSON.stringify(time),
     user_attributes: JSON.stringify(user_attributes),
   }
 
