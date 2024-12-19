@@ -91,7 +91,7 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
     jsonNonce,
     time,
     session_length,
-    external_user_id,
+    JSON.stringify(external_user_id),
     JSON.stringify(permissions),
     JSON.stringify(models),
     JSON.stringify(group_ids),
@@ -111,7 +111,7 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
   const queryParams = {
     access_filters: JSON.stringify(access_filters),
     external_group_id,
-    external_user_id,
+    external_user_id: JSON.stringify(external_user_id),
     first_name,
     force_logout_login,
     group_ids: JSON.stringify(group_ids),
