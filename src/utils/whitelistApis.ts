@@ -4974,6 +4974,13 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/feedDiscussion/uploadFile': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -5613,5 +5620,6 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/answerPosts',
             '/proxies/v8/feedDiscussion/downVote/:id',
             '/proxies/v8/feedDiscussion/report',
+            '/proxies/v8/feedDiscussion/uploadFile',
            ],
 }
