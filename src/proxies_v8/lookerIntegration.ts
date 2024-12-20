@@ -43,15 +43,17 @@ lookerDashboard.post('/*', async (req, res) => {
   if (!userId) {
     return res.status(400).json({ error: 'userId is missing in userAttributes' })
   }
-
-  if (!embedUrl) {
+  logInfo(`The embedUrl is: ${embedUrl}`)
+  logInfo(`The SessionTimeoutLength is: ${sessionLengthInSec}`)
+  if (embedUrl) {
     embedUrlInfo = embedUrl
+    logInfo(`Inside the embedUrl: ${embedUrlInfo}` )
   } else {
     const lookerUserDashboards: Record<string, string> = JSON.parse(CONSTANTS.LOOKER_EMBED_CODE_MAP)
     logInfo(`The embedUserDashboard is: ${lookerUserDashboards}`)
   }
 
-  if (!sessionLengthInSec) {
+  if (sessionLengthInSec) {
     sessionTimeoutLength = sessionLengthInSec
   } else {
     sessionTimeoutLength = CONSTANTS.LOOKER_SESSION_LENGTH
