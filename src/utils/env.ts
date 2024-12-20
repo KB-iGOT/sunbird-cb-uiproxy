@@ -194,6 +194,16 @@ export const CONSTANTS = {
   PROFILE_UPDATE_LINK_PATH: env.PROFILE_UPDATE_LINK_PATH || '/app/person-profile/me#profileInfo',
   LOOKER_SECRET: env.LOOKER_SECRET || 'f9da26bd4902e74c19eae42e27be449047e3655743514759059b54247b05fcda',
   LOOKER_HOST: env.LOOKER_HOST || 'karamyogibharat.cloud.looker.com',
+  LOOKER_SESSION_LENGTH: env.LOOKER_SESSION_LENGTH || 900,
+  LOOKER_USER_MODELS: env.LOOKER_USER_MODELS || 'employee_enrolment,igot',
+  // tslint:disable-next-line: max-line-length
+  LOOKER_USER_DASHBOARD_PERMISSION: env.LOOKER_USER_DASHBOARD_PERMISSION || 'see_user_dashboards,see_lookml_dashboards,access_data,see_looks',
+  // tslint:disable-next-line: max-line-length
+  LOOKER_GROUP_IDS: env.LOOKER_GROUP_IDS || '',
+  LOOKER_FORCE_LOGOUT_LOGIN: env.LOOKER_FORCE_LOGOUT_LOGIN || false,
+  // tslint:disable-next-line: max-line-length
+  LOOKER_EMBED_CODE_MAP: env.LOOKER_EMBED_CODE_MAP || '{"MDO_ADMIN":"/embed/dashboards/7","MDO_LEADER":"/embed/dashboards/7","SPV_ADMIN":"/embed/dashboards/9"}',
+  // tslint:disable-next-line: max-line-length
 }
 
 export const RESTRICTED_PYTHON_STMT: string[] = process.env.RESTRICTED_CHARACTERS

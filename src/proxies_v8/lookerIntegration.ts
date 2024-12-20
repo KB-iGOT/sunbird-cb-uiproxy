@@ -12,11 +12,9 @@ interface ILookerOptions {
   embed_url: string
   external_group_id: string
   external_user_id: string
-  first_name: string
   force_logout_login: boolean
-  group_ids: number[]
+  group_ids: string[]
   host: string
-  last_name: string
   models: string[]
   permissions: string[]
   secret: string
@@ -24,34 +22,64 @@ interface ILookerOptions {
   user_attributes: Record<string, string>
 }
 
-lookerDashboard.use('/*', async (req, res) => {
-  const fifteenMinutes = 15 * 60
+lookerDashboard.post('/*', async (req, res) => {
+
+  // Check if the request body is present and contains the required data
+  if (!req.body.request) {
+    return res.status(400).json({ error: 'Request body is missing or invalid' })
+  }
+
+  let embedUrlInfo
+  let sessionTimeoutLength
+
+  const { embedUrl, sessionLengthInSec, userAttributes } = req.body.request
+
+  if (!userAttributes || Object.keys(userAttributes).length === 0) {
+    return res.status(400).json({ error: 'userAttributes are required and cannot be empty' })
+  }
+
+  // Check if userId is present within userAttributes
+  const userId = userAttributes.userId
+  if (!userId) {
+    return res.status(400).json({ error: 'userId is missing in userAttributes' })
+  }
+
+  if (!embedUrl) {
+    embedUrlInfo = embedUrl
+  } else {
+    const lookerUserDashboards: Record<string, string> = JSON.parse(CONSTANTS.LOOKER_EMBED_CODE_MAP)
+    logInfo(`The embedUserDashboard is: ${lookerUserDashboards}`)
+  }
+
+  if (!sessionLengthInSec) {
+    sessionTimeoutLength = sessionLengthInSec
+  } else {
+    sessionTimeoutLength = CONSTANTS.LOOKER_SESSION_LENGTH
+  }
 
   const lookerOptions: ILookerOptions = {
     access_filters: { fake_model: { id: 1 } },
-    embed_url: req.query.embedUrl || '/embed/dashboards/9',
+    embed_url: embedUrlInfo,
     external_group_id: '5',
-    external_user_id: req.query.externalUserId || '31fa43e8-8123-43b9-997c-5c46d381ef7c',
-    first_name: req.query.firstName || 'Sahil',
-    force_logout_login: false,
-    group_ids: [4, 5],
+    external_user_id: userId,
+    force_logout_login: Boolean(CONSTANTS.LOOKER_FORCE_LOGOUT_LOGIN),
+    group_ids: CONSTANTS.LOOKER_GROUP_IDS.split(',') ,
     host: CONSTANTS.LOOKER_HOST,
-    last_name: req.query.lastName || 'Chaudhary',
-    models: ['employee_enrolment', 'igot'],
-    permissions: ['see_user_dashboards', 'see_lookml_dashboards', 'access_data', 'see_looks'],
+    models: CONSTANTS.LOOKER_USER_MODELS.split(','),
+    permissions: CONSTANTS.LOOKER_USER_DASHBOARD_PERMISSION.split(','),
     secret: CONSTANTS.LOOKER_SECRET,
-    session_length: fifteenMinutes,
-    user_attributes: { user_id: req.query.externalUserId || '31fa43e8-8123-43b9-997c-5c46d381ef7c' },
+    session_length:  sessionTimeoutLength,
+    user_attributes: userAttributes || { user_id: userId },
   }
 
   try {
     const signedUrl = createSignedEmbedUrl(lookerOptions)
 
     logInfo(`Generated Looker dashboard URL: ${signedUrl}`)
-    res.status(200).json({ signedUrl })
+    return res.status(200).json({ signedUrl })
   } catch (err) {
     logError('Error generating Looker dashboard URL:', err)
-    res.status(500).json({ error: 'Failed to generate Looker dashboard URL' })
+    return res.status(500).json({ error: 'Failed to generate Looker dashboard URL' })
   }
 })
 
@@ -60,8 +88,6 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
     secret,
     host,
     external_user_id,
-    first_name,
-    last_name,
     group_ids,
     external_group_id,
     permissions,
@@ -75,7 +101,7 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
 
   const nonce = () => {
     // Generate a UUID, remove hyphens, and take the first 16 characters
-     return uuidv4().replace(/-/g, '').slice(0, 16)
+    return uuidv4().replace(/-/g, '').slice(0, 16)
   }
 
   const forceUnicodeEncoding = (str: string) => decodeURIComponent(encodeURIComponent(str))
@@ -111,10 +137,8 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
     access_filters: JSON.stringify(access_filters),
     external_group_id: JSON.stringify(external_group_id),
     external_user_id: JSON.stringify(external_user_id),
-    first_name: JSON.stringify(first_name),
     force_logout_login : JSON.stringify(force_logout_login),
     group_ids: JSON.stringify(group_ids),
-    last_name: JSON.stringify(last_name),
     models: JSON.stringify(models),
     nonce: JSON.stringify(jsonNonce),
     permissions: JSON.stringify(permissions),
