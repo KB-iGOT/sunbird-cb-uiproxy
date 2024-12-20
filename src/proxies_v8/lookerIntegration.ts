@@ -1,6 +1,7 @@
 import crypto from 'crypto'
 import express from 'express'
 import querystring from 'querystring'
+import { v4 as uuidv4 } from 'uuid'
 import { CONSTANTS } from '../utils/env'
 import { logError, logInfo } from '../utils/logger'
 
@@ -73,10 +74,8 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
   } = options
 
   const nonce = () => {
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    return Array.from({ length: 16 }, () =>
-      possible.charAt(Math.floor(Math.random() * possible.length))
-    ).join('')
+    // Generate a UUID, remove hyphens, and take the first 16 characters
+     return uuidv4().replace(/-/g, '').slice(0, 16)
   }
 
   const forceUnicodeEncoding = (str: string) => decodeURIComponent(encodeURIComponent(str))
