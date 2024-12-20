@@ -76,8 +76,7 @@ lookerDashboard.post('/*', async (req, res) => {
     res.header('Pragma', 'no-cache')
     res.header('Expires', '0')
 
-    let signedUrl = createSignedEmbedUrl(lookerOptions)
-    signedUrl = `${signedUrl}&_=${Date.now()}`
+    const signedUrl = createSignedEmbedUrl(lookerOptions)
 
     logInfo(`Generated Looker dashboard URL: ${signedUrl}`)
     return res.status(200).json({ signedUrl })
