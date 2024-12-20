@@ -71,7 +71,7 @@ lookerDashboard.post('/*', async (req, res) => {
     permissions: CONSTANTS.LOOKER_USER_DASHBOARD_PERMISSION.split(','),
     secret: CONSTANTS.LOOKER_SECRET,
     session_length:  sessionTimeoutLength,
-    user_attributes: userAttributes || { user_id: userId },
+    user_attributes: { user_id: userId },
   }
 
   try {
