@@ -201,9 +201,6 @@ export const CONSTANTS = {
   // tslint:disable-next-line: max-line-length
   LOOKER_GROUP_IDS: env.LOOKER_GROUP_IDS || '5,6',
   LOOKER_FORCE_LOGOUT_LOGIN: env.LOOKER_FORCE_LOGOUT_LOGIN || false,
-  // tslint:disable-next-line: max-line-length
-  LOOKER_EMBED_CODE_MAP: env.LOOKER_EMBED_CODE_MAP || '{"MDO_ADMIN":"/embed/dashboards/7","MDO_LEADER":"/embed/dashboards/7","SPV_ADMIN":"/embed/dashboards/9"}',
-  // tslint:disable-next-line: max-line-length
 }
 
 export const RESTRICTED_PYTHON_STMT: string[] = process.env.RESTRICTED_CHARACTERS

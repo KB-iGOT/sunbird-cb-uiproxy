@@ -43,14 +43,11 @@ lookerDashboard.post('/*', async (req, res) => {
   if (!userId) {
     return res.status(400).json({ error: 'userId is missing in userAttributes' })
   }
-  logInfo(`The embedUrl is: ${embedUrl}`)
-  logInfo(`The SessionTimeoutLength is: ${sessionLengthInSec}`)
+
   if (embedUrl) {
     embedUrlInfo = embedUrl
-    logInfo(`Inside the embedUrl: ${embedUrlInfo}` )
   } else {
-    const lookerUserDashboards: Record<string, string> = JSON.parse(CONSTANTS.LOOKER_EMBED_CODE_MAP)
-    logInfo(`The embedUserDashboard is: ${lookerUserDashboards}`)
+     return res.status(400).json({ error: 'embedUrl is are required and cannot be empty' })
   }
 
   if (sessionLengthInSec) {
@@ -75,7 +72,12 @@ lookerDashboard.post('/*', async (req, res) => {
   }
 
   try {
-    const signedUrl = createSignedEmbedUrl(lookerOptions)
+    res.header('Cache-Control', 'no-cache, no-store, must-revalidate')
+    res.header('Pragma', 'no-cache')
+    res.header('Expires', '0')
+
+    let signedUrl = createSignedEmbedUrl(lookerOptions)
+    signedUrl = `${signedUrl}&_=${Date.now()}`
 
     logInfo(`Generated Looker dashboard URL: ${signedUrl}`)
     return res.status(200).json({ signedUrl })
@@ -126,15 +128,12 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
     JSON.stringify(user_attributes),
     JSON.stringify(access_filters),
   ].join('\n')
-  logInfo(`The stringToSign: ${stringToSign}`)
-  logInfo(`Secret Key: ${secret}`)
   const signature = crypto
     .createHmac('sha1', secret)
     .update(forceUnicodeEncoding(stringToSign))
     .digest('base64')
     .trim()
 
-  logInfo(`The signature: ${signature}`)
   const queryParams = {
     access_filters: JSON.stringify(access_filters),
     external_group_id: JSON.stringify(external_group_id),
