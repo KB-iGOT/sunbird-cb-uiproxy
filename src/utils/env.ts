@@ -200,6 +200,8 @@ export const CONSTANTS = {
   // tslint:disable-next-line: max-line-length
   LOOKER_GROUP_IDS: env.LOOKER_GROUP_IDS || '5,6',
   LOOKER_FORCE_LOGOUT_LOGIN: env.LOOKER_FORCE_LOGOUT_LOGIN || false,
+  LOOKER_DEFAULT_USER_NAME: env.LOOKER_DEFAULT_USER_NAME || 'Dashboard Viewer',
+  LOOKER_EXTERNAL_GROUP_ID: env.LOOKER_EXTERNAL_GROUP_ID || '5',
 }
 
 export const RESTRICTED_PYTHON_STMT: string[] = process.env.RESTRICTED_CHARACTERS
