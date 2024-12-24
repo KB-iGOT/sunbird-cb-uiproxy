@@ -163,7 +163,6 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
     JSON.stringify(group_ids),
     JSON.stringify(user_attributes),
     JSON.stringify(access_filters),
-    JSON.stringify(first_name),
   ].join('\n')
   const signature = crypto
     .createHmac('sha1', secret)
