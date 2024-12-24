@@ -19,7 +19,7 @@ interface ILookerOptions {
   secret: string
   session_length: number
   user_attributes: Record<string, string>
-  name: string
+  first_name: string
 }
 
 lookerDashboard.post('/*', async (req, res) => {
@@ -37,7 +37,7 @@ lookerDashboard.post('/*', async (req, res) => {
 
   let embedUrlInfo
   let sessionTimeoutLength
-  let userName
+  let firstName
   let userPermissionParam: string[]
   let userModelsParam: string[]
   let userGroupIdsParam: string[]
@@ -60,13 +60,13 @@ lookerDashboard.post('/*', async (req, res) => {
     sessionTimeoutLength = CONSTANTS.LOOKER_SESSION_LENGTH
   }
 
-  const name = userAttributes.userName
+  const name = userAttributes.firstName
   if (name) {
-    userName = name
+    firstName = name
   } else {
-    userName = CONSTANTS.LOOKER_DEFAULT_USER_NAME
+    firstName = CONSTANTS.LOOKER_DEFAULT_USER_NAME
   }
-    
+
   if (userPermissions) {
       if (!Array.isArray(userPermissions)) {
           return res.status(400).json({ error: 'userPermissions should be array' })
@@ -98,11 +98,11 @@ lookerDashboard.post('/*', async (req, res) => {
     access_filters: { fake_model: { id: 1 } },
     embed_url: embedUrlInfo,
     external_user_id: userId,
+    first_name: firstName,
     force_logout_login: Boolean(CONSTANTS.LOOKER_FORCE_LOGOUT_LOGIN),
     group_ids:  userGroupIdsParam,
     host: CONSTANTS.LOOKER_HOST,
     models: userModelsParam,
-    name: userName,
     permissions: userPermissionParam,
     secret: CONSTANTS.LOOKER_SECRET,
     session_length:  sessionTimeoutLength,
@@ -129,6 +129,7 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
     secret,
     host,
     external_user_id,
+    first_name,
     group_ids,
     permissions,
     models,
@@ -137,7 +138,6 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
     session_length,
     embed_url,
     force_logout_login,
-    name,
   } = options
 
   const nonce = () => {
@@ -163,7 +163,7 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
     JSON.stringify(group_ids),
     JSON.stringify(user_attributes),
     JSON.stringify(access_filters),
-    JSON.stringify(name),
+    JSON.stringify(first_name),
   ].join('\n')
   const signature = crypto
     .createHmac('sha1', secret)
@@ -174,10 +174,10 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
   const queryParams = {
     access_filters: JSON.stringify(access_filters),
     external_user_id: JSON.stringify(external_user_id),
+    first_name:  JSON.stringify(first_name),
     force_logout_login : JSON.stringify(force_logout_login),
     group_ids: JSON.stringify(group_ids),
     models: JSON.stringify(models),
-    name:  JSON.stringify(name),
     nonce: JSON.stringify(jsonNonce),
     permissions: JSON.stringify(permissions),
     session_length: JSON.stringify(session_length),
