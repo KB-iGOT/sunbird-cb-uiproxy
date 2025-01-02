@@ -3835,7 +3835,7 @@ export const API_LIST = {
                   checksNeeded: [CHECK.ROLE],
                   // tslint:disable-next-line: object-literal-sort-keys
                    ROLE_CHECK: [
-                    ROLE.PUBLIC,    
+                    ROLE.PUBLIC,
                     ROLE.SPV_ADMIN,
                     ROLE.SPV_PUBLISHER,
                    ],
@@ -4966,6 +4966,7 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
+        proxiesV8.use('/looker/dashboard', lookerDashboard)
         '/proxies/v8/courseRecommend/v1/courses': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -5027,6 +5028,20 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/feedDiscussion/report': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/feedDiscussion/uploadFile': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
             ],
         },
     },
@@ -5667,6 +5682,9 @@ export const API_LIST = {
             '/proxies/v8/community/v1/delete/:communityId',
             '/proxies/v8/feedDiscussion/answerPosts',
             '/proxies/v8/feedDiscussion/downVote/:id',
+            '/proxies/v8/feedDiscussion/report',
+            '/proxies/v8/feedDiscussion/uploadFile',
+            '/proxies/v8/looker/dashboard',
             '/proxies/v8/courseRecommend/v1/courses',
             '/proxies/v8/community/v1/join',
             '/proxies/v8/community/v1/unjoin',
