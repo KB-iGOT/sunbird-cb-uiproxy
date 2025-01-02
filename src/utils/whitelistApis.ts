@@ -4966,7 +4966,27 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
-        proxiesV8.use('/looker/dashboard', lookerDashboard)
+        '/proxies/v8/feedDiscussion/report': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/feedDiscussion/uploadFile': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/looker/dashboard': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
         '/proxies/v8/courseRecommend/v1/courses': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -5028,20 +5048,6 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
-            ],
-        },
-        '/proxies/v8/feedDiscussion/report': {
-            checksNeeded: [CHECK.ROLE],
-            // tslint:disable-next-line: object-literal-sort-keys
-            ROLE_CHECK: [
-               ROLE.PUBLIC,
-            ],
-        },
-        '/proxies/v8/feedDiscussion/uploadFile': {
-            checksNeeded: [CHECK.ROLE],
-            // tslint:disable-next-line: object-literal-sort-keys
-            ROLE_CHECK: [
-               ROLE.PUBLIC,
             ],
         },
     },
