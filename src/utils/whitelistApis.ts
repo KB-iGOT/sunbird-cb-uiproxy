@@ -5088,6 +5088,13 @@ export const API_LIST = {
                     ROLE.PUBLIC,
                   ],
         },
+        '/proxies/v8/community/v1/subcategory/list': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
     },
     URL_PATTERN:
         [
@@ -5743,5 +5750,6 @@ export const API_LIST = {
             '/proxies/v8/community/v1/category/read/:categoryId',
             '/proxies/v8/community/v1/category/delete/:categoryId',
             '/proxies/v8/community/v1/category/list',
+            '/proxies/v8/community/v1/subcategory/list',
            ],
 }
