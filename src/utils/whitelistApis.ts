@@ -4994,7 +4994,28 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.PUBLIC,
             ],
-        }
+        },
+        '/proxies/v8/learner/course/v4/user/enrollment/summary/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/learner/course/v4/user/enrollment/list/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/learner/course/v4/user/enrollment/details/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -5637,5 +5658,8 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/uploadFile',
             '/proxies/v8/looker/dashboard',
             '/protected/v8/workflowhandler/v2/transition',
+            '/proxies/v8/learner/course/v4/user/enrollment/summary/:id',
+            '/proxies/v8/learner/course/v4/user/enrollment/list/:id',
+            '/proxies/v8/learner/course/v4/user/enrollment/details/:id',
            ],
 }
