@@ -4987,6 +4987,13 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
+        '/protected/v8/workflowhandler/v2/transition': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
         '/proxies/v8/courseRecommend/v1/courses': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -5691,6 +5698,7 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/report',
             '/proxies/v8/feedDiscussion/uploadFile',
             '/proxies/v8/looker/dashboard',
+            '/protected/v8/workflowhandler/v2/transition',
             '/proxies/v8/courseRecommend/v1/courses',
             '/proxies/v8/community/v1/join',
             '/proxies/v8/community/v1/unjoin',
