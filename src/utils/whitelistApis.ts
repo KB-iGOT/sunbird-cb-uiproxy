@@ -4511,7 +4511,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
             ],
         },
-        '/proxies/v8/organisation/v1/competencyDesignationMappings/bulkUpload/:frameworkId': {
+        '/proxies/v8/organisation/v1/competencyDesignationMappings/bulkUpload/:orgId/:frameworkId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -5692,7 +5692,7 @@ export const API_LIST = {
             '/proxies/v8/template/api/v1/survey/getSolutions',
             '/proxies/v8/template/api/v1/survey/downloadSolutions',
             '/proxies/v8/organisation/v1/getCompetencyDesignationMappingFile/sample/:frameworkId',
-            '/proxies/v8/organisation/v1/competencyDesignationMappings/bulkUpload/:frameworkId',
+            '/proxies/v8/organisation/v1/competencyDesignationMappings/bulkUpload/:orgId/:frameworkId',
             '/proxies/v8/organisation/v1/competencyDesignationMappings/bulkUpload/progress/details/:orgId',
             '/proxies/v8/organisation/v1/competencyDesignationMappings/download/:fileName',
             '/proxies/v8/national/learning/week/insights',
