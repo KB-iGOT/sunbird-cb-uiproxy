@@ -17,7 +17,7 @@ userAuthKeyCloakApi.get('/', (req, res) => {
                   } else {
                       const hostParts = host.split('.')
                       if (hostParts.length > 2) {
-                          domain = '.' + hostParts.slice(1).join('.') // Slice to get .uat.karmayogibharat.net
+                          domain = '.' + hostParts.slice(1).join('.')
                       } else {
                           domain = host
                       }
