@@ -4977,7 +4977,7 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/feedDiscussion/uploadFile': {
+        '/proxies/v8/feedDiscussion/uploadFile/:communityId/:discussionId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -5754,7 +5754,7 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/answerPosts',
             '/proxies/v8/feedDiscussion/downVote/:id',
             '/proxies/v8/feedDiscussion/report',
-            '/proxies/v8/feedDiscussion/uploadFile',
+            '/proxies/v8/feedDiscussion/uploadFile/:communityId/:discussionId',
             '/proxies/v8/looker/dashboard',
             '/protected/v8/workflowhandler/v2/transition',
             '/proxies/v8/learner/course/v4/user/enrollment/summary/:id',
