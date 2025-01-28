@@ -372,7 +372,6 @@ proxiesV8.post('/org/v1/search', async (req, res) => {
   const roleData = lodash.get(req, 'session.userRoles')  
   // tslint:disable-next-line: all
   const rootOrgId = lodash.get(req, 'session.rootOrgId')
-  logInfo('req object -> ' + req)
   logInfo('org search API call : Users Roles are...')
   logInfo(roleData)
   let urlPath = API_END_POINTS.kongSearchOrg
