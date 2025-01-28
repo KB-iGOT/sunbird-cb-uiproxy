@@ -379,6 +379,7 @@ proxiesV8.post('/org/v1/search', async (req, res) => {
     logInfo('roleData contains state admin')
     req.body.request.filters.sbRootOrgId = rootOrgId
     urlPath = API_END_POINTS.kongExtOrgSearch
+    logInfo('updated urlPath -> ' + urlPath)
   }
   const searchResponse = await axios({
     ...axiosRequestConfig,
