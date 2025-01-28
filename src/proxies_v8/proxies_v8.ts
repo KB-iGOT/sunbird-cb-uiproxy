@@ -372,8 +372,11 @@ proxiesV8.post('/org/v1/search', async (req, res) => {
   const roleData = lodash.get(req, 'session.userRoles')  
   // tslint:disable-next-line: all
   const rootOrgId = lodash.get(req, 'session.rootOrgId')
+  logInfo('org search API call : Users Roles are...')
+  logInfo(roleData)
   let urlPath = API_END_POINTS.kongSearchOrg
   if (roleData.includes('STATE_ADMIN')) {
+    logInfo('roleData contains state admin')
     req.body.request.filters.sbRootOrgId = rootOrgId
     urlPath = API_END_POINTS.kongExtOrgSearch
   }
