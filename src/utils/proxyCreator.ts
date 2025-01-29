@@ -18,7 +18,7 @@ const PROXY_SLUG_FORMS = '/proxies/v8/ext-forms'
 proxy.on('proxyReq', (proxyReq: any, req: any, _res: any, _options: any) => {
   logInfo('proxyReqOn method. Adding more headers in request...')
   logInfo(JSON.stringify(req.headers))
-  const rootOrg = req.headers ? req.headers('rootOrg') : req.headers('rootorg')
+  const rootOrg = req.headers ? req.headers.rootOrg : req.headers.rootorg
   logInfo(`rootOrg is: ` + JSON.stringify(rootOrg))
   if (!rootOrg) {
     proxyReq.setHeader('rootOrg', 'iGOT')
