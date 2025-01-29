@@ -22,6 +22,7 @@ proxy.on('proxyReq', (proxyReq: any, req: any, _res: any, _options: any) => {
   logInfo(`rootOrg is: ` + JSON.stringify(rootOrg))
   if (!rootOrg) {
     proxyReq.setHeader('rootOrg', 'iGOT')
+    proxyReq.setHeader('org', 'dopt')
     }
   // tslint:disable-next-line: no-duplicate-string
   proxyReq.setHeader('X-Channel-Id', (_.get(req, 'session.rootOrgId')) ? _.get(req, 'session.rootOrgId') : CONSTANTS.X_Channel_Id)
