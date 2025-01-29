@@ -18,9 +18,11 @@ const PROXY_SLUG_FORMS = '/proxies/v8/ext-forms'
 proxy.on('proxyReq', (proxyReq: any, req: any, _res: any, _options: any) => {
   logInfo('proxyReqOn method. Adding more headers in request...')
   logInfo(JSON.stringify(req.headers))
-  const rootOrg = req.headers ? req.headers.rootOrg || req.headers.rootorg : 'iGOT'
-  logInfo(JSON.stringify(rootOrg))
-  proxyReq.setHeader('rootOrg', rootOrg)
+  const rootOrg = req.headers ? req.headers('rootOrg') : req.headers('rootorg')
+  logInfo(`rootOrg is: ` + JSON.stringify(rootOrg))
+  if (!rootOrg) {
+    proxyReq.setHeader('rootOrg', 'iGOT')
+    }
   // tslint:disable-next-line: no-duplicate-string
   proxyReq.setHeader('X-Channel-Id', (_.get(req, 'session.rootOrgId')) ? _.get(req, 'session.rootOrgId') : CONSTANTS.X_Channel_Id)
   // tslint:disable-next-line: max-line-length
