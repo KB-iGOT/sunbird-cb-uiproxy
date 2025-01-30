@@ -12,17 +12,17 @@ userAuthKeyCloakApi.get('/', (req, res) => {
     if (req.session && req.session.authenticated ) {
         logInfo('User is authenticated.. Updating Cookie with Secure and SameSite flags')
         if (host !== undefined) {
-          if (host.includes('localhost')) {
-                      domain = 'localhost' // For localhost, set domain to localhost
-                  } else {
-                      const hostParts = host.split('.')
-                      if (hostParts.length > 2) {
-                          domain = '.' + hostParts.slice(1).join('.')
-                      } else {
-                          domain = host
-                      }
-                    }
-          }
+            if (host.includes('localhost')) {
+                domain = 'localhost' // For localhost, set domain to localhost
+            } else {
+                const hostParts = host.split('.')
+                if (hostParts.length > 2) {
+                    domain = '.' + hostParts.slice(1).join('.')
+                } else {
+                    domain = host
+                }
+            }
+        }
         res.cookie('connect.sid', req.cookies['connect.sid'], {
             domain,
             httpOnly: true,
