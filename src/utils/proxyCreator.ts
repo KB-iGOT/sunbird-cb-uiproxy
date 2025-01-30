@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { createProxyServer } from 'http-proxy'
-import { extractUserEmailFromRequest, extractUserId, extractUserToken } from '../utils/requestExtract'
+import { extractUserEmailFromRequest, extractUserId, extractUserIdFromRequest, extractUserToken } from '../utils/requestExtract'
 import { CONSTANTS } from './env'
 import { logInfo } from './logger'
 
@@ -23,6 +23,7 @@ proxy.on('proxyReq', (proxyReq: any, req: any, _res: any, _options: any) => {
   if (!rootOrg) {
     proxyReq.setHeader('rootOrg', 'iGOT')
     proxyReq.setHeader('org', 'dopt')
+    proxyReq.setHeader('wid', extractUserIdFromRequest(req))
     }
   // tslint:disable-next-line: no-duplicate-string
   proxyReq.setHeader('X-Channel-Id', (_.get(req, 'session.rootOrgId')) ? _.get(req, 'session.rootOrgId') : CONSTANTS.X_Channel_Id)
