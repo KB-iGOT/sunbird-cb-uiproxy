@@ -201,6 +201,7 @@ export class Server {
           }
         }
       }
+      logInfo('domain is: ' + domain)
       res.clearCookie('connect.sid', { domain, httpOnly: false, path: '/', secure: true, sameSite: 'None' })
       if (_req.session) {
         _req.session.destroy(() => {
