@@ -205,8 +205,8 @@ export class Server {
         }
       }
       logInfo('domain is: ' + domainUrl)
-      res.clearCookie('connect.sid', { domain: host, httpOnly: true, path: '/', sameSite: 'None', secure: true})
-      res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: true, path: '/', secure: true, secure: true })
+      res.clearCookie('connect.sid', { httpOnly: true, path: '/', sameSite: 'None', secure: true })
+      res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: true, path: '/', secure: true})
       if (_req.session) {
         _req.session.destroy(() => {
           logInfo('Session Destroyed')
