@@ -188,21 +188,7 @@ export class Server {
     this.app.use('/reset', (_req, res) => {
       logInfo('CLEARING RES COOKIES')
       const host = _req.get('host')
-      let domain = ''
-      if (host !== undefined) {
-        if (host.includes('localhost')) {
-          domain = 'localhost' // For localhost, set domain to localhost
-        } else {
-          const hostParts = host.split('.')
-          if (hostParts.length > 2) {
-            domain = '.' + hostParts.slice(1).join('.')
-          } else {
-            domain = host
-          }
-        }
-      }
-      logInfo('domain is: ' + domain)
-      res.clearCookie('connect.sid', { domain, httpOnly: false, path: '/', secure: true, sameSite: 'None' })
+      res.clearCookie('connect.sid', { httpOnly: false, path: '/', secure: true, sameSite: 'None' })
       if (_req.session) {
         _req.session.destroy(() => {
           logInfo('Session Destroyed')
