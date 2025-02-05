@@ -187,7 +187,6 @@ export class Server {
   private resetCookies() {
     this.app.use('/reset', (_req, res) => {
       logInfo('CLEARING RES COOKIES')
-      const host = _req.get('host')
       res.clearCookie('connect.sid', { httpOnly: false, path: '/', secure: true, sameSite: 'None' })
       if (_req.session) {
         _req.session.destroy(() => {
