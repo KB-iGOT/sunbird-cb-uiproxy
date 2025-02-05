@@ -191,6 +191,7 @@ export class Server {
       logInfo('host is: ' + host)
       logInfo('Cookies:' + _req.get('cookies'))
       logInfo('Cookie:' + _req.get('cookie'))
+      logInfo('Cookies::::' + JSON.stringify(_req.cookies))
       let domainUrl = ''
       if (host !== undefined) {
         if (host.includes('localhost')) {
