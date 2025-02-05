@@ -189,6 +189,8 @@ export class Server {
       logInfo('CLEARING RES COOKIES')
       const host = _req.get('host')
       logInfo('host is: ' + host)
+      logInfo('Cookies:' + _req.get('cookies'))
+      logInfo('Cookie:' + _req.get('cookie'))
       let domainUrl = ''
       if (host !== undefined) {
         if (host.includes('localhost')) {
@@ -203,8 +205,8 @@ export class Server {
         }
       }
       logInfo('domain is: ' + domainUrl)
-      res.clearCookie('connect.sid', { domain: host, httpOnly: true, path: '/', sameSite: 'None'})
-      res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: true, path: '/', secure: true })
+      res.clearCookie('connect.sid', { domain: host, httpOnly: true, path: '/', sameSite: 'None', secure: true})
+      res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: true, path: '/', secure: true, secure: true })
       if (_req.session) {
         _req.session.destroy(() => {
           logInfo('Session Destroyed')
