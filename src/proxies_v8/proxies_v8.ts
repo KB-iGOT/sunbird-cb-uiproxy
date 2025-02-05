@@ -1140,3 +1140,11 @@ proxiesV8.use('/courseRecommend/v1/courses',
   // tslint:disable-next-line: max-line-length
   proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/courseRecommend/v1/courses`)
 )
+
+proxiesV8.use('/courseRecommendation/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
+proxiesV8.use('/chatbot/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
