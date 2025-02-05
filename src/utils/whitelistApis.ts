@@ -5136,6 +5136,55 @@ export const API_LIST = {
                     ROLE.PUBLIC,
                   ],
         },
+        '/proxies/v8/courseRecommendation/create': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/courseRecommendation/read/:id': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/courseRecommendation/feedback': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/chatbot/session/start': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/chatbot/session/:id': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/chatbot/message/feedback': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/chatbot/message/content/feedback': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
     },
     URL_PATTERN:
         [
@@ -5797,5 +5846,12 @@ export const API_LIST = {
             '/proxies/v8/interface/v1/mentors/details/:id',
             '/proxies/v8/feedDiscussion/updateAnswerPost',
             '/proxies/v8/community/v1/category/listAll',
+            '/proxies/v8/courseRecommendation/create',
+            '/proxies/v8/courseRecommendation/read/:id',
+            '/proxies/v8/courseRecommendation/feedback',
+            '/proxies/v8/chatbot/session/start',
+            '/proxies/v8/chatbot/session/:id',
+            '/proxies/v8/chatbot/message/feedback',
+            '/proxies/v8/chatbot/message/content/feedback',
            ],
 }
