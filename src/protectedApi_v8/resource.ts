@@ -23,14 +23,13 @@ userAuthKeyCloakApi.get('/', (req, res) => {
                 }
             }
         }
-        const COOKIE_NAME = 'connect.sid'
-        const COOKIE_OPTIONS = {
-          httpOnly: true,
-          sameSite: 'None',
-          secure: true,
-      }
-        res.cookie(COOKIE_NAME, req.cookies[COOKIE_NAME], { domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL, ...COOKIE_OPTIONS })
-        res.cookie(COOKIE_NAME, req.cookies[COOKIE_NAME], COOKIE_OPTIONS)
+        res.cookie('connect.sid', req.cookies['connect.sid'], {
+            domain,
+            httpOnly: true,
+            maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
+            sameSite: 'None',
+            secure: true,
+        })
         // res.cookie('express.sid', req.cookies['express.sid'], {
         //     httpOnly: true,
         //     maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
