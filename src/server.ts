@@ -189,7 +189,7 @@ export class Server {
       logInfo('CLEARING RES COOKIES')
       const host = _req.get('host')
       logInfo('host is: ' + host)
-      logInfo('response cookies: ' + JSON.stringify(res))
+      logInfo('response cookies: ' + JSON.stringify(res.cookie))
       logInfo('Cookies:' + _req.get('cookies'))
       logInfo('Cookie:' + _req.get('cookie'))
       logInfo('Cookies::::' + JSON.stringify(_req.cookies))
@@ -210,7 +210,7 @@ export class Server {
       res.clearCookie('connect.sid', { domain: 'portal.dev.karmayogibharat.net', httpOnly: false, path: '/', secure: true })
       res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: false, path: '/', secure: true })
       logInfo('After delete Cookies::::' + JSON.stringify(_req.cookies))
-      logInfo('After delete response cookies: ' + JSON.stringify(res))
+      logInfo('After delete response cookies: ' + JSON.stringify(res.cookie))
       if (_req.session) {
         _req.session.destroy(() => {
           logInfo('Session Destroyed')
