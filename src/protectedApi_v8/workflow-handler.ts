@@ -309,6 +309,10 @@ workflowHandlerApi.post('/profileApprovalSearch', async (req, res) => {
             res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
             return
         }
+        let rootOrgId = ''
+        if (req && req.session && req.session.hasOwnProperty('rootOrgId')) {
+            rootOrgId = req.session.rootOrgId
+        }
         const response = await axios.post(
             API_END_POINTS.profileApprovalSearch,
             req.body,
@@ -318,8 +322,10 @@ workflowHandlerApi.post('/profileApprovalSearch', async (req, res) => {
                     Authorization: CONSTANTS.SB_API_KEY,
                     org: orgValue,
                     rootOrg: rootOrgValue,
-                     // tslint:disable-next-line: all
-                     'x-authenticated-user-token': extractUserToken(req),
+                    // tslint:disable-next-line: all
+                    'x-authenticated-user-orgid': rootOrgId,
+                    // tslint:disable-next-line: all
+                    'x-authenticated-user-token': extractUserToken(req),
                 },
             }
         )
