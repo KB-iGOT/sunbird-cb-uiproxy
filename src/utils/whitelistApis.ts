@@ -5026,7 +5026,7 @@ export const API_LIST = {
                     ROLE.PUBLIC,
                   ],
         },
-        '/proxies/v8/community/v1/community/listuser/:communityId': {
+        '/proxies/v8/community/v1/community/listuser': {
                   checksNeeded: [CHECK.ROLE],
                   // tslint:disable-next-line: object-literal-sort-keys
                   ROLE_CHECK: [
@@ -5841,7 +5841,7 @@ export const API_LIST = {
             '/proxies/v8/community/v1/join',
             '/proxies/v8/community/v1/unjoin',
             '/proxies/v8/community/v1/user/communities',
-            '/proxies/v8/community/v1/community/listuser/:communityId',
+            '/proxies/v8/community/v1/community/listuser',
             '/proxies/v8/community/v1/search',
             '/proxies/v8/community/v1/category/create',
             '/proxies/v8/community/v1/category/update',
