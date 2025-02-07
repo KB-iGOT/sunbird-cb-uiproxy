@@ -5192,6 +5192,13 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/feedDiscussion/bookmarkedDiscussions': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -5861,5 +5868,6 @@ export const API_LIST = {
             '/proxies/v8/chatbot/message/content/feedback',
             '/proxies/v8/feedDiscussion/bookmark/:communityId/:discussionId',
             '/proxies/v8/feedDiscussion/unbookmark/:communityId/:discussionId',
+            '/proxies/v8/feedDiscussion/bookmarkedDiscussions',
            ],
 }
