@@ -5206,6 +5206,13 @@ export const API_LIST = {
                       ROLE.PUBLIC,
                    ],
         },
+        '/proxies/v8/event/v4/reject/:do_id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -5877,5 +5884,6 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/unbookmark/:communityId/:discussionId',
             '/proxies/v8/feedDiscussion/bookmarkedDiscussions',
             '/proxies/v8/comment/v2/search',
+            '/proxies/v8/event/v4/reject/:do_id',
            ],
 }
