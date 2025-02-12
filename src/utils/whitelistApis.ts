@@ -5215,6 +5215,20 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER
             ],
         },
+        '/proxies/v8/mentoring/v1/reports/filterList': {
+                    checksNeeded: [CHECK.ROLE],
+                    // tslint:disable-next-line: object-literal-sort-keys
+                    ROLE_CHECK: [
+                        ROLE.PUBLIC,
+                   ],
+        },
+        '/proxies/v8/mentoring/v1/reports/reportData': {
+                    checksNeeded: [CHECK.ROLE],
+                    // tslint:disable-next-line: object-literal-sort-keys
+                    ROLE_CHECK: [
+                        ROLE.PUBLIC,
+                   ],
+        },
     },
     URL_PATTERN:
         [
@@ -5887,5 +5901,7 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/bookmarkedDiscussions',
             '/proxies/v8/comment/v2/search',
             '/proxies/v8/event/v4/reject/:do_id',
+            '/proxies/v8/mentoring/v1/reports/filterList',
+            '/proxies/v8/mentoring/v1/reports/reportData',
            ],
 }
