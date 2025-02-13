@@ -187,7 +187,28 @@ export class Server {
   private resetCookies() {
     this.app.use('/reset', (_req, res) => {
       logInfo('CLEARING RES COOKIES')
-      res.clearCookie('connect.sid', { httpOnly: false, path: '/', secure: true })
+      const host = _req.get('host')
+      logInfo('host is: ' + host)
+      logInfo('response cookies: ' + JSON.stringify(_req.session))
+      logInfo('Cookies:' + _req.get('cookies'))
+      logInfo('Cookie:' + _req.get('cookie'))
+      logInfo('Cookies::::' + JSON.stringify(_req.cookies))
+      let domainUrl = ''
+      if (host !== undefined) {
+        if (host.includes('localhost')) {
+          domainUrl = 'localhost' // For localhost, set domainUrl to localhost
+        } else {
+          const hostParts = host.split('.')
+          if (hostParts.length > 2) {
+            domainUrl = '.' + hostParts.slice(1).join('.')
+          } else {
+            domainUrl = host
+          }
+        }
+      }
+      res.clearCookie('connect.sid', {httpOnly: true, secure: true, })
+      res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: false, path: '/', secure: true, })
+      logInfo('After delete Cookies::::' + JSON.stringify(_req.cookies))
       if (_req.session) {
         _req.session.destroy(() => {
           logInfo('Session Destroyed')
