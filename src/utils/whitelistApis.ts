@@ -105,6 +105,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER
             ],
         },
         '/proxies/v8/event/v4/create': {
@@ -123,6 +124,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER,
             ],
         },
         '/proxies/v8/event/v4/retire/:do_id': {
@@ -4977,7 +4979,7 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/feedDiscussion/uploadFile': {
+        '/proxies/v8/feedDiscussion/uploadFile/:communityId/:discussionId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -5026,7 +5028,7 @@ export const API_LIST = {
                     ROLE.PUBLIC,
                   ],
         },
-        '/proxies/v8/community/v1/community/listuser/:communityId': {
+        '/proxies/v8/community/v1/community/listuser': {
                   checksNeeded: [CHECK.ROLE],
                   // tslint:disable-next-line: object-literal-sort-keys
                   ROLE_CHECK: [
@@ -5114,6 +5116,133 @@ export const API_LIST = {
                     ROLE.CBP_ADMIN,
                     ROLE.SPV_PUBLISHER,
                   ],
+        },
+       '/proxies/v8/interface/v1/mentors/details/:id': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/feedDiscussion/updateAnswerPost': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/community/v1/category/listAll': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/courseRecommendation/create': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/courseRecommendation/read/:id': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/courseRecommendation/feedback': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/chatbot/session/start': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/chatbot/session/:id': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/chatbot/message/feedback': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/chatbot/message/content/feedback': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/feedDiscussion/bookmark/:communityId/:discussionId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/feedDiscussion/unbookmark/:communityId/:discussionId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/feedDiscussion/bookmarkedDiscussions': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/comment/v2search': {
+                   checksNeeded: [CHECK.ROLE],
+                   // tslint:disable-next-line: object-literal-sort-keys
+                   ROLE_CHECK: [
+                      ROLE.PUBLIC,
+                   ],
+        },
+        '/proxies/v8/event/v4/reject/:do_id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER
+            ],
+        },
+        '/proxies/v8/mentoring/v1/reports/filterList': {
+                    checksNeeded: [CHECK.ROLE],
+                    // tslint:disable-next-line: object-literal-sort-keys
+                    ROLE_CHECK: [
+                        ROLE.PUBLIC,
+                   ],
+        },
+        '/proxies/v8/mentoring/v1/reports/reportData': {
+                    checksNeeded: [CHECK.ROLE],
+                    // tslint:disable-next-line: object-literal-sort-keys
+                    ROLE_CHECK: [
+                        ROLE.PUBLIC,
+                   ],
+        },
+       '/proxies/v8/feedDiscussion/communityFeed': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
         },
     },
     URL_PATTERN:
@@ -5754,7 +5883,7 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/answerPosts',
             '/proxies/v8/feedDiscussion/downVote/:id',
             '/proxies/v8/feedDiscussion/report',
-            '/proxies/v8/feedDiscussion/uploadFile',
+            '/proxies/v8/feedDiscussion/uploadFile/:communityId/:discussionId',
             '/proxies/v8/looker/dashboard',
             '/protected/v8/workflowhandler/v2/transition',
             '/proxies/v8/learner/course/v4/user/enrollment/summary/:id',
@@ -5764,7 +5893,7 @@ export const API_LIST = {
             '/proxies/v8/community/v1/join',
             '/proxies/v8/community/v1/unjoin',
             '/proxies/v8/community/v1/user/communities',
-            '/proxies/v8/community/v1/community/listuser/:communityId',
+            '/proxies/v8/community/v1/community/listuser',
             '/proxies/v8/community/v1/search',
             '/proxies/v8/community/v1/category/create',
             '/proxies/v8/community/v1/category/update',
@@ -5773,5 +5902,23 @@ export const API_LIST = {
             '/proxies/v8/community/v1/category/list',
             '/proxies/v8/community/v1/subcategory/list',
             '/proxies/v8/serviceregistry/v1/callexternal/progressapibyid/:id',
+            '/proxies/v8/interface/v1/mentors/details/:id',
+            '/proxies/v8/feedDiscussion/updateAnswerPost',
+            '/proxies/v8/community/v1/category/listAll',
+            '/proxies/v8/courseRecommendation/create',
+            '/proxies/v8/courseRecommendation/read/:id',
+            '/proxies/v8/courseRecommendation/feedback',
+            '/proxies/v8/chatbot/session/start',
+            '/proxies/v8/chatbot/session/:id',
+            '/proxies/v8/chatbot/message/feedback',
+            '/proxies/v8/chatbot/message/content/feedback',
+            '/proxies/v8/feedDiscussion/bookmark/:communityId/:discussionId',
+            '/proxies/v8/feedDiscussion/unbookmark/:communityId/:discussionId',
+            '/proxies/v8/feedDiscussion/bookmarkedDiscussions',
+            '/proxies/v8/comment/v2/search',
+            '/proxies/v8/event/v4/reject/:do_id',
+            '/proxies/v8/mentoring/v1/reports/filterList',
+            '/proxies/v8/mentoring/v1/reports/reportData',
+            '/proxies/v8/feedDiscussion/communityFeed',
            ],
 }
