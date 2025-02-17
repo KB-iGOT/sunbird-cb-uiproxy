@@ -5271,6 +5271,20 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
            ],
         },
+        '/proxies/v8/community/v1/popular': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/community/v1/report': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
     },
     URL_PATTERN:
         [
@@ -5950,5 +5964,7 @@ export const API_LIST = {
             '/proxies/v8/user/v2/event/bulkonboard',
             '/proxies/v8/user/v1/event/bulkonboard/status/:eventId',
             '/proxies/v8/user/v1/event/bulkonboard/download/:fileName',
+            '/proxies/v8/community/v1/popular',
+            '/proxies/v8/community/v1/report',
            ],
 }
