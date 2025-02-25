@@ -5294,6 +5294,13 @@ export const API_LIST = {
                ROLE.MDO_LEADER,
             ],
         },
+        '/proxies/v8/comment/v2/search': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
     },
     URL_PATTERN:
         [
