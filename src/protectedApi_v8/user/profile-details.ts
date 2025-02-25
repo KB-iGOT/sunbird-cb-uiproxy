@@ -229,7 +229,7 @@ profileDeatailsApi.post('/createUser', async (req, res) => {
             res.status(400).send(channelParamMissing)
             return
         }
-        console.log('Incoming Request Body for createUser:', JSON.stringify(req.body, null, 2));
+        logInfo('Incoming Request Body for createUser:', JSON.stringify(req.body, null, 2));
         let statusString = ''
         let errMsg = ''
         const sbemail_ = req.body.personalDetails.email
