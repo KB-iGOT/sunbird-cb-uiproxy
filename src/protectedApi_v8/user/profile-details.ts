@@ -24,7 +24,7 @@ const API_END_POINTS = {
     getProfilePageMeta: `${CONSTANTS.USER_PROFILE_API_BASE}/public/v8/profileDetails/getProfilePageMeta`,
     getUserRegistry: `${CONSTANTS.USER_PROFILE_API_BASE}/public/v8/profileDetails/getUserRegistry`,
     getUserRegistryById: `${CONSTANTS.USER_PROFILE_API_BASE}/public/v8/profileDetails/getUserRegistryById`,
-    kongCreateUser: `${CONSTANTS.KONG_API_BASE}/user/cb/v5/create`,
+    kongCreateUser: `${CONSTANTS.KONG_API_BASE}/user/v5/create`,
     kongSearchUser: `${CONSTANTS.KONG_API_BASE}/user/v1/search`,
     kongSendWelcomeEmail: `${CONSTANTS.KONG_API_BASE}/private/user/v1/notification/email`,
     kongUpdateUser: `${CONSTANTS.KONG_API_BASE}/super/user/private/v1/update`,
