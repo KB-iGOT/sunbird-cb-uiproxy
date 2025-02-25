@@ -229,7 +229,7 @@ profileDeatailsApi.post('/createUser', async (req, res) => {
             res.status(400).send(channelParamMissing)
             return
         }
-        logInfo('Incoming Request Body for createUser:', JSON.stringify(req.body, null, 2));
+        logInfo('Incoming Request Body for createUser:', JSON.stringify(req.body, null, 2))
         let statusString = ''
         let errMsg = ''
         const sbemail_ = req.body.personalDetails.email
@@ -248,12 +248,8 @@ profileDeatailsApi.post('/createUser', async (req, res) => {
         const userRoles = (req.body.personalDetails.roles) ? req.body.personalDetails.roles : undefined
         let sbUserProfile: Partial<ISBUser> = {
             channel: sbChannel, email: sbemail_, emailVerified: sbemailVerified_,
-            firstName: sbfirstName_, phone: sbphone_, roles: userRoles,
+            firstName: sbfirstName_, phone: sbphone_,
             profileDetails: {
-                employmentDetails: {
-                    departmentName: sbChannel,
-                    pinCode: sbpincode_ ? Number(sbpincode_) : undefined,
-                },
                 mandatoryFieldsExists: false,
                 personalDetails: {
                     category: sbcategory_,
@@ -268,14 +264,14 @@ profileDeatailsApi.post('/createUser', async (req, res) => {
                 profileDesignationStatus: notVerifiedStatus,
                 profileGroupStatus: notVerifiedStatus,
                 profileStatus: notVerifiedStatus,
-            }
+            },
+            roles: userRoles,
         }
 
         sbUserProfile.profileDetails = sbUserProfile.profileDetails || {
-            employmentDetails: {},
             personalDetails: {},
-        };
-        
+        }
+
         if (sbphone_ === undefined || sbphone_ === '') {
             // tslint:disable-next-line: all
             sbUserProfile.profileDetails.personalDetails = _.omit(sbUserProfile.profileDetails.personalDetails, 'phoneVerified')

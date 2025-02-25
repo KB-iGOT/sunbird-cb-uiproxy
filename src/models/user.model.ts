@@ -135,6 +135,7 @@ export interface ISBUser {
   password: string
   roles: string[]
   phone: string
+  profileDetails?: Record<string, unknown>
 }
 
 export interface IPersonalDetails {
