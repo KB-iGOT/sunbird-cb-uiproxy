@@ -5107,6 +5107,13 @@ export const API_LIST = {
                     ROLE.SPV_PUBLISHER,
                   ],
         },
+        '/proxies/v8/comment/v2/search': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
     },
     URL_PATTERN:
         [
@@ -5765,5 +5772,6 @@ export const API_LIST = {
             '/proxies/v8/community/v1/category/list',
             '/proxies/v8/community/v1/subcategory/list',
             '/proxies/v8/serviceregistry/v1/callexternal/progressapibyid/:id',
+            '/proxies/v8/comment/v2/search',
            ],
 }
