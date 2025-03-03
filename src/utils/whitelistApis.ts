@@ -5294,6 +5294,13 @@ export const API_LIST = {
                ROLE.MDO_LEADER,
             ],
         },
+        '/proxies/v8/nlp/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -5976,5 +5983,6 @@ export const API_LIST = {
             '/proxies/v8/community/v1/popular',
             '/proxies/v8/community/v1/report',
             '/proxies/v8/community/v1/fileUpload/:communityId',
+            '/proxies/v8/nlp/search',
            ],
 }
