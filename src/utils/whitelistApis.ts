@@ -5236,7 +5236,7 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/user/v2/event/bulkonboard': {
+        '/proxies/v8/user/v2/event/bulkonboard/:eventId/:batchId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -5287,6 +5287,20 @@ export const API_LIST = {
             ],
         },
         '/proxies/v8/comment/v2/search': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/nlp/search': {
+              checksNeeded: [CHECK.ROLE],
+              // tslint:disable-next-line: object-literal-sort-keys
+              ROLE_CHECK: [
+                 ROLE.PUBLIC,
+              ],
+        },
+        '/proxies/v8/community/v1/topic/search': {
                   checksNeeded: [CHECK.ROLE],
                   // tslint:disable-next-line: object-literal-sort-keys
                   ROLE_CHECK: [
@@ -5969,11 +5983,13 @@ export const API_LIST = {
             '/proxies/v8/mentoring/v1/reports/filterList',
             '/proxies/v8/mentoring/v1/reports/reportData',
             '/proxies/v8/feedDiscussion/communityFeed',
-            '/proxies/v8/user/v2/event/bulkonboard',
+            '/proxies/v8/user/v2/event/bulkonboard/:eventId/:batchId',
             '/proxies/v8/user/v1/event/bulkonboard/status/:eventId',
             '/proxies/v8/user/v1/event/bulkonboard/download/:fileName',
             '/proxies/v8/community/v1/popular',
             '/proxies/v8/community/v1/report',
             '/proxies/v8/community/v1/fileUpload/:communityId',
+            '/proxies/v8/nlp/search',
+            '/proxies/v8/community/v1/topic/search'
            ],
 }
