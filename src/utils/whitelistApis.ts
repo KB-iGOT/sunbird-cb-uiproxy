@@ -5322,6 +5322,13 @@ export const API_LIST = {
                        ROLE.PUBLIC,
                    ],
         },
+        '/proxies/v8/user/events/enroll/summary': {
+                   checksNeeded: [CHECK.ROLE],
+                   // tslint:disable-next-line: object-literal-sort-keys
+                   ROLE_CHECK: [
+                        ROLE.PUBLIC,
+                   ],
+        },
     },
     URL_PATTERN:
         [
@@ -6007,6 +6014,7 @@ export const API_LIST = {
             '/proxies/v8/nlp/search',
             '/proxies/v8/community/v1/topic/search',
             '/proxies/v8/user/mdo/trending/events',
-            '/proxies/v8/user/featured/events'
+            '/proxies/v8/user/featured/events',
+            '/proxies/v8/user/events/enroll/summary',
            ],
 }
