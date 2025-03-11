@@ -4004,6 +4004,13 @@ export const API_LIST = {
                     ROLE.PUBLIC,
                    ],
         },
+        '/proxies/v8/halloffame/state/top/learners/:ministryOrgId': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                   ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                   ],
+        },
         '/proxies/v8/competencySubTheme/create/term': {
                           checksNeeded: [CHECK.ROLE],
                           // tslint:disable-next-line: object-literal-sort-keys
@@ -4152,6 +4159,13 @@ export const API_LIST = {
                   checksNeeded: [CHECK.ROLE],
         },
         '/proxies/v8/halloffame/v1/mdoleaderboard': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                    ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/halloffame/v1/state/mdoleaderboard': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -4531,6 +4545,13 @@ export const API_LIST = {
             ],
         },
         '/proxies/v8/national/learning/week/insights': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                 ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/state/learning/week/insights': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -5631,6 +5652,7 @@ export const API_LIST = {
             '/proxies/v8/competencySubTheme/update',
             '/proxies/v8/competencySubTheme/read/:id',
             '/proxies/v8/halloffame/top/learners/:ministryOrgId',
+            '/proxies/v8/halloffame/state/top/learners/:ministryOrgId',
             '/proxies/v8/competencySubTheme/create/term',
             '/proxies/v8/competencyTheme/create/term',
             '/proxies/v8/designation/create/term',
@@ -5651,6 +5673,7 @@ export const API_LIST = {
             '/proxies/v8/cqfquestionset/v2/review/:id',
             '/proxies/v8/cqfquestionset/v2/hierarchy/update',
             '/proxies/v8/halloffame/v1/mdoleaderboard',
+            '/proxies/v8/halloffame/v1/state/mdoleaderboard',
             '/proxies/v8/halloffame/v1/userleaderboard',
             '/proxies/v8/ciosIntegration/v1/file/info/:partnerId',
             '/protected/v8/user/evaluate/assessment/submit/v6',
@@ -5699,6 +5722,7 @@ export const API_LIST = {
             '/proxies/v8/organisation/v1/competencyDesignationMappings/bulkUpload/progress/details/:orgId',
             '/proxies/v8/organisation/v1/competencyDesignationMappings/download/:fileName',
             '/proxies/v8/national/learning/week/insights',
+            '/proxies/v8/state/learning/week/insights',
             '/proxies/v8/designation/v1/orgMapping/sample/:frameworkId',
             '/proxies/v8/designation/v1/orgMapping/bulkUpload/:orgId/:frameworkId',
             '/proxies/v8/designation/v1/orgMapping/bulkUpload/progress/details/:orgId',
