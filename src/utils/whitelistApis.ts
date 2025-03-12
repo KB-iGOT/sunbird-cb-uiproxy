@@ -5371,6 +5371,13 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/thumbnail/v1/image/variations/course/:id': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                    ROLE.PUBLIC,
+                  ],
+        },
     },
     URL_PATTERN:
         [
@@ -6064,5 +6071,6 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/answerPost/like/:id',
             '/proxies/v8/feedDiscussion/answerPost/delete/:id',
             '/proxies/v8/feedDiscussion/answerPost/dislike/:id',
+            '/proxies/v8/thumbnail/v1/image/variations/course/:id'
            ],
 }

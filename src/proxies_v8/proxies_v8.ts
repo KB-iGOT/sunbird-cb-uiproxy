@@ -1170,3 +1170,7 @@ proxiesV8.use('/chatbot/*',
 proxiesV8.use('/nlp/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/thumbnail/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
