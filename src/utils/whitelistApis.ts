@@ -4850,7 +4850,7 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/feedDiscussion/delete/:id': {
+        '/proxies/v8/feedDiscussion/question/delete/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -4864,7 +4864,7 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/feedDiscussion/upVote/:id': {
+        '/proxies/v8/feedDiscussion/question/like/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -4957,7 +4957,7 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/feedDiscussion/downVote/:id': {
+        '/proxies/v8/feedDiscussion/question/dislike/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -5328,6 +5328,27 @@ export const API_LIST = {
                    ROLE_CHECK: [
                         ROLE.PUBLIC,
                    ],
+        },
+        '/proxies/v8/feedDiscussion/answerPost/like/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/feedDiscussion/answerPost/delete/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/feedDiscussion/answerPost/dislike/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
         },
     },
     URL_PATTERN:
@@ -5953,9 +5974,9 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/create',
             '/proxies/v8/feedDiscussion/update',
             '/proxies/v8/feedDiscussion/read/:id',
-            '/proxies/v8/feedDiscussion/delete/:id',
+            '/proxies/v8/feedDiscussion/question/delete/:id',
             '/proxies/v8/feedDiscussion/search',
-            '/proxies/v8/feedDiscussion/upVote/:id',
+            '/proxies/v8/feedDiscussion/question/like/:id',
             '/proxies/v8/org/ext/v1/update',
             '/proxies/v8/customselfregistration/listallqrs',
             '/proxies/v8/comment/v1/likedComments',
@@ -5966,7 +5987,7 @@ export const API_LIST = {
             '/proxies/v8/community/v1/read/:communityId',
             '/proxies/v8/community/v1/delete/:communityId',
             '/proxies/v8/feedDiscussion/answerPosts',
-            '/proxies/v8/feedDiscussion/downVote/:id',
+            '/proxies/v8/feedDiscussion/question/dislike/:id',
             '/proxies/v8/feedDiscussion/report',
             '/proxies/v8/feedDiscussion/uploadFile/:communityId/:discussionId',
             '/proxies/v8/looker/dashboard',
@@ -6016,5 +6037,8 @@ export const API_LIST = {
             '/proxies/v8/user/mdo/trending/events',
             '/proxies/v8/user/featured/events',
             '/proxies/v8/user/events/enroll/summary',
+            '/proxies/v8/feedDiscussion/answerPost/like/:id',
+            '/proxies/v8/feedDiscussion/answerPost/delete/:id',
+            '/proxies/v8/feedDiscussion/answerPost/dislike/:id',
            ],
 }
