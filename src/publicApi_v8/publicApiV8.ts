@@ -138,3 +138,6 @@ const fetchList = async (resourceCategoryString: string, res: express.Response) 
 }
 
 publicApiV8.use('/org/v2/list', proxyCreatorRoute(express.Router(), CONSTANTS.KONG_API_BASE + '/org/v2/list'))
+publicApiV8.use('/liveness', (_req, res) => {
+    res.status(200).send('ok')
+})
