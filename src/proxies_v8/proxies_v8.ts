@@ -231,9 +231,9 @@ proxiesV8.use('/trending/content/search',
   proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/trending/search`)
 )
 
-proxiesV8.use('/halloffame/read',
+proxiesV8.use('/walloffame/read',
   // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/halloffame/read`)
+  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/walloffame/read`)
 )
 
 proxiesV8.use('/karmapoints/read',
@@ -258,9 +258,9 @@ proxiesV8.use('/user/totalkarmapoints',
   proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/user/totalkarmapoints`)
 )
 
-proxiesV8.use('/halloffame/learnerleaderboard',
+proxiesV8.use('/walloffame/learnerleaderboard',
   // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/halloffame/learnerleaderboard`)
+  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/walloffame/learnerleaderboard`)
 )
 
 proxiesV8.use('/microsite/read/insights',
@@ -273,12 +273,12 @@ proxiesV8.use('/msite/content/aggregation/search',
   proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/msite/content/aggregation/search`)
 )
 
-proxiesV8.use('/halloffame/top/learners/*',
+proxiesV8.use('/walloffame/top/learners/*',
   // tslint:disable-next-line: max-line-length
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
-proxiesV8.use('/halloffame/state/top/learners/*',
+proxiesV8.use('/walloffame/state/top/learners/*',
   // tslint:disable-next-line: max-line-length
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
@@ -1000,7 +1000,7 @@ proxiesV8.use('/competencySubTheme/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
-proxiesV8.use('/halloffame/*',
+proxiesV8.use('/walloffame/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
