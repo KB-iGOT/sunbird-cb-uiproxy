@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Request, Response, Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { IGamificationBdage, IGamificationBdageResponse } from '../models/badge.model'
-import { IHallOfFameItem, ILeaderboard } from '../models/leaderboard.model'
+import { IWallOfFameItem, ILeaderboard } from '../models/leaderboard.model'
 import { appendUrl } from '../utils/contentHelpers'
 import { CONSTANTS } from '../utils/env'
 import { ERROR } from '../utils/message'
@@ -27,7 +27,7 @@ const apiEndpoints = {
   fetchConfiguration: `${CONSTANTS.GAMIFICATION_API_BASE}/FordGamification/PlatformServices/ApiGamification/Gamification/FetchConfiguration `,
   // tslint:disable-next-line: max-line-length
   fetchGuildAwardCountData: `${CONSTANTS.GAMIFICATION_API_BASE}/FordGamification/PlatformServices/ApiGamification/Gamification/FetchGuildAwardCountData `,
-  hallOfFame: `${CONSTANTS.SB_EXT_API_BASE_2}/v2/TopLearners`,
+  wallOfFame: `${CONSTANTS.SB_EXT_API_BASE_2}/v2/TopLearners`,
   leaderboard: `${CONSTANTS.SB_EXT_API_BASE_2}/v2/LeaderBoard`,
   // tslint:disable-next-line: max-line-length
   leaderboardActivities: `${CONSTANTS.GAMIFICATION_API_BASE}/FordGamification/PlatformServices/ApiGamification/Gamification/FetchDetailedActivitiesLeaderBoardData`,
@@ -87,7 +87,7 @@ leaderBoardApi.get('/:durationType/:durationValue/:year', async (req: Request, r
 })
 
 // Get Hall of Fame
-leaderBoardApi.get('/hallOfFame', async (req: Request, res: Response) => {
+leaderBoardApi.get('/wallOfFame', async (req: Request, res: Response) => {
   try {
     const rootOrg = req.header('rootOrg')
 
@@ -98,8 +98,8 @@ leaderBoardApi.get('/hallOfFame', async (req: Request, res: Response) => {
 
     const userId = extractUserIdFromRequest(req)
 
-    const hallOfFame: IHallOfFameItem[] = await axios
-      .get<IHallOfFameItem[]>(`${apiEndpoints.hallOfFame}`, {
+    const wallOfFame: IWallOfFameItem[] = await axios
+      .get<IWallOfFameItem[]>(`${apiEndpoints.wallOfFame}`, {
         headers: { rootOrg },
         params: {
           duration_type: 'M',
@@ -109,7 +109,7 @@ leaderBoardApi.get('/hallOfFame', async (req: Request, res: Response) => {
       })
       .then((response) => response.data)
 
-    return res.send(hallOfFame)
+    return res.send(wallOfFame)
   } catch (err) {
     return res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {

@@ -2642,7 +2642,7 @@ export const API_LIST = {
                     ROLE.MDO_LEADER,
             ],
         },
-        '/proxies/v8/halloffame/read': {
+        '/proxies/v8/walloffame/read': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -2788,7 +2788,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
               ],
           },
-        '/proxies/v8/halloffame/learnerleaderboard': {
+        '/proxies/v8/walloffame/learnerleaderboard': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -3999,14 +3999,14 @@ export const API_LIST = {
                     ROLE.PUBLIC,
                    ],
         },
-        '/proxies/v8/halloffame/top/learners/:ministryOrgId': {
+        '/proxies/v8/walloffame/top/learners/:ministryOrgId': {
                   checksNeeded: [CHECK.ROLE],
                   // tslint:disable-next-line: object-literal-sort-keys
                    ROLE_CHECK: [
                     ROLE.PUBLIC,
                    ],
         },
-        '/proxies/v8/halloffame/state/top/learners/:ministryOrgId': {
+        '/proxies/v8/walloffame/state/top/learners/:ministryOrgId': {
                   checksNeeded: [CHECK.ROLE],
                   // tslint:disable-next-line: object-literal-sort-keys
                    ROLE_CHECK: [
@@ -4160,21 +4160,21 @@ export const API_LIST = {
                   ],
                   checksNeeded: [CHECK.ROLE],
         },
-        '/proxies/v8/halloffame/v1/mdoleaderboard': {
+        '/proxies/v8/walloffame/v1/mdoleaderboard': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                     ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/halloffame/v1/state/mdoleaderboard': {
+        '/proxies/v8/walloffame/v1/state/mdoleaderboard': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                     ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/halloffame/v1/userleaderboard': {
+        '/proxies/v8/walloffame/v1/userleaderboard': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -5744,7 +5744,7 @@ export const API_LIST = {
             '/proxies/v8/cbplan/v1/archive',
             '/proxies/v8/cbplan/v1/read/:id',
             '/proxies/v8/cbplan/v1/list',
-            '/proxies/v8/halloffame/read',
+            '/proxies/v8/walloffame/read',
             '/proxies/v8/user/v1/cbplan',
             '/proxies/v8/karmapoints/read',
             '/proxies/v8/karmapoints/user/course/read',
@@ -5762,7 +5762,7 @@ export const API_LIST = {
             '/proxies/v8/operationalreports/admin/grantaccess',
             '/proxies/v8/openprogram/v1/enrol',
             '/proxies/v8/operationalreports/download',
-            '/proxies/v8/halloffame/learnerleaderboard',
+            '/proxies/v8/walloffame/learnerleaderboard',
             '/proxies/v8/otp/v3/generate',
             '/proxies/v8/otp/v3/verify',
             '/proxies/v8/user/otp/v2/extPatch',
@@ -5924,8 +5924,8 @@ export const API_LIST = {
             '/proxies/v8/competencySubTheme/delete/:id',
             '/proxies/v8/competencySubTheme/update',
             '/proxies/v8/competencySubTheme/read/:id',
-            '/proxies/v8/halloffame/top/learners/:ministryOrgId',
-            '/proxies/v8/halloffame/state/top/learners/:ministryOrgId',
+            '/proxies/v8/walloffame/top/learners/:ministryOrgId',
+            '/proxies/v8/walloffame/state/top/learners/:ministryOrgId',
             '/proxies/v8/competencySubTheme/create/term',
             '/proxies/v8/competencyTheme/create/term',
             '/proxies/v8/designation/create/term',
@@ -5945,9 +5945,9 @@ export const API_LIST = {
             '/proxies/v8/cqfquestionset/v2/create',
             '/proxies/v8/cqfquestionset/v2/review/:id',
             '/proxies/v8/cqfquestionset/v2/hierarchy/update',
-            '/proxies/v8/halloffame/v1/mdoleaderboard',
-            '/proxies/v8/halloffame/v1/state/mdoleaderboard',
-            '/proxies/v8/halloffame/v1/userleaderboard',
+            '/proxies/v8/walloffame/v1/mdoleaderboard',
+            '/proxies/v8/walloffame/v1/state/mdoleaderboard',
+            '/proxies/v8/walloffame/v1/userleaderboard',
             '/proxies/v8/ciosIntegration/v1/file/info/:partnerId',
             '/protected/v8/user/evaluate/assessment/submit/v6',
             '/proxies/v8/ciosIntegration/v1/deleteContent',

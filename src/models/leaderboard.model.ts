@@ -26,7 +26,7 @@ export interface ILeaderboardItem {
   percentile: number
 }
 
-export interface IHallOfFameItem {
+export interface IWallOfFameItem {
   first_name: string
   last_name: string
   email_id: string
