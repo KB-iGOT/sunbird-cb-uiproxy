@@ -5388,10 +5388,31 @@ export const API_LIST = {
                   ],
         },
         '/proxies/v8/feedDiscussion/globalFeed': {
+          checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/user/events/v2/list/:uid': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/feedDiscussion/v1/enrichData': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/user/v5/public/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
             ],
         },
     },
@@ -6090,5 +6111,8 @@ export const API_LIST = {
             '/proxies/v8/thumbnail/v1/image/variations/course/:id',
             '/proxies/v8/community/v1/publish',
             '/proxies/v8/feedDiscussion/globalFeed',
+            '/proxies/v8/user/events/v2/list/:uid',
+            '/proxies/v8/feedDiscussion/v1/enrichData',
+            '/proxies/v8/user/v5/public/search',
            ],
 }
