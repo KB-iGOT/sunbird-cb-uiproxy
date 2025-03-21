@@ -77,6 +77,8 @@ publicApiV8.use('/parichay', parichayAuth)
 
 publicApiV8.use('/halloffame/read', proxyCreatorRoute(express.Router(), CONSTANTS.KONG_API_BASE + '/halloffame/read'))
 
+publicApiV8.use('/walloffame/read', proxyCreatorRoute(express.Router(), CONSTANTS.KONG_API_BASE + '/walloffame/read'))
+
 publicApiV8.use('/playlist', youtubePlaylist)
 
 publicApiV8.use('/public/assessment/v1/question/list', proxyCreatorRoute(express.Router(), API_END_POINTS.publicAssessmentV1QuestionList))
