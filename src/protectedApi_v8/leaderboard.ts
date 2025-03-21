@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Request, Response, Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { IGamificationBdage, IGamificationBdageResponse } from '../models/badge.model'
-import { IWallOfFameItem, ILeaderboard } from '../models/leaderboard.model'
+import { ILeaderboard, IWallOfFameItem } from '../models/leaderboard.model'
 import { appendUrl } from '../utils/contentHelpers'
 import { CONSTANTS } from '../utils/env'
 import { ERROR } from '../utils/message'
@@ -27,7 +27,7 @@ const apiEndpoints = {
   fetchConfiguration: `${CONSTANTS.GAMIFICATION_API_BASE}/FordGamification/PlatformServices/ApiGamification/Gamification/FetchConfiguration `,
   // tslint:disable-next-line: max-line-length
   fetchGuildAwardCountData: `${CONSTANTS.GAMIFICATION_API_BASE}/FordGamification/PlatformServices/ApiGamification/Gamification/FetchGuildAwardCountData `,
-  wallOfFame: `${CONSTANTS.SB_EXT_API_BASE_2}/v2/TopLearners`,
+
   leaderboard: `${CONSTANTS.SB_EXT_API_BASE_2}/v2/LeaderBoard`,
   // tslint:disable-next-line: max-line-length
   leaderboardActivities: `${CONSTANTS.GAMIFICATION_API_BASE}/FordGamification/PlatformServices/ApiGamification/Gamification/FetchDetailedActivitiesLeaderBoardData`,
@@ -41,6 +41,7 @@ const apiEndpoints = {
   updateConfiguration: `${CONSTANTS.GAMIFICATION_API_BASE}/FordGamification/PlatformServices/ApiGamification/Gamification/UpdateConfiguration`,
   // tslint:disable-next-line: max-line-length
   userDetails: `${CONSTANTS.GAMIFICATION_API_BASE}/FordGamification/PlatformServices/ApiGamification/Gamification/FetchCompleteUserInfo`,
+  wallOfFame: `${CONSTANTS.SB_EXT_API_BASE_2}/v2/TopLearners`,
 }
 
 // api params required to call gamification related apis
@@ -87,7 +88,7 @@ leaderBoardApi.get('/:durationType/:durationValue/:year', async (req: Request, r
 })
 
 // Get Hall of Fame
-leaderBoardApi.get('/wallOfFame', async (req: Request, res: Response) => {
+leaderBoardApi.get(['/hallOfFame', '/wallOfFame'], async (req: Request, res: Response) => {
   try {
     const rootOrg = req.header('rootOrg')
 
