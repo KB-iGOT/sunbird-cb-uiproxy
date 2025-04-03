@@ -24,7 +24,7 @@ const API_END_POINTS = {
     getProfilePageMeta: `${CONSTANTS.USER_PROFILE_API_BASE}/public/v8/profileDetails/getProfilePageMeta`,
     getUserRegistry: `${CONSTANTS.USER_PROFILE_API_BASE}/public/v8/profileDetails/getUserRegistry`,
     getUserRegistryById: `${CONSTANTS.USER_PROFILE_API_BASE}/public/v8/profileDetails/getUserRegistryById`,
-    kongCreateUser: `${CONSTANTS.KONG_API_BASE}/user/v3/create`,
+    kongCreateUser: `${CONSTANTS.KONG_API_BASE}/user/v5/create`,
     kongSearchUser: `${CONSTANTS.KONG_API_BASE}/user/v1/search`,
     kongSendWelcomeEmail: `${CONSTANTS.KONG_API_BASE}/private/user/v1/notification/email`,
     kongUpdateUser: `${CONSTANTS.KONG_API_BASE}/super/user/private/v1/update`,
@@ -229,6 +229,7 @@ profileDeatailsApi.post('/createUser', async (req, res) => {
             res.status(400).send(channelParamMissing)
             return
         }
+        logInfo('Incoming Request Body for createUser:', JSON.stringify(req.body, null, 2))
         let statusString = ''
         let errMsg = ''
         const sbemail_ = req.body.personalDetails.email
@@ -247,7 +248,85 @@ profileDeatailsApi.post('/createUser', async (req, res) => {
         const userRoles = (req.body.personalDetails.roles) ? req.body.personalDetails.roles : undefined
         let sbUserProfile: Partial<ISBUser> = {
             channel: sbChannel, email: sbemail_, emailVerified: sbemailVerified_,
-            firstName: sbfirstName_, phone: sbphone_, roles: userRoles,
+            firstName: sbfirstName_, phone: sbphone_,
+            profileDetails: {
+                mandatoryFieldsExists: false,
+                personalDetails: {
+                    category: sbcategory_,
+                    dob: sbdob_,
+                    domicileMedium: sbdomicileMedium_,
+                    firstname: sbfirstName_,
+                    gender: sbgender_,
+                    mobile: sbphone_ ? Number(sbphone_) : undefined,
+                    phoneVerified: sbphoneVerified_,
+                    primaryEmail: sbemail_,
+                },
+                profileDesignationStatus: notVerifiedStatus,
+                profileGroupStatus: notVerifiedStatus,
+                profileStatus: notVerifiedStatus,
+            },
+            roles: userRoles,
+        }
+
+        sbUserProfile.profileDetails = sbUserProfile.profileDetails || {
+            personalDetails: {},
+        }
+
+        if (sbphone_ === undefined || sbphone_ === '') {
+            // tslint:disable-next-line: all
+            sbUserProfile.profileDetails.personalDetails = _.omit(sbUserProfile.profileDetails.personalDetails, 'phoneVerified')
+            // tslint:disable-next-line: all
+            sbUserProfile.profileDetails.personalDetails = _.omit(sbUserProfile.profileDetails.personalDetails, 'mobile')
+        }
+
+        if (sbdob_ === undefined || sbdob_ === '') {
+            // tslint:disable-next-line: all
+            sbUserProfile.profileDetails.personalDetails = _.omit(sbUserProfile.profileDetails.personalDetails, 'dob')
+        }
+        if (sbdomicileMedium_ === undefined || sbdomicileMedium_ === '') {
+            // tslint:disable-next-line: all
+            sbUserProfile.profileDetails.personalDetails = _.omit(sbUserProfile.profileDetails.personalDetails, 'domicileMedium')
+        }
+        if (sbpincode_ === undefined || sbpincode_ === '') {
+            // tslint:disable-next-line: all
+            sbUserProfile.profileDetails.employmentDetails = _.omit(sbUserProfile.profileDetails.employmentDetails, 'pinCode')
+        }
+        if (sbgender_ === undefined || sbgender_ === '') {
+            // tslint:disable-next-line: all
+            sbUserProfile.profileDetails.personalDetails = _.omit(sbUserProfile.profileDetails.personalDetails, 'gender')
+        }
+        if (sbcategory_ === undefined || sbcategory_ === '') {
+            // tslint:disable-next-line: all
+            sbUserProfile.profileDetails.personalDetails = _.omit(sbUserProfile.profileDetails.personalDetails, 'category')
+        }
+        if (req.body.personalDetails.designation || req.body.personalDetails.group) {
+            const arrDesignation = []
+            let objDesignation = {
+                designation: sbdesignation_,
+                group: sbgroup_,
+            }
+            if (sbdesignation_ === undefined || sbdesignation_ === '') {
+                objDesignation = _.omit(objDesignation, 'designation')
+            }
+            if (sbgroup_ === undefined || sbgroup_ === '') {
+              objDesignation = _.omit(objDesignation, 'group')
+            }
+            arrDesignation.push(objDesignation)
+            const profDetailsPropertyName = 'professionalDetails'
+            sbUserProfile.profileDetails[profDetailsPropertyName] = arrDesignation
+       }
+        if (req.body.personalDetails.tags) {
+           const objAdditionalProperties = {
+             tag: (req.body.personalDetails.tags) ? req.body.personalDetails.tags :  '',
+           }
+           const additionalPropertiesPropertyName = 'additionalProperties'
+           sbUserProfile.profileDetails[additionalPropertiesPropertyName] = objAdditionalProperties
+        }
+
+        if ((sbdesignation_ !== undefined && sbdesignation_ !== '') && (sbgroup_ !== undefined && sbgroup_ !== '')) {
+            sbUserProfile.profileDetails.profileStatus = verifiedStatus
+            sbUserProfile.profileDetails.profileGroupStatus = verifiedStatus
+            sbUserProfile.profileDetails.profileDesignationStatus = verifiedStatus
         }
         if (sbphone_ === undefined || sbphone_ === '') {
             sbUserProfile = _.omit(sbUserProfile, 'phone')
@@ -362,99 +441,6 @@ profileDeatailsApi.post('/createUser', async (req, res) => {
                 }
             }
             const sbUserOrgId = sbUserReadResponse.data.result.response.rootOrgId
-            const sbProfileUpdateReq = {
-                profileDetails: {
-                    employmentDetails: {
-                        departmentName: sbChannel,
-                         pinCode: Number(sbpincode_),
-                    },
-                    mandatoryFieldsExists: false,
-                    personalDetails: {
-                        category : sbcategory_,
-                        dob: sbdob_,
-                        domicileMedium: sbdomicileMedium_,
-                        firstname: sbfirstName_,
-                        gender: sbgender_,
-                        mobile: Number(sbphone_),
-                        phoneVerified: sbphoneVerified_,
-                        primaryEmail: sbemail_,
-                    },
-                    profileDesignationStatus: notVerifiedStatus,
-                    profileGroupStatus: notVerifiedStatus,
-                    profileStatus: notVerifiedStatus,
-                },
-                userId: sbUserId,
-            }
-            if (sbphone_ === undefined || sbphone_ === '') {
-                // tslint:disable-next-line: all
-                sbProfileUpdateReq.profileDetails.personalDetails = _.omit(sbProfileUpdateReq.profileDetails.personalDetails, 'phoneVerified')
-                // tslint:disable-next-line: all
-                sbProfileUpdateReq.profileDetails.personalDetails = _.omit(sbProfileUpdateReq.profileDetails.personalDetails, 'mobile')
-            }
-
-            if (sbdob_ === undefined || sbdob_ === '') {
-                // tslint:disable-next-line: all
-                sbProfileUpdateReq.profileDetails.personalDetails = _.omit(sbProfileUpdateReq.profileDetails.personalDetails, 'dob')
-            }
-            if (sbdomicileMedium_ === undefined || sbdomicileMedium_ === '') {
-                // tslint:disable-next-line: all
-                sbProfileUpdateReq.profileDetails.personalDetails = _.omit(sbProfileUpdateReq.profileDetails.personalDetails, 'domicileMedium')
-            }
-            if (sbpincode_ === undefined || sbpincode_ === '') {
-                // tslint:disable-next-line: all
-                sbProfileUpdateReq.profileDetails.employmentDetails = _.omit(sbProfileUpdateReq.profileDetails.employmentDetails, 'pinCode')
-            }
-            if (sbgender_ === undefined || sbgender_ === '') {
-                // tslint:disable-next-line: all
-                sbProfileUpdateReq.profileDetails.personalDetails = _.omit(sbProfileUpdateReq.profileDetails.personalDetails, 'gender')
-            }
-            if (sbcategory_ === undefined || sbcategory_ === '') {
-                // tslint:disable-next-line: all
-                sbProfileUpdateReq.profileDetails.personalDetails = _.omit(sbProfileUpdateReq.profileDetails.personalDetails, 'category')
-            }
-            if (req.body.personalDetails.designation || req.body.personalDetails.group) {
-                const arrDesignation = []
-                let objDesignation = {
-                    designation: sbdesignation_,
-                    group: sbgroup_,
-                }
-                if (sbdesignation_ === undefined || sbdesignation_ === '') {
-                    objDesignation = _.omit(objDesignation, 'designation')
-                }
-                if (sbgroup_ === undefined || sbgroup_ === '') {
-                  objDesignation = _.omit(objDesignation, 'group')
-                }
-                arrDesignation.push(objDesignation)
-                const profDetailsPropertyName = 'professionalDetails'
-                sbProfileUpdateReq.profileDetails[profDetailsPropertyName] = arrDesignation
-           }
-            if (req.body.personalDetails.tags) {
-               const objAdditionalProperties = {
-                 tag: (req.body.personalDetails.tags) ? req.body.personalDetails.tags :  '',
-               }
-               const additionalPropertiesPropertyName = 'additionalProperties'
-               sbProfileUpdateReq.profileDetails[additionalPropertiesPropertyName] = objAdditionalProperties
-            }
-
-            if ((sbdesignation_ !== undefined && sbdesignation_ !== '') && (sbgroup_ !== undefined && sbgroup_ !== '')) {
-              sbProfileUpdateReq.profileDetails.profileStatus = verifiedStatus
-              sbProfileUpdateReq.profileDetails.profileGroupStatus = verifiedStatus
-              sbProfileUpdateReq.profileDetails.profileDesignationStatus = verifiedStatus
-            }
-            const sbUserProfileUpdateResp = await axios({
-                ...axiosRequestConfig,
-                data: { request: sbProfileUpdateReq },
-                headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                },
-                method: 'PATCH',
-                url: API_END_POINTS.kongUpdateUser,
-            })
-            if (sbUserProfileUpdateResp.data.responseCode === 'CLIENT_ERROR') {
-                errMsg = sbUserProfileUpdateResp.data.params ? sbUserProfileUpdateResp.data.params.errmsg : failedToUpdateUser
-                res.status(400).send(errMsg)
-                return
-            }
             if (isEmailRequired) {
                 const passwordResetRequest = {
                     key: 'email',

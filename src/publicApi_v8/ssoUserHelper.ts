@@ -6,7 +6,8 @@ import { logError, logInfo } from '../utils/logger'
 import { getKeyCloakClient } from './keycloakHelper'
 
 const API_END_POINTS = {
-    cbExtSignUpUser: `${CONSTANTS.KONG_API_BASE}/user/v1/ext/signup`,
+    // cbExtSignUpUser: `${CONSTANTS.KONG_API_BASE}/user/v1/ext/signup`,
+    cbExtSignUpUser: `${CONSTANTS.KONG_API_BASE}/user/v5/parichay/create`,
 }
 
 export async function fetchUserByEmailId(emailId: string) {
