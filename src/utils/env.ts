@@ -202,7 +202,7 @@ export const CONSTANTS = {
   LOOKER_GROUP_IDS: env.LOOKER_GROUP_IDS || '13',
   LOOKER_FORCE_LOGOUT_LOGIN: env.LOOKER_FORCE_LOGOUT_LOGIN || false,
   LOOKER_DEFAULT_USER_NAME: env.LOOKER_DEFAULT_USER_NAME || 'Dashboard Viewer',
-  APP_FUEL_API_URL: env.APP_FUEL_API_URL || 'https://api.appfuel.ai/api/kb-pipeline/v3/search',
+  APP_FUEL_API_URL: env.APP_FUEL_API_URL || 'api_url',
 }
 
 export const RESTRICTED_PYTHON_STMT: string[] = process.env.RESTRICTED_CHARACTERS
