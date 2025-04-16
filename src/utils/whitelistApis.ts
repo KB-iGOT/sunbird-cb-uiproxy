@@ -5488,6 +5488,13 @@ export const API_LIST = {
                 ROLE.PUBLIC,
              ],
          },
+        '/proxies/v8/fetchUserToken': {
+            checksNeeded: [CHECK.ROLE],
+             // tslint:disable-next-line: object-literal-sort-keys
+             ROLE_CHECK: [
+                ROLE.PUBLIC,
+             ],
+         },
     },
     URL_PATTERN:
         [
@@ -6197,5 +6204,6 @@ export const API_LIST = {
             '/proxies/v8/community/v1/user/communities/all',
             '/proxies/v8/community/v1/mdo/search',
             '/proxies/v8/chatbot/v3/search',
+            '/proxies/v8/fetchUserToken',
            ],
 }
