@@ -22,7 +22,8 @@ import {
   proxyCreatorSunbirdSearch,
   proxyCreatorToAppentUserId,
   proxyQuestionRead,
-  scormProxyCreatorRoute
+  scormProxyCreatorRoute,
+  proxyAssessmentReadV7
 } from '../utils/proxyCreator'
 import { extractUserIdFromRequest, extractUserToken } from '../utils/requestExtract'
 import { chatBotIntegrationAPI } from './chatBotIntegration'
@@ -778,6 +779,14 @@ proxiesV8.use('/announcements/*',
 proxiesV8.use('/cqfquestionset/*',
   // tslint:disable-next-line: max-line-length
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+proxiesV8.use('/assessment/v7/read/*',
+  // tslint:disable-next-line: max-line-length
+  proxyAssessmentReadV7(express.Router(), `${CONSTANTS.KONG_API_BASE}` + '/player/questionset/v7/hierarchy')
+)
+proxiesV8.use('/question/v7/read',
+  // tslint:disable-next-line: max-line-length
+  proxyQuestionRead(express.Router(), `${CONSTANTS.KONG_API_BASE}` + '/player/question/v7/list')
 )
 
 function removePrefix(prefix: string, s: string) {

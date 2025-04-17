@@ -19,6 +19,7 @@ const API_END_POINTS = {
   publicAssessmentV5QuestionList: `${CONSTANTS.KONG_API_BASE}/public/assessment/v5/question/list`,
   publicAssessmentV5Read: `${CONSTANTS.KONG_API_BASE}/public/assessment/v5/read`,
   publicAssessmentV5Result: `${CONSTANTS.KONG_API_BASE}/public/assessment/v5/result`,
+  publicAssessmentV7Result: `${CONSTANTS.KONG_API_BASE}/public/assessment/v7/result`,
   publicAssessmentV5Submit: `${CONSTANTS.KONG_API_BASE}/public/assessment/v5/assessment/submit`,
 }
 
@@ -94,6 +95,8 @@ publicApiV8.use('/public/assessment/v5/assessment/submit', proxyCreatorRoute(exp
 publicApiV8.use('/public/assessment/v4/assessment/submit', proxyCreatorRoute(express.Router(), API_END_POINTS.publicAssessmentV4Submit))
 
 publicApiV8.use('/public/assessment/v5/result', proxyCreatorRoute(express.Router(), API_END_POINTS.publicAssessmentV5Result))
+
+publicApiV8.use('/public/assessment/v7/result', proxyCreatorRoute(express.Router(), API_END_POINTS.publicAssessmentV7Result))
 
 publicApiV8.use('/org/v1/read', proxyCreatorRoute(express.Router(), CONSTANTS.KONG_API_BASE + '/org/v1/read'))
 

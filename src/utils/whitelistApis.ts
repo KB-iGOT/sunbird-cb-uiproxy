@@ -5488,6 +5488,41 @@ export const API_LIST = {
                 ROLE.PUBLIC,
              ],
          },
+        '/proxies/v8/user/assessment/v7/result': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                  ROLE.PUBLIC,
+                  ],
+        },        
+        '/proxies/v8/public/assessment/v7/result': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                  ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/public/assessment/v7/question/list': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                  ROLE.PUBLIC,
+                  ],
+        },
+        '/proxies/v8/user/assessment/v7/retake/:id': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                  ROLE.PUBLIC,
+                  ],
+        },
+        '/protected/v8/user/evaluate/assessment/submit/v7': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                  ROLE.PUBLIC,
+                  ],
+        },
     },
     URL_PATTERN:
         [
@@ -6197,5 +6232,10 @@ export const API_LIST = {
             '/proxies/v8/community/v1/user/communities/all',
             '/proxies/v8/community/v1/mdo/search',
             '/proxies/v8/chatbot/v3/search',
+            '/proxies/v8/user/assessment/v7/result',
+            '/protected/v8/user/evaluate/assessment/submit/v7',
+            '/proxies/v8/public/assessment/v7/question/list',
+            '/proxies/v8/user/assessment/v7/retake/:id',
+            '/proxies/v8/public/assessment/v7/result'
            ],
 }
