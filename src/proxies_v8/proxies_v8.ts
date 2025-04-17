@@ -27,6 +27,7 @@ import {
 import { extractUserIdFromRequest, extractUserToken } from '../utils/requestExtract'
 import { chatBotIntegrationAPI } from './chatBotIntegration'
 import { frameworksApi } from './frameworks'
+import { jwtUserTokenHelper } from './jwtUserTokenHelper'
 import { lookerDashboard } from './lookerIntegration'
 
 const API_END_POINTS = {
@@ -1201,3 +1202,5 @@ proxiesV8.use('/nlp/*',
 proxiesV8.use('/thumbnail/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/fetchUserToken', jwtUserTokenHelper)
