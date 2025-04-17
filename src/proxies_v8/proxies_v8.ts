@@ -11,6 +11,7 @@ import {
   // proxyCreatorDiscussion,
   proxyAssessmentRead,
   proxyAssessmentReadV2,
+  proxyAssessmentReadV7,
   proxyContent,
   proxyContentLearnerVM,
   proxyCreatorForms,
@@ -22,8 +23,7 @@ import {
   proxyCreatorSunbirdSearch,
   proxyCreatorToAppentUserId,
   proxyQuestionRead,
-  scormProxyCreatorRoute,
-  proxyAssessmentReadV7
+  scormProxyCreatorRoute
 } from '../utils/proxyCreator'
 import { extractUserIdFromRequest, extractUserToken } from '../utils/requestExtract'
 import { chatBotIntegrationAPI } from './chatBotIntegration'
