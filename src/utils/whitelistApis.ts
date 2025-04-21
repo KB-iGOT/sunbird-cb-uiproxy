@@ -5517,39 +5517,40 @@ export const API_LIST = {
             ],
         },        
         '/proxies/v8/user/assessment/v7/result': {
-        checksNeeded: [CHECK.ROLE],
-        // tslint:disable-next-line: object-literal-sort-keys
-        ROLE_CHECK: [
-        ROLE.PUBLIC,
-        ],
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+            ROLE.PUBLIC,
+            ],
         },
         '/proxies/v8/public/assessment/v7/result': {
-        checksNeeded: [CHECK.ROLE],
-        // tslint:disable-next-line: object-literal-sort-keys
-        ROLE_CHECK: [
-        ROLE.PUBLIC,
-        ],
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+            ROLE.PUBLIC,
+            ],
         },
         '/proxies/v8/public/assessment/v7/question/list': {
-        checksNeeded: [CHECK.ROLE],
-        // tslint:disable-next-line: object-literal-sort-keys
-        ROLE_CHECK: [
-        ROLE.PUBLIC,
-        ],
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+            ROLE.PUBLIC,
+            ],
         },
         '/proxies/v8/user/assessment/v7/retake/:id': {
-        checksNeeded: [CHECK.ROLE],
-        // tslint:disable-next-line: object-literal-sort-keys
-        ROLE_CHECK: [
-        ROLE.PUBLIC,
-        ],
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+            ROLE.PUBLIC,
+            ],
         },
-        '/protected/v8/user/evaluate/assessment/submit/v7': {
-        checksNeeded: [CHECK.ROLE],
-        // tslint:disable-next-line: object-literal-sort-keys
-        ROLE_CHECK: [
-        ROLE.PUBLIC,
-        ],
+          '/protected/v8/user/evaluate/assessment/submit/v7': {
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+          ROLE.PUBLIC,
+          ],
+        },
     },
     URL_PATTERN:
         [
