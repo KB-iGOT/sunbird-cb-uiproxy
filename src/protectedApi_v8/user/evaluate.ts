@@ -12,6 +12,7 @@ const API_END_POINTS = {
   assessmentSubmitV4: `${CONSTANTS.KONG_API_BASE}/v4/user`,
   assessmentSubmitV5: `${CONSTANTS.KONG_API_BASE}/v5/user`,
   assessmentSubmitV6: `${CONSTANTS.KONG_API_BASE}/v6/user`,
+  assessmentSubmitV7: `${CONSTANTS.KONG_API_BASE}/v7/user`,
   iapSubmitAssessment: `${CONSTANTS.SB_EXT_API_BASE_2}/v3/iap-assessment`,
   postAssessment: `${CONSTANTS.POST_ASSESSMENT_BASE}/lmsapi/v1/post_assessment`,
 
@@ -218,6 +219,42 @@ evaluateApi.post('/assessment/submit/v4', async (req, res) => {
     try {
       const userId = extractUserIdFromRequest(req)
       const url = `${API_END_POINTS.assessmentSubmitV6}/assessment/submit`
+      const requestBody = {
+        ...req.body,
+      }
+      let rootOrgId = ''
+      // tslint:disable-next-line
+      if (typeof req.session != "undefined" && typeof req.session.rootOrgId != "undefined") {
+        // tslint:disable-next-line
+        rootOrgId = req.session.rootOrgId
+      }
+      const response = await axios({
+        ...axiosRequestConfig,
+        data: requestBody,
+        headers: {
+          Authorization: CONSTANTS.SB_API_KEY,
+          [A_AUTHENTICATED_ORG_ID]: rootOrgId,
+          // tslint:disable-next-line: no-duplicate-string
+          [X_AUTHENTICATED_USER_TOKEN] : extractUserToken(req),
+          userId,
+        },
+        method: 'POST',
+        url,
+      })
+      res.status(response.status).send(response.data)
+    } catch (error) {
+      res.status((error && error.response && error.response.status) || 500).send(
+        (error && error.response && error.response.data) || {
+          error: GENERAL_ERR_MSG,
+        }
+      )
+    }
+  })
+
+  evaluateApi.post('/assessment/submit/v7', async (req, res) => {
+    try {
+      const userId = extractUserIdFromRequest(req)
+      const url = `${API_END_POINTS.assessmentSubmitV7}/assessment/submit`
       const requestBody = {
         ...req.body,
       }

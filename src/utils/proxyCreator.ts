@@ -388,3 +388,22 @@ export function proxyAssessmentReadV2(route: Router, targetUrl: string, _timeout
   })
   return route
 }
+
+export function proxyAssessmentReadV7(route: Router, targetUrl: string, _timeout = 10000): Router {
+  const hierarchyQuery = 'hierarchy=detail'
+  route.all('/*', (req, res) => {
+    let url = removePrefix(`${PROXY_SLUG}/assessment/v7/read`, req.originalUrl)
+    // Append query parameter
+    url = url.includes('?')
+      ? `${targetUrl}${url}&${hierarchyQuery}`
+      : `${targetUrl}${url}?${hierarchyQuery}`
+    // tslint:disable-next-line: no-console
+    console.log('REQ_URL_UPDATED proxyAssessmentReadV7', url)
+    proxy.web(req, res, {
+      changeOrigin: true,
+      ignorePath: true,
+      target: url,
+    })
+  })
+  return route
+}
