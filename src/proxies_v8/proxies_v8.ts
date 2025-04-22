@@ -1204,3 +1204,7 @@ proxiesV8.use('/thumbnail/*',
 )
 
 proxiesV8.use('/fetchUserToken', jwtUserTokenHelper)
+
+proxiesV8.use('/certificate/dynamic/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
