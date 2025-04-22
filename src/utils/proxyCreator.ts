@@ -319,14 +319,13 @@ export function proxyContentLearnerVM(route: Router, targetUrl: string, _timeout
 }
 
 export function proxyAssessmentRead(route: Router, targetUrl: string, _timeout = 10000): Router {
+  const hierarchyQuery = 'hierarchy=detail'
   route.all('/*', (req, res) => {
     let url = removePrefix(`${PROXY_SLUG}/assessment/read`, req.originalUrl)
     // Check if the target URL already contains query parameters
-    if (url.includes('?')) {
-      url = targetUrl + url + '&hierarchy=detail'
-    } else {
-      url = targetUrl + url + '?hierarchy=detail'
-    }
+    url = url.includes('?')
+      ? `${targetUrl}${url}&${hierarchyQuery}`
+      : `${targetUrl}${url}?${hierarchyQuery}`
     // tslint:disable-next-line: no-console
     console.log('REQ_URL_UPDATED proxyAssessmentRead', url)
     proxy.web(req, res, {
