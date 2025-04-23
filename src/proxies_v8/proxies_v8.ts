@@ -374,6 +374,9 @@ proxiesV8.use([
 proxiesV8.use('/action/content/v3/updateReviewStatus',
   proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+proxiesV8.use('private/content/v4/updateReviewStatus',
+  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
 proxiesV8.use('/action/content/v3/hierarchyUpdate',
   proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )

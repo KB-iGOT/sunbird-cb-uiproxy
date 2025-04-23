@@ -5580,6 +5580,13 @@ export const API_LIST = {
             ROLE.STATE_ADMIN,
             ],
           },
+        '/proxies/v8/private/content/v4/updateReviewStatus/:do_id': {
+           checksNeeded: [CHECK.ROLE],
+           // tslint:disable-next-line: object-literal-sort-keys
+           ROLE_CHECK: [
+             ROLE.SPV_PUBLISHER,
+           ],
+         },
     },
     URL_PATTERN:
         [
@@ -6302,5 +6309,6 @@ export const API_LIST = {
             '/proxies/v8/user/assessment/v7/retake/:id',
             '/proxies/v8/public/assessment/v7/result',
             '/proxies/v8/org/ext/v2/update',
+            '/proxies/v8/private/content/v4/updateReviewStatus/:do_id',
             ],
 }
