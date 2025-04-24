@@ -5608,6 +5608,13 @@ export const API_LIST = {
                ROLE.SPV_PUBLISHER,
             ],
         },
+        '/proxies/v8/commentTree/v1/get': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                 ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -6334,5 +6341,6 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/answerPostReply/like/:id',
             '/proxies/v8/feedDiscussion/answerPostReply/dislike/:id',
             '/proxies/v8/private/content/v4/system/update/:do_id',
+            '/proxies/v8/commentTree/v1/get',
             ],
 }
