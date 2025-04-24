@@ -1228,3 +1228,7 @@ proxiesV8.use('/certificate/dynamic/*',
 proxiesV8.use('/commentTree/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/search/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
