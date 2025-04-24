@@ -5587,7 +5587,6 @@ export const API_LIST = {
              ROLE.SPV_PUBLISHER,
            ],
          },
-        },
         '/proxies/v8/feedDiscussion/answerPostReply/like/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
