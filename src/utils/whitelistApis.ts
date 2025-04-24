@@ -5602,10 +5602,10 @@ export const API_LIST = {
             ],
         },
         '/proxies/v8/private/content/v4/system/update/:do_id': {
-                 checksNeeded: [CHECK.ROLE],
-                 // tslint:disable-next-line: object-literal-sort-keys
-                 ROLE_CHECK: [
-                   ROLE.SPV_PUBLISHER,
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.SPV_PUBLISHER,
             ],
         },
     },
