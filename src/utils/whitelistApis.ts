@@ -5615,6 +5615,41 @@ export const API_LIST = {
                  ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/search/v1/recent/create': {
+            checksNeeded: [CHECK.ROLE],
+                    // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                 ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/search/v1/recent/read': {
+            checksNeeded: [CHECK.ROLE],
+                    // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                 ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/search/v1/recent/delete': {
+            checksNeeded: [CHECK.ROLE],
+                    // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                 ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/search/v1/trending/create': {
+            checksNeeded: [CHECK.ROLE],
+                    // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                 ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/search/v1/trending/read': {
+            checksNeeded: [CHECK.ROLE],
+                    // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                 ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -6342,5 +6377,10 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/answerPostReply/dislike/:id',
             '/proxies/v8/private/content/v4/system/update/:do_id',
             '/proxies/v8/commentTree/v1/get',
+            '/proxies/v8/search/v1/recent/create',
+            '/proxies/v8/search/v1/recent/read',
+            '/proxies/v8/search/v1/recent/delete'
+            '/proxies/v8/search/v1/trending/create'
+            '/proxies/v8/search/v1/trending/read',
             ],
 }
