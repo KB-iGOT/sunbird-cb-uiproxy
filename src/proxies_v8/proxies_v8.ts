@@ -1189,7 +1189,7 @@ proxiesV8.use('/courseRecommendation/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
-proxiesV8.use('/chatbot/v3/search', chatBotIntegrationAPI)
+proxiesV8.use('/chatbot/v3', chatBotIntegrationAPI)
 
 proxiesV8.use('/chatbot/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
