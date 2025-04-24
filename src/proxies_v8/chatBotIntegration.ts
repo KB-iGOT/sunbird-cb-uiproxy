@@ -9,11 +9,13 @@ export const chatBotIntegrationAPI = express.Router()
 chatBotIntegrationAPI.use('/*', async (req: express.Request, res: express.Response) => {
     try {
 
-        const subPath = req.path.replace(/^\/+/, '')
+        const baseUrl = removePrefix('/proxies/v8', req.originalUrl)
+        logInfo(`The url is... ${baseUrl} : rootUrl: ${req.originalUrl}`)
+        const subPath = baseUrl.replace(/^\/+/, '')
         const url = `${CONSTANTS.APP_FUEL_API_URL}/${subPath}`
         const requestBody = req.body
         const queryParams = req.query
-        logInfo(`Chatbot API Request -> URL: ${url} , reqPath : ${req.path}`)
+        logInfo(`Chatbot API Request -> URL: ${url}`)
         logInfo(`Chatbot API Request -> Query Params: ${JSON.stringify(queryParams)}`)
         logInfo(`Chatbot API Request -> Body: ${JSON.stringify(requestBody)}`)
         const axiosConfig = {
@@ -36,3 +38,7 @@ chatBotIntegrationAPI.use('/*', async (req: express.Request, res: express.Respon
         res.status(500).send({ error: 'Failed to fetch data from chatbot API' })
     }
 })
+
+function removePrefix(prefix: string, s: string): string {
+  return s.startsWith(prefix) ? s.substring(prefix.length) : s
+}
