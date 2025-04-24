@@ -6330,8 +6330,9 @@ export const API_LIST = {
             '/proxies/v8/user/assessment/v7/retake/:id',
             '/proxies/v8/public/assessment/v7/result',
             '/proxies/v8/org/ext/v2/update',
-            '/proxies/v8/private/content/v4/updateReviewStatus/:do_id',
+            '/proxies/v8/private/content/v4/update/:do_id',
             '/proxies/v8/feedDiscussion/answerPostReply/like/:id',
             '/proxies/v8/feedDiscussion/answerPostReply/dislike/:id',
+            '/proxies/v8/private/content/v4/system/update/:do_id',
             ],
 }
