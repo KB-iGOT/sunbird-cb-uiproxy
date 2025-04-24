@@ -5580,7 +5580,7 @@ export const API_LIST = {
             ROLE.STATE_ADMIN,
             ],
           },
-        '/proxies/v8/private/content/v4/updateReviewStatus/:do_id': {
+        '/proxies/v8/private/content/v4/update/:do_id': {
            checksNeeded: [CHECK.ROLE],
            // tslint:disable-next-line: object-literal-sort-keys
            ROLE_CHECK: [
@@ -5599,6 +5599,13 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/private/content/v4/system/update/:do_id': {
+                 checksNeeded: [CHECK.ROLE],
+                 // tslint:disable-next-line: object-literal-sort-keys
+                 ROLE_CHECK: [
+                   ROLE.SPV_PUBLISHER,
             ],
         },
     },
