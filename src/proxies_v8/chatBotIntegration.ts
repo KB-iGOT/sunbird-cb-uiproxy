@@ -2,18 +2,19 @@ import axios from 'axios'
 import express from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logError } from '../utils/logger'
+import { logError, logInfo } from '../utils/logger'
 
 export const chatBotIntegrationAPI = express.Router()
 
 chatBotIntegrationAPI.use('/*', async (req: express.Request, res: express.Response) => {
     try {
+
         const subPath = req.path.replace(/^\/+/, '')
         const url = `${CONSTANTS.APP_FUEL_API_URL}/${subPath}`
-
         const requestBody = req.body
         const queryParams = req.query
-
+        logInfo(`the url is ${url}`)
+        logInfo(`the query is ${queryParams}`)
         const axiosConfig = {
             headers: {
                 'Content-Type': 'application/json',
@@ -30,7 +31,7 @@ chatBotIntegrationAPI.use('/*', async (req: express.Request, res: express.Respon
 
         res.status(response.status).send(response.data)
     } catch (error) {
-        logError(`Error in chatBotIntegrationAPI /chatbot/v3${req.path}`, error)
+        logError(`Error in chatBotIntegrationAPI`, error)
         res.status(500).send({ error: 'Failed to fetch data from chatbot API' })
     }
 })
