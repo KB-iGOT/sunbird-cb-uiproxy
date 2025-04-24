@@ -13,8 +13,9 @@ chatBotIntegrationAPI.use('/*', async (req: express.Request, res: express.Respon
         const url = `${CONSTANTS.APP_FUEL_API_URL}/${subPath}`
         const requestBody = req.body
         const queryParams = req.query
-        logInfo(`the url is ${url}`)
-        logInfo(`the query is ${queryParams}`)
+        logInfo(`Chatbot API Request -> URL: ${url} , reqPath : ${req.path}`)
+        logInfo(`Chatbot API Request -> Query Params: ${JSON.stringify(queryParams)}`)
+        logInfo(`Chatbot API Request -> Body: ${JSON.stringify(requestBody)}`)
         const axiosConfig = {
             headers: {
                 'Content-Type': 'application/json',
