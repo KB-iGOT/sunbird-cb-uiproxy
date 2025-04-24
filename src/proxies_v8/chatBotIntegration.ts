@@ -9,15 +9,12 @@ export const chatBotIntegrationAPI = express.Router()
 chatBotIntegrationAPI.use('/*', async (req: express.Request, res: express.Response) => {
     try {
 
-        const baseUrl = removePrefix('/proxies/v8', req.originalUrl)
-        logInfo(`The url is... ${baseUrl} : rootUrl: ${req.originalUrl}`)
+        const baseUrl = removePrefix('/proxies/v8/chatbot/v3', req.originalUrl)
+        logInfo(`The url is... ${baseUrl} : originalUrl: ${req.originalUrl}`)
         const subPath = baseUrl.replace(/^\/+/, '')
         const url = `${CONSTANTS.APP_FUEL_API_URL}/${subPath}`
         const requestBody = req.body
-        const queryParams = req.query
         logInfo(`Chatbot API Request -> URL: ${url}`)
-        logInfo(`Chatbot API Request -> Query Params: ${JSON.stringify(queryParams)}`)
-        logInfo(`Chatbot API Request -> Body: ${JSON.stringify(requestBody)}`)
         const axiosConfig = {
             headers: {
                 'Content-Type': 'application/json',
@@ -25,13 +22,7 @@ chatBotIntegrationAPI.use('/*', async (req: express.Request, res: express.Respon
             ...axiosRequestConfig,
         }
 
-        // Only include `params` if there are any query parameters
-        if (Object.keys(queryParams).length > 0) {
-            axiosConfig.params = queryParams
-        }
-
         const response = await axios.post(url, requestBody, axiosConfig)
-
         res.status(response.status).send(response.data)
     } catch (error) {
         logError(`Error in chatBotIntegrationAPI`, error)
