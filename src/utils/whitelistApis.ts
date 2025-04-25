@@ -6379,8 +6379,8 @@ export const API_LIST = {
             '/proxies/v8/commentTree/v1/get',
             '/proxies/v8/search/v1/recent/create',
             '/proxies/v8/search/v1/recent/read',
-            '/proxies/v8/search/v1/recent/delete'
-            '/proxies/v8/search/v1/trending/create'
+            '/proxies/v8/search/v1/recent/delete',
+            '/proxies/v8/search/v1/trending/create',
             '/proxies/v8/search/v1/trending/read',
             ],
 }
