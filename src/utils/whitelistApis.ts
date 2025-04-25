@@ -4336,6 +4336,10 @@ export const API_LIST = {
                   // tslint:disable-next-line: object-literal-sort-keys
                   ROLE_CHECK: [
                      ROLE.PUBLIC,
+                     ROLE.CONTENT_CREATOR,
+                     ROLE.CONTENT_PUBLISHER,
+                     ROLE.CONTENT_REVIEWER,
+                     ROLE.SPV_PUBLISHER,
                   ],
         },
         '/proxies/v8/comment/v1/addNew': {
@@ -4343,6 +4347,10 @@ export const API_LIST = {
                   // tslint:disable-next-line: object-literal-sort-keys
                   ROLE_CHECK: [
                      ROLE.PUBLIC,
+                     ROLE.CONTENT_CREATOR,
+                     ROLE.CONTENT_PUBLISHER,
+                     ROLE.CONTENT_REVIEWER,
+                     ROLE.SPV_PUBLISHER,
                   ],
         },
         '/proxies/v8/comment/v1/update': {
@@ -4350,6 +4358,10 @@ export const API_LIST = {
                   // tslint:disable-next-line: object-literal-sort-keys
                   ROLE_CHECK: [
                      ROLE.PUBLIC,
+                     ROLE.CONTENT_CREATOR,
+                     ROLE.CONTENT_PUBLISHER,
+                     ROLE.CONTENT_REVIEWER,
+                     ROLE.SPV_PUBLISHER,
                   ],
         },
         '/proxies/v8/comment/v1/getAll': {
@@ -4357,20 +4369,32 @@ export const API_LIST = {
                   // tslint:disable-next-line: object-literal-sort-keys
                   ROLE_CHECK: [
                      ROLE.PUBLIC,
+                     ROLE.CONTENT_CREATOR,
+                     ROLE.CONTENT_PUBLISHER,
+                     ROLE.CONTENT_REVIEWER,
+                     ROLE.SPV_PUBLISHER,
                   ],
         },
         '/proxies/v8/comment/v1/multipleWorkflows': {
                    checksNeeded: [CHECK.ROLE],
                    // tslint:disable-next-line: object-literal-sort-keys
                    ROLE_CHECK: [
-                      ROLE.PUBLIC,
+                     ROLE.PUBLIC,
+                     ROLE.CONTENT_CREATOR,
+                     ROLE.CONTENT_PUBLISHER,
+                     ROLE.CONTENT_REVIEWER,
+                     ROLE.SPV_PUBLISHER,
                    ],
         },
         '/proxies/v8/comment/v1/delete/:commentId': {
                    checksNeeded: [CHECK.ROLE],
                    // tslint:disable-next-line: object-literal-sort-keys
                    ROLE_CHECK: [
-                      ROLE.PUBLIC,
+                     ROLE.PUBLIC,
+                     ROLE.CONTENT_CREATOR,
+                     ROLE.CONTENT_PUBLISHER,
+                     ROLE.CONTENT_REVIEWER,
+                     ROLE.SPV_PUBLISHER,
                    ],
         },
         '/proxies/v8/comment/v1/setStatusToResolved': {
@@ -4378,6 +4402,10 @@ export const API_LIST = {
                   // tslint:disable-next-line: object-literal-sort-keys
                   ROLE_CHECK: [
                      ROLE.PUBLIC,
+                     ROLE.CONTENT_CREATOR,
+                     ROLE.CONTENT_PUBLISHER,
+                     ROLE.CONTENT_REVIEWER,
+                     ROLE.SPV_PUBLISHER,
                   ],
         },
         '/proxies/v8/comment/v1/resolve/:commentId': {
@@ -4385,6 +4413,10 @@ export const API_LIST = {
                   // tslint:disable-next-line: object-literal-sort-keys
                   ROLE_CHECK: [
                      ROLE.PUBLIC,
+                     ROLE.CONTENT_CREATOR,
+                     ROLE.CONTENT_PUBLISHER,
+                     ROLE.CONTENT_REVIEWER,
+                     ROLE.SPV_PUBLISHER,
                   ],
         },
         '/proxies/v8/cqfquestionset/questionset/create': {
@@ -4794,14 +4826,22 @@ export const API_LIST = {
                    checksNeeded: [CHECK.ROLE],
                    // tslint:disable-next-line: object-literal-sort-keys
                    ROLE_CHECK: [
-                      ROLE.PUBLIC,
+                     ROLE.PUBLIC,
+                     ROLE.CONTENT_CREATOR,
+                     ROLE.CONTENT_PUBLISHER,
+                     ROLE.CONTENT_REVIEWER,
+                     ROLE.SPV_PUBLISHER,
                    ],
         },
         '/proxies/v8/comment/list': {
                    checksNeeded: [CHECK.ROLE],
                    // tslint:disable-next-line: object-literal-sort-keys
                    ROLE_CHECK: [
-                      ROLE.PUBLIC,
+                     ROLE.PUBLIC,
+                     ROLE.CONTENT_CREATOR,
+                     ROLE.CONTENT_PUBLISHER,
+                     ROLE.CONTENT_REVIEWER,
+                     ROLE.SPV_PUBLISHER,
                    ],
         },
         '/proxies/v8/comment/v1/like': {
@@ -4809,13 +4849,21 @@ export const API_LIST = {
                   // tslint:disable-next-line: object-literal-sort-keys
                   ROLE_CHECK: [
                      ROLE.PUBLIC,
+                     ROLE.CONTENT_CREATOR,
+                     ROLE.CONTENT_PUBLISHER,
+                     ROLE.CONTENT_REVIEWER,
+                     ROLE.SPV_PUBLISHER,
                   ],
         },
         '/proxies/v8/comment/v1/like/read': {
                    checksNeeded: [CHECK.ROLE],
                    // tslint:disable-next-line: object-literal-sort-keys
                    ROLE_CHECK: [
-                      ROLE.PUBLIC,
+                     ROLE.PUBLIC,
+                     ROLE.CONTENT_CREATOR,
+                     ROLE.CONTENT_PUBLISHER,
+                     ROLE.CONTENT_REVIEWER,
+                     ROLE.SPV_PUBLISHER,
                    ],
         },
         '/proxies/v8/serviceregistry/v1/callexternalapibyid/:id': {
@@ -4832,7 +4880,11 @@ export const API_LIST = {
                    checksNeeded: [CHECK.ROLE],
                    // tslint:disable-next-line: object-literal-sort-keys
                    ROLE_CHECK: [
-                      ROLE.PUBLIC,
+                     ROLE.PUBLIC,
+                     ROLE.CONTENT_CREATOR,
+                     ROLE.CONTENT_PUBLISHER,
+                     ROLE.CONTENT_REVIEWER,
+                     ROLE.SPV_PUBLISHER,
                    ],
         },
         '/proxies/v8/comment/delete/reported': {
@@ -4963,7 +5015,11 @@ export const API_LIST = {
                    checksNeeded: [CHECK.ROLE],
                    // tslint:disable-next-line: object-literal-sort-keys
                    ROLE_CHECK: [
-                      ROLE.PUBLIC,
+                     ROLE.PUBLIC,
+                     ROLE.CONTENT_CREATOR,
+                     ROLE.CONTENT_PUBLISHER,
+                     ROLE.CONTENT_REVIEWER,
+                     ROLE.SPV_PUBLISHER,
                    ],
         },
         '/proxies/v8/customselfregistration/upload/logo/gcpcontainer': {
@@ -5185,6 +5241,10 @@ export const API_LIST = {
                   // tslint:disable-next-line: object-literal-sort-keys
                   ROLE_CHECK: [
                     ROLE.PUBLIC,
+                    ROLE.CONTENT_CREATOR,
+                    ROLE.CONTENT_PUBLISHER,
+                    ROLE.CONTENT_REVIEWER,
+                    ROLE.SPV_PUBLISHER,
                   ],
         },
        '/proxies/v8/interface/v1/mentors/details/:id': {
@@ -5283,6 +5343,10 @@ export const API_LIST = {
                    // tslint:disable-next-line: object-literal-sort-keys
                    ROLE_CHECK: [
                       ROLE.PUBLIC,
+                      ROLE.CONTENT_CREATOR,
+                      ROLE.CONTENT_PUBLISHER,
+                      ROLE.CONTENT_REVIEWER,
+                      ROLE.SPV_PUBLISHER,
                    ],
         },
         '/proxies/v8/event/v4/reject/:do_id': {
