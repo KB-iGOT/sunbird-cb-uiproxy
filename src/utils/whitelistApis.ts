@@ -5718,7 +5718,7 @@ export const API_LIST = {
                  ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/comment/search/v3': {
+        '/proxies/v8/comment/v3/search': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -6461,6 +6461,6 @@ export const API_LIST = {
             '/proxies/v8/search/v1/recent/delete',
             '/proxies/v8/search/v1/trending/create',
             '/proxies/v8/search/v1/trending/read',
-            '/proxies/v8/comment/search/v3',
+            '/proxies/v8/comment/v3/search',
             ],
 }
