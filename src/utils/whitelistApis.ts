@@ -5736,6 +5736,13 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
             ],
         },
+        '/proxies/v8/youtube/duration/:videoid': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CONTENT_CREATOR,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -6470,5 +6477,6 @@ export const API_LIST = {
             '/proxies/v8/search/v1/trending/create',
             '/proxies/v8/search/v1/trending/read',
             '/proxies/v8/comment/v3/search',
+            '/proxies/v8/youtube/duration/:videoid',
             ],
 }
