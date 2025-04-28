@@ -1239,7 +1239,7 @@ proxiesV8.get('/youtube/duration/:videoid', async (req, res) => {
 
   try {
     const response = await axios.get(
-      `https://www.googleapis.com/youtube/v3/videos?id=${videoid}&part=contentDetails&key=${apiKey}`
+      `${CONSTANTS.YOUTUBE_VIDEOS}?id=${videoid}&part=contentDetails&key=${apiKey}`
     )
     res.json(response.data)
   } catch (error) {
