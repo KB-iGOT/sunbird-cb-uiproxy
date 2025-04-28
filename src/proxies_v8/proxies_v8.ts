@@ -1235,7 +1235,7 @@ proxiesV8.use('/search/*',
 
 proxiesV8.get('/youtube/duration/:videoid', async (req, res) => {
   const { videoid } = req.params  // Get videoid from URL path instead of query params
-  const apiKey = `${CONSTANTS.YOUTUBE_API_KEY}`  // Use your actual API key here
+  const apiKey = `${CONSTANTS.YOUTUBE_PLAYLIST_API_KEY}`  // Use your actual API key here
 
   try {
     const response = await axios.get(
