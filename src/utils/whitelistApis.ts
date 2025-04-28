@@ -5736,6 +5736,13 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
             ],
         },
+        '/proxies/v8/youtube/duration/:videoid': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CONTENT_CREATOR,
+            ],
+        },
         '/proxies/v8/feedDiscussion/admin/activatePost': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -6486,6 +6493,7 @@ export const API_LIST = {
             '/proxies/v8/search/v1/trending/create',
             '/proxies/v8/search/v1/trending/read',
             '/proxies/v8/comment/v3/search',
+            '/proxies/v8/youtube/duration/:videoid',
             '/proxies/v8/feedDiscussion/admin/activatePost',
             '/proxies/v8/feedDiscussion/admin/removePost',
             ],
