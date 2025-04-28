@@ -1232,3 +1232,17 @@ proxiesV8.use('/commentTree/*',
 proxiesV8.use('/search/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.get('/youtube/duration/:videoid', async (req, res) => {
+  const { videoid } = req.params  // Get videoid from URL path instead of query params
+  const apiKey = `${CONSTANTS.YOUTUBE_API_KEY}`  // Use your actual API key here
+
+  try {
+    const response = await axios.get(
+      `https://www.googleapis.com/youtube/v3/videos?id=${videoid}&part=contentDetails&key=${apiKey}`
+    )
+    res.json(response.data)
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch video data' })
+  }
+})
