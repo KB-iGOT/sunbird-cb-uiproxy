@@ -4983,6 +4983,8 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                ROLE.PUBLIC,
+               ROLE.MDO_LEADER,
+               ROLE.MDO_ADMIN,
             ],
         },
         '/proxies/v8/feedDiscussion/question/like/:id': {
