@@ -5760,6 +5760,14 @@ export const API_LIST = {
                ROLE.MDO_ADMIN,
                ROLE.MDO_LEADER
             ],
+        },
+        '/proxies/v8/feedDiscussion/getReportStatistics': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.MDO_ADMIN,
+               ROLE.MDO_LEADER
+            ],
         }
     },
     URL_PATTERN:
@@ -6498,5 +6506,6 @@ export const API_LIST = {
             '/proxies/v8/youtube/duration/:videoid',
             '/proxies/v8/feedDiscussion/admin/activatePost',
             '/proxies/v8/feedDiscussion/admin/removePost',
+            '/proxies/v8/feedDiscussion/getReportStatistics',
             ],
 }
