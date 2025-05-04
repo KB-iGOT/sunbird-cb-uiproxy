@@ -4983,6 +4983,8 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                ROLE.PUBLIC,
+               ROLE.MDO_LEADER,
+               ROLE.MDO_ADMIN,
             ],
         },
         '/proxies/v8/feedDiscussion/question/like/:id': {
@@ -5656,6 +5658,7 @@ export const API_LIST = {
            // tslint:disable-next-line: object-literal-sort-keys
            ROLE_CHECK: [
              ROLE.SPV_PUBLISHER,
+             ROLE.CONTENT_PUBLISHER,
            ],
          },
         '/proxies/v8/feedDiscussion/answerPostReply/like/:id': {
@@ -5677,6 +5680,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                ROLE.SPV_PUBLISHER,
+               ROLE.CONTENT_PUBLISHER,
             ],
         },
         '/proxies/v8/commentTree/v1/get': {
@@ -5741,6 +5745,30 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.CONTENT_CREATOR,
+            ],
+        },
+        '/proxies/v8/feedDiscussion/admin/activatePost': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.MDO_ADMIN,
+               ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/feedDiscussion/admin/removePost': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.MDO_ADMIN,
+               ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/feedDiscussion/getReportStatistics': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.MDO_ADMIN,
+               ROLE.MDO_LEADER,
             ],
         },
     },
@@ -6478,5 +6506,8 @@ export const API_LIST = {
             '/proxies/v8/search/v1/trending/read',
             '/proxies/v8/comment/v3/search',
             '/proxies/v8/youtube/duration/:videoid',
+            '/proxies/v8/feedDiscussion/admin/activatePost',
+            '/proxies/v8/feedDiscussion/admin/removePost',
+            '/proxies/v8/feedDiscussion/getReportStatistics',
             ],
 }
