@@ -5656,6 +5656,7 @@ export const API_LIST = {
            // tslint:disable-next-line: object-literal-sort-keys
            ROLE_CHECK: [
              ROLE.SPV_PUBLISHER,
+             ROLE.CONTENT_PUBLISHER,
            ],
          },
         '/proxies/v8/feedDiscussion/answerPostReply/like/:id': {
@@ -5677,6 +5678,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                ROLE.SPV_PUBLISHER,
+               ROLE.CONTENT_PUBLISHER,
             ],
         },
         '/proxies/v8/commentTree/v1/get': {
