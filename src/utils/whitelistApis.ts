@@ -5502,6 +5502,16 @@ export const API_LIST = {
                 ROLE.PUBLIC,
              ],
          },
+        '/proxies/v8/org/ext/v2/update': {
+            checksNeeded: [CHECK.ROLE],
+              // tslint:disable-next-line: object-literal-sort-keys
+              ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
+              ],
+        },
     },
     URL_PATTERN:
         [
@@ -6213,5 +6223,6 @@ export const API_LIST = {
             '/proxies/v8/chatbot/v3/search',
             '/proxies/v8/fetchUserToken',
             '/proxies/v8/chatbot/v3/upload/:id',
+            '/proxies/v8/org/ext/v2/update',
            ],
 }
