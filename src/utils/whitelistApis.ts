@@ -230,6 +230,9 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.CONTENT_PUBLISHER,
+                ROLE.SPV_PUBLISHER,
+                ROLE.CONTENT_CREATOR,
             ],
         },
         '/proxies/v8/action/content/v3/reject/:do_id': {
