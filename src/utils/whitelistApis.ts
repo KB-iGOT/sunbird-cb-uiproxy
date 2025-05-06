@@ -5774,6 +5774,22 @@ export const API_LIST = {
                ROLE.MDO_LEADER,
             ],
         },
+       '/proxies/v8/workflow/blendedprogram/getUserApprovalDataInCsv': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PROGRAM_COORDINATOR,
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/workflow/blendedprogram/bulkApprovalDataFromCsv/:contentId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PROGRAM_COORDINATOR,
+            ],
+        },      
     },
     URL_PATTERN:
         [
@@ -6512,5 +6528,7 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/admin/activatePost',
             '/proxies/v8/feedDiscussion/admin/removePost',
             '/proxies/v8/feedDiscussion/getReportStatistics',
+            '/proxies/v8/workflow/blendedprogram/getUserApprovalDataInCsv',
+            '/proxies/v8/workflow/blendedprogram/bulkApprovalDataFromCsv/:contentId',
             ],
 }
