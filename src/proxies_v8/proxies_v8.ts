@@ -944,7 +944,7 @@ proxiesV8.post('/course/v1/batch/getParticipants', async (req, res) => {
         'x-authenticated-user-token': extractUserToken(req),
       },
     })
-    let totalCount = response.data.result.batch.count || 0
+    let totalCount = response.data.result.batch.count != null ? response.data.result.batch.count : 0
     if ((typeof response.data.result.batch.participants !== 'undefined' && response.data.result.batch.participants.length > 0)) {
       totalCount = response.data.result.batch.count
       const searchresponse = await axios({
