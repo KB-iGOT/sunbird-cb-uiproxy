@@ -5789,7 +5789,35 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
             ],
-        },      
+        },  
+        '/proxies/v8/extendedprofile/list/states': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+         '/proxies/v8/extendedprofile/list/districts': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/masterdata/list/degrees': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/masterdata/list/institutions': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -6530,5 +6558,9 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/getReportStatistics',
             '/proxies/v8/workflow/blendedprogram/getUserApprovalDataInCsv',
             '/proxies/v8/workflow/blendedprogram/bulkApprovalDataFromCsv/:contentId',
+            '/proxies/v8/extendedprofile/list/states',
+            '/proxies/v8/extendedprofile/list/districts',
+            '/proxies/v8/masterdata/list/degrees',
+            '/proxies/v8/masterdata/list/institutions'
             ],
 }

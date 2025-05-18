@@ -1246,3 +1246,7 @@ proxiesV8.get('/youtube/duration/:videoid', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch video data' })
   }
 })
+
+proxiesV8.use('/extendedprofile/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
