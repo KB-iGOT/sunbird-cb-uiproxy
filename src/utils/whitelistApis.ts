@@ -5789,7 +5789,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
             ],
-        },  
+        },
         '/proxies/v8/extendedprofile/list/states': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -6561,6 +6561,6 @@ export const API_LIST = {
             '/proxies/v8/extendedprofile/list/states',
             '/proxies/v8/extendedprofile/list/districts',
             '/proxies/v8/masterdata/list/degrees',
-            '/proxies/v8/masterdata/list/institutions'
+            '/proxies/v8/masterdata/list/institutions',
             ],
 }
