@@ -1250,3 +1250,7 @@ proxiesV8.get('/youtube/duration/:videoid', async (req, res) => {
 proxiesV8.use('/extendedprofile/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/masterdata/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
