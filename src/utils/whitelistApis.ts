@@ -5789,7 +5789,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
             ],
-        }, 
+        },
         '/proxies/v8/user/profile/v1/extended': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -5817,7 +5817,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                ROLE.PUBLIC,
             ],
-        }, 
+        },
         '/proxies/v8/user/profile/v1/extended/achievements': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -5838,14 +5838,14 @@ export const API_LIST = {
             ROLE_CHECK: [
                ROLE.PUBLIC,
             ],
-        },  
+        },
         '/proxies/v8/user/profile/v1/basic': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                ROLE.PUBLIC,
             ],
-        },    
+        },
     },
     URL_PATTERN:
         [
@@ -6593,6 +6593,6 @@ export const API_LIST = {
             '/proxies/v8/user/profile/v1/extended/achievement',
             '/proxies/v8/user/profile/v1/extended/update',
             '/proxies/v8/user/profile/v1/extended/delete',
-            '/proxies/v8/user/profile/v1/basic'
+            '/proxies/v8/user/profile/v1/basic',
             ],
 }
