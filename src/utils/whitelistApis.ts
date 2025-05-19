@@ -5789,7 +5789,63 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
             ],
-        },      
+        }, 
+        '/proxies/v8/user/profile/v1/extended': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/user/profile/v1/extended/all': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/user/profile/v1/extended/serviceHistory': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/user/profile/v1/extended/education': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        }, 
+        '/proxies/v8/user/profile/v1/extended/achievements': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/user/profile/v1/extended/update': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/user/profile/v1/extended/delete': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },  
+        '/proxies/v8/user/profile/v1/basic': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },    
     },
     URL_PATTERN:
         [
@@ -6530,5 +6586,13 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/getReportStatistics',
             '/proxies/v8/workflow/blendedprogram/getUserApprovalDataInCsv',
             '/proxies/v8/workflow/blendedprogram/bulkApprovalDataFromCsv/:contentId',
+            '/proxies/v8/user/profile/v1/extended',
+            '/proxies/v8/user/profile/v1/extended/all',
+            '/proxies/v8/user/profile/v1/extended/serviceHistory',
+            '/proxies/v8/user/profile/v1/extended/education',
+            '/proxies/v8/user/profile/v1/extended/achievement',
+            '/proxies/v8/user/profile/v1/extended/update',
+            '/proxies/v8/user/profile/v1/extended/delete',
+            '/proxies/v8/user/profile/v1/basic'
             ],
 }
