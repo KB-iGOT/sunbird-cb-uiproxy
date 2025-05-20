@@ -5874,6 +5874,47 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/v1/notifications/create': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                      ROLE.PUBLIC,
+                  ],
+                
+        },
+        '/proxies/v8/v1/notifications/readById/:notificationId': {
+                        checksNeeded: [CHECK.ROLE],
+                        // tslint:disable-next-line: object-literal-sort-keys
+                        ROLE_CHECK: [
+                            ROLE.PUBLIC,
+                        ],
+                      
+        },
+       '/proxies/v8/v1/notifications/list': {
+                               checksNeeded: [CHECK.ROLE],
+                               // tslint:disable-next-line: object-literal-sort-keys
+                               ROLE_CHECK: [
+                                   ROLE.PUBLIC,
+                               ],
+                             
+       },
+       '/proxies/v8/v1/notifications/read': {
+                                      checksNeeded: [CHECK.ROLE],
+                                      // tslint:disable-next-line: object-literal-sort-keys
+                                      ROLE_CHECK: [
+                                          ROLE.PUBLIC,
+                                      ],
+                                    
+       },
+      '/proxies/v8/v1/notifications/delete': {
+                                           checksNeeded: [CHECK.ROLE],
+                                           // tslint:disable-next-line: object-literal-sort-keys
+                                           ROLE_CHECK: [
+                                               ROLE.PUBLIC,
+                                           ],
+                                         
+      },
+      
     },
     URL_PATTERN:
         [
@@ -6626,5 +6667,11 @@ export const API_LIST = {
             '/proxies/v8/masterdata/list/degrees',
             '/proxies/v8/masterdata/list/institutions',
             '/proxies/v8/user/profile/v1/basic/:id',
+            '/proxies/v8/v1/notifications/create',
+            '/proxies/v8/v1/notifications/readById/:notificationId',
+            '/proxies/v8/v1/notifications/list',
+            '/proxies/v8/v1/notifications/read',
+            '/proxies/v8/v1/notifications/delete',
+            
             ],
 }
