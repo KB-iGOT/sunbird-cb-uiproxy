@@ -1254,3 +1254,7 @@ proxiesV8.use('/extendedprofile/*',
 proxiesV8.use('/masterdata/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/notifications/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
