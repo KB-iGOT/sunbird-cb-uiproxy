@@ -5781,6 +5781,161 @@ export const API_LIST = {
                ROLE.MDO_LEADER,
             ],
         },
+       '/proxies/v8/workflow/blendedprogram/getUserApprovalDataInCsv': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PROGRAM_COORDINATOR,
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/workflow/blendedprogram/bulkApprovalDataFromCsv/:contentId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PROGRAM_COORDINATOR,
+            ],
+        },
+        '/proxies/v8/user/profile/v1/extended': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/user/profile/v1/extended/all/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/user/profile/v1/extended/serviceHistory/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/user/profile/v1/extended/education/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/user/profile/v1/extended/achievements/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/user/profile/v1/extended/update': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/user/profile/v1/extended/delete': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/user/profile/v1/basic/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+              ],
+        },
+        '/proxies/v8/extendedprofile/list/states': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+         '/proxies/v8/extendedprofile/list/districts': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/masterdata/list/degrees': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/masterdata/list/institutions': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/v1/notifications/create': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                  ROLE_CHECK: [
+                      ROLE.PUBLIC,
+                  ],
+                
+        },
+        '/proxies/v8/v1/notifications/readById/:notificationId': {
+                        checksNeeded: [CHECK.ROLE],
+                        // tslint:disable-next-line: object-literal-sort-keys
+                        ROLE_CHECK: [
+                            ROLE.PUBLIC,
+                        ],
+                      
+        },
+       '/proxies/v8/v1/notifications/list': {
+                               checksNeeded: [CHECK.ROLE],
+                               // tslint:disable-next-line: object-literal-sort-keys
+                               ROLE_CHECK: [
+                                   ROLE.PUBLIC,
+                               ],
+                             
+       },
+       '/proxies/v8/v1/notifications/read': {
+                                      checksNeeded: [CHECK.ROLE],
+                                      // tslint:disable-next-line: object-literal-sort-keys
+                                      ROLE_CHECK: [
+                                          ROLE.PUBLIC,
+                                      ],
+                                    
+       },
+      '/proxies/v8/v1/notifications/delete': {
+                                           checksNeeded: [CHECK.ROLE],
+                                           // tslint:disable-next-line: object-literal-sort-keys
+                                           ROLE_CHECK: [
+                                               ROLE.PUBLIC,
+                                           ],
+                                         
+      },
+       '/proxies/v8/masterdata/update/degree': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/masterdata/update/institution': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+      
     },
     URL_PATTERN:
         [
@@ -6520,5 +6675,26 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/admin/activatePost',
             '/proxies/v8/feedDiscussion/admin/removePost',
             '/proxies/v8/feedDiscussion/getReportStatistics',
+            '/proxies/v8/workflow/blendedprogram/getUserApprovalDataInCsv',
+            '/proxies/v8/workflow/blendedprogram/bulkApprovalDataFromCsv/:contentId',
+            '/proxies/v8/user/profile/v1/extended',
+            '/proxies/v8/user/profile/v1/extended/all/:id',
+            '/proxies/v8/user/profile/v1/extended/serviceHistory/:id',
+            '/proxies/v8/user/profile/v1/extended/education/:id',
+            '/proxies/v8/user/profile/v1/extended/achievement/:id',
+            '/proxies/v8/user/profile/v1/extended/update',
+            '/proxies/v8/user/profile/v1/extended/delete',
+            '/proxies/v8/extendedprofile/list/states',
+            '/proxies/v8/extendedprofile/list/districts',
+            '/proxies/v8/masterdata/list/degrees',
+            '/proxies/v8/masterdata/list/institutions',
+            '/proxies/v8/user/profile/v1/basic/:id',
+            '/proxies/v8/v1/notifications/create',
+            '/proxies/v8/v1/notifications/readById/:notificationId',
+            '/proxies/v8/v1/notifications/list',
+            '/proxies/v8/v1/notifications/read',
+            '/proxies/v8/v1/notifications/delete',
+            '/proxies/v8/masterdata/update/degree',
+            '/proxies/v8/masterdata/update/institution'         
             ],
 }
