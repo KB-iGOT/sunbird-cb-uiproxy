@@ -1255,6 +1255,6 @@ proxiesV8.use('/masterdata/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
-proxiesV8.use('/notifications/*',
+proxiesV8.use('/v1/notifications/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
