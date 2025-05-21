@@ -513,6 +513,21 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/org/v1/admin/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.MDO_ADMIN,
+               ROLE.MDO_LEADER,
+               ROLE.SPV_ADMIN,
+               ROLE.CONTENT_PUBLISHER,
+               ROLE.CONTENT_CREATOR,
+               ROLE.CONTENT_REVIEWER,
+               ROLE.SPV_PUBLISHER,
+               ROLE.CBP_ADMIN,
+               ROLE.PROGRAM_COORDINATOR,
+            ],
+        },
         '/proxies/v8/user/private/v1/assign/role': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -530,6 +545,21 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/user/v1/admin/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.MDO_ADMIN,
+               ROLE.MDO_LEADER,
+               ROLE.SPV_ADMIN,
+               ROLE.CONTENT_PUBLISHER,
+               ROLE.CONTENT_CREATOR,
+               ROLE.CONTENT_REVIEWER,
+               ROLE.SPV_PUBLISHER,
+               ROLE.CBP_ADMIN,
+               ROLE.PROGRAM_COORDINATOR,
             ],
         },
         '/proxies/v8/org/v1/read': {
@@ -5887,7 +5917,7 @@ export const API_LIST = {
                   ROLE_CHECK: [
                       ROLE.PUBLIC,
                   ],
-                
+
         },
         '/proxies/v8/v1/notifications/readById/:notificationId': {
                         checksNeeded: [CHECK.ROLE],
@@ -5895,7 +5925,7 @@ export const API_LIST = {
                         ROLE_CHECK: [
                             ROLE.PUBLIC,
                         ],
-                      
+
         },
        '/proxies/v8/v1/notifications/list': {
                                checksNeeded: [CHECK.ROLE],
@@ -5903,7 +5933,7 @@ export const API_LIST = {
                                ROLE_CHECK: [
                                    ROLE.PUBLIC,
                                ],
-                             
+
        },
        '/proxies/v8/v1/notifications/read': {
                                       checksNeeded: [CHECK.ROLE],
@@ -5911,7 +5941,7 @@ export const API_LIST = {
                                       ROLE_CHECK: [
                                           ROLE.PUBLIC,
                                       ],
-                                    
+
        },
       '/proxies/v8/v1/notifications/delete': {
                                            checksNeeded: [CHECK.ROLE],
@@ -5919,7 +5949,7 @@ export const API_LIST = {
                                            ROLE_CHECK: [
                                                ROLE.PUBLIC,
                                            ],
-                                         
+
       },
        '/proxies/v8/masterdata/update/degree': {
             checksNeeded: [CHECK.ROLE],
@@ -5935,7 +5965,7 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
-      
+
     },
     URL_PATTERN:
         [
@@ -5963,6 +5993,7 @@ export const API_LIST = {
             '/proxies/v8/data/v1/system/settings/get/orgTypeList',
             '/proxies/v8/data/v1/system/settings/get/notificationPreference',
             '/proxies/v8/org/v1/search',
+            '/proxies/v8/org/v1/admin/search',
             '/proxies/v8/org/v1/update',
             '/proxies/v8/notifyContentState',
             '/proxies/v8/discussion/topic/:id/:slug',
@@ -5998,6 +6029,7 @@ export const API_LIST = {
             '/proxies/v8/action/content/v3/reject/:do_id',
             '/proxies/v8/user/private/v1/assign/role',
             '/proxies/v8/user/v1/search',
+            `/proxies/v8/user/v1/admin/search`,
             '/proxies/v8/org/v1/read',
             '/proxies/v8/org/v1/profile/read',
             '/proxies/v8/org/v1/profile/patch',
@@ -6695,6 +6727,6 @@ export const API_LIST = {
             '/proxies/v8/v1/notifications/read',
             '/proxies/v8/v1/notifications/delete',
             '/proxies/v8/masterdata/update/degree',
-            '/proxies/v8/masterdata/update/institution'         
+            '/proxies/v8/masterdata/update/institution',
             ],
 }
