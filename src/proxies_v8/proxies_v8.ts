@@ -936,7 +936,6 @@ proxiesV8.post('/course/v1/batch/getParticipants', async (req, res) => {
       },
     }
     const userlist: ICohortsUser[] = []
-    let totalCount = null
     const response = await axios.post(API_END_POINTS.batchParticipantsApi, reqBody, {
       ...axiosRequestConfig,
       headers: {
@@ -945,8 +944,8 @@ proxiesV8.post('/course/v1/batch/getParticipants', async (req, res) => {
         'x-authenticated-user-token': extractUserToken(req),
       },
     })
+    let totalCount = response.data.result.batch.count != null ? response.data.result.batch.count : 0
     if ((typeof response.data.result.batch.participants !== 'undefined' && response.data.result.batch.participants.length > 0)) {
-      totalCount = response.data.result.batch.count
       const searchresponse = await axios({
         ...axiosRequestConfig,
         data: { request: { filters: { userId: response.data.result.batch.participants } } },
@@ -1252,5 +1251,9 @@ proxiesV8.use('/extendedprofile/*',
 )
 
 proxiesV8.use('/masterdata/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
+proxiesV8.use('/v1/notifications/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
