@@ -5912,45 +5912,54 @@ export const API_LIST = {
             ],
         },
         '/proxies/v8/v1/notifications/create': {
-                  checksNeeded: [CHECK.ROLE],
-                  // tslint:disable-next-line: object-literal-sort-keys
-                  ROLE_CHECK: [
-                      ROLE.PUBLIC,
-                  ],
-
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
         },
         '/proxies/v8/v1/notifications/readById/:notificationId': {
-                        checksNeeded: [CHECK.ROLE],
-                        // tslint:disable-next-line: object-literal-sort-keys
-                        ROLE_CHECK: [
-                            ROLE.PUBLIC,
-                        ],
-
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
         },
-       '/proxies/v8/v1/notifications/list': {
-                               checksNeeded: [CHECK.ROLE],
-                               // tslint:disable-next-line: object-literal-sort-keys
-                               ROLE_CHECK: [
-                                   ROLE.PUBLIC,
-                               ],
-
-       },
-       '/proxies/v8/v1/notifications/read': {
-                                      checksNeeded: [CHECK.ROLE],
-                                      // tslint:disable-next-line: object-literal-sort-keys
-                                      ROLE_CHECK: [
-                                          ROLE.PUBLIC,
-                                      ],
-
-       },
-      '/proxies/v8/v1/notifications/delete': {
-                                           checksNeeded: [CHECK.ROLE],
-                                           // tslint:disable-next-line: object-literal-sort-keys
-                                           ROLE_CHECK: [
-                                               ROLE.PUBLIC,
-                                           ],
-
-      },
+        '/proxies/v8/v1/notifications/list': {
+             checksNeeded: [CHECK.ROLE],
+             // tslint:disable-next-line: object-literal-sort-keys
+             ROLE_CHECK: [
+                 ROLE.PUBLIC,
+             ],
+        },
+         '/proxies/v8/v1/notifications/read': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+         },
+        '/proxies/v8/v1/notifications/delete': {
+             checksNeeded: [CHECK.ROLE],
+             // tslint:disable-next-line: object-literal-sort-keys
+             ROLE_CHECK: [
+                 ROLE.PUBLIC,
+             ],
+        },
+        '/proxies/v8/v1/notifications/bulk/create': {
+             checksNeeded: [CHECK.ROLE],
+             // tslint:disable-next-line: object-literal-sort-keys
+             ROLE_CHECK: [
+                 ROLE.PUBLIC,
+             ],
+        },
+        '/proxies/v8/v1/notifications/unread/count': {
+             checksNeeded: [CHECK.ROLE],
+             // tslint:disable-next-line: object-literal-sort-keys
+             ROLE_CHECK: [
+                 ROLE.PUBLIC,
+             ],
+        },
        '/proxies/v8/masterdata/update/degree': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -5972,7 +5981,6 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
-
     },
     URL_PATTERN:
         [
@@ -6733,6 +6741,8 @@ export const API_LIST = {
             '/proxies/v8/v1/notifications/list',
             '/proxies/v8/v1/notifications/read',
             '/proxies/v8/v1/notifications/delete',
+            '/proxies/v8/v1/notifications/bulk/create',
+            '/proxies/v8/v1/notifications/unread/count',
             '/proxies/v8/masterdata/update/degree',
             '/proxies/v8/masterdata/update/institution',
             '/proxies/v8/user/profile/v1/extended/locationDetails/:id'
