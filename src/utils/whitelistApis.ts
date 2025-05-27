@@ -497,6 +497,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
                 ROLE.STATE_ADMIN,
                 ROLE.MDO_LEADER,
+                ROLE.COMMUNITY_MODERATOR,
             ],
         },
         '/proxies/v8/data/v1/system/settings/get/notificationPreference': {
@@ -5018,6 +5019,7 @@ export const API_LIST = {
                ROLE.PUBLIC,
                ROLE.MDO_LEADER,
                ROLE.MDO_ADMIN,
+               ROLE.COMMUNITY_MODERATOR,
             ],
         },
         '/proxies/v8/feedDiscussion/question/like/:id': {
@@ -5793,6 +5795,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                ROLE.MDO_ADMIN,
                ROLE.MDO_LEADER,
+               ROLE.COMMUNITY_MODERATOR,
             ],
         },
         '/proxies/v8/feedDiscussion/admin/removePost': {
@@ -5801,6 +5804,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                ROLE.MDO_ADMIN,
                ROLE.MDO_LEADER,
+               ROLE.COMMUNITY_MODERATOR,
             ],
         },
         '/proxies/v8/feedDiscussion/getReportStatistics': {
@@ -5809,6 +5813,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                ROLE.MDO_ADMIN,
                ROLE.MDO_LEADER,
+               ROLE.COMMUNITY_MODERATOR,
             ],
         },
        '/proxies/v8/workflow/blendedprogram/getUserApprovalDataInCsv': {
