@@ -6772,6 +6772,6 @@ export const API_LIST = {
             '/proxies/v8/masterdata/update/institution',
             '/proxies/v8/user/profile/v1/extended/locationDetails/:id',
             '/proxies/v8/accessSetttings/v1/upsert',
-            '/proxies/v8/user/v1/groups'
+            '/proxies/v8/user/v1/groups',
             ],
 }
