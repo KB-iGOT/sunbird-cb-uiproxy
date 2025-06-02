@@ -497,6 +497,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
                 ROLE.STATE_ADMIN,
                 ROLE.MDO_LEADER,
+                ROLE.COMMUNITY_MODERATOR,
             ],
         },
         '/proxies/v8/data/v1/system/settings/get/notificationPreference': {
@@ -5018,6 +5019,7 @@ export const API_LIST = {
                ROLE.PUBLIC,
                ROLE.MDO_LEADER,
                ROLE.MDO_ADMIN,
+               ROLE.COMMUNITY_MODERATOR,
             ],
         },
         '/proxies/v8/feedDiscussion/question/like/:id': {
@@ -5793,6 +5795,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                ROLE.MDO_ADMIN,
                ROLE.MDO_LEADER,
+               ROLE.COMMUNITY_MODERATOR,
             ],
         },
         '/proxies/v8/feedDiscussion/admin/removePost': {
@@ -5801,6 +5804,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                ROLE.MDO_ADMIN,
                ROLE.MDO_LEADER,
+               ROLE.COMMUNITY_MODERATOR,
             ],
         },
         '/proxies/v8/feedDiscussion/getReportStatistics': {
@@ -5809,6 +5813,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                ROLE.MDO_ADMIN,
                ROLE.MDO_LEADER,
+               ROLE.COMMUNITY_MODERATOR,
             ],
         },
        '/proxies/v8/workflow/blendedprogram/getUserApprovalDataInCsv': {
@@ -5912,45 +5917,54 @@ export const API_LIST = {
             ],
         },
         '/proxies/v8/v1/notifications/create': {
-                  checksNeeded: [CHECK.ROLE],
-                  // tslint:disable-next-line: object-literal-sort-keys
-                  ROLE_CHECK: [
-                      ROLE.PUBLIC,
-                  ],
-
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
         },
         '/proxies/v8/v1/notifications/readById/:notificationId': {
-                        checksNeeded: [CHECK.ROLE],
-                        // tslint:disable-next-line: object-literal-sort-keys
-                        ROLE_CHECK: [
-                            ROLE.PUBLIC,
-                        ],
-
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
         },
-       '/proxies/v8/v1/notifications/list': {
-                               checksNeeded: [CHECK.ROLE],
-                               // tslint:disable-next-line: object-literal-sort-keys
-                               ROLE_CHECK: [
-                                   ROLE.PUBLIC,
-                               ],
-
-       },
-       '/proxies/v8/v1/notifications/read': {
-                                      checksNeeded: [CHECK.ROLE],
-                                      // tslint:disable-next-line: object-literal-sort-keys
-                                      ROLE_CHECK: [
-                                          ROLE.PUBLIC,
-                                      ],
-
-       },
-      '/proxies/v8/v1/notifications/delete': {
-                                           checksNeeded: [CHECK.ROLE],
-                                           // tslint:disable-next-line: object-literal-sort-keys
-                                           ROLE_CHECK: [
-                                               ROLE.PUBLIC,
-                                           ],
-
-      },
+        '/proxies/v8/v1/notifications/list': {
+             checksNeeded: [CHECK.ROLE],
+             // tslint:disable-next-line: object-literal-sort-keys
+             ROLE_CHECK: [
+                 ROLE.PUBLIC,
+             ],
+        },
+         '/proxies/v8/v1/notifications/read': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+         },
+        '/proxies/v8/v1/notifications/delete': {
+             checksNeeded: [CHECK.ROLE],
+             // tslint:disable-next-line: object-literal-sort-keys
+             ROLE_CHECK: [
+                 ROLE.PUBLIC,
+             ],
+        },
+        '/proxies/v8/v1/notifications/bulk/create': {
+             checksNeeded: [CHECK.ROLE],
+             // tslint:disable-next-line: object-literal-sort-keys
+             ROLE_CHECK: [
+                 ROLE.PUBLIC,
+             ],
+        },
+        '/proxies/v8/v1/notifications/unread/count': {
+             checksNeeded: [CHECK.ROLE],
+             // tslint:disable-next-line: object-literal-sort-keys
+             ROLE_CHECK: [
+                 ROLE.PUBLIC,
+             ],
+        },
        '/proxies/v8/masterdata/update/degree': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -5965,7 +5979,23 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
-
+        '/proxies/v8/user/profile/v1/extended/locationDetails/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/accessSetttings/v1/upsert': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CONTENT_CREATOR,
+                ROLE.CONTENT_PUBLISHER,
+                ROLE.CONTENT_REVIEWER,
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -6726,7 +6756,11 @@ export const API_LIST = {
             '/proxies/v8/v1/notifications/list',
             '/proxies/v8/v1/notifications/read',
             '/proxies/v8/v1/notifications/delete',
+            '/proxies/v8/v1/notifications/bulk/create',
+            '/proxies/v8/v1/notifications/unread/count',
             '/proxies/v8/masterdata/update/degree',
             '/proxies/v8/masterdata/update/institution',
+            '/proxies/v8/user/profile/v1/extended/locationDetails/:id',
+            '/proxies/v8/accessSetttings/v1/upsert',
             ],
 }
