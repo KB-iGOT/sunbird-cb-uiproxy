@@ -6016,6 +6016,16 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
             ],
         },
+        '/proxies/v8/accessSetttings/v1/delete/:contentId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CONTENT_CREATOR,
+                ROLE.CONTENT_PUBLISHER,
+                ROLE.CONTENT_REVIEWER,
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -6784,5 +6794,6 @@ export const API_LIST = {
             '/proxies/v8/accessSetttings/v1/upsert',
             '/proxies/v8/user/v1/groups',
             '/proxies/v8/accessSetttings/read/:contentId',
+            '/proxies/v8/accessSetttings/v1/delete/:contentId',
             ],
 }
