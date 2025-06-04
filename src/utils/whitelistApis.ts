@@ -5986,6 +5986,20 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/chatbot/v3/feedbacks/save': {
+            checksNeeded: [CHECK.ROLE],
+             // tslint:disable-next-line: object-literal-sort-keys
+             ROLE_CHECK: [
+                ROLE.PUBLIC,
+             ],
+         },
+        '/proxies/v8/chatbot/v3/feedbacks/get': {
+            checksNeeded: [CHECK.ROLE],
+             // tslint:disable-next-line: object-literal-sort-keys
+             ROLE_CHECK: [
+                ROLE.PUBLIC,
+             ],
+         },
         '/proxies/v8/accessSetttings/v1/upsert': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -6781,6 +6795,8 @@ export const API_LIST = {
             '/proxies/v8/masterdata/update/degree',
             '/proxies/v8/masterdata/update/institution',
             '/proxies/v8/user/profile/v1/extended/locationDetails/:id',
+            '/proxies/v8/chatbot/v3/feedbacks/save',
+            '/proxies/v8/chatbot/v3/feedbacks/get',
             '/proxies/v8/accessSetttings/v1/upsert',
             '/proxies/v8/user/v1/groups',
             '/proxies/v8/accessSetttings/read/:contentId',
