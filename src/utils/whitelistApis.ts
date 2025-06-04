@@ -6040,6 +6040,13 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
             ],
         },
+        '/proxies/v8/search/v1/recent/delete/timestamp/:timestamp': {
+            checksNeeded: [CHECK.ROLE],
+                    // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                 ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -6811,5 +6818,6 @@ export const API_LIST = {
             '/proxies/v8/user/v1/groups',
             '/proxies/v8/accessSetttings/read/:contentId',
             '/proxies/v8/accessSetttings/v1/delete/:contentId',
+            '/proxies/v8/search/v1/recent/delete/timestamp/:timestamp',
             ],
 }
