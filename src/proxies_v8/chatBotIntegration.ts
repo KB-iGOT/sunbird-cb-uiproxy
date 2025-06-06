@@ -22,11 +22,22 @@ chatBotIntegrationAPI.use('/*', async (req: express.Request, res: express.Respon
             ...axiosRequestConfig,
         }
 
-        const response = await axios.post(url, requestBody, axiosConfig)
-        res.status(response.status).send(response.data)
+        let response
+        if (req.method === 'GET') {
+            response = await axios.get(url, axiosConfig)
+        } else if (req.method === 'POST') {
+            response = await axios.post(url, requestBody, axiosConfig)
+        } else if (req.method === 'PUT') {
+            response = await axios.put(url, requestBody, axiosConfig)
+        } else if (req.method === 'DELETE') {
+            response = await axios.delete(url, axiosConfig)
+        } else {
+            return res.status(405).send({ error: `Method ${req.method} not supported` })
+        }
+        return res.status(response.status).send(response.data)
     } catch (error) {
         logError(`Error in chatBotIntegrationAPI`, error)
-        res.status(500).send({ error: 'Failed to fetch data from chatbot API' })
+        return res.status(500).send({ error: 'Failed to fetch data from chatbot API' })
     }
 })
 
