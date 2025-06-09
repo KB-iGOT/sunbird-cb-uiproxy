@@ -6834,6 +6834,6 @@ export const API_LIST = {
             '/proxies/v8/accessSetttings/v1/delete/:contentId',
             '/proxies/v8/search/v1/recent/delete/timestamp/:timestamp',
             '/proxies/v8/chatbot/v3/transcoder/stats',
-            '/proxies/v8/chatbot/v3/global/search'
+            '/proxies/v8/chatbot/v3/global/search',
             ],
 }
