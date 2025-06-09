@@ -6060,7 +6060,47 @@ export const API_LIST = {
              ROLE_CHECK: [
                 ROLE.PUBLIC,
              ],
-         },       
+         },
+        '/proxies/v8/customFields/create': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.MDO_ADMIN,
+               ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/customFields/read/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/customFields/update/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.MDO_ADMIN,
+               ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/customFields/delete/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.MDO_ADMIN,
+               ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/customFields/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.MDO_ADMIN,
+               ROLE.MDO_LEADER,
+               ROLE.PUBLIC,
+            ],
+        },       
     },
     URL_PATTERN:
         [
@@ -6835,5 +6875,10 @@ export const API_LIST = {
             '/proxies/v8/search/v1/recent/delete/timestamp/:timestamp',
             '/proxies/v8/chatbot/v3/transcoder/stats',
             '/proxies/v8/chatbot/v3/global/search',
+            '/proxies/v8/customFields/create',
+            '/proxies/v8/customFields/read/:id',
+            '/proxies/v8/customFields/update/:id',
+            '/proxies/v8/customFields/delete/:id',
+            '/proxies/v8/customFields/search',
             ],
 }
