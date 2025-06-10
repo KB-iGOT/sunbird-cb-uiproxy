@@ -5829,7 +5829,7 @@ export const API_LIST = {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
-                ROLE.PROGRAM_COORDINATOR,
+                ROLE.PUBLIC,
             ],
         },
         '/proxies/v8/user/profile/v1/extended': {
