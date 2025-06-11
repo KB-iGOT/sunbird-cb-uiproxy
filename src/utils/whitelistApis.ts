@@ -6120,6 +6120,13 @@ export const API_LIST = {
                ROLE.MDO_ADMIN,
                ROLE.MDO_LEADER,
             ],
+        },
+        '/proxies/v8/user/profile/v1/extended/competencies/:userId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
         },       
     },
     URL_PATTERN:
@@ -6902,5 +6909,6 @@ export const API_LIST = {
             '/proxies/v8/customFields/v1/delete/:id',
             '/proxies/v8/customFields/v1/search',
             '/proxies/v8/customFields/v1/masterList/create',
+            '/proxies/v8/user/profile/v1/extended/competencies/:userId',
             ],
 }
