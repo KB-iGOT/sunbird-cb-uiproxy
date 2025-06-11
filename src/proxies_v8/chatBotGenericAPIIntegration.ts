@@ -4,15 +4,15 @@ import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { logError, logInfo } from '../utils/logger'
 
-export const chatBotIntegrationAPI = express.Router()
+export const chatBotGenericAPIIntegration = express.Router()
 
-chatBotIntegrationAPI.use('/*', async (req: express.Request, res: express.Response) => {
+chatBotGenericAPIIntegration.use('/*', async (req: express.Request, res: express.Response) => {
     try {
 
-        const baseUrl = removePrefix('/proxies/v8/chatbot/v3', req.originalUrl)
+        const baseUrl = removePrefix('/proxies/v8/chatbot/v3/global', req.originalUrl)
         logInfo(`The url is... ${baseUrl} : originalUrl: ${req.originalUrl}`)
         const subPath = baseUrl.replace(/^\/+/, '')
-        const url = `${CONSTANTS.APP_FUEL_API_URL}/${subPath}`
+        const url = `${CONSTANTS.APP_FUEL_GLOBAL_API_URL}/${subPath}`
         const requestBody = req.body
         logInfo(`Chatbot API Request -> URL: ${url}`)
         const axiosConfig = {
@@ -36,8 +36,8 @@ chatBotIntegrationAPI.use('/*', async (req: express.Request, res: express.Respon
         }
         return res.status(response.status).send(response.data)
     } catch (error) {
-        logError(`Error in chatBotIntegrationAPI`, error)
-        return res.status(500).send({ error: 'Failed to fetch data from chatbot API' })
+        logError(`Error in chatBotGenericAPIIntegration`, error)
+        return res.status(500).send({ error: 'Failed to fetch data from global chatbot API' })
     }
 })
 
