@@ -6112,6 +6112,14 @@ export const API_LIST = {
                ROLE.MDO_LEADER,
                ROLE.PUBLIC,
             ],
+        },
+        '/proxies/v8/customFields/masterList/create': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.MDO_ADMIN,
+               ROLE.MDO_LEADER,
+            ],
         },       
     },
     URL_PATTERN:
@@ -6893,5 +6901,6 @@ export const API_LIST = {
             '/proxies/v8/customFields/update/:id',
             '/proxies/v8/customFields/delete/:id',
             '/proxies/v8/customFields/search',
+            '/proxies/v8/customFields/masterList/create',
             ],
 }
