@@ -5829,7 +5829,9 @@ export const API_LIST = {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
-                ROLE.PUBLIC,
+                ROLE.PROGRAM_COORDINATOR,
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
             ],
         },
         '/proxies/v8/user/profile/v1/extended': {
