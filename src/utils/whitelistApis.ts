@@ -6073,7 +6073,7 @@ export const API_LIST = {
                 ROLE.PUBLIC,
              ],
          },
-        '/proxies/v8/customFields/create': {
+        '/proxies/v8/customFields/v1/create': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -6081,14 +6081,14 @@ export const API_LIST = {
                ROLE.MDO_LEADER,
             ],
         },
-        '/proxies/v8/customFields/read/:id': {
+        '/proxies/v8/customFields/v1/read/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/customFields/update/:id': {
+        '/proxies/v8/customFields/v1/update/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -6096,7 +6096,7 @@ export const API_LIST = {
                ROLE.MDO_LEADER,
             ],
         },
-        '/proxies/v8/customFields/delete/:id': {
+        '/proxies/v8/customFields/v1/delete/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -6104,13 +6104,21 @@ export const API_LIST = {
                ROLE.MDO_LEADER,
             ],
         },
-        '/proxies/v8/customFields/search': {
+        '/proxies/v8/customFields/v1/search': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                ROLE.MDO_ADMIN,
                ROLE.MDO_LEADER,
                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/customFields/v1/masterList/create': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.MDO_ADMIN,
+               ROLE.MDO_LEADER,
             ],
         },       
     },
@@ -6888,10 +6896,11 @@ export const API_LIST = {
             '/proxies/v8/org/framework/v1/create',
             '/proxies/v8/chatbot/v3/transcoder/stats',
             '/proxies/v8/chatbot/v3/global/search',
-            '/proxies/v8/customFields/create',
-            '/proxies/v8/customFields/read/:id',
-            '/proxies/v8/customFields/update/:id',
-            '/proxies/v8/customFields/delete/:id',
-            '/proxies/v8/customFields/search',
+            '/proxies/v8/customFields/v1/create',
+            '/proxies/v8/customFields/v1/read/:id',
+            '/proxies/v8/customFields/v1/update/:id',
+            '/proxies/v8/customFields/v1/delete/:id',
+            '/proxies/v8/customFields/v1/search',
+            '/proxies/v8/customFields/v1/masterList/create',
             ],
 }
