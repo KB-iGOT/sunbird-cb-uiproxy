@@ -448,12 +448,12 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
       contentType: file.mimetype,
       filename: file.name,
     })
-    
+
     // Forward the metadata parameter
     if (req.body && req.body.metadata) {
       formData.append('metadata', req.body.metadata)
     }
-    
+
     let rootOrgId = _.get(req, 'session.rootOrgId')
     if (!rootOrgId) {
       rootOrgId = ''
@@ -507,12 +507,12 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
       contentType: file.mimetype,
       filename: file.name,
     })
-    
+
     // Forward the metadata parameter
     if (req.body && req.body.metadata) {
       formData.append('metadata', req.body.metadata)
     }
-    
+
     let rootOrgId = _.get(req, 'session.rootOrgId')
     if (!rootOrgId) {
       rootOrgId = ''
@@ -1290,5 +1290,9 @@ proxiesV8.use('/accessSetttings*',
 )
 
 proxiesV8.use('/customFields/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
+proxiesV8.use('/connections/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )

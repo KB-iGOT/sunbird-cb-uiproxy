@@ -6120,7 +6120,14 @@ export const API_LIST = {
             ROLE_CHECK: [
                ROLE.PUBLIC,
             ],
-        },       
+        },
+        '/proxies/v8/connections/v1/profile/relationship/:userId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -6903,5 +6910,6 @@ export const API_LIST = {
             '/proxies/v8/customFields/v1/search',
             '/proxies/v8/customFields/v1/masterList/create',
             '/proxies/v8/user/profile/v1/extended/competencies/:userId',
+            '/proxies/v8/connections/v1/profile/relationship/:userId',
             ],
 }
