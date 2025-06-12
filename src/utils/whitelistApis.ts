@@ -5085,7 +5085,6 @@ export const API_LIST = {
                   checksNeeded: [CHECK.ROLE],
                   // tslint:disable-next-line: object-literal-sort-keys
                   ROLE_CHECK: [
-                     ROLE.SPV_ADMIN,
                      ROLE.MDO_ADMIN,
                      ROLE.MDO_LEADER,
                   ],
@@ -5094,7 +5093,6 @@ export const API_LIST = {
                   checksNeeded: [CHECK.ROLE],
                   // tslint:disable-next-line: object-literal-sort-keys
                   ROLE_CHECK: [
-                     ROLE.SPV_ADMIN,
                      ROLE.MDO_ADMIN,
                      ROLE.MDO_LEADER,
                   ],
@@ -5110,8 +5108,8 @@ export const API_LIST = {
                   checksNeeded: [CHECK.ROLE],
                   // tslint:disable-next-line: object-literal-sort-keys
                   ROLE_CHECK: [
-                     ROLE.SPV_ADMIN,
-                      ROLE.MDO_ADMIN,
+                    ROLE.MDO_ADMIN,
+                    ROLE.MDO_LEADER,
                   ],
         },
         '/proxies/v8/feedDiscussion/answerPosts': {
@@ -5540,7 +5538,6 @@ export const API_LIST = {
                   checksNeeded: [CHECK.ROLE],
                   // tslint:disable-next-line: object-literal-sort-keys
                   ROLE_CHECK: [
-                     ROLE.SPV_ADMIN,
                      ROLE.MDO_ADMIN,
                      ROLE.MDO_LEADER,
                   ],
