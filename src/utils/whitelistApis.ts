@@ -5960,6 +5960,13 @@ export const API_LIST = {
                  ROLE.PUBLIC,
              ],
         },
+        '/proxies/v8/v1/notifications/reset/unread/count': {
+                     checksNeeded: [CHECK.ROLE],
+                     // tslint:disable-next-line: object-literal-sort-keys
+                     ROLE_CHECK: [
+                         ROLE.PUBLIC,
+                     ],
+                },
        '/proxies/v8/masterdata/update/degree': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -6953,6 +6960,7 @@ export const API_LIST = {
             '/proxies/v8/v1/notifications/delete',
             '/proxies/v8/v1/notifications/bulk/create',
             '/proxies/v8/v1/notifications/unread/count',
+            '/proxies/v8/v1/notifications/reset/unread/count'
             '/proxies/v8/masterdata/update/degree',
             '/proxies/v8/masterdata/update/institution',
             '/proxies/v8/user/profile/v1/extended/locationDetails/:id'
