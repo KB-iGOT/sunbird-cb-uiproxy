@@ -6025,6 +6025,51 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
             ],
         },
+        '/proxies/v8/organisation/v1/getMappingFile/sample/:frameworkId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+                ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/organisation/v1/hierarchy/bulkUpload/:frameworkId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+                ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/organisation/v1/hierarchy/progress/details/bulkUpload/:orgId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+                ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/organisation/v1/hierarchy/download/file/:fileName': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+                ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/organisation/v1/hierarchy/download/:frameworkId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+                ROLE.SPV_ADMIN,
+            ],
+        },
         '/proxies/v8/accessSetttings/v1/delete/:contentId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -6912,6 +6957,11 @@ export const API_LIST = {
             '/proxies/v8/chatbot/v3/feedbacks/save',
             '/proxies/v8/chatbot/v3/feedbacks/get',
             '/proxies/v8/accessSetttings/v1/upsert',
+            '/proxies/v8/organisation/v1/getMappingFile/sample/:frameworkId',
+            '/proxies/v8/organisation/v1/hierarchy/bulkUpload/:frameworkId',
+            '/proxies/v8/organisation/v1/hierarchy/progress/details/bulkUpload/:orgId',
+            '/proxies/v8/organisation/v1/hierarchy/download/file/:fileName',
+            '/proxies/v8/organisation/v1/hierarchy/download/:frameworkId',
             '/proxies/v8/user/v1/groups',
             '/proxies/v8/accessSetttings/read/:contentId',
             '/proxies/v8/accessSetttings/v1/delete/:contentId',
