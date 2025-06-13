@@ -26,6 +26,7 @@ import {
   scormProxyCreatorRoute
 } from '../utils/proxyCreator'
 import { extractUserIdFromRequest, extractUserToken } from '../utils/requestExtract'
+import { chatBotGenericAPIIntegration } from './chatBotGenericAPIIntegration'
 import { chatBotIntegrationAPI } from './chatBotIntegration'
 import { frameworksApi } from './frameworks'
 import { jwtUserTokenHelper } from './jwtUserTokenHelper'
@@ -438,7 +439,8 @@ proxiesV8.use('/dashboard/*',
 )
 
 // tslint:disable-next-line:max-line-length
-proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workflow/admin/transition/bulkupdate', '/cloud-services/mlcore/v1/files/upload', '/calendar/v1/bulkUpload', '/storage/orgStoreUpload', '/workflow/admin/v2/bulkupdate/transition', '/user/v2/bulkupload', '/ciosIntegration/v1/loadContentFromExcel/*', '/storage/v1/uploadCiosIcon', '/storage/v1/uploadCiosContract', '/organisation/v1/competencyDesignationMappings/bulkUpload/*', '/template/api/v1/upload', '/designation/v1/orgMapping/bulkUpload/*', '/storage/v1/uploadCiosLogsFile', '/customselfregistration/upload/logo/gcpcontainer', '/ciosIntegration/v1/loadContentProgressFromExcel/*', '/feedDiscussion/uploadFile/*', '/community/v1/fileUpload/*', '/user/v2/event/bulkonboard/*', 'workflow/blendedprogram/bulkApprovalDataFromCsv/*', 'organisation/v1/hierarchy/bulkUpload/*'], (req, res) => {
+
+proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workflow/admin/transition/bulkupdate', '/cloud-services/mlcore/v1/files/upload', '/calendar/v1/bulkUpload', '/storage/orgStoreUpload', '/workflow/admin/v2/bulkupdate/transition', '/user/v2/bulkupload', '/ciosIntegration/v1/loadContentFromExcel/*', '/storage/v1/uploadCiosIcon', '/storage/v1/uploadCiosContract', '/organisation/v1/competencyDesignationMappings/bulkUpload/*', '/template/api/v1/upload', '/designation/v1/orgMapping/bulkUpload/*', '/storage/v1/uploadCiosLogsFile', '/customselfregistration/upload/logo/gcpcontainer', '/ciosIntegration/v1/loadContentProgressFromExcel/*', '/feedDiscussion/uploadFile/*', '/community/v1/fileUpload/*', '/user/v2/event/bulkonboard/*', '/workflow/blendedprogram/bulkApprovalDataFromCsv/*', '/customFields/v1/masterList/create', 'organisation/v1/hierarchy/bulkUpload/*'], (req, res) => {
   if (req.files && req.files.data) {
     const url = removePrefix('/proxies/v8', req.originalUrl)
     const file: UploadedFile = req.files.data as UploadedFile
@@ -447,6 +449,12 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
       contentType: file.mimetype,
       filename: file.name,
     })
+
+    // Forward the metadata parameter
+    if (req.body && req.body.metadata) {
+      formData.append('metadata', req.body.metadata)
+    }
+
     let rootOrgId = _.get(req, 'session.rootOrgId')
     if (!rootOrgId) {
       rootOrgId = ''
@@ -476,7 +484,13 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
         // tslint:disable-next-line: all
         response.on('data', (data) => {
           if (!err && (response.statusCode === 200 || response.statusCode === 201 || response.statusCode === 406)) {
-            res.status(response.statusCode).send(JSON.parse(data.toString('utf8')))
+            if (response.headers['content-type'] === 'text/csv') {
+              res.setHeader('Content-Type', 'text/csv')
+              res.setHeader('Content-Disposition', 'attachment; filename="report.csv"')
+              res.status(response.statusCode).send(data)
+            } else {
+              res.status(response.statusCode).send(JSON.parse(data.toString('utf8')))
+            }
           } else {
             res.status(500).send(data.toString('utf8'))
           }
@@ -494,6 +508,12 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
       contentType: file.mimetype,
       filename: file.name,
     })
+
+    // Forward the metadata parameter
+    if (req.body && req.body.metadata) {
+      formData.append('metadata', req.body.metadata)
+    }
+
     let rootOrgId = _.get(req, 'session.rootOrgId')
     if (!rootOrgId) {
       rootOrgId = ''
@@ -523,7 +543,13 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
         // tslint:disable-next-line: all
         response.on('data', (data) => {
           if (!err && (response.statusCode === 200 || response.statusCode === 201 || response.statusCode === 406)) {
-            res.status(response.statusCode).send(JSON.parse(data.toString('utf8')))
+            if (response.headers['content-type'] === 'text/csv') {
+              res.setHeader('Content-Type', 'text/csv')
+              res.setHeader('Content-Disposition', 'attachment; filename="report.csv"')
+              res.status(response.statusCode).send(data)
+            } else {
+              res.status(response.statusCode).send(JSON.parse(data.toString('utf8')))
+            }
           } else {
             res.status(500).send(data.toString('utf8'))
           }
@@ -1204,6 +1230,8 @@ proxiesV8.use('/courseRecommendation/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
+proxiesV8.use('/chatbot/v3/global', chatBotGenericAPIIntegration)
+
 proxiesV8.use('/chatbot/v3', chatBotIntegrationAPI)
 
 proxiesV8.use('/chatbot/*',
@@ -1261,3 +1289,12 @@ proxiesV8.use('/v1/notifications/*',
 proxiesV8.use('/accessSetttings*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/customFields/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
+proxiesV8.use('/connections/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
