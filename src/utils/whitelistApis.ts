@@ -5966,7 +5966,7 @@ export const API_LIST = {
                      ROLE_CHECK: [
                          ROLE.PUBLIC,
                      ],
-                },
+         },          
        '/proxies/v8/masterdata/update/degree': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -6197,7 +6197,6 @@ export const API_LIST = {
                ROLE.MDO_LEADER,
             ],
         },
->>>>>>> upstream/4.8.26-dev-v6
     },
     URL_PATTERN:
         [
