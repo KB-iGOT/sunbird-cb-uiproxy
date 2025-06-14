@@ -6960,10 +6960,10 @@ export const API_LIST = {
             '/proxies/v8/v1/notifications/delete',
             '/proxies/v8/v1/notifications/bulk/create',
             '/proxies/v8/v1/notifications/unread/count',
-            '/proxies/v8/v1/notifications/reset/unread/count'
+            '/proxies/v8/v1/notifications/reset/unread/count',
             '/proxies/v8/masterdata/update/degree',
             '/proxies/v8/masterdata/update/institution',
-            '/proxies/v8/user/profile/v1/extended/locationDetails/:id'
+            '/proxies/v8/user/profile/v1/extended/locationDetails/:id',
             '/proxies/v8/chatbot/v3/feedbacks/save',
             '/proxies/v8/chatbot/v3/feedbacks/get',
             '/proxies/v8/accessSetttings/v1/upsert',
