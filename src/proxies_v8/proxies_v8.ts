@@ -493,8 +493,8 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
                   parsed = JSON.parse(data.toString('utf8'))
                   res.status(response.statusCode).json(parsed)
               } catch (e) {
-                  logInfo('Invalid JSON received:', data.toString('utf8'))
-                  res.status(500).json({ error: 'Invalid JSON in response body' })
+                  logInfo('Invalid JSON received as per Json Parse')
+                  res.status(response.statusCode).send(data)
               }
             }
           } else {
@@ -559,8 +559,8 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
                   parsed = JSON.parse(data.toString('utf8'))
                   res.status(response.statusCode).json(parsed)
               } catch (e) {
-                  logInfo('Invalid JSON received:', data.toString('utf8'))
-                  res.status(500).json({ error: 'Invalid JSON in response body' })
+                   logInfo('Invalid JSON received as per Json Parse')
+                   res.status(response.statusCode).send(data)
               }
             }
           } else {
