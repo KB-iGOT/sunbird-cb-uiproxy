@@ -494,7 +494,7 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
                   res.status(response.statusCode).json(parsed)
               } catch (e) {
                   logInfo('Invalid JSON received as per Json Parse')
-                  res.status(response.statusCode).send(data)
+                  res.status(response.statusCode).type('application/json').send(data)
               }
             }
           } else {
@@ -560,7 +560,7 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
                   res.status(response.statusCode).json(parsed)
               } catch (e) {
                    logInfo('Invalid JSON received as per Json Parse')
-                   res.status(response.statusCode).send(data)
+                   res.status(response.statusCode).type('application/json').send(data)
               }
             }
           } else {
