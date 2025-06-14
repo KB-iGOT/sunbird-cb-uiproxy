@@ -481,17 +481,28 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
       // tslint:disable-next-line: all
       (err, response) => {
         // tslint:disable-next-line: all
-        response.on('data', (data) => {
+        let chunks: Buffer[] = [];
+        response.on('data', (chunk) => chunks.push(chunk))
+        // tslint:disable-next-line: all
+        response.on('end', () => {
+          const fullData = Buffer.concat(chunks)
           if (!err && (response.statusCode === 200 || response.statusCode === 201 || response.statusCode === 406)) {
             if (response.headers['content-type'] === 'text/csv') {
               res.setHeader('Content-Type', 'text/csv')
               res.setHeader('Content-Disposition', 'attachment; filename="report.csv"')
-              res.status(response.statusCode).send(data)
+              res.status(response.statusCode).send(fullData)
             } else {
-              res.status(response.statusCode).send(JSON.parse(data.toString('utf8')))
+              let parsed
+              try {
+                  parsed = JSON.parse(fullData.toString('utf8'))
+                  res.status(response.statusCode).json(parsed)
+              } catch (e) {
+                  logInfo('Invalid JSON received as per Json Parse')
+                  res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
+              }
             }
           } else {
-            res.status(500).send(data.toString('utf8'))
+            res.status(500).send(fullData.toString('utf8'))
           }
         })
         if (err) {
@@ -540,17 +551,28 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
       // tslint:disable-next-line: all
       (err, response) => {
         // tslint:disable-next-line: all
-        response.on('data', (data) => {
+        let chunks: Buffer[] = [];
+        response.on('data', (chunk) => chunks.push(chunk))
+        // tslint:disable-next-line: all
+        response.on('end', () => {
+          const fullData = Buffer.concat(chunks)
           if (!err && (response.statusCode === 200 || response.statusCode === 201 || response.statusCode === 406)) {
             if (response.headers['content-type'] === 'text/csv') {
               res.setHeader('Content-Type', 'text/csv')
               res.setHeader('Content-Disposition', 'attachment; filename="report.csv"')
-              res.status(response.statusCode).send(data)
+              res.status(response.statusCode).send(fullData)
             } else {
-              res.status(response.statusCode).send(JSON.parse(data.toString('utf8')))
+              let parsed
+              try {
+                  parsed = JSON.parse(fullData.toString('utf8'))
+                  res.status(response.statusCode).json(parsed)
+              } catch (e) {
+                   logInfo('Invalid JSON received as per Json Parse')
+                   res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
+              }
             }
           } else {
-            res.status(500).send(data.toString('utf8'))
+            res.status(500).send(fullData.toString('utf8'))
           }
         })
         if (err) {
