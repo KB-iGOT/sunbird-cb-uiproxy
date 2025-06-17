@@ -26,6 +26,7 @@ import {
   scormProxyCreatorRoute
 } from '../utils/proxyCreator'
 import { extractUserIdFromRequest, extractUserToken } from '../utils/requestExtract'
+import { chatBotGenericAPIIntegration } from './chatBotGenericAPIIntegration'
 import { chatBotIntegrationAPI } from './chatBotIntegration'
 import { frameworksApi } from './frameworks'
 import { jwtUserTokenHelper } from './jwtUserTokenHelper'
@@ -944,7 +945,7 @@ proxiesV8.post('/course/v1/batch/getParticipants', async (req, res) => {
         'x-authenticated-user-token': extractUserToken(req),
       },
     })
-    let totalCount = response.data.result.batch.count != null ? response.data.result.batch.count : 0
+    const totalCount = response.data.result.batch.count != null ? response.data.result.batch.count : 0
     if ((typeof response.data.result.batch.participants !== 'undefined' && response.data.result.batch.participants.length > 0)) {
       const searchresponse = await axios({
         ...axiosRequestConfig,
@@ -1203,6 +1204,8 @@ proxiesV8.use('/interface/*',
 proxiesV8.use('/courseRecommendation/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/chatbot/v3/global', chatBotGenericAPIIntegration)
 
 proxiesV8.use('/chatbot/v3', chatBotIntegrationAPI)
 
