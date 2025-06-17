@@ -5781,6 +5781,34 @@ export const API_LIST = {
                ROLE.MDO_LEADER,
             ],
         },
+        '/proxies/v8/chatbot/v3/feedbacks/save': {
+            checksNeeded: [CHECK.ROLE],
+             // tslint:disable-next-line: object-literal-sort-keys
+             ROLE_CHECK: [
+                ROLE.PUBLIC,
+             ],
+         },
+         '/proxies/v8/chatbot/v3/feedbacks/get': {
+            checksNeeded: [CHECK.ROLE],
+             // tslint:disable-next-line: object-literal-sort-keys
+             ROLE_CHECK: [
+                ROLE.PUBLIC,
+             ],
+         },
+         '/proxies/v8/chatbot/v3/transcoder/stats': {
+            checksNeeded: [CHECK.ROLE],
+             // tslint:disable-next-line: object-literal-sort-keys
+             ROLE_CHECK: [
+                ROLE.PUBLIC,
+             ],
+         },
+         '/proxies/v8/chatbot/v3/global/search': {
+            checksNeeded: [CHECK.ROLE],
+             // tslint:disable-next-line: object-literal-sort-keys
+             ROLE_CHECK: [
+                ROLE.PUBLIC,
+             ],
+         },
     },
     URL_PATTERN:
         [
@@ -6520,5 +6548,9 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/admin/activatePost',
             '/proxies/v8/feedDiscussion/admin/removePost',
             '/proxies/v8/feedDiscussion/getReportStatistics',
+            '/proxies/v8/chatbot/v3/feedbacks/save',
+            '/proxies/v8/chatbot/v3/feedbacks/get',
+            '/proxies/v8/chatbot/v3/transcoder/stats',
+            '/proxies/v8/chatbot/v3/global/search',
             ],
 }
