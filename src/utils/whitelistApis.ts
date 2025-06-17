@@ -5966,7 +5966,7 @@ export const API_LIST = {
                      ROLE_CHECK: [
                          ROLE.PUBLIC,
                      ],
-         },          
+         },
        '/proxies/v8/masterdata/update/degree': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -6196,6 +6196,15 @@ export const API_LIST = {
                ROLE.MDO_ADMIN,
                ROLE.MDO_LEADER,
             ],
+        },
+        '/proxies/v8/framework/v1/category/update/:id': {
+                  checksNeeded: [CHECK.ROLE],
+                  // tslint:disable-next-line: object-literal-sort-keys
+                   ROLE_CHECK: [
+                        ROLE.SPV_ADMIN,
+                        ROLE.SPV_PUBLISHER,
+                        ROLE.PUBLIC,
+                   ],
         },
     },
     URL_PATTERN:
@@ -6988,6 +6997,6 @@ export const API_LIST = {
             '/proxies/v8/connections/v1/profile/relationship/:userId',
             '/proxies/v8/customFields/v1/masterList/update',
             '/proxies/v8/customFields/v1/status/update',
-
+            '/proxies/v8/framework/v1/category/update/:id',
             ],
 }
