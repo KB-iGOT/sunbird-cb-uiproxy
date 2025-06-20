@@ -1840,7 +1840,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.PUBLIC,
                 ROLE.SPV_ADMIN,
-                ROLE.STATE_ADMIN
+                ROLE.STATE_ADMIN,
             ],
         },
         '/proxies/v8/action/content/v3/upload/:do_id': {
@@ -6109,7 +6109,7 @@ export const API_LIST = {
              ROLE.MDO_LEADER,
              ROLE.SPV_ADMIN,
              ROLE.SPV_PUBLISHER,
-             ROLE.STATE_ADMIN
+             ROLE.STATE_ADMIN,
             ],
         },
         '/proxies/v8/chatbot/v3/transcoder/stats': {
