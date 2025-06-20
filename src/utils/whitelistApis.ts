@@ -6206,6 +6206,20 @@ export const API_LIST = {
                         ROLE.PUBLIC,
                    ],
         },
+        '/proxies/v8/user/profile/v1/update/additionalFields': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/user/profile/v1/getAdditionalFields/:userId/:orgId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -6998,5 +7012,7 @@ export const API_LIST = {
             '/proxies/v8/customFields/v1/masterList/update',
             '/proxies/v8/customFields/v1/status/update',
             '/proxies/v8/framework/v1/category/update/:id',
+            '/proxies/v8/user/profile/v1/update/additionalFields',
+            '/proxies/v8/user/profile/v1/getAdditionalFields/:userId/:orgId',
             ],
 }
