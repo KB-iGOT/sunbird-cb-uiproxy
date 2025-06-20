@@ -6241,7 +6241,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                ROLE.PUBLIC,
             ],
-        },      
+        },
     },
     URL_PATTERN:
         [
@@ -7037,6 +7037,6 @@ export const API_LIST = {
             '/proxies/v8/user/profile/v1/update/additionalFields',
             '/proxies/v8/user/profile/v1/getAdditionalFields/:userId/:orgId',
             '/proxies/v8/support/ai/chat/start',
-            '/proxies/v8/support/ai/chat/send'
+            '/proxies/v8/support/ai/chat/send',
             ],
 }
