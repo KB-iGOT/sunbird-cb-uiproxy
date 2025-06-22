@@ -6145,7 +6145,7 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/customFields/v1/update/:id': {
+        '/proxies/v8/customFields/v1/update': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7037,7 +7037,7 @@ export const API_LIST = {
             '/proxies/v8/chatbot/v3/global/search',
             '/proxies/v8/customFields/v1/create',
             '/proxies/v8/customFields/v1/read/:id',
-            '/proxies/v8/customFields/v1/update/:id',
+            '/proxies/v8/customFields/v1/update',
             '/proxies/v8/customFields/v1/delete/:id',
             '/proxies/v8/customFields/v1/search',
             '/proxies/v8/customFields/v1/masterList/create',
