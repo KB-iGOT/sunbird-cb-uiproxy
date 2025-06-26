@@ -6284,6 +6284,7 @@ export const API_LIST = {
                ROLE.SPV_ADMIN,
                ROLE.CONTENT_CREATOR,
                ROLE.SPV_PUBLISHER,
+               ROLE.PUBLIC,
             ],
          },
     },
