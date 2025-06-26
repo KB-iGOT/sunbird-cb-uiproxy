@@ -6275,6 +6275,18 @@ export const API_LIST = {
                ROLE.MDO_LEADER,
             ],
         },
+        '/proxies/v8/content/v2/state/update': {
+            checksNeeded: [CHECK.ROLE],
+             // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.MDO_ADMIN,
+               ROLE.MDO_LEADER,
+               ROLE.SPV_ADMIN,
+               ROLE.CONTENT_CREATOR,
+               ROLE.SPV_PUBLISHER,
+               ROLE.PUBLIC,
+            ],
+         },
     },
     URL_PATTERN:
         [
@@ -7075,5 +7087,6 @@ export const API_LIST = {
             '/proxies/v8/support/ai/chat/start',
             '/proxies/v8/support/ai/chat/send',
             '/proxies/v8/customFields/v1/popup/update',
+            '/proxies/v8/content/v2/state/update',
             ],
 }
