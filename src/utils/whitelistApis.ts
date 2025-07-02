@@ -6287,27 +6287,27 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
          },
-         '/protected/v8/connections/v3/connections/recommended':{
+        '/protected/v8/connections/v3/connections/recommended':{
             checksNeeded: [CHECK.ROLE],
              // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                ROLE.PUBLIC
             ],
-         },
+        },
         '/protected/v8/connections/v3/connections/recommended/mentors':{
             checksNeeded: [CHECK.ROLE],
              // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                ROLE.PUBLIC
             ],
-         },
-         '/protected/v8/connections/v2/connections/requests/blocked' :{
-              checksNeeded: [CHECK.ROLE],
+        },
+        '/protected/v8/connections/v2/connections/requests/blocked' :{
+            checksNeeded: [CHECK.ROLE],
              // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                ROLE.PUBLIC
             ],
-         }
+        }
 
     },
     URL_PATTERN:
