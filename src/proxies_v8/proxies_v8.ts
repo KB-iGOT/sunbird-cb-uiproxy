@@ -413,7 +413,6 @@ proxiesV8.post('/org/v1/search', async (req, res) => {
   if (roleData.includes('STATE_ADMIN')) {
     logInfo('roleData contains state admin')
     req.body.request.filters.ministryOrStateId = rootOrgId
-    req.body.request.filters.ministryOrStateType = 'state'
     logInfo('updated urlPath -> ' + urlPath)
   }
   const searchResponse = await axios({
