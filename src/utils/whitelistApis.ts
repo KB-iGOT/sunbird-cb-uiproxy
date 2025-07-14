@@ -6323,6 +6323,27 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/learner/course/v5/user/enrollment/details/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/learner/course/v5/user/enrollment/summary/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/learner/course/v5/user/enrollment/list/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
 
     },
     URL_PATTERN:
@@ -7129,6 +7150,9 @@ export const API_LIST = {
             '/protected/v8/connections/v3/connections/recommended/mentors',
             '/protected/v8/connections/v2/connections/requests/blocked',
             '/proxies/v8/connections/block',
-            '/proxies/v8/connections/user/v1/network/connections/list' 
+            '/proxies/v8/connections/user/v1/network/connections/list' ,
+            '/proxies/v8/learner/course/v5/user/enrollment/details/:id',
+            '/proxies/v8/learner/course/v5/user/enrollment/summary/:id',
+            '/proxies/v8/learner/course/v5/user/enrollment/list/:id',
             ],
 }
