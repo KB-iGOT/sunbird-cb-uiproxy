@@ -6344,6 +6344,62 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/forms/v2/createForm': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/forms/v2/updateForm': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/forms/v2/getFormById': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/forms/v2/saveFormSubmit': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/forms/v2/getApplicationsById': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/forms/v2/getAllApplications': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/forms/v2/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/forms/v2/submissions/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
 
     },
     URL_PATTERN:
@@ -7154,5 +7210,13 @@ export const API_LIST = {
             '/proxies/v8/learner/course/v5/user/enrollment/details/:id',
             '/proxies/v8/learner/course/v5/user/enrollment/summary/:id',
             '/proxies/v8/learner/course/v5/user/enrollment/list/:id',
+            '/proxies/v8/forms/v2/createForm',
+            '/proxies/v8/forms/v2/updateForm',
+            '/proxies/v8/forms/v2/getFormById',
+            '/proxies/v8/forms/v2/saveFormSubmit',
+            '/proxies/v8/forms/v2/getAllApplications',
+            '/proxies/v8/forms/v2/getApplicationsById',
+            '/proxies/v8/forms/v2/search',
+            '/proxies/v8/forms/v2/submissions/search',
             ],
 }
