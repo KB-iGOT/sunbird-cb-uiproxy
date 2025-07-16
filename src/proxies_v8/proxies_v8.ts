@@ -151,6 +151,10 @@ proxiesV8.use('/content/v2/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
+proxiesV8.use('/content/v4/mlcreate',
+  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
 proxiesV8.use(
   '/content',
   proxyCreatorRoute(express.Router(), CONSTANTS.CONTENT_API_BASE + '/content')
@@ -210,10 +214,6 @@ proxiesV8.use('/v1/content/retire',
 
 proxiesV8.use('/v1/content/copy/*',
   proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KNOWLEDGE_MW_API_BASE}`)
-)
-
-proxiesV8.use('/content/v4/mlcreate',
-  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/private/content/*',
