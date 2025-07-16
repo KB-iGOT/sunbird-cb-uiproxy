@@ -55,7 +55,7 @@ module.exports = {
         batchsize: 1,
         channel: '', // should fetch default channel by making api call
         dispatcher: 'http', // default
-        endpoint: 'v1/telemetry',
+        endpoint: '/v1/telemetry',
         env: process.env.sunbird_environment,
         host: CONSTANTS.TELEMETRY_SB_BASE,
         pdata: {
