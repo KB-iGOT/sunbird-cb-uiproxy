@@ -5979,7 +5979,7 @@ export const API_LIST = {
            ROLE_CHECK: [
                ROLE.PUBLIC,
            ],
-          },   
+          },
          '/proxies/v8/notificationSetting/read': {
              checksNeeded: [CHECK.ROLE],
              // tslint:disable-next-line: object-literal-sort-keys
@@ -6400,7 +6400,13 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
-
+        '/proxies/v8/content/v4/mlcreate': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CONTENT_CREATOR,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7218,5 +7224,6 @@ export const API_LIST = {
             '/proxies/v8/forms/v2/getApplicationsById',
             '/proxies/v8/forms/v2/search',
             '/proxies/v8/forms/v2/submissions/search',
+            '/proxies/v8/content/v4/mlcreate',
             ],
 }
