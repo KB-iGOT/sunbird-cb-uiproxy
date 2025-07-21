@@ -317,6 +317,7 @@ export const API_LIST = {
                 ROLE.PROGRAM_COORDINATOR,
                 ROLE.SPV_ADMIN,
                 ROLE.SPV_PUBLISHER,
+                ROLE.CONTENT_PUBLISHER,
             ],
         },
         '/proxies/v8/dashboard/analytics/getDashboardConfig/Karmayogi/:comp': {
@@ -428,6 +429,7 @@ export const API_LIST = {
                 ROLE.PROGRAM_COORDINATOR,
                 ROLE.SPV_ADMIN,
                 ROLE.SPV_PUBLISHER,
+                ROLE.CONTENT_PUBLISHER,
             ],
         },
         '/proxies/v8/v1/content/retire': {
@@ -5700,6 +5702,7 @@ export const API_LIST = {
            ROLE_CHECK: [
              ROLE.SPV_PUBLISHER,
              ROLE.CONTENT_PUBLISHER,
+             ROLE.CONTENT_CREATOR,
            ],
          },
         '/proxies/v8/feedDiscussion/answerPostReply/like/:id': {
@@ -5722,6 +5725,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                ROLE.SPV_PUBLISHER,
                ROLE.CONTENT_PUBLISHER,
+               ROLE.CONTENT_CREATOR,
             ],
         },
         '/proxies/v8/commentTree/v1/get': {
