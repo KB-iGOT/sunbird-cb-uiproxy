@@ -429,7 +429,7 @@ export const API_LIST = {
                 ROLE.PROGRAM_COORDINATOR,
                 ROLE.SPV_ADMIN,
                 ROLE.SPV_PUBLISHER,
-                ROLE.CONTENT_PUBLISHER
+                ROLE.CONTENT_PUBLISHER,
             ],
         },
         '/proxies/v8/v1/content/retire': {
@@ -5702,6 +5702,7 @@ export const API_LIST = {
            ROLE_CHECK: [
              ROLE.SPV_PUBLISHER,
              ROLE.CONTENT_PUBLISHER,
+             ROLE.CONTENT_CREATOR,
            ],
          },
         '/proxies/v8/feedDiscussion/answerPostReply/like/:id': {
@@ -5724,6 +5725,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                ROLE.SPV_PUBLISHER,
                ROLE.CONTENT_PUBLISHER,
+               ROLE.CONTENT_CREATOR,
             ],
         },
         '/proxies/v8/commentTree/v1/get': {
@@ -5981,7 +5983,7 @@ export const API_LIST = {
            ROLE_CHECK: [
                ROLE.PUBLIC,
            ],
-          },   
+          },
          '/proxies/v8/notificationSetting/read': {
              checksNeeded: [CHECK.ROLE],
              // tslint:disable-next-line: object-literal-sort-keys
@@ -6346,7 +6348,69 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
-
+        '/proxies/v8/forms/v2/createForm': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/forms/v2/updateForm': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/forms/v2/getFormById': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/forms/v2/saveFormSubmit': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/forms/v2/getApplicationsById': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/forms/v2/getAllApplications': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/forms/v2/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/forms/v2/submissions/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/content/v4/mlcreate': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CONTENT_CREATOR,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7156,5 +7220,14 @@ export const API_LIST = {
             '/proxies/v8/learner/course/v5/user/enrollment/details/:id',
             '/proxies/v8/learner/course/v5/user/enrollment/summary/:id',
             '/proxies/v8/learner/course/v5/user/enrollment/list/:id',
+            '/proxies/v8/forms/v2/createForm',
+            '/proxies/v8/forms/v2/updateForm',
+            '/proxies/v8/forms/v2/getFormById',
+            '/proxies/v8/forms/v2/saveFormSubmit',
+            '/proxies/v8/forms/v2/getAllApplications',
+            '/proxies/v8/forms/v2/getApplicationsById',
+            '/proxies/v8/forms/v2/search',
+            '/proxies/v8/forms/v2/submissions/search',
+            '/proxies/v8/content/v4/mlcreate',
             ],
 }
