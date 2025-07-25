@@ -6411,6 +6411,20 @@ export const API_LIST = {
                 ROLE.CONTENT_CREATOR,
             ],
         },
+        '/proxies/v8/user/v1/assignedcourses': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/collection/v1/hierarchy/initialize/:do_id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CONTENT_CREATOR,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7229,5 +7243,7 @@ export const API_LIST = {
             '/proxies/v8/forms/v2/search',
             '/proxies/v8/forms/v2/submissions/search',
             '/proxies/v8/content/v4/mlcreate',
+            '/proxies/v8/user/v1/assignedcourses',
+            '/proxies/v8/collection/v1/hierarchy/initialize/:do_id',
             ],
 }

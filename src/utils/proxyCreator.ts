@@ -17,7 +17,6 @@ const PROXY_SLUG_FORMS = '/proxies/v8/ext-forms'
 // tslint:disable-next-line: no-any
 proxy.on('proxyReq', (proxyReq: any, req: any, _res: any, _options: any) => {
   logInfo('proxyReqOn method. Adding more headers in request...')
-  logInfo(JSON.stringify(req.headers))
   const rootOrg = req.headers ? req.headers.rootOrg : req.headers.rootorg
   logInfo(`rootOrg is updated: ` + JSON.stringify(rootOrg))
   // tslint:disable-next-line: no-duplicate-string
