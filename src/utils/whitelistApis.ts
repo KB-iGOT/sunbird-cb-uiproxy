@@ -6027,7 +6027,7 @@ export const API_LIST = {
                 ROLE.PUBLIC,
              ],
          },
-        '/proxies/v8/accessSetttings/v1/upsert': {
+        '/proxies/v8/accessSettings/v1/upsert': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -6047,7 +6047,7 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
             ],
         },
-        '/proxies/v8/accessSetttings/read/:contentId': {
+        '/proxies/v8/accessSettings/read/:contentId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -6107,7 +6107,7 @@ export const API_LIST = {
                 ROLE.STATE_ADMIN,
             ],
         },
-        '/proxies/v8/accessSetttings/v1/delete/:contentId': {
+        '/proxies/v8/accessSettings/v1/delete/:contentId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7181,15 +7181,15 @@ export const API_LIST = {
             '/proxies/v8/user/profile/v1/extended/locationDetails/:id',
             '/proxies/v8/chatbot/v3/feedbacks/save',
             '/proxies/v8/chatbot/v3/feedbacks/get',
-            '/proxies/v8/accessSetttings/v1/upsert',
+            '/proxies/v8/accessSettings/v1/upsert',
             '/proxies/v8/organisation/v1/getMappingFile/sample/:frameworkId',
             '/proxies/v8/organisation/v1/hierarchy/bulkUpload/:frameworkId',
             '/proxies/v8/organisation/v1/hierarchy/progress/details/bulkUpload/:orgId',
             '/proxies/v8/organisation/v1/hierarchy/download/file/:fileName',
             '/proxies/v8/organisation/v1/hierarchy/download/:frameworkId',
             '/proxies/v8/user/v1/groups',
-            '/proxies/v8/accessSetttings/read/:contentId',
-            '/proxies/v8/accessSetttings/v1/delete/:contentId',
+            '/proxies/v8/accessSettings/read/:contentId',
+            '/proxies/v8/accessSettings/v1/delete/:contentId',
             '/proxies/v8/search/v1/recent/delete/timestamp/:timestamp',
             '/proxies/v8/org/framework/v1/create',
             '/proxies/v8/chatbot/v3/transcoder/stats',
