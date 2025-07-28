@@ -6327,27 +6327,6 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/learner/course/v5/user/enrollment/details/:id': {
-            checksNeeded: [CHECK.ROLE],
-            // tslint:disable-next-line: object-literal-sort-keys
-            ROLE_CHECK: [
-                ROLE.PUBLIC,
-            ],
-        },
-        '/proxies/v8/learner/course/v5/user/enrollment/summary/:id': {
-            checksNeeded: [CHECK.ROLE],
-            // tslint:disable-next-line: object-literal-sort-keys
-            ROLE_CHECK: [
-                ROLE.PUBLIC,
-            ],
-        },
-        '/proxies/v8/learner/course/v5/user/enrollment/list/:id': {
-            checksNeeded: [CHECK.ROLE],
-            // tslint:disable-next-line: object-literal-sort-keys
-            ROLE_CHECK: [
-                ROLE.PUBLIC,
-            ],
-        },
         '/proxies/v8/forms/v2/createForm': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -7238,9 +7217,6 @@ export const API_LIST = {
             '/protected/v8/connections/v2/connections/requests/blocked',
             '/proxies/v8/connections/block',
             '/proxies/v8/connections/user/v1/network/connections/list' ,
-            '/proxies/v8/learner/course/v5/user/enrollment/details/:id',
-            '/proxies/v8/learner/course/v5/user/enrollment/summary/:id',
-            '/proxies/v8/learner/course/v5/user/enrollment/list/:id',
             '/proxies/v8/forms/v2/createForm',
             '/proxies/v8/forms/v2/updateForm',
             '/proxies/v8/forms/v2/getFormById',
