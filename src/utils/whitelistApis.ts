@@ -6411,6 +6411,13 @@ export const API_LIST = {
                 ROLE.CONTENT_CREATOR,
             ],
         },
+        '/proxies/v8/learner/course/v5/user/enrollment/details/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7229,5 +7236,6 @@ export const API_LIST = {
             '/proxies/v8/user/v1/assignedcourses',
             '/proxies/v8/collection/v1/hierarchy/initialize/:do_id',
             '/proxies/v8/collection/v1/discard/:do_id',
+            '/proxies/v8/learner/course/v5/user/enrollment/details/:id',
             ],
 }
