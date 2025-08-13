@@ -151,7 +151,7 @@ proxiesV8.use('/content/v2/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
-proxiesV8.use('/content/v4/mlcreate',
+proxiesV8.use('/content/v4/*',
   proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 

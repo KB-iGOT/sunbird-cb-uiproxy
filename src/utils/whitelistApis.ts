@@ -6418,6 +6418,13 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/content/v4/mlReview': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CONTENT_CREATOR,
+            ],
+        },      
     },
     URL_PATTERN:
         [
@@ -7237,5 +7244,6 @@ export const API_LIST = {
             '/proxies/v8/collection/v1/hierarchy/initialize/:do_id',
             '/proxies/v8/collection/v1/discard/:do_id',
             '/proxies/v8/content/v1/language/detect',
+            '/proxies/v8/content/v4/mlReview',
             ],
 }
