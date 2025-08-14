@@ -1340,5 +1340,5 @@ proxiesV8.use('/collection/*',
 
 proxiesV8.use('/content/v1/language/detect',
   // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/v1/content/language/detect`)
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}/v1/content/moderation/detect-language`)
 )
