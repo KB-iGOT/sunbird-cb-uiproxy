@@ -153,6 +153,7 @@ cohortsApi.get('/user/autoenrollment/:courseId', async (req, res) => {
     const courseId = req.params.courseId
     const wid = req.headers.wid as string
     const rootOrgValue = req.headers.rootorg
+    const reqLanguage = req.headers.language
     let rootOrgId = ''
     // tslint:disable-next-line
     if (typeof req.session != "undefined" && typeof req.session.rootOrgId != "undefined") {
@@ -166,6 +167,7 @@ cohortsApi.get('/user/autoenrollment/:courseId', async (req, res) => {
         courseId,
         rootOrg: rootOrgValue,
         userUUID: wid,
+        language: reqLanguage,
         'x-authenticated-user-orgid': rootOrgId,
         // tslint:disable-next-line: no-duplicate-string
         'x-authenticated-user-token': extractUserToken(req),
