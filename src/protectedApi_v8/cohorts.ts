@@ -161,7 +161,6 @@ cohortsApi.get('/user/autoenrollment/:courseId', async (req, res) => {
     }
     const response = await axios.get(API_END_POINTS.autoenrollment, {
       ...axiosRequestConfig,
-      params: req.query
       headers: {
         Authorization: CONSTANTS.SB_API_KEY,
         courseId,
@@ -171,6 +170,7 @@ cohortsApi.get('/user/autoenrollment/:courseId', async (req, res) => {
         // tslint:disable-next-line: no-duplicate-string
         'x-authenticated-user-token': extractUserToken(req),
       },
+      params: req.query,
     })
     res.status(response.status).send(response.data)
   } catch (err) {
