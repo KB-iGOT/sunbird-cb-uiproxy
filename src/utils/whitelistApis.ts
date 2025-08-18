@@ -6432,9 +6432,9 @@ export const API_LIST = {
                     ROLE.CONTENT_REVIEWER,
                     ROLE.CONTENT_PUBLISHER,
                     ROLE.SPV_PUBLISHER,
-                    ROLE.CONTENT_CREATOR,          
+                    ROLE.CONTENT_CREATOR,
             ],
-        },      
+        },
     },
     URL_PATTERN:
         [
