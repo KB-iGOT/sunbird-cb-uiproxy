@@ -1337,3 +1337,8 @@ proxiesV8.use('/support/ai/*',
 proxiesV8.use('/collection/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/moderation/*',
+  // tslint:disable-next-line: max-line-length
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
