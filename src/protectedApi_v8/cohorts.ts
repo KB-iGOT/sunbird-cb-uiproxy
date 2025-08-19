@@ -170,6 +170,7 @@ cohortsApi.get('/user/autoenrollment/:courseId', async (req, res) => {
         // tslint:disable-next-line: no-duplicate-string
         'x-authenticated-user-token': extractUserToken(req),
       },
+      params: req.query,
     })
     res.status(response.status).send(response.data)
   } catch (err) {
