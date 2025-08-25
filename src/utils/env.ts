@@ -70,6 +70,9 @@ export const CONSTANTS = {
   MULTI_TENANT_KEYCLOAK:
     env.MULTI_TENANT_KEYCLOAK ||
     'igot,https://portal.karmayogi.nic.in/auth,sunbird',
+  MULTI_TENANT_KEYCLOAK_24:
+    env.MULTI_TENANT_KEYCLOAK_24 ||
+    'igot,https://portal.dev.karmayogibharat.net/,sunbird',
   NAVIGATOR_JSON_HOST:
     env.NAVIGATOR_JSON_HOST || 'http://localhost:3007/web-hosted/navigator/json',
   NODE_API_BASE: env.NODE_API_BASE || 'http://localhost:5001',

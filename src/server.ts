@@ -15,8 +15,8 @@ import { getSessionConfig } from './configs/session.config'
 import { protectedApiV8 } from './protectedApi_v8/protectedApiV8'
 import { proxiesV8 } from './proxies_v8/proxies_v8'
 import { publicApiV8 } from './publicApi_v8/publicApiV8'
-import { CustomKeycloak } from './utils/custom-keycloak'
 import { CONSTANTS } from './utils/env'
+import { Keycloak24Authenticator } from './utils/keycloak-24-authenticator'
 import { logError, logInfo, logSuccess } from './utils/logger'
 const { frameworkAPI } = require('@project-sunbird/ext-framework-server/api')
 const frameworkConfig = require('./configs/framework.config')
@@ -39,7 +39,7 @@ export class Server {
   }
 
   protected app = express()
-  private keycloak?: CustomKeycloak
+  private keycloak24?: Keycloak24Authenticator
   private constructor() {
     if (CONSTANTS.CORS_ENVIRONMENT === 'dev') {
       this.app.use(cors({origin: 'https://local.igot-dev.in:3000', credentials: true}))
@@ -139,8 +139,8 @@ export class Server {
   }
   // tslint:disable-next-line: no-any
   private setKeyCloak(sessionConfig: any) {
-    this.keycloak = new CustomKeycloak(sessionConfig)
-    this.app.use(this.keycloak.middleware)
+    this.keycloak24 = new Keycloak24Authenticator(sessionConfig)
+    this.app.use(this.keycloak24.middleware)
   }
 
   private setExtFormsFramework() {
@@ -162,25 +162,25 @@ export class Server {
   }
 
   private serverProtectedApi() {
-    if (this.keycloak) {
-      this.app.use('/protected/v8', this.keycloak.protect, protectedApiV8)
+    if (this.keycloak24) {
+      this.app.use('/protected/v8', this.keycloak24.protect, protectedApiV8)
     }
   }
   private serverProxies() {
-    if (this.keycloak) {
-      this.app.use('/proxies/v8', this.keycloak.protect, proxiesV8)
+    if (this.keycloak24) {
+      this.app.use('/proxies/v8', this.keycloak24.protect, proxiesV8)
     }
   }
   private authoringProxies() {
-    if (this.keycloak) {
-      this.app.use('/authContent', this.keycloak.protect, authContent)
-      this.app.use('/authNotificationApi', this.keycloak.protect, authNotification)
-      this.app.use('/authIapApi', this.keycloak.protect, authIapBackend)
+    if (this.keycloak24) {
+      this.app.use('/authContent', this.keycloak24.protect, authContent)
+      this.app.use('/authNotificationApi', this.keycloak24.protect, authNotification)
+      this.app.use('/authIapApi', this.keycloak24.protect, authIapBackend)
     }
   }
   private authoringApi() {
-    if (this.keycloak) {
-      this.app.use('/authSearchApi', this.keycloak.protect, authSearch)
+    if (this.keycloak24) {
+      this.app.use('/authSearchApi', this.keycloak24.protect, authSearch)
       this.app.use('/authApi', authApi)
     }
   }
