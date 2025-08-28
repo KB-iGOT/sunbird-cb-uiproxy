@@ -6436,6 +6436,13 @@ export const API_LIST = {
                     ROLE.CONTENT_CREATOR,
             ],
         },
+        '/proxies/v8/learner/course/v1/batch/delete': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7257,5 +7264,6 @@ export const API_LIST = {
             '/proxies/v8/moderation/v1/language/detect',
             '/proxies/v8/content/v4/mlReview',
             '/proxies/v8/content/v4/ml/update/reviewStatus',
+            '/proxies/v8/learner/course/v1/batch/delete',
             ],
 }
