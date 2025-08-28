@@ -6440,7 +6440,7 @@ export const API_LIST = {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
-                ROLE.PUBLIC,
+                ROLE.PROGRAM_COORDINATOR,
             ],
         },      
         '/proxies/v8/pipeline/content/transcode/process/:id': {
