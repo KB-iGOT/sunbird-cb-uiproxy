@@ -1337,3 +1337,7 @@ proxiesV8.use('/support/ai/*',
 proxiesV8.use('/collection/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/pipeline/content/transcode/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
