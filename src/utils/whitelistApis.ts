@@ -6454,6 +6454,22 @@ export const API_LIST = {
                     ROLE.MDO_LEADER,
             ],
         },
+        '/proxies/v8/cbplan/v2/publish': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                    ROLE.MDO_ADMIN,
+                    ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/cbplan/v2/read/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                    ROLE.MDO_ADMIN,
+                    ROLE.MDO_LEADER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7276,6 +7292,8 @@ export const API_LIST = {
             '/proxies/v8/content/v4/ml/update/reviewStatus',
             '/proxies/v8/pipeline/content/transcode/process/:id',
             '/proxies/v8/cbplan/v2/create',
-            '/proxies/v8/cbplan/v2/update'
+            '/proxies/v8/cbplan/v2/update',
+            '/proxies/v8/cbplan/v2/publish',
+            '/proxies/v8/cbplan/v2/read/:id',
             ],
 }
