@@ -26,7 +26,7 @@ const deauthenticated = async (reqObj: any) => {
         const refreshToken = tokenObject.refresh_token
         if (refreshToken) {
           const host = reqObj.get('host')
-          const urlValue = `https://${host}` + '/auth/realms/' + CONSTANTS.KEYCLOAK_REALM + '/protocol/openid-connect/logout'
+          const urlValue = `https://${host}` + '/realms/' + CONSTANTS.KEYCLOAK_REALM + '/protocol/openid-connect/logout'
           try {
               request.post({
                   form: {
