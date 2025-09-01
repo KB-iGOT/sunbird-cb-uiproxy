@@ -487,6 +487,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.SPV_PUBLISHER,
+                ROLE.PROGRAM_COORDINATOR,
             ],
         },
         '/proxies/v8/data/v1/system/settings/get/orgTypeList': {
@@ -6435,6 +6436,13 @@ export const API_LIST = {
                     ROLE.CONTENT_CREATOR,
             ],
         },
+        '/proxies/v8/learner/course/v1/batch/delete': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PROGRAM_COORDINATOR,
+            ],
+        },      
         '/proxies/v8/pipeline/content/transcode/process/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -7298,6 +7306,7 @@ export const API_LIST = {
             '/proxies/v8/moderation/v1/language/detect',
             '/proxies/v8/content/v4/mlReview',
             '/proxies/v8/content/v4/ml/update/reviewStatus',
+            '/proxies/v8/learner/course/v1/batch/delete',
             '/proxies/v8/pipeline/content/transcode/process/:id',
             '/proxies/v8/cbplan/v2/create',
             '/proxies/v8/cbplan/v2/update',
