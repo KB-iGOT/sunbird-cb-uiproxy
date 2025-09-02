@@ -6046,6 +6046,8 @@ export const API_LIST = {
                 ROLE.CONTENT_PUBLISHER,
                 ROLE.CONTENT_REVIEWER,
                 ROLE.SPV_PUBLISHER,
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
             ],
         },
         '/proxies/v8/accessSettings/read/:contentId': {
