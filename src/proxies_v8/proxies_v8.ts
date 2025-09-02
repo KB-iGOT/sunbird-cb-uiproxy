@@ -28,6 +28,7 @@ import {
 import { extractUserIdFromRequest, extractUserToken } from '../utils/requestExtract'
 import { chatBotGenericAPIIntegration } from './chatBotGenericAPIIntegration'
 import { chatBotIntegrationAPI } from './chatBotIntegration'
+import { contentTranscodeAPIIntegration } from './contentTranscodeAPIIntegration'
 import { frameworksApi } from './frameworks'
 import { jwtUserTokenHelper } from './jwtUserTokenHelper'
 import { lookerDashboard } from './lookerIntegration'
@@ -1343,6 +1344,4 @@ proxiesV8.use('/moderation/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
-proxiesV8.use('/pipeline/content/transcode/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+proxiesV8.use('/pipeline/content/transcode/*', contentTranscodeAPIIntegration)
