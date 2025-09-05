@@ -6046,6 +6046,8 @@ export const API_LIST = {
                 ROLE.CONTENT_PUBLISHER,
                 ROLE.CONTENT_REVIEWER,
                 ROLE.SPV_PUBLISHER,
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
             ],
         },
         '/proxies/v8/accessSettings/read/:contentId': {
@@ -6412,13 +6414,6 @@ export const API_LIST = {
                 ROLE.CONTENT_CREATOR,
             ],
         },
-        '/proxies/v8/moderation/v1/language/detect': {
-            checksNeeded: [CHECK.ROLE],
-            // tslint:disable-next-line: object-literal-sort-keys
-            ROLE_CHECK: [
-                ROLE.PUBLIC,
-            ],
-        },
         '/proxies/v8/content/v4/mlReview': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -6478,6 +6473,22 @@ export const API_LIST = {
             ],
         },
         '/proxies/v8/cbplan/v2/read/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                    ROLE.MDO_ADMIN,
+                    ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/cbplan/v2/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                    ROLE.MDO_ADMIN,
+                    ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/cbplan/v2/archive': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7312,5 +7323,7 @@ export const API_LIST = {
             '/proxies/v8/cbplan/v2/update',
             '/proxies/v8/cbplan/v2/publish',
             '/proxies/v8/cbplan/v2/read/:id',
+            '/proxies/v8/cbplan/v2/search',
+            '/proxies/v8/cbplan/v2/archive',
             ],
 }
