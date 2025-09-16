@@ -292,7 +292,7 @@ export const isAllowed = () => {
     return function(req: Request, res: Response, next: NextFunction) {
         let REQ_URL = req.path
         if (CONSTANTS.PORTAL_API_WHITELIST_CHECK === 'true') {
-            if (shouldAllow(req) || _.includes(REQ_URL, '/resource')) {
+            if (shouldAllow(req) || _.includes(REQ_URL, '/resource') || _.includes(REQ_URL, '/eclogin')) {
                 logInfo('Path : ' + REQ_URL + ' is in excluded list.')
                 next()
             } else {
