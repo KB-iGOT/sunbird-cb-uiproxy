@@ -6437,7 +6437,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
             ],
-        },      
+        },
         '/proxies/v8/pipeline/content/transcode/process/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -6494,6 +6494,13 @@ export const API_LIST = {
             ROLE_CHECK: [
                     ROLE.MDO_ADMIN,
                     ROLE.MDO_LEADER,
+            ],
+        },
+        '/protected/v8/eclogin/': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
             ],
         },
     },
@@ -7325,5 +7332,6 @@ export const API_LIST = {
             '/proxies/v8/cbplan/v2/read/:id',
             '/proxies/v8/cbplan/v2/search',
             '/proxies/v8/cbplan/v2/archive',
+            '/protected/v8/eclogin/',
             ],
 }
