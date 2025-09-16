@@ -81,4 +81,4 @@ protectedApiV8.use('/resource', userAuthKeyCloakApi)
 protectedApiV8.use('/workallocation', workAllocationApi)
 protectedApiV8.use('/frac', fracApi)
 protectedApiV8.use('/contentprivate', contentPrivateApi),
-protectedApiV8.use('/ec/resource', userAuthKeyCloakEcApi)
+protectedApiV8.use('/eclogin', userAuthKeyCloakEcApi)
