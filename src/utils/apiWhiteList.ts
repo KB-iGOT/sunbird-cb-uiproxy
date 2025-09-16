@@ -376,7 +376,7 @@ export function apiWhiteListLogger() {
             return
         }
         const REQ_URL = req.path
-        if (!_.includes(REQ_URL, '/resource') && (req.session)) {
+        if (!_.includes(REQ_URL, '/resource') && !_.includes(REQ_URL, '/eclogin') && (req.session)) {
             if (!('userRoles' in req.session) || (('userRoles' in req.session) && (req.session.userRoles.length === 0))) {
                 logError('Portal_API_WHITELIST_LOGGER: User needs to authenticated themselves', '------', new Date().toString())
                 respond419(req, res)
