@@ -115,7 +115,7 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
     if (isLocal) {
         redirectUrl = queryParam
     } else {
-        redirectUrl = `https://${host}${queryParam}`
+        redirectUrl = `https://${host}/ec${queryParam}`
     }
     logInfo('Redirecting to: ' + redirectUrl)
 
