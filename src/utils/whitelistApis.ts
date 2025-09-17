@@ -318,6 +318,8 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
                 ROLE.SPV_PUBLISHER,
                 ROLE.CONTENT_PUBLISHER,
+                ROLE.PROGRAM_INSTRUCTOR,
+              
             ],
         },
         '/proxies/v8/dashboard/analytics/getDashboardConfig/Karmayogi/:comp': {
