@@ -318,6 +318,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
                 ROLE.SPV_PUBLISHER,
                 ROLE.CONTENT_PUBLISHER,
+                ROLE.PROGRAM_INSTRUCTOR,
             ],
         },
         '/proxies/v8/dashboard/analytics/getDashboardConfig/Karmayogi/:comp': {
@@ -581,6 +582,7 @@ export const API_LIST = {
                 ROLE.PROGRAM_COORDINATOR,
                 ROLE.CBP_ADMIN,
                 ROLE.SPV_PUBLISHER,
+                ROLE.PROGRAM_INSTRUCTOR,
             ],
         },
         '/proxies/v8/org/v1/profile/read': {
