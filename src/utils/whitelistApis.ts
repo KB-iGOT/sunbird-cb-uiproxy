@@ -6500,6 +6500,13 @@ export const API_LIST = {
                     ROLE.MDO_LEADER,
             ],
         },
+        '/proxies/v8/user/v3/bulkupload': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7329,5 +7336,6 @@ export const API_LIST = {
             '/proxies/v8/cbplan/v2/read/:id',
             '/proxies/v8/cbplan/v2/search',
             '/proxies/v8/cbplan/v2/archive',
+            '/proxies/v8/user/v3/bulkupload',
             ],
 }
