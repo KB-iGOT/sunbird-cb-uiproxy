@@ -115,7 +115,7 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
     if (isLocal) {
         redirectUrl = queryParam
     } else {
-        redirectUrl = `https://${host}/ec${queryParam}`
+        redirectUrl = `${CONSTANTS.IIM_PORTAL_HOST}${CONSTANTS.EC_REDIRECT_PATH}${queryParam}` //   'https://' + host + '/page/home'
     }
     logInfo('Redirecting to: ' + redirectUrl)
 
