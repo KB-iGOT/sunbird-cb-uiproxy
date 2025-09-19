@@ -490,6 +490,7 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
                 ROLE.SPV_PUBLISHER,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.PROGRAM_INSTRUCTOR,
             ],
         },
         '/proxies/v8/data/v1/system/settings/get/orgTypeList': {
