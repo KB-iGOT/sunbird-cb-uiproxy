@@ -318,6 +318,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
                 ROLE.SPV_PUBLISHER,
                 ROLE.CONTENT_PUBLISHER,
+                ROLE.PROGRAM_INSTRUCTOR,
             ],
         },
         '/proxies/v8/dashboard/analytics/getDashboardConfig/Karmayogi/:comp': {
@@ -430,6 +431,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
                 ROLE.SPV_PUBLISHER,
                 ROLE.CONTENT_PUBLISHER,
+                ROLE.PROGRAM_INSTRUCTOR,
             ],
         },
         '/proxies/v8/v1/content/retire': {
@@ -487,6 +489,8 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.SPV_PUBLISHER,
+                ROLE.PROGRAM_COORDINATOR,
+                ROLE.PROGRAM_INSTRUCTOR,
             ],
         },
         '/proxies/v8/data/v1/system/settings/get/orgTypeList': {
@@ -580,6 +584,7 @@ export const API_LIST = {
                 ROLE.PROGRAM_COORDINATOR,
                 ROLE.CBP_ADMIN,
                 ROLE.SPV_PUBLISHER,
+                ROLE.PROGRAM_INSTRUCTOR,
             ],
         },
         '/proxies/v8/org/v1/profile/read': {
@@ -2336,6 +2341,8 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.PROGRAM_COORDINATOR,
+                ROLE.PROGRAM_INSTRUCTOR,
             ],
         },
         '/proxies/v8/workflow/blendedprogram/searchv2/pc': {
@@ -6413,6 +6420,13 @@ export const API_LIST = {
                 ROLE.CONTENT_CREATOR,
             ],
         },
+        '/proxies/v8/moderation/v1/language/detect': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
         '/proxies/v8/content/v4/mlReview': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -6428,6 +6442,13 @@ export const API_LIST = {
                     ROLE.CONTENT_PUBLISHER,
                     ROLE.SPV_PUBLISHER,
                     ROLE.CONTENT_CREATOR,
+            ],
+        },
+        '/proxies/v8/learner/course/v1/batch/delete': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PROGRAM_COORDINATOR,
             ],
         },
         '/proxies/v8/pipeline/content/transcode/process/:id': {
@@ -6486,6 +6507,13 @@ export const API_LIST = {
             ROLE_CHECK: [
                     ROLE.MDO_ADMIN,
                     ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/user/v3/bulkupload': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
             ],
         },
     },
@@ -7309,6 +7337,7 @@ export const API_LIST = {
             '/proxies/v8/moderation/v1/language/detect',
             '/proxies/v8/content/v4/mlReview',
             '/proxies/v8/content/v4/ml/update/reviewStatus',
+            '/proxies/v8/learner/course/v1/batch/delete',
             '/proxies/v8/pipeline/content/transcode/process/:id',
             '/proxies/v8/cbplan/v2/create',
             '/proxies/v8/cbplan/v2/update',
@@ -7316,5 +7345,6 @@ export const API_LIST = {
             '/proxies/v8/cbplan/v2/read/:id',
             '/proxies/v8/cbplan/v2/search',
             '/proxies/v8/cbplan/v2/archive',
+            '/proxies/v8/user/v3/bulkupload',
             ],
 }
