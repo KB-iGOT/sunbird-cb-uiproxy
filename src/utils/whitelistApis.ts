@@ -318,6 +318,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
                 ROLE.SPV_PUBLISHER,
                 ROLE.CONTENT_PUBLISHER,
+                ROLE.PROGRAM_INSTRUCTOR,
             ],
         },
         '/proxies/v8/dashboard/analytics/getDashboardConfig/Karmayogi/:comp': {
@@ -430,6 +431,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
                 ROLE.SPV_PUBLISHER,
                 ROLE.CONTENT_PUBLISHER,
+                ROLE.PROGRAM_INSTRUCTOR,
             ],
         },
         '/proxies/v8/v1/content/retire': {
@@ -488,6 +490,7 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
                 ROLE.SPV_PUBLISHER,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.PROGRAM_INSTRUCTOR,
             ],
         },
         '/proxies/v8/data/v1/system/settings/get/orgTypeList': {
@@ -581,6 +584,7 @@ export const API_LIST = {
                 ROLE.PROGRAM_COORDINATOR,
                 ROLE.CBP_ADMIN,
                 ROLE.SPV_PUBLISHER,
+                ROLE.PROGRAM_INSTRUCTOR,
             ],
         },
         '/proxies/v8/org/v1/profile/read': {
@@ -2337,6 +2341,8 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.PROGRAM_COORDINATOR,
+                ROLE.PROGRAM_INSTRUCTOR,
             ],
         },
         '/proxies/v8/workflow/blendedprogram/searchv2/pc': {
@@ -6496,6 +6502,13 @@ export const API_LIST = {
                     ROLE.MDO_LEADER,
             ],
         },
+        '/proxies/v8/user/v3/bulkupload': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7325,5 +7338,6 @@ export const API_LIST = {
             '/proxies/v8/cbplan/v2/read/:id',
             '/proxies/v8/cbplan/v2/search',
             '/proxies/v8/cbplan/v2/archive',
+            '/proxies/v8/user/v3/bulkupload',
             ],
 }
