@@ -6537,7 +6537,7 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         }, 
-        '/proxies/v8/assignment/v1/answer': {
+        '/proxies/v8/assignment/v1/submitDraft': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7391,7 +7391,7 @@ export const API_LIST = {
             '/proxies/v8/assignment/v1/create',
             '/proxies/v8/assignment/v1/search',
             '/proxies/v8/assignment/v1/getAnswerById',
-            '/proxies/v8/assignment/v1/answer',
+            '/proxies/v8/assignment/v1/submitDraft',
             '/proxies/v8/assignment/v1/submit',
             '/proxies/v8/assignment/v1/feedback',
             ],
