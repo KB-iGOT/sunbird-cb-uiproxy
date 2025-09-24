@@ -6420,6 +6420,13 @@ export const API_LIST = {
                 ROLE.CONTENT_CREATOR,
             ],
         },
+        '/proxies/v8/moderation/v1/language/detect': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
         '/proxies/v8/content/v4/mlReview': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -6443,7 +6450,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
             ],
-        },      
+        },
         '/proxies/v8/pipeline/content/transcode/process/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
