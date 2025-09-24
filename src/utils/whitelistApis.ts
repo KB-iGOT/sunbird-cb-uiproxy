@@ -6516,7 +6516,7 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
             ],
         },
-        '/proxies/v8/organisation/user/migration/v1/mapping-file/sample/:rootOrgId': {
+        '/proxies/v8/user/v1/org-migration/sample-file/:orgFrameworkId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7356,6 +7356,6 @@ export const API_LIST = {
             '/proxies/v8/cbplan/v2/search',
             '/proxies/v8/cbplan/v2/archive',
             '/proxies/v8/user/v3/bulkupload',
-            '/proxies/v8/organisation/user/migration/v1/mapping-file/sample/:rootOrgId',
+            '/proxies/v8/user/v1/org-migration/sample-file/:orgFrameworkId',
             ],
 }
