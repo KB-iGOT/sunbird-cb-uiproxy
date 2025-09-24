@@ -6516,6 +6516,48 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
             ],
         },
+        '/proxies/v8/assignment/v1/create': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PROGRAM_INSTRUCTOR,
+            ],
+        },
+        '/proxies/v8/assignment/v1/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        }, 
+        '/proxies/v8/assignment/v1/getAnswerById': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        }, 
+        '/proxies/v8/assignment/v1/answer': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        }, 
+        '/proxies/v8/assignment/v1/submit': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/assignment/v1/feedback': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PROGRAM_INSTRUCTOR,
+            ],
+        },      
     },
     URL_PATTERN:
         [
@@ -7346,5 +7388,11 @@ export const API_LIST = {
             '/proxies/v8/cbplan/v2/search',
             '/proxies/v8/cbplan/v2/archive',
             '/proxies/v8/user/v3/bulkupload',
+            '/proxies/v8/assignment/v1/create',
+            '/proxies/v8/assignment/v1/search',
+            '/proxies/v8/assignment/v1/getAnswerById',
+            '/proxies/v8/assignment/v1/answer',
+            '/proxies/v8/assignment/v1/submit',
+            '/proxies/v8/assignment/v1/feedback',
             ],
 }
