@@ -6516,6 +6516,46 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
             ],
         },
+        '/proxies/v8/user/v1/org-migration/sample-file/:orgHierarchyFrameworkId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+                ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
+            ],
+        },
+        '/proxies/v8/user/v1/org-migration/bulk-upload/:orgHierarchyFrameworkId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+                ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
+            ],
+        },
+        '/proxies/v8/user/v1/org-migration/bulk-upload/progress/:orgId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+                ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
+            ],
+        },
+        '/proxies/v8/user/v1/org-migration/bulk-upload/result/:fileName': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+                ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7346,5 +7386,9 @@ export const API_LIST = {
             '/proxies/v8/cbplan/v2/search',
             '/proxies/v8/cbplan/v2/archive',
             '/proxies/v8/user/v3/bulkupload',
+            '/proxies/v8/user/v1/org-migration/sample-file/:orgHierarchyFrameworkId',
+            '/proxies/v8/user/v1/org-migration/bulk-upload/:orgHierarchyFrameworkId',
+            '/proxies/v8/user/v1/org-migration/bulk-upload/progress/:orgId',
+            '/proxies/v8/user/v1/org-migration/bulk-upload/result/:fileName',
             ],
 }
