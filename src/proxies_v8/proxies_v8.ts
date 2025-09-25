@@ -237,6 +237,11 @@ proxiesV8.use('/discussion/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.DISCUSSION_HUB_MIDDLEWARE}`)
 )
 
+proxiesV8.use('/assignment/*',
+  // tslint:disable-next-line: max-line-length
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
 function removePrefix(prefix: string, s: string) {
   return s.substr(prefix.length)
 }
