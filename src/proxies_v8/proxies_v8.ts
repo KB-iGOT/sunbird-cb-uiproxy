@@ -1345,3 +1345,8 @@ proxiesV8.use('/moderation/*',
 )
 
 proxiesV8.use('/pipeline/content/transcode/*', contentTranscodeAPIIntegration)
+
+proxiesV8.use('/assignment/*',
+  // tslint:disable-next-line: max-line-length
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
