@@ -2114,6 +2114,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.SPV_ADMIN,
                 ROLE.STATE_ADMIN,
+                ROLE.MDO_LEADER,
             ],
         },
         '/proxies/v8/user/basicInfo': {
