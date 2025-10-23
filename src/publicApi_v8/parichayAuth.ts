@@ -10,18 +10,36 @@ export const parichayAuth = express.Router()
 
 parichayAuth.get('/auth', async (req, res) => {
     logInfo('Received host : ' + req.hostname)
+    const rawIiidem = Array.isArray(req.query.iiidem) ? req.query.iiidem[0] : req.query.iiidem
+    const iiidemFlag = rawIiidem === '1'
+    if (req.session) {
+        req.session.parichayIsEclogin = iiidemFlag
+        logInfo('Stored parichayIsEclogin=' + iiidemFlag)
+    } else if (iiidemFlag) {
+        logError('iiidem flag present but session not available to persist it')
+    }
     const redirectUrl = 'https://' + req.hostname + CONSTANTS.PARICHAY_AUTH_CALLBACK_URL
     let oAuthParams = 'client_id=' + CONSTANTS.PARICHAY_CLIENT_ID
     oAuthParams = oAuthParams + '&redirect_uri=' + redirectUrl
     oAuthParams = oAuthParams + '&response_type=code&scope=user_details'
     oAuthParams = oAuthParams + '&code_challenge=' + CONSTANTS.PARICHAY_CODE_CHALLENGE
     oAuthParams = oAuthParams + '&code_challenge_method=S256'
+    try {
+        oAuthParams = oAuthParams + '&state=' + encodeURIComponent(iiidemFlag ? 'iiidem=1' : '')
+    } catch (e) {
+        logError('Failed to encode state param: ' + e)
+    }
     const parichayUrl = CONSTANTS.PARICHAY_AUTH_URL + '?' + oAuthParams
     res.redirect(parichayUrl)
 })
 
 parichayAuth.get('/callback', async (req, res) => {
-    const host = req.get('host')
+    const sessionIsEclogin = req.session ? Boolean(req.session.parichayIsEclogin) : false
+    let host = req.get('host') || ''
+    if (sessionIsEclogin && CONSTANTS.IIM_PORTAL_HOST && CONSTANTS.IIM_PORTAL_HOST.length > 0) {
+        host = CONSTANTS.IIM_PORTAL_HOST
+    }
+    logInfo('parichay /callback - parichayIsEclogin=' + sessionIsEclogin + ', redirectHost=' + host)
     if (!req.query.code) {
         logInfo('Received host : ' + host)
         logError('Failed to login in Parichay, authorization code is missing. Redirecting to /error')
@@ -39,7 +57,7 @@ parichayAuth.get('/callback', async (req, res) => {
             data: {
                 client_id: CONSTANTS.PARICHAY_CLIENT_ID,
                 client_secret: CONSTANTS.PARICHAY_CLIENT_SECRET,
-                code: decodeURIComponent(req.query.code),
+                code: decodeURIComponent(req.query.code as string),
                 // tslint:disable-next-line: max-line-length
                 code_verifier: CONSTANTS.PARICHAY_CODE_VERIFIER,
                 grant_type: 'authorization_code',
@@ -132,6 +150,9 @@ parichayAuth.get('/callback', async (req, res) => {
     } catch (err) {
         logError('Failed to process callback API for Parichay code : ' + req.query.code + '..with the error: ' + JSON.stringify(err))
         resRedirectUrl = `https://${host}/public/logout?error=` + encodeURIComponent('Internal Server Error. Please contact administrator.')
+    }
+    if (req.session && req.session.parichayIsEclogin) {
+        delete req.session.parichayIsEclogin
     }
     res.redirect(resRedirectUrl)
 })
