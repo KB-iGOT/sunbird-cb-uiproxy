@@ -127,13 +127,14 @@ parichayAuth.get('/callback', async (req, res) => {
                     isFirstTimeUser = true
                 }
             }
+
             if (result.errMessage === '') {
                 let keycloakResult: {
                     access_token: string, errMessage: string, keycloakSessionCreated: boolean, refresh_token: string
                 }
-                logInfo('request object is before updateKeycloakSession ', JSON.stringify(req))
+                logInfo('request object is before updateKeycloakSession ', JSON.stringify(req.session))
                 keycloakResult = await updateKeycloakSession(userDetailResponse.data.loginId, req, res)
-                logInfo('request object is after updateKeycloakSession ', JSON.stringify(req))
+                logInfo('request object is after updateKeycloakSession ', JSON.stringify(req.session))
                 if (keycloakResult.errMessage !== '') {
                   logError('For Parichay emailId:' + userDetailResponse.data.loginId
                     + ', Received a keycloak error: ' + keycloakResult.errMessage)

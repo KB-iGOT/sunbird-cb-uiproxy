@@ -152,7 +152,7 @@ export async function updateKeycloakSession(emailId: string, req: any, res: any)
         logError('ssoUserHelper: createSession failed for Email: ' + emailId + ', Error: ' + JSON.stringify(err))
         result.errMessage = 'FAILED_TO_CREATE_KEYCLOAK_SESSION'
     }
-    logInfo('request object is inside updateKeycloakSession ', JSON.stringify(req))
-    logInfo('result object is inside updateKeycloakSession ', JSON.stringify(result))
+    logInfo('request object is inside updateKeycloakSession ', JSON.stringify(req.session))
+    //logInfo('result object is inside updateKeycloakSession ', JSON.stringify(result))
     return Promise.resolve(result)
 }
