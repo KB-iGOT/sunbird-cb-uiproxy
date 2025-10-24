@@ -136,6 +136,8 @@ export async function updateKeycloakSession(emailId: string, req: any, res: any)
         req.session.keycloakClientSecret = CONSTANTS.KEYCLOAK_GOOGLE_CLIENT_SECRET
         result.access_token = grant.access_token.token
         result.refresh_token = grant.refresh_token.token
+        logInfo('access Token :: ' + result.access_token)
+        logInfo('refresh Token :: ' + result.refresh_token)
         result.keycloakSessionCreated = true
         // tslint:disable-next-line: no-any
         keycloakClient.authenticated(req, (error: any) => {
