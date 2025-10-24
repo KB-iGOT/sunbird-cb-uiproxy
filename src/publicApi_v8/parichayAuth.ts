@@ -36,8 +36,8 @@ parichayAuth.get('/auth', async (req, res) => {
 parichayAuth.get('/callback', async (req, res) => {
     const sessionIsEclogin = req.session ? Boolean(req.session.parichayIsEclogin) : false
     let host = req.get('host') || ''
-    if (sessionIsEclogin && CONSTANTS.IIM_PORTAL_HOST && CONSTANTS.IIM_PORTAL_HOST.length > 0) {
-        host = CONSTANTS.IIM_PORTAL_HOST
+    if (sessionIsEclogin && CONSTANTS.IIIDEM_PORTAL_HOST && CONSTANTS.IIIDEM_PORTAL_HOST.length > 0) {
+        host = CONSTANTS.IIIDEM_PORTAL_HOST
     }
     logInfo('parichay /callback - parichayIsEclogin=' + sessionIsEclogin + ', redirectHost=' + host)
     if (!req.query.code) {
@@ -49,7 +49,9 @@ parichayAuth.get('/callback', async (req, res) => {
         res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
         return
     }
-    let resRedirectUrl = `https://${host}/page/home`
+    let resRedirectUrl = (sessionIsEclogin && CONSTANTS.IIIDEM_PORTAL_HOST && CONSTANTS.EC_REDIRECT_PATH)
+        ? `https://${host}${CONSTANTS.EC_REDIRECT_PATH}`
+        : `https://${host}/page/home`
     try {
         const redirectUrl = 'https://' + req.hostname + CONSTANTS.PARICHAY_AUTH_CALLBACK_URL
         const tokenResponse = await axios({

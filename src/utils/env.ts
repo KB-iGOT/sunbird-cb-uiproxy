@@ -207,6 +207,7 @@ export const CONSTANTS = {
   APP_FUEL_GLOBAL_API_URL: env.APP_FUEL_GLOBAL_API_URL || 'api_url',
   IIM_PORTAL_HOST: env.IIM_PORTAL_HOST || 'https://iiidem-portal.igotkarmayogi.gov.in',
   EC_REDIRECT_PATH: env.EC_REDIRECT_PATH || '/page/custom-home/iiidem',
+  IIIDEM_PORTAL_HOST: env.IIIDEM_PORTAL_HOST || 'iiidem.igotkarmayogi.gov.in',
 }
 
 export const RESTRICTED_PYTHON_STMT: string[] = process.env.RESTRICTED_CHARACTERS
