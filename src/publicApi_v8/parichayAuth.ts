@@ -49,8 +49,8 @@ parichayAuth.get('/callback', async (req, res) => {
         res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
         return
     }
-    let resRedirectUrl = (sessionIsEclogin && CONSTANTS.IIIDEM_PORTAL_HOST)
-        ? `https://${host}/eclogin`
+    let resRedirectUrl = (sessionIsEclogin && CONSTANTS.IIIDEM_PORTAL_HOST && CONSTANTS.EC_REDIRECT_PATH)
+        ? `https://${host}${CONSTANTS.EC_REDIRECT_PATH}`
         : `https://${host}/page/home`
     try {
         const redirectUrl = 'https://' + req.hostname + CONSTANTS.PARICHAY_AUTH_CALLBACK_URL
