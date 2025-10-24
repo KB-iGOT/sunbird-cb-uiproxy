@@ -155,5 +155,6 @@ parichayAuth.get('/callback', async (req, res) => {
         logError('Failed to process callback API for Parichay code : ' + req.query.code + '..with the error: ' + JSON.stringify(err))
         resRedirectUrl = `https://${host}/public/logout?error=` + encodeURIComponent('Internal Server Error. Please contact administrator.')
     }
+    logInfo('redirect url is  ', resRedirectUrl);
     res.redirect(resRedirectUrl)
 })
