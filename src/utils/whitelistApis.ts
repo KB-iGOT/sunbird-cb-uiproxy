@@ -3199,6 +3199,7 @@ export const API_LIST = {
             ROLE_CHECK: [
               ROLE.SPV_ADMIN,
               ROLE.MDO_ADMIN,
+              ROLE.MDO_LEADER,
             ],
         },
        '/proxies/v8/demand/content/create': {
@@ -6569,21 +6570,21 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.PUBLIC,
             ],
-        }, 
+        },
         '/proxies/v8/assignment/v1/getAnswerById': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
             ],
-        }, 
+        },
         '/proxies/v8/assignment/v1/submitDraft': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
             ],
-        }, 
+        },
         '/proxies/v8/assignment/v1/submit': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -6611,7 +6612,7 @@ export const API_LIST = {
            ROLE_CHECK: [
                ROLE.PUBLIC,
            ],
-        },      
+        },
     },
     URL_PATTERN:
         [
