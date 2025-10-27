@@ -59,7 +59,7 @@ parichayAuth.get('/callback', async (req, res) => {
             data: {
                 client_id: CONSTANTS.PARICHAY_CLIENT_ID,
                 client_secret: CONSTANTS.PARICHAY_CLIENT_SECRET,
-                code: decodeURIComponent(req.query.code as string),
+                code: decodeURIComponent(req.query.code),
                 // tslint:disable-next-line: max-line-length
                 code_verifier: CONSTANTS.PARICHAY_CODE_VERIFIER,
                 grant_type: 'authorization_code',
