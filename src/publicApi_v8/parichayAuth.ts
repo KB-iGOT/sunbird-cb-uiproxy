@@ -25,11 +25,6 @@ parichayAuth.get('/auth', async (req, res) => {
     oAuthParams = oAuthParams + '&response_type=code&scope=user_details'
     oAuthParams = oAuthParams + '&code_challenge=' + CONSTANTS.PARICHAY_CODE_CHALLENGE
     oAuthParams = oAuthParams + '&code_challenge_method=S256'
-    try {
-        oAuthParams = oAuthParams + '&state=' + encodeURIComponent(iiidemFlag ? 'iiidem=1' : '')
-    } catch (e) {
-        logError('Failed to encode state param: ' + e)
-    }
     const parichayUrl = CONSTANTS.PARICHAY_AUTH_URL + '?' + oAuthParams
     res.redirect(parichayUrl)
 })
