@@ -10,7 +10,16 @@ export const parichayAuth = express.Router()
 
 parichayAuth.get('/auth', async (req, res) => {
     logInfo('Received host : ' + req.hostname)
-    const redirectUrl = 'https://' + req.hostname + CONSTANTS.PARICHAY_AUTH_CALLBACK_URL
+    const rawIiidem = Array.isArray(req.query.iiidem) ? req.query.iiidem[0] : req.query.iiidem
+    const iiidemFlag = rawIiidem === '1'
+    if (req.session) {
+        req.session.parichayIsEclogin = iiidemFlag
+        logInfo('Stored parichayIsEclogin=' + iiidemFlag)
+    } else if (iiidemFlag) {
+        logError('iiidem flag present but session not available to persist it')
+    }
+    const callbackHost = iiidemFlag? CONSTANTS.IIIDEM_PORTAL_HOST: req.hostname
+    const redirectUrl = 'https://' + callbackHost + CONSTANTS.PARICHAY_AUTH_CALLBACK_URL
     let oAuthParams = 'client_id=' + CONSTANTS.PARICHAY_CLIENT_ID
     oAuthParams = oAuthParams + '&redirect_uri=' + redirectUrl
     oAuthParams = oAuthParams + '&response_type=code&scope=user_details'
@@ -31,7 +40,11 @@ parichayAuth.get('/callback', async (req, res) => {
         res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
         return
     }
+    logInfo('Received host :: ' + host)
     let resRedirectUrl = `https://${host}/page/home`
+    if (host === CONSTANTS.IIIDEM_PORTAL_HOST) {
+        resRedirectUrl = `https://${host}${CONSTANTS.EC_REDIRECT_PATH}`
+    }
     try {
         const redirectUrl = 'https://' + req.hostname + CONSTANTS.PARICHAY_AUTH_CALLBACK_URL
         const tokenResponse = await axios({
