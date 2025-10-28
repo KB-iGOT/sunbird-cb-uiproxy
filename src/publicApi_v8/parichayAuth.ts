@@ -45,6 +45,7 @@ parichayAuth.get('/callback', async (req, res) => {
         res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
         return
     }
+    logInfo('Received host :: ' + host)
     let resRedirectUrl = `https://${host}/page/home`
     try {
         const redirectUrl = 'https://' + req.hostname + CONSTANTS.PARICHAY_AUTH_CALLBACK_URL
