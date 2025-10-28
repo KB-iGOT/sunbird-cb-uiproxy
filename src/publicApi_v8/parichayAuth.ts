@@ -10,12 +10,26 @@ export const parichayAuth = express.Router()
 
 parichayAuth.get('/auth', async (req, res) => {
     logInfo('Received host : ' + req.hostname)
-    const redirectUrl = 'https://' + req.hostname + CONSTANTS.PARICHAY_AUTH_CALLBACK_URL
+    const rawIiidem = Array.isArray(req.query.iiidem) ? req.query.iiidem[0] : req.query.iiidem
+    const iiidemFlag = rawIiidem === '1'
+    if (req.session) {
+        req.session.parichayIsEclogin = iiidemFlag
+        logInfo('Stored parichayIsEclogin=' + iiidemFlag)
+    } else if (iiidemFlag) {
+        logError('iiidem flag present but session not available to persist it')
+    }
+    const callbackHost = iiidemFlag? CONSTANTS.IIIDEM_PORTAL_HOST: req.hostname
+    const redirectUrl = 'https://' + callbackHost + CONSTANTS.PARICHAY_AUTH_CALLBACK_URL
     let oAuthParams = 'client_id=' + CONSTANTS.PARICHAY_CLIENT_ID
     oAuthParams = oAuthParams + '&redirect_uri=' + redirectUrl
     oAuthParams = oAuthParams + '&response_type=code&scope=user_details'
     oAuthParams = oAuthParams + '&code_challenge=' + CONSTANTS.PARICHAY_CODE_CHALLENGE
     oAuthParams = oAuthParams + '&code_challenge_method=S256'
+    try {
+        oAuthParams = oAuthParams + '&state=' + encodeURIComponent(iiidemFlag ? 'iiidem=1' : '')
+    } catch (e) {
+        logError('Failed to encode state param: ' + e)
+    }
     const parichayUrl = CONSTANTS.PARICHAY_AUTH_URL + '?' + oAuthParams
     res.redirect(parichayUrl)
 })
