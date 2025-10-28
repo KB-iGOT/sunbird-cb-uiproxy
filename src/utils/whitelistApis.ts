@@ -6585,6 +6585,7 @@ export const API_LIST = {
                ROLE.MDO_LEADER,
                ROLE.SPV_ADMIN,
                ROLE.SPV_PUBLISHER,
+               ROLE.PUBLIC,
             ],
         },
     },
