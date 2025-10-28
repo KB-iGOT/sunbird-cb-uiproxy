@@ -6577,6 +6577,16 @@ export const API_LIST = {
                     ROLE.SPV_PUBLISHER,
             ],
         },
+        '/proxies/v8/org/level/hierarchy' : {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.MDO_ADMIN,
+               ROLE.MDO_LEADER,
+               ROLE.SPV_ADMIN,
+               ROLE.SPV_PUBLISHER,
+            ]
+        }
     },
     URL_PATTERN:
         [
@@ -7413,5 +7423,6 @@ export const API_LIST = {
             '/proxies/v8/user/v1/org-migration/bulk-upload/:orgHierarchyFrameworkId',
             '/proxies/v8/user/v1/org-migration/bulk-upload/progress/:orgId',
             '/proxies/v8/user/v1/org-migration/bulk-upload/result/:fileName',
+            '/proxies/v8/org/level/hierarchy',
             ],
 }
