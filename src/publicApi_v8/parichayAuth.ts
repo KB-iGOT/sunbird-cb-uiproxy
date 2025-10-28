@@ -47,6 +47,9 @@ parichayAuth.get('/callback', async (req, res) => {
     }
     logInfo('Received host :: ' + host)
     let resRedirectUrl = `https://${host}/page/home`
+    if (host === CONSTANTS.IIIDEM_PORTAL_HOST) {
+        resRedirectUrl = `https://${host}${CONSTANTS.EC_REDIRECT_PATH}`
+    }
     try {
         const redirectUrl = 'https://' + req.hostname + CONSTANTS.PARICHAY_AUTH_CALLBACK_URL
         const tokenResponse = await axios({
