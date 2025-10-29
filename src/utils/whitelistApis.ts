@@ -2114,6 +2114,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.SPV_ADMIN,
                 ROLE.STATE_ADMIN,
+                ROLE.MDO_LEADER,
             ],
         },
         '/proxies/v8/user/basicInfo': {
@@ -6613,6 +6614,37 @@ export const API_LIST = {
                ROLE.PUBLIC,
            ],
         },
+        '/proxies/v8/consent/v1/acknowledge': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                    ROLE.CONTENT_CREATOR,
+                    ROLE.CONTENT_REVIEWER,
+                    ROLE.CONTENT_PUBLISHER,
+                    ROLE.SPV_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/consent/v1/acknowledge/read/:contentId/:consentId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                    ROLE.CONTENT_CREATOR,
+                    ROLE.CONTENT_REVIEWER,
+                    ROLE.CONTENT_PUBLISHER,
+                    ROLE.SPV_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/org/level/hierarchy' : {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.MDO_ADMIN,
+               ROLE.MDO_LEADER,
+               ROLE.SPV_ADMIN,
+               ROLE.SPV_PUBLISHER,
+               ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7442,6 +7474,8 @@ export const API_LIST = {
             '/proxies/v8/cbplan/v2/read/:id',
             '/proxies/v8/cbplan/v2/search',
             '/proxies/v8/cbplan/v2/archive',
+            '/proxies/v8/consent/v1/acknowledge',
+            '/proxies/v8/consent/v1/acknowledge/read/:contentId/:consentId',
             '/proxies/v8/user/v3/bulkupload',
             '/proxies/v8/user/v1/org-migration/sample-file/:orgHierarchyFrameworkId',
             '/proxies/v8/user/v1/org-migration/bulk-upload/:orgHierarchyFrameworkId',
@@ -7455,5 +7489,6 @@ export const API_LIST = {
             '/proxies/v8/assignment/v1/feedback',
             '/proxies/v8/storage/v1/bp/assignment/answer/:contentId/:batchId/:formId',
             '/proxies/v8/storage/v1/bp/assignment/answer/read/file',
+            '/proxies/v8/org/level/hierarchy',
             ],
 }
