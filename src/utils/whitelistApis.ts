@@ -3200,6 +3200,7 @@ export const API_LIST = {
             ROLE_CHECK: [
               ROLE.SPV_ADMIN,
               ROLE.MDO_ADMIN,
+              ROLE.MDO_LEADER,
             ],
         },
        '/proxies/v8/demand/content/create': {
@@ -6599,6 +6600,20 @@ export const API_LIST = {
                 ROLE.PROGRAM_INSTRUCTOR,
             ],
         },
+        '/proxies/v8/storage/v1/bp/assignment/answer/:contentId/:batchId/:formId': {
+           checksNeeded: [CHECK.ROLE],
+           // tslint:disable-next-line: object-literal-sort-keys
+           ROLE_CHECK: [
+               ROLE.PUBLIC,
+           ],
+        },
+        '/proxies/v8/storage/v1/bp/assignment/answer/read/file': {
+           checksNeeded: [CHECK.ROLE],
+           // tslint:disable-next-line: object-literal-sort-keys
+           ROLE_CHECK: [
+               ROLE.PUBLIC,
+           ],
+        },
         '/proxies/v8/consent/v1/acknowledge': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -7461,5 +7476,7 @@ export const API_LIST = {
             '/proxies/v8/assignment/v1/submitDraft',
             '/proxies/v8/assignment/v1/submit',
             '/proxies/v8/assignment/v1/feedback',
+            '/proxies/v8/storage/v1/bp/assignment/answer/:contentId/:batchId/:formId',
+            '/proxies/v8/storage/v1/bp/assignment/answer/read/file',
             ],
 }
