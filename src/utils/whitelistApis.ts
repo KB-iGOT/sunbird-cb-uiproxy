@@ -6577,6 +6577,27 @@ export const API_LIST = {
                     ROLE.SPV_PUBLISHER,
             ],
         },
+        '/proxies/v8/v1/notifyAssignment/upoad': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                    ROLE.PROGRAM_INSTRUCTOR,
+            ],
+        },
+        '/proxies/v8/v1/notifyAssignment/submit': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                    ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/v1/notifyAssignment/evaluate': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                    ROLE.PROGRAM_INSTRUCTOR,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7413,5 +7434,8 @@ export const API_LIST = {
             '/proxies/v8/user/v1/org-migration/bulk-upload/:orgHierarchyFrameworkId',
             '/proxies/v8/user/v1/org-migration/bulk-upload/progress/:orgId',
             '/proxies/v8/user/v1/org-migration/bulk-upload/result/:fileName',
+            '/proxies/v8/v1/notifyAssignment/upoad',
+            '/proxies/v8/v1/notifyAssignment/submit',
+            '/proxies/v8/v1/notifyAssignment/evaluate',
             ],
 }
