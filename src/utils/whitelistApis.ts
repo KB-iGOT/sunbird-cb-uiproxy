@@ -6645,6 +6645,13 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/forms/v2/bulkGetApplicationsById': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7490,5 +7497,6 @@ export const API_LIST = {
             '/proxies/v8/storage/v1/bp/assignment/answer/:contentId/:batchId/:formId',
             '/proxies/v8/storage/v1/bp/assignment/answer/read/file',
             '/proxies/v8/org/level/hierarchy',
+            '/proxies/v8/forms/v2/bulkGetApplicationsById',
             ],
 }
