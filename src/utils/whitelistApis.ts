@@ -6670,6 +6670,15 @@ export const API_LIST = {
                     ROLE.PROGRAM_INSTRUCTOR,
             ],
         },
+        '/proxies/v8/workflow/blendedprogram/remove/approved/user': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PROGRAM_COORDINATOR,
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7518,5 +7527,6 @@ export const API_LIST = {
             '/proxies/v8/v1/notifyAssignment/upload',
             '/proxies/v8/v1/notifyAssignment/submit',
             '/proxies/v8/v1/notifyAssignment/evaluate',
+            '/proxies/v8/workflow/blendedprogram/remove/approved/user',
             ],
 }
