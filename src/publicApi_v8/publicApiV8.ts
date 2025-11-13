@@ -156,10 +156,10 @@ const fetchContentDetailsList = async (resourceCategoryString: string, req: Requ
     request: {
       facets: ['courseCategory', 'resourceCategory'],
       filters: {
+        additionalTags : ['Public Course'],
         courseCategory: resourceCategoryString,
         resourceCategory: resourceCategoryString,
         status: ['Live'],
-        additionalTags : ['Public Course']
       },
       limit: req.body.request.limit,
       offset: req.body.request.offset,
