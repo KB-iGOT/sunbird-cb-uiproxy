@@ -147,9 +147,8 @@ publicApiV8.use('/liveness', (_req, res) => {
     res.status(200).send('ok')
 })
 
-
 publicApiV8.post('/public/content/search', async (req, res) => {
-  await fetchContentDetailsList('Case Study', req,res)
+  await fetchContentDetailsList('Case Study', req, res)
 })
 
 const fetchContentDetailsList = async (resourceCategoryString: string, req: Request, res: express.Response) => {
@@ -157,8 +156,8 @@ const fetchContentDetailsList = async (resourceCategoryString: string, req: Requ
     request: {
       facets: ['courseCategory', 'resourceCategory'],
       filters: {
-        resourceCategory: resourceCategoryString,
         courseCategory: resourceCategoryString,
+        resourceCategory: resourceCategoryString,
         status: ['Live'],
       },
       limit: req.body.request.limit,
