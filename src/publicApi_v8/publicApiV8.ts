@@ -1,5 +1,5 @@
 import axios from 'axios'
-import express from 'express'
+import express, { Request } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { logError } from '../utils/logger'
@@ -146,3 +146,43 @@ publicApiV8.use('/org/v2/list', proxyCreatorRoute(express.Router(), CONSTANTS.KO
 publicApiV8.use('/liveness', (_req, res) => {
     res.status(200).send('ok')
 })
+
+
+publicApiV8.post('/public/content/search', async (req, res) => {
+  await fetchContentDetailsList('Case Study', req,res)
+})
+
+const fetchContentDetailsList = async (resourceCategoryString: string, req: Request, res: express.Response) => {
+  const reqBody = {
+    request: {
+      facets: ['courseCategory', 'resourceCategory'],
+      filters: {
+        resourceCategory: resourceCategoryString,
+        courseCategory: resourceCategoryString,
+        status: ['Live'],
+      },
+      limit: req.body.request.limit,
+      offset: req.body.request.offset,
+      sort_by: {
+        lastUpdatedOn: 'desc',
+      },
+    },
+  }
+  try {
+    const response = await axios.post(API_END_POINTS.kongCompositeSearch, reqBody, {
+      ...axiosRequestConfig,
+      headers: {
+        Authorization: CONSTANTS.SB_API_KEY,
+      },
+    })
+    const resCode = response.data.responseCode
+    if (!resCode || resCode.toLowerCase() !== 'ok') {
+      res.status(400).send(response.data)
+    } else {
+      res.status(200).send(response.data)
+    }
+  } catch (error) {
+    logError(`Failed to get ${resourceCategoryString} listing. Error: ${error}`)
+    res.status(500).send('Internal Server Error')
+  }
+}
