@@ -159,6 +159,7 @@ const fetchContentDetailsList = async (resourceCategoryString: string, req: Requ
         courseCategory: resourceCategoryString,
         resourceCategory: resourceCategoryString,
         status: ['Live'],
+        additionalTags : ['Public Course']
       },
       limit: req.body.request.limit,
       offset: req.body.request.offset,
