@@ -21,6 +21,7 @@ const API_END_POINTS = {
   publicAssessmentV5Result: `${CONSTANTS.KONG_API_BASE}/public/assessment/v5/result`,
   publicAssessmentV5Submit: `${CONSTANTS.KONG_API_BASE}/public/assessment/v5/assessment/submit`,
   publicAssessmentV7Result: `${CONSTANTS.KONG_API_BASE}/public/assessment/v7/result`,
+  designationSearch: `${CONSTANTS.KONG_API_BASE}/designation/search`,
 }
 
 publicApiV8.get('/', (_req, res) => {
@@ -146,3 +147,86 @@ publicApiV8.use('/org/v2/list', proxyCreatorRoute(express.Router(), CONSTANTS.KO
 publicApiV8.use('/liveness', (_req, res) => {
     res.status(200).send('ok')
 })
+
+publicApiV8.post('/designation/search', async (req, res) => {
+  let { searchString, pageSize, pageNumber, requestedFields } = req.body;
+
+  // ---- 0. Apply defaults if missing ----
+  pageNumber = Number(pageNumber ?? 0);   // default 0
+  pageSize = Number(pageSize ?? 20);      // default 20
+
+  // ---- Ensure requestedFields is always an array ----
+  if (!Array.isArray(requestedFields)) {
+    requestedFields = [];
+  }
+
+  // ---- 1. Validate searchString ----
+  if (typeof searchString !== 'string') {
+    return res.status(400).json({
+      message: "searchString must be a string"
+    });
+  }
+
+  if (searchString.length < 2 || searchString.length > 50) {
+    return res.status(400).json({
+      message: "searchString length must be between 2 and 50 characters"
+    });
+  }
+
+  const forbiddenPatterns = /[*{}[\]\\]|(\b(AND|OR|NOT)\b)/i;
+  if (forbiddenPatterns.test(searchString)) {
+    return res.status(400).json({
+      message: "Invalid characters in searchString"
+    });
+  }
+
+  // ---- 2. Validate pageSize (1–50) ----
+  if (isNaN(pageSize) || pageSize < 1 || pageSize > 50) {
+    return res.status(400).json({
+      message: "pageSize must be a number between 1 and 50"
+    });
+  }
+
+  // ---- 3. Validate pageNumber (0–10000) ----
+  if (isNaN(pageNumber) || pageNumber < 0 || pageNumber > 10000) {
+    return res.status(400).json({
+      message: "pageNumber must be a number between 0 and 10000"
+    });
+  }
+
+  // ---- Set normalized values back into req.body ----
+  req.body.pageNumber = pageNumber;
+  req.body.pageSize = pageSize;
+  req.body.requestedFields = requestedFields;
+
+  await publicDesignationSearch(req, res);
+})
+
+const publicDesignationSearch = async (req: Request, res: express.Response) => {
+  const reqBody = {
+      filterCriteriaMap: {
+        status:'Active'
+      },
+      pageSize: req.body.pageSize,
+      pageNumber: req.body.pageNumber,
+      searchString: req.body.searchString,
+      requestedFields: req.body.requestedFields,
+  }
+  try {
+    const response = await axios.post(API_END_POINTS.designationSearch, reqBody, {
+      ...axiosRequestConfig,
+      headers: {
+        Authorization: CONSTANTS.SB_API_KEY,
+      },
+    })
+    const resCode = response.data.responseCode
+    if (!resCode || resCode.toLowerCase() !== 'ok') {
+      res.status(400).send(response.data)
+    } else {
+      res.status(200).send(response.data)
+    }
+  } catch (error) {
+    logError(`Failed to get designation list. Error: ${error}`)
+    res.status(500).send('Internal Server Error')
+  }
+}
