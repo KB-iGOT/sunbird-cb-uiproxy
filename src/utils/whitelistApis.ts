@@ -6686,6 +6686,20 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/workflow/blendedprogram/nominate': {
+           checksNeeded: [CHECK.ROLE],
+           // tslint:disable-next-line: object-literal-sort-keys
+           ROLE_CHECK: [
+               ROLE.PROGRAM_COORDINATOR,
+           ],
+       },
+        '/proxies/v8/user/v2/assignedcourses': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7531,10 +7545,12 @@ export const API_LIST = {
             '/proxies/v8/storage/v1/bp/assignment/answer/:contentId/:batchId/:formId',
             '/proxies/v8/storage/v1/bp/assignment/answer/read/file',
             '/proxies/v8/org/level/hierarchy',
+            '/proxies/v8/user/v2/assignedcourses',
             '/proxies/v8/v1/notifyAssignment/upload',
             '/proxies/v8/v1/notifyAssignment/submit',
             '/proxies/v8/v1/notifyAssignment/evaluate',
             '/proxies/v8/workflow/blendedprogram/remove/approved/user',
             '/proxies/v8/forms/v2/bulkGetApplicationsById',
+            '/proxies/v8/workflow/blendedprogram/nominate',
             ],
 }
