@@ -6679,6 +6679,13 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
             ],
         },
+        '/proxies/v8/forms/v2/bulkGetApplicationsById': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
         '/proxies/v8/workflow/blendedprogram/nominate': {
            checksNeeded: [CHECK.ROLE],
            // tslint:disable-next-line: object-literal-sort-keys
@@ -7543,6 +7550,7 @@ export const API_LIST = {
             '/proxies/v8/v1/notifyAssignment/submit',
             '/proxies/v8/v1/notifyAssignment/evaluate',
             '/proxies/v8/workflow/blendedprogram/remove/approved/user',
+            '/proxies/v8/forms/v2/bulkGetApplicationsById',
             '/proxies/v8/workflow/blendedprogram/nominate',
             ],
 }
