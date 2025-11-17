@@ -1,4 +1,5 @@
 'use strict'
+import { roleActivityApi } from 'src/protectedApi_v8/roleActivity'
 import { ROLE } from './roles'
 
 const CHECK = {
@@ -6684,6 +6685,8 @@ export const API_LIST = {
            // tslint:disable-next-line: object-literal-sort-keys
            ROLE_CHECK: [
                ROLE.PROGRAM_COORDINATOR,
+               ROLE.MDO_ADMIN,
+               ROLE.MDO_LEADER,
            ],
        },
     },
