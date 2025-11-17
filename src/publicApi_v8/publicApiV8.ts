@@ -1,5 +1,5 @@
 import axios from 'axios'
-import express from 'express'
+import express, { Request } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { logError } from '../utils/logger'
@@ -12,6 +12,7 @@ const puppeteer = require('puppeteer')
 export const publicApiV8 = express.Router()
 
 const API_END_POINTS = {
+  designationSearch: `${CONSTANTS.KONG_API_BASE}/designation/search`,
   kongCompositeSearch: `${CONSTANTS.KONG_API_BASE}/composite/v4/search`,
   publicAssessmentV1QuestionList: `${CONSTANTS.KONG_API_BASE}/public/assessment/v1/question/list`,
   publicAssessmentV1Read: `${CONSTANTS.KONG_API_BASE}/public/assessment/v1/read/:id`,
@@ -146,3 +147,84 @@ publicApiV8.use('/org/v2/list', proxyCreatorRoute(express.Router(), CONSTANTS.KO
 publicApiV8.use('/liveness', (_req, res) => {
     res.status(200).send('ok')
 })
+
+publicApiV8.post('/designation/search', async (req, res) => {
+  const { searchString } = req.body
+  let { pageSize, pageNumber, requestedFields } = req.body
+
+  // ---- 0. Apply defaults if missing ----
+  pageNumber = Number(pageNumber !== undefined && pageNumber !== null ? pageNumber : 0)
+  pageSize = Number(pageSize !== undefined && pageSize !== null ? pageSize : 20)
+  // ---- Ensure requestedFields is always an array ----
+  if (!Array.isArray(requestedFields)) {
+    requestedFields = []
+  }
+
+  // ---- 1. Validate searchString ----
+  if (typeof searchString !== 'string') {
+    return res.status(400).json({
+      message: 'searchString must be a string',
+    })
+  }
+  if (searchString.length < 2 || searchString.length > 50) {
+    return res.status(400).json({
+      message: 'searchString length must be between 2 and 50 characters',
+    })
+  }
+  const searchQueryStringRegex = new RegExp(CONSTANTS.SEARCH_QUERY_STRING_REGEX, 'i')
+  if (searchQueryStringRegex.test(searchString)) {
+    return res.status(400).json({
+    message: 'Invalid characters in searchString',
+    })
+  }
+
+  // ---- 2. Validate pageSize (1–100) ----
+  if (isNaN(pageSize) || pageSize < 1 || pageSize > 100) {
+    return res.status(400).json({
+      message: 'pageSize must be a number between 1 and 100',
+    })
+  }
+
+  // ---- 3. Validate pageNumber (0–10000) ----
+  if (isNaN(pageNumber) || pageNumber < 0 || pageNumber > 10000) {
+    return res.status(400).json({
+      message: 'pageNumber must be a number between 0 and 10000',
+    })
+  }
+
+  // ---- Set normalized values back into req.body ----
+  req.body.pageNumber = pageNumber
+  req.body.pageSize = pageSize
+  req.body.requestedFields = requestedFields
+
+  return publicDesignationSearch(req, res)
+})
+
+const publicDesignationSearch = async (req: Request, res: express.Response) => {
+  const reqBody = {
+      filterCriteriaMap: {
+        status: 'Active',
+      },
+      pageNumber: req.body.pageNumber,
+      pageSize: req.body.pageSize,
+      requestedFields: req.body.requestedFields,
+      searchString: req.body.searchString,
+  }
+  try {
+    const response = await axios.post(API_END_POINTS.designationSearch, reqBody, {
+      ...axiosRequestConfig,
+      headers: {
+        Authorization: CONSTANTS.SB_API_KEY,
+      },
+    })
+    const resCode = response.data.responseCode
+    if (!resCode || resCode.toLowerCase() !== 'ok') {
+      res.status(400).send(response.data)
+    } else {
+      res.status(200).send(response.data)
+    }
+  } catch (error) {
+    logError(`Failed to get designation list. Error: ${error}`)
+    res.status(500).send('Internal Server Error')
+  }
+}

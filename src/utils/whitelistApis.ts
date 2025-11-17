@@ -6688,6 +6688,13 @@ export const API_LIST = {
                ROLE.MDO_LEADER,
            ],
        },
+        '/proxies/v8/user/v2/assignedcourses': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7533,6 +7540,7 @@ export const API_LIST = {
             '/proxies/v8/storage/v1/bp/assignment/answer/:contentId/:batchId/:formId',
             '/proxies/v8/storage/v1/bp/assignment/answer/read/file',
             '/proxies/v8/org/level/hierarchy',
+            '/proxies/v8/user/v2/assignedcourses',
             '/proxies/v8/v1/notifyAssignment/upload',
             '/proxies/v8/v1/notifyAssignment/submit',
             '/proxies/v8/v1/notifyAssignment/evaluate',
