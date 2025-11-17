@@ -160,22 +160,27 @@ publicApiV8.post('/designation/search', async (req, res) => {
     requestedFields = []
   }
 
-  // ---- 1. Validate searchString ----
-  if (typeof searchString !== 'string') {
-    return res.status(400).json({
-      message: 'searchString must be a string',
-    })
-  }
-  if (searchString.length < 2 || searchString.length > 50) {
-    return res.status(400).json({
-      message: 'searchString length must be between 2 and 50 characters',
-    })
-  }
-  const searchQueryStringRegex = new RegExp(CONSTANTS.SEARCH_QUERY_STRING_REGEX, 'i')
-  if (searchQueryStringRegex.test(searchString)) {
-    return res.status(400).json({
-    message: 'Invalid characters in searchString',
-    })
+  // ---- 1. Validate searchString ONLY IF PROVIDED ----
+  if (searchString !== undefined && searchString !== null && searchString !== '') {
+
+    if (typeof searchString !== 'string') {
+      return res.status(400).json({
+        message: 'searchString must be a string',
+      })
+    }
+
+    if (searchString.length < 2 || searchString.length > 50) {
+      return res.status(400).json({
+        message: 'searchString length must be between 2 and 50 characters',
+      })
+    }
+
+    const searchQueryStringRegex = new RegExp(CONSTANTS.SEARCH_QUERY_STRING_REGEX, 'i')
+    if (searchQueryStringRegex.test(searchString)) {
+      return res.status(400).json({
+        message: 'Invalid characters in searchString',
+      })
+    }
   }
 
   // ---- 2. Validate pageSize (1–100) ----
