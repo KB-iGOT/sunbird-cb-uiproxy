@@ -161,39 +161,44 @@ publicApiV8.post('/designation/search', async (req, res) => {
     requestedFields = []
   }
 
-  // ---- 1. Validate searchString ----
-  if (typeof searchString !== 'string') {
-    return res.status(400).json({
-      message: 'searchString must be a string',
-    })
-  }
-  if (searchString.length < 2 || searchString.length > 50) {
-    return res.status(400).json({
-      message: 'searchString length must be between 2 and 50 characters',
-    })
-  }
-  const searchQueryStringRegex = new RegExp(CONSTANTS.SEARCH_QUERY_STRING_REGEX, 'i')
-  if (searchQueryStringRegex.test(searchString)) {
-    return res.status(400).json({
-    message: 'Invalid characters in searchString',
-    })
+  // ---- 1. Validate searchString ONLY IF PROVIDED ----
+  if (searchString !== undefined && searchString !== null && searchString !== '') {
+
+    if (typeof searchString !== CONSTANTS.STRING_TYPE) {
+      return res.status(400).json({
+        message: CONSTANTS.SEARCH_STRING_TYPE_ERR_MSG,
+      })
+    }
+
+    if (searchString.length < 2 || searchString.length > 50) {
+      return res.status(400).json({
+        message: CONSTANTS.SEARCH_STRING_LENGTH_ERR_MSG,
+      })
+    }
+
+    const searchQueryStringRegex = new RegExp(CONSTANTS.SEARCH_QUERY_STRING_REGEX, 'i')
+    if (searchQueryStringRegex.test(searchString)) {
+      return res.status(400).json({
+        message: CONSTANTS.SEARCH_STRING_INVALID_CHAR_ERR_MSG,
+      })
+    }
   }
 
   // ---- 2. Validate pageSize (1–100) ----
   if (isNaN(pageSize) || pageSize < 1 || pageSize > 100) {
     return res.status(400).json({
-      message: 'pageSize must be a number between 1 and 100',
+      message: CONSTANTS.PAGE_SIZE_ERR_MSG,
     })
   }
 
   // ---- 3. Validate pageNumber (0–10000) ----
   if (isNaN(pageNumber) || pageNumber < 0 || pageNumber > 10000) {
     return res.status(400).json({
-      message: 'pageNumber must be a number between 0 and 10000',
+      message: CONSTANTS.PAGE_NUMBER_ERR_MSG,
     })
   }
 
-  // ---- Set normalized values back into req.body ----
+  // ----4. Set normalized values back into req.body ----
   req.body.pageNumber = pageNumber
   req.body.pageSize = pageSize
   req.body.requestedFields = requestedFields
@@ -204,7 +209,7 @@ publicApiV8.post('/designation/search', async (req, res) => {
 const publicDesignationSearch = async (req: Request, res: express.Response) => {
   const reqBody = {
       filterCriteriaMap: {
-        status: 'Active',
+        status: CONSTANTS.ACTIVE,
       },
       pageNumber: req.body.pageNumber,
       pageSize: req.body.pageSize,
@@ -226,7 +231,7 @@ const publicDesignationSearch = async (req: Request, res: express.Response) => {
     }
   } catch (error) {
     logError(`Failed to get designation list. Error: ${error}`)
-    res.status(500).send('Internal Server Error')
+    res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERR_MSG)
   }
 }
 

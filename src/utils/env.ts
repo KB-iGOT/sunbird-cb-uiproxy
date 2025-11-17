@@ -209,6 +209,14 @@ export const CONSTANTS = {
   EC_REDIRECT_PATH: env.EC_REDIRECT_PATH || '/page/custom-home/iiidem',
   IIIDEM_PORTAL_HOST: env.IIIDEM_PORTAL_HOST || 'iiidem.igotkarmayogi.gov.in',
   SEARCH_QUERY_STRING_REGEX: env.SEARCH_QUERY_STRING_REGEX || '[*{}\\[\\]\\\\]|(\\b(AND|OR|NOT)\\b)',
+  SEARCH_STRING_TYPE_ERR_MSG: 'searchString must be a string',
+  SEARCH_STRING_LENGTH_ERR_MSG: 'searchString length must be between 2 and 50 characters',
+  SEARCH_STRING_INVALID_CHAR_ERR_MSG: 'Invalid characters in searchString',
+  PAGE_SIZE_ERR_MSG: 'pageSize must be a number between 1 and 100',
+  PAGE_NUMBER_ERR_MSG: 'pageNumber must be a number between 0 and 10000',
+  STRING_TYPE: 'string',
+  ACTIVE: 'Active',
+  INTERNAL_SERVER_ERR_MSG: 'Internal server error',
 
 }
 
