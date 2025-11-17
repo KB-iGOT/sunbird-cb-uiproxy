@@ -6684,6 +6684,8 @@ export const API_LIST = {
            // tslint:disable-next-line: object-literal-sort-keys
            ROLE_CHECK: [
                ROLE.PROGRAM_COORDINATOR,
+               ROLE.MDO_ADMIN,
+               ROLE.MDO_LEADER,
            ],
        },
         '/proxies/v8/user/v2/assignedcourses': {
