@@ -1,6 +1,5 @@
 import axios from 'axios'
 import express, { Request } from 'express'
-import express, { Request } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { logError } from '../utils/logger'
@@ -23,6 +22,9 @@ const API_END_POINTS = {
   publicAssessmentV5Result: `${CONSTANTS.KONG_API_BASE}/public/assessment/v5/result`,
   publicAssessmentV5Submit: `${CONSTANTS.KONG_API_BASE}/public/assessment/v5/assessment/submit`,
   publicAssessmentV7Result: `${CONSTANTS.KONG_API_BASE}/public/assessment/v7/result`,
+  publicFormSubmit: `${CONSTANTS.KONG_API_BASE}/forms/v2/saveFormSubmit`,
+  publicGetApplicationsById: `${CONSTANTS.KONG_API_BASE}/forms/v2/getApplicationsById`,
+  publicGetFormById: `${CONSTANTS.KONG_API_BASE}/forms/v2/getFormById`,
 }
 
 publicApiV8.get('/', (_req, res) => {
@@ -102,6 +104,12 @@ publicApiV8.use('/public/assessment/v7/result', proxyCreatorRoute(express.Router
 
 publicApiV8.use('/org/v1/read', proxyCreatorRoute(express.Router(), CONSTANTS.KONG_API_BASE + '/org/v1/read'))
 
+publicApiV8.use('/forms/v2/getFormById', proxyCreatorRoute(express.Router(), API_END_POINTS.publicGetFormById))
+
+publicApiV8.use('/forms/v2/getApplicationsById', proxyCreatorRoute(express.Router(), API_END_POINTS.publicGetApplicationsById))
+
+publicApiV8.use('/forms/v2/saveFormSubmit', proxyCreatorRoute(express.Router(), API_END_POINTS.publicFormSubmit))
+
 publicApiV8.get('/careers/list', async (_, res) => {
    await fetchList('Jobs', res)
  })
@@ -140,7 +148,7 @@ const fetchList = async (resourceCategoryString: string, res: express.Response) 
     }
   } catch (error) {
     logError(`Failed to get ${resourceCategoryString} listing. Error: ${error}`)
-    res.status(500).send('Internal Server Error')
+    res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERROR)
   }
 }
 
@@ -226,7 +234,7 @@ const publicDesignationSearch = async (req: Request, res: express.Response) => {
     }
   } catch (error) {
     logError(`Failed to get designation list. Error: ${error}`)
-    res.status(500).send('Internal Server Error')
+    res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERROR)
   }
 }
 
@@ -266,6 +274,6 @@ const fetchContentDetailsList = async (resourceCategoryString: string, req: Requ
     }
   } catch (error) {
     logError(`Failed to get ${resourceCategoryString} listing. Error: ${error}`)
-    res.status(500).send('Internal Server Error')
+    res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERROR)
   }
 }

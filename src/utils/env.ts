@@ -209,7 +209,7 @@ export const CONSTANTS = {
   EC_REDIRECT_PATH: env.EC_REDIRECT_PATH || '/page/custom-home/iiidem',
   IIIDEM_PORTAL_HOST: env.IIIDEM_PORTAL_HOST || 'iiidem.igotkarmayogi.gov.in',
   SEARCH_QUERY_STRING_REGEX: env.SEARCH_QUERY_STRING_REGEX || '[*{}\\[\\]\\\\]|(\\b(AND|OR|NOT)\\b)',
-
+  INTERNAL_SERVER_ERROR : 'Internal Server Error',
 }
 
 export const RESTRICTED_PYTHON_STMT: string[] = process.env.RESTRICTED_CHARACTERS
