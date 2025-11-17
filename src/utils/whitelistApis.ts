@@ -1,5 +1,4 @@
 'use strict'
-import { roleActivityApi } from 'src/protectedApi_v8/roleActivity'
 import { ROLE } from './roles'
 
 const CHECK = {
