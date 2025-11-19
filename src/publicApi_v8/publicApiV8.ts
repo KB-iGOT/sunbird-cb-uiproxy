@@ -22,9 +22,9 @@ const API_END_POINTS = {
   publicAssessmentV5Result: `${CONSTANTS.KONG_API_BASE}/public/assessment/v5/result`,
   publicAssessmentV5Submit: `${CONSTANTS.KONG_API_BASE}/public/assessment/v5/assessment/submit`,
   publicAssessmentV7Result: `${CONSTANTS.KONG_API_BASE}/public/assessment/v7/result`,
-  publicFormSubmit: `${CONSTANTS.KONG_API_BASE}/forms/v2/saveFormSubmit`,
+  publicFormSubmit: `${CONSTANTS.KONG_API_BASE}/public/forms/v2/saveFormSubmit`,
   publicGetApplicationsById: `${CONSTANTS.KONG_API_BASE}/forms/v2/getApplicationsById`,
-  publicGetFormById: `${CONSTANTS.KONG_API_BASE}/forms/v2/getFormById`,
+  publicGetFormById: `${CONSTANTS.KONG_API_BASE}/public/forms/v2/getFormById`,
 }
 
 publicApiV8.get('/', (_req, res) => {
