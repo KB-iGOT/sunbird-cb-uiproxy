@@ -130,6 +130,7 @@ parichayAuth.get('/callback', async (req, res) => {
                     + ', Received a keycloak error: ' + keycloakResult.errMessage)
                   result.errMessage = keycloakResult.errMessage
                 }
+                logInfo('Parichay user session established in Keycloak: ' + JSON.stringify(keycloakResult))
             }
         }
         if (result.errMessage !== '') {
