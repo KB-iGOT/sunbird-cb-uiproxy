@@ -108,7 +108,26 @@ publicApiV8.use('/public/forms/v2/getFormById', proxyCreatorRoute(express.Router
 
 publicApiV8.use('/forms/v2/getApplicationsById', proxyCreatorRoute(express.Router(), API_END_POINTS.publicGetApplicationsById))
 
-publicApiV8.use('/public/forms/v2/saveFormSubmit', proxyCreatorRoute(express.Router(), API_END_POINTS.publicFormSubmit))
+publicApiV8.post('/public/forms/v2/saveFormSubmit', async (req: Request, res: express.Response) => {
+  try {
+    const response = await axios.post(API_END_POINTS.publicFormSubmit, req.body, {
+      ...axiosRequestConfig,
+      headers: {
+        ...req.headers,
+        Authorization: CONSTANTS.SB_API_KEY,
+      },
+    })
+    const resCode = response.data.responseCode
+    if (!resCode || resCode.toLowerCase() !== 'ok') {
+      res.status(400).send(response.data)
+    } else {
+      res.status(200).send(response.data)
+    }
+  } catch (error) {
+    logError(`Failed to submit form. Error: ${error}`)
+    res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERROR)
+  }
+})
 
 publicApiV8.get('/careers/list', async (_, res) => {
    await fetchList('Jobs', res)
