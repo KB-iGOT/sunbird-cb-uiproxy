@@ -188,11 +188,6 @@ export class Server {
     this.app.use('/reset', (_req, res) => {
       logInfo('CLEARING RES COOKIES')
       const host = _req.get('host')
-      logInfo('host is: ' + host)
-      logInfo('response cookies: ' + JSON.stringify(_req.session))
-      logInfo('Cookies:' + _req.get('cookies'))
-      logInfo('Cookie:' + _req.get('cookie'))
-      logInfo('Cookies::::' + JSON.stringify(_req.cookies))
       let domainUrl = ''
       if (host !== undefined) {
         if (host.includes('localhost')) {
