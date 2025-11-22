@@ -30,20 +30,20 @@ export async function fetchUserByEmailId(emailId: string) {
         } else if (sbUserSearchRes.data.result.response.count === 1) {
             const contentObj = sbUserSearchRes.data.result.response.content[0]
             const status = contentObj.status
-            logInfo('user account exist. Data: ' + JSON.stringify(sbUserSearchRes.data) + ', Status: ' + status)
+            logInfo('ssoUserHelper:: user account exist for :: ' + emailId + ', Status: ' + status)
             if (status === 1) {
-                logInfo('user account enabled. returning true')
+                logInfo('ssoUserHelper:: user account enabled. returning true')
                 result.userExist = true
                 result.rootOrgId = contentObj.rootOrgId
             } else {
-                logInfo('user account is diabled. throwing error')
+                logInfo('ssoUserHelper:: user account is diabled. throwing error')
                 result.errMessage = 'Account Disabled. Please contact Admin.'
             }
         } else {
             result.errMessage = 'More than one user account exists. Please contact Admin.'
         }
     } else {
-        logError('googleOauthHelper: fetchUserByEmailId failed' + JSON.stringify(sbUserSearchRes.data))
+        logError('ssoUserHelper:: fetchUserByEmailId failed' + JSON.stringify(sbUserSearchRes.data))
         result.errMessage = 'Failed to verify email exist. Internal Server Error.'
     }
     return Promise.resolve(result)
@@ -110,7 +110,7 @@ export async function createUserWithMailId(emailId: string, firstNameStr: string
         }
     } catch (signUpErr) {
         const errMsg = signUpErr.response.data.params.errmsg
-        logError ('Failed to create User, error msg : ' + errMsg)
+        logError ('ssoUserHelper:: Failed to create User, error msg : ' + errMsg)
         result.errMessage = errMsg
     }
     return Promise.resolve(result)
@@ -131,7 +131,7 @@ export async function updateKeycloakSession(emailId: string, req: any, res: any)
         req.kauth.grant = grant
         const userId = req.kauth.grant.access_token.content.sub.split(':')
         req.session.userId = userId[userId.length - 1]
-        logInfo('userId ::', userId, '------', new Date().toString())
+        logInfo('ssoUserHelper::updateKeycloakSession:: userId ::', userId, ' dateTime :: ', new Date().toString())
         req.session.keycloakClientId = CONSTANTS.KEYCLOAK_GOOGLE_CLIENT_ID
         req.session.keycloakClientSecret = CONSTANTS.KEYCLOAK_GOOGLE_CLIENT_SECRET
         result.access_token = grant.access_token.token
