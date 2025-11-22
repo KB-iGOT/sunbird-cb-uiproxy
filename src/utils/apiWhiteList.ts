@@ -366,27 +366,46 @@ const validateAPI = (req: Request, res: Response, next: NextFunction) => {
         respond403(req, res)
     }
 }
+// tslint:disable-next-line: no-any
+const shouldSkipWhitelistCheck = (path: string) => {
+    return path === '/' || checkIsStaticRoute(path) || _.includes(path, '/resource') || _.includes(path, '/eclogin')
+}
+
+// tslint:disable-next-line: no-any
+const hasValidUserRoles = (session: any) => {
+    return session && 'userRoles' in session && session.userRoles.length > 0
+}
+
+// tslint:disable-next-line: no-any
+const logSessionDebugInfo = (session: any) => {
+    logError('Portal_API_WHITELIST_LOGGER: User needs to authenticated themselves', '------', new Date().toString())
+    logError('Session userRoles: ' + (session ? JSON.stringify(session.userRoles) : 'UNDEFINED'))
+    logError('Session keycloak-token exists: ' + (session && session['keycloak-token'] ? 'YES' : 'NO'))
+}
+
 /**
  * This function is used for checking whether
  */
 export function apiWhiteListLogger() {
     return (req: Request, res: Response, next: NextFunction) => {
-        if (req.path === '/' || checkIsStaticRoute(req.path)) {
+        if (shouldSkipWhitelistCheck(req.path)) {
             next()
             return
         }
-        const REQ_URL = req.path
-        if (!_.includes(REQ_URL, '/resource') && !_.includes(REQ_URL, '/eclogin') && (req.session)) {
-            if (!('userRoles' in req.session) || (('userRoles' in req.session) && (req.session.userRoles.length === 0))) {
-                logError('Portal_API_WHITELIST_LOGGER: User needs to authenticated themselves', '------', new Date().toString())
-                respond419(req, res)
-            } else {
-                // Pattern match for URL
-                logInfo('In WhilteList Call========' + REQ_URL, '------', new Date().toString())
-                validateAPI(req, res, next)
-            }
-        } else {
-            next()
+
+        if (!req.session) {
+            logError('Portal_API_WHITELIST_LOGGER: No session found', '------', new Date().toString())
+            respond419(req, res)
+            return
         }
+
+        if (hasValidUserRoles(req.session)) {
+            logInfo('In WhilteList Call========' + req.path, '------', new Date().toString())
+            validateAPI(req, res, next)
+            return
+        }
+
+        logSessionDebugInfo(req.session)
+        respond419(req, res)
     }
 }

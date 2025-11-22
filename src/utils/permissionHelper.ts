@@ -30,7 +30,13 @@ export const PERMISSION_HELPER = {
             }
             if (!_.includes(reqObj.session.userRoles, 'PUBLIC')) {
                 reqObj.session.userRoles.push('PUBLIC')
-            }            
+            }
+            logInfo('=== ROLES FINALLY SET IN SESSION ===')
+            logInfo('Session ID: ' + reqObj.session.id)
+            logInfo('Session userId: ' + reqObj.session.userId)
+            logInfo('Session userRoles: ' + JSON.stringify(reqObj.session.userRoles))
+            logInfo('Session userName: ' + reqObj.session.userName)
+            logInfo('Timestamp: ' + new Date().toString())
             // tslint:disable-next-line: no-any
             // reqObj.session.save((error: any) => {
             //     if (error) {

@@ -132,6 +132,12 @@ export async function updateKeycloakSession(emailId: string, req: any, res: any)
         const userId = req.kauth.grant.access_token.content.sub.split(':')
         req.session.userId = userId[userId.length - 1]
         logInfo('userId ::', userId, '------', new Date().toString())
+        logInfo('=== SESSION STATE AFTER STORE GRANT ===')
+        logInfo('Session ID: ' + (req.session ? req.session.id : 'NO SESSION'))
+        logInfo('Session userId: ' + req.session.userId)
+        logInfo('Session userRoles: ' + JSON.stringify(req.session.userRoles || 'NOT SET YET'))
+        logInfo('Session userName: ' + (req.session.userName || 'NOT SET YET'))
+        logInfo('Session keycloak-token exists: ' + (req.session['keycloak-token'] ? 'YES' : 'NO'))
         req.session.keycloakClientId = CONSTANTS.KEYCLOAK_GOOGLE_CLIENT_ID
         req.session.keycloakClientSecret = CONSTANTS.KEYCLOAK_GOOGLE_CLIENT_SECRET
         result.access_token = grant.access_token.token
