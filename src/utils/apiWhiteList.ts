@@ -379,6 +379,9 @@ const hasValidUserRoles = (session: any) => {
 // tslint:disable-next-line: no-any
 const logSessionDebugInfo = (session: any) => {
     logError('Portal_API_WHITELIST_LOGGER: User needs to authenticated themselves', '------', new Date().toString())
+    logError('Session ID: ' + (session ? session.id : 'NO SESSION ID'))
+    logError('Session userId: ' + (session ? session.userId : 'UNDEFINED'))
+    logError('Session userName: ' + (session ? session.userName : 'UNDEFINED'))
     logError('Session userRoles: ' + (session ? JSON.stringify(session.userRoles) : 'UNDEFINED'))
     logError('Session keycloak-token exists: ' + (session && session['keycloak-token'] ? 'YES' : 'NO'))
 }

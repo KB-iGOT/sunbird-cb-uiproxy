@@ -37,17 +37,18 @@ export const PERMISSION_HELPER = {
             logInfo('Session userRoles: ' + JSON.stringify(reqObj.session.userRoles))
             logInfo('Session userName: ' + reqObj.session.userName)
             logInfo('Timestamp: ' + new Date().toString())
+
+            // Explicitly save session to ensure persistence
             // tslint:disable-next-line: no-any
-            // reqObj.session.save((error: any) => {
-            //     if (error) {
-            //         logError('reqObj.session.save error -- ', error)
-            //         callback(error, null)
-            //     } else {
-            //       logInfo('Before calling createNodeBBUser', '------', new Date().toString())
-            //       this.createNodeBBUser(reqObj, callback)
-            //     //   callback(null, userData)
-            //     }
-            // })
+            reqObj.session.save((error: any) => {
+                if (error) {
+                    logError('ERROR: Failed to save session with roles -- ', error)
+                } else {
+                    logInfo('SUCCESS: Session saved with roles at ' + new Date().toString())
+                }
+            })
+            // Continue without waiting for save to complete
+            callback(null, userData)
         } else {
             callback('reqObj.session no session', null)
         }
