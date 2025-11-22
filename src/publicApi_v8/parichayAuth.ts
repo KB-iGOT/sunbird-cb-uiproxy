@@ -64,7 +64,7 @@ parichayAuth.get('/callback', async (req, res) => {
         if (req.session) {
             req.session.parichayToken = tokenResponse.data
             req.session.cookie.expires = new Date(getCurrnetExpiryTime(tokenResponse.data.access_token))
-            logInfo('Parichay Token is set in request Session.' + tokenResponse.data.access_token)
+            logInfo('Parichay Token is set in request Session.')
         } else {
             logError('Failed to set Parichay token in req session. Session not available...')
         }
@@ -77,7 +77,7 @@ parichayAuth.get('/callback', async (req, res) => {
             url: CONSTANTS.PARICHAY_USER_DETAILS_URL,
         })
 
-        logInfo('User information from Parichay : ' + JSON.stringify(userDetailResponse.data))
+        logInfo('User information from Parichay received successfully. ')
         const loginId = userDetailResponse.data.loginId
         if (!loginId) {
           const errorMessage = 'iGOT login failed. You must allow Email id on the consent form for Login. '
@@ -130,7 +130,7 @@ parichayAuth.get('/callback', async (req, res) => {
                     + ', Received a keycloak error: ' + keycloakResult.errMessage)
                   result.errMessage = keycloakResult.errMessage
                 }
-                logInfo('Parichay user session established in Keycloak: ' + JSON.stringify(keycloakResult))
+                logInfo('Parichay user session established in Keycloak successfully.')
             }
         }
         if (result.errMessage !== '') {
