@@ -171,12 +171,6 @@ export class CustomKeycloak {
   }
 
   protect = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    logInfo('=== KEYCLOAK PROTECT CALLED ===')
-    logInfo('Request URL: ' + req.path)
-    logInfo('Session ID: ' + (req.session ? req.session.id : 'NO SESSION'))
-    logInfo('Session userId: ' + (req.session ? req.session.userId : 'NO USER ID'))
-    logInfo('Session userRoles: ' + (req.session ? JSON.stringify(req.session.userRoles) : 'NO ROLES'))
-    logInfo('Session keycloak-token exists: ' + (req.session && req.session['keycloak-token'] ? 'YES' : 'NO'))
     const keycloak = this.getKeyCloakObject(req)
     return keycloak.protect()(req, res, next)
   }
