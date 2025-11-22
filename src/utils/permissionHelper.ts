@@ -9,10 +9,10 @@ import { extractUserToken } from './requestExtract'
 export const PERMISSION_HELPER = {
     // tslint:disable-next-line: no-any
     setRolesData(reqObj: any, callback: any, body: any) {
-        logInfo('permission helper:: setRolesData function ', '------', new Date().toString())
+        logInfo('permissionHelper:: setRolesData function ', '------', new Date().toString())
         // tslint:disable-next-line: no-any
         const userData: any = JSON.parse(body)
-        logInfo(JSON.stringify(userData))
+        logInfo('permissionHelper:: received user data successfully.')
         if (reqObj.session) {
             reqObj.session.userId = userData.result.response.id ? userData.result.response.id : userData.result.response.userId
             reqObj.session.userName = userData.result.response.userName
@@ -30,22 +30,23 @@ export const PERMISSION_HELPER = {
             }
             if (!_.includes(reqObj.session.userRoles, 'PUBLIC')) {
                 reqObj.session.userRoles.push('PUBLIC')
-            }            
+            }
+
+            // Explicitly save session to ensure persistence
             // tslint:disable-next-line: no-any
-            // reqObj.session.save((error: any) => {
-            //     if (error) {
-            //         logError('reqObj.session.save error -- ', error)
-            //         callback(error, null)
-            //     } else {
-            //       logInfo('Before calling createNodeBBUser', '------', new Date().toString())
-            //       this.createNodeBBUser(reqObj, callback)
-            //     //   callback(null, userData)
-            //     }
-            // })
+            reqObj.session.save((error: any) => {
+                if (error) {
+                    logError('permissionHelper:: ERROR: Failed to save session with roles -- ', error)
+                } else {
+                    logInfo('permissionHelper:: SUCCESS: Session saved with roles at ' + new Date().toString())
+                }
+            })
+            // Continue without waiting for save to complete
+            callback(null, userData)
         } else {
-            callback('reqObj.session no session', null)
+            callback('permissionHelper:: reqObj.session no session', null)
         }
-        logInfo('permission helper:: setRolesData function end', '------', new Date().toString())
+        logInfo('permissionHelper:: setRolesData function end', '------', new Date().toString())
     },
     // tslint:disable-next-line: no-any
     setNodeBBUID(reqObj: any, callback: any, body: any) {
@@ -71,7 +72,7 @@ export const PERMISSION_HELPER = {
     // tslint:disable-next-line: no-any
     getCurrentUserRoles(reqObj: any, callback: any) {
         const userId = reqObj.session.userId
-        logInfo('Step 3: getCurrentUserRoles for user ' + userId, '------', new Date().toString())
+        logInfo('permissionHelper:: Step 3: getCurrentUserRoles for user ' + userId, '------', new Date().toString())
         const readUrl = `${CONSTANTS.KONG_API_BASE}/user/v2/read/` + userId
         const options = {
             headers: {
@@ -88,7 +89,7 @@ export const PERMISSION_HELPER = {
                 // tslint:disable-next-line: no-any
                 const userData: any = JSON.parse(body)
                 if (userData.responseCode.toUpperCase() === 'OK') {
-                    logInfo('Success user/v2/read::', '------', new Date().toString())
+                    logInfo('permissionHelper:: Success user/v2/read::', '------', new Date().toString())
                     this.setRolesData(reqObj, callback, body)
                 } else {
                     const errMsg = 'Failed to read the user with Id: ' + userId + 'Error: ' + userData.responseCode
@@ -97,7 +98,7 @@ export const PERMISSION_HELPER = {
                 }
             }
             if (err) {
-                logError('Making axios call to nodeBB ERROR -- ', err, '------', new Date().toString())
+                logError('Making axios call to user read. ERROR -- ', err, '------', new Date().toString())
                 callback(err, null)
             }
         })
