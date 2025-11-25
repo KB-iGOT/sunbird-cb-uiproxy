@@ -6424,6 +6424,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.CONTENT_CREATOR,
+                ROLE.SPV_PUBLISHER,
             ],
         },
         '/proxies/v8/moderation/v1/language/detect': {
