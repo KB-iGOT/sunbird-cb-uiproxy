@@ -1,6 +1,5 @@
 import axios from 'axios'
 import express, { Request } from 'express'
-import express, { Request } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { logError } from '../utils/logger'
