@@ -18,7 +18,7 @@ parichayAuth.get('/auth', async (req, res) => {
     } else if (iiidemFlag) {
         logError('iiidem flag present but session not available to persist it')
     }
-    const callbackHost = iiidemFlag? CONSTANTS.IIIDEM_PORTAL_HOST: req.hostname
+    const callbackHost = iiidemFlag ? CONSTANTS.IIIDEM_PORTAL_HOST : req.hostname
     const redirectUrl = 'https://' + callbackHost + CONSTANTS.PARICHAY_AUTH_CALLBACK_URL
     let oAuthParams = 'client_id=' + CONSTANTS.PARICHAY_CLIENT_ID
     oAuthParams = oAuthParams + '&redirect_uri=' + redirectUrl
@@ -130,6 +130,7 @@ parichayAuth.get('/callback', async (req, res) => {
                     + ', Received a keycloak error: ' + keycloakResult.errMessage)
                   result.errMessage = keycloakResult.errMessage
                 }
+                logInfo('Parichay user session established in Keycloak: ' + JSON.stringify(keycloakResult))
             }
         }
         if (result.errMessage !== '') {

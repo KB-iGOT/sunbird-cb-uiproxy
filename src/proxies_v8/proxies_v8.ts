@@ -1358,3 +1358,7 @@ proxiesV8.use('/consent/*',
 proxiesV8.use('/v1/notifyAssignment/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/promotionalcontent/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
