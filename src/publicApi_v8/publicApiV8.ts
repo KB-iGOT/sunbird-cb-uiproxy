@@ -125,7 +125,7 @@ publicApiV8.post('/public/forms/v2/saveFormSubmit', async (req: Request, res: ex
     }
   } catch (error) {
     logError(`Failed to submit form. Error: ${error}`)
-    res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERROR)
+    res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERR_MSG)
   }
 })
 
@@ -167,7 +167,7 @@ const fetchList = async (resourceCategoryString: string, res: express.Response) 
     }
   } catch (error) {
     logError(`Failed to get ${resourceCategoryString} listing. Error: ${error}`)
-    res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERROR)
+    res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERR_MSG)
   }
 }
 
@@ -298,6 +298,6 @@ const fetchContentDetailsList = async (resourceCategoryString: string, req: Requ
     }
   } catch (error) {
     logError(`Failed to get ${resourceCategoryString} listing. Error: ${error}`)
-    res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERROR)
+    res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERR_MSG)
   }
 }
