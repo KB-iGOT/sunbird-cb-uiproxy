@@ -2,7 +2,7 @@ import axios from 'axios'
 import express from 'express'
 import { UploadedFile } from 'express-fileupload'
 import FormData from 'form-data'
-import lodash from 'lodash'
+import * as lodash from 'lodash'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { logError, logInfo } from '../utils/logger'
@@ -36,6 +36,7 @@ import { lookerDashboard } from './lookerIntegration'
 const API_END_POINTS = {
   batchParticipantsApi: `${CONSTANTS.KONG_API_BASE}/course/v1/batch/participants/list`,
   contentNotificationEmail: `${CONSTANTS.NOTIFICATION_SERVIC_API_BASE}/v1/notification/send/sync`,
+  enrollmentListV4: `${CONSTANTS.KONG_API_BASE}/course/v4/user/enrollment/list`,
   kongExtOrgSearch: `${CONSTANTS.KONG_API_BASE}/org/v1/cb/ext/search`,
   kongSearchOrg: `${CONSTANTS.KONG_API_BASE}/org/v1/search`,
   // tslint:disable-next-line: all
@@ -1358,3 +1359,26 @@ proxiesV8.use('/consent/*',
 proxiesV8.use('/v1/notifyAssignment/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.post('learner/course/v4/user/enrollment/list/:id', async (req, res) => {
+const rootOrgId = _.get(req, 'session.rootOrgId')
+const originalUrl = req.originalUrl
+const lastIndex = originalUrl.lastIndexOf('/')
+const subStr = originalUrl.substr(lastIndex).substr(1).split('-').length
+let urlUserId = ''
+if (subStr === 5 && (originalUrl.substr(lastIndex).substr(1))) {
+    urlUserId = originalUrl.substr(lastIndex).substr(1)
+  }
+  const enrollmentListResponse = await axios({
+    ...axiosRequestConfig,
+    data: req.body,
+    headers: {
+        Authorization: CONSTANTS.SB_API_KEY,
+        // tslint:disable-next-line: all
+        [CONSTANTS.X_AUTHENTICATED_USER_ORGID]: rootOrgId,
+    },
+    method: 'POST',
+    url: API_END_POINTS.enrollmentListV4 + urlUserId,
+  })
+res.status(200).send(enrollmentListResponse.data)
+})

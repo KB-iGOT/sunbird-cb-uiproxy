@@ -217,6 +217,7 @@ export const CONSTANTS = {
   STRING_TYPE: 'string',
   ACTIVE: 'Active',
   INTERNAL_SERVER_ERR_MSG: 'Internal server error',
+  X_AUTHENTICATED_USER_ORGID: 'x-authenticated-user-orgid',
 
 }
 
