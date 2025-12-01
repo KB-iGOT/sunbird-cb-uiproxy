@@ -380,7 +380,7 @@ export function apiWhiteListLogger() {
             if (!('userRoles' in req.session)) {
             logInfo('checking for parichay issue need to see what all role are there in the session', req.session.userrole)
             } else {    
-                logInfo('the userRole is not there in the session', req.session.userrole)
+                logInfo('the userRole is not there in the session', req.session)
             }
             if (!('userRoles' in req.session) || (('userRoles' in req.session) && (req.session.userRoles.length === 0))) {
                 logError('Portal_API_WHITELIST_LOGGER: User needs to authenticated themselves', '------', new Date().toString())
