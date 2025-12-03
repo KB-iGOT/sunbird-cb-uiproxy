@@ -37,12 +37,12 @@ export const PERMISSION_HELPER = {
             reqObj.session.save((error: any) => {
                 if (error) {
                     logError('permissionHelper:: ERROR: Failed to save session with roles -- ', error)
+                    callback(error, null)
                 } else {
                     logInfo('permissionHelper:: SUCCESS: Session saved with roles at ' + new Date().toString())
+                    callback(null, userData)
                 }
             })
-            // Continue without waiting for save to complete
-            callback(null, userData)
         } else {
             callback('permissionHelper:: reqObj.session no session', null)
         }
