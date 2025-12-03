@@ -33,16 +33,13 @@ export const PERMISSION_HELPER = {
             }
             this.createNodeBBUser(reqObj, callback)
             // tslint:disable-next-line: no-any
-            // reqObj.session.save((error: any) => {
-            //     if (error) {
-            //         logError('reqObj.session.save error -- ', error)
-            //         callback(error, null)
-            //     } else {
-            //       logInfo('Before calling createNodeBBUser', '------', new Date().toString())
-            //       this.createNodeBBUser(reqObj, callback)
-            //     //   callback(null, userData)
-            //     }
-            // })
+            reqObj.session.save((error: any) => {
+                if (error) {
+                    logError('permissionHelper:: ERROR: Failed to save session with roles -- ', error)
+                } else {
+                    logInfo('permissionHelper:: SUCCESS: Session saved with roles at ' + new Date().toString())
+                }
+            })
         } else {
             callback('reqObj.session no session', null)
         }
