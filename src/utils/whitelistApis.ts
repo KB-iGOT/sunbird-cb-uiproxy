@@ -6714,7 +6714,7 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/promotionalcontent/v1/delete': {
+        '/proxies/v8/promotionalcontent/v1/delete/:identifier': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7575,6 +7575,6 @@ export const API_LIST = {
             '/proxies/v8/workflow/blendedprogram/nominate',
             '/proxies/v8/promotionalcontent/v1/assignedto/users',
             '/proxies/v8/promotionalcontent/v1/metadata/upsert',
-            '/proxies/v8/promotionalcontent/v1/delete',
+            '/proxies/v8/promotionalcontent/v1/delete/:identifier',
             ],
 }
