@@ -22,6 +22,7 @@ const API_END_POINTS = {
   publicAssessmentV5Result: `${CONSTANTS.KONG_API_BASE}/public/assessment/v5/result`,
   publicAssessmentV5Submit: `${CONSTANTS.KONG_API_BASE}/public/assessment/v5/assessment/submit`,
   publicAssessmentV7Result: `${CONSTANTS.KONG_API_BASE}/public/assessment/v7/result`,
+  publicOrgHierarchySearch: `${CONSTANTS.KONG_API_BASE}/org/hierarchy/search`,
 }
 
 publicApiV8.get('/', (_req, res) => {
@@ -234,4 +235,22 @@ const publicDesignationSearch = async (req: Request, res: express.Response) => {
   }
 }
 
-publicApiV8.use('/org/hierarchy/search', proxyCreatorRoute(express.Router(), CONSTANTS.KONG_API_BASE + '/org/hierarchy/search'))
+publicApiV8.post('/org/hierarchy/search', async (req: Request, res: express.Response) => {
+  try {
+    const response = await axios.post(API_END_POINTS.publicOrgHierarchySearch, req.body, {
+      ...axiosRequestConfig,
+      headers: {
+        ...req.headers,
+      },
+    })
+    const resCode = response.data.responseCode
+    if (!resCode || resCode.toLowerCase() !== 'ok') {
+      res.status(400).send(response.data)
+    } else {
+      res.status(200).send(response.data)
+    }
+  } catch (error) {
+    logError(`Failed to get the hierarchy search Response. Error: ${error}`)
+    res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERR_MSG)
+  }
+})
