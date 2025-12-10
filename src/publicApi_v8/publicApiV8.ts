@@ -233,3 +233,5 @@ const publicDesignationSearch = async (req: Request, res: express.Response) => {
     res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERR_MSG)
   }
 }
+
+publicApiV8.use('/org/hierarchy/search', proxyCreatorRoute(express.Router(), CONSTANTS.KONG_API_BASE + '/org/hierarchy/search'))
