@@ -301,3 +301,5 @@ const fetchContentDetailsList = async (resourceCategoryString: string, req: Requ
     res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERR_MSG)
   }
 }
+
+publicApiV8.use('/org/hierarchy/search', proxyCreatorRoute(express.Router(), CONSTANTS.KONG_API_BASE + '/org/hierarchy/search'))
