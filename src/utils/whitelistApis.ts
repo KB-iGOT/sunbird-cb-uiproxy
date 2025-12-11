@@ -6721,6 +6721,13 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/user/v1/assigned/externalcourses': {
+          checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+              ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7576,5 +7583,6 @@ export const API_LIST = {
             '/proxies/v8/promotionalcontent/v1/assignedto/users',
             '/proxies/v8/otp/v4/verify',
             '/proxies/v8/user/v3/extPatch',
+            '/proxies/v8/user/v1/assigned/externalcourses',
             ],
 }
