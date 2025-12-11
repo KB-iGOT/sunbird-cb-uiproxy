@@ -6720,6 +6720,20 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.PUBLIC,
             ],
+        },
+        '/proxies/v8/content/v1/retirement/schedule': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CONTENT_CREATOR,
+            ],
+        },
+        '/proxies/v8/content/v1/retirement/validate/:identifier': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CONTENT_CREATOR,
+            ],
         },       
     },
     URL_PATTERN:
@@ -7576,5 +7590,7 @@ export const API_LIST = {
             '/proxies/v8/promotionalcontent/v1/assignedto/users',
             '/proxies/v8/promotionalcontent/v1/metadata/upsert',
             '/proxies/v8/promotionalcontent/v1/delete/:identifier',
+            '/proxies/v8/content/v1/retirement/schedule',
+            '/proxies/v8/content/v1/retirement/validate/:identifier'
             ],
 }
