@@ -7591,6 +7591,6 @@ export const API_LIST = {
             '/proxies/v8/promotionalcontent/v1/metadata/upsert',
             '/proxies/v8/promotionalcontent/v1/delete/:identifier',
             '/proxies/v8/content/v1/retirement/schedule',
-            '/proxies/v8/content/v1/retirement/validate/:identifier'
+            '/proxies/v8/content/v1/retirement/validate/:identifier',
             ],
 }
