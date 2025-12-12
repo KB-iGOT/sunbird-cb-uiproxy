@@ -6741,6 +6741,14 @@ export const API_LIST = {
             ROLE_CHECK: [
               ROLE.PUBLIC,
             ],
+        },   
+        '/proxies/v8/event/v1/cancel/:identifier': {
+         checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+              ROLE.MDO_ADMIN,
+              ROLE.SPV_ADMIN
+            ],
         },      
     },
     URL_PATTERN:
@@ -7600,5 +7608,6 @@ export const API_LIST = {
             '/proxies/v8/otp/v4/verify',
             '/proxies/v8/user/v3/extPatch',
             '/proxies/v8/user/v1/assigned/externalcourses',
+            '/proxies/v8/event/v1/cancel/:identifier'
             ],
 }
