@@ -7651,5 +7651,8 @@ export const API_LIST = {
             '/proxies/v8/content/v1/retirement/schedule',
             '/proxies/v8/content/v1/retirement/validate/:identifier',
             '/proxies/v8/content/v4/copy',
+            '/proxies/v8/sso/craete/:id',
+            '/proxies/v8/sso/update/:id',
+            '/proxies/v8/sso/read/:id'
             ],
 }
