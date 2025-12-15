@@ -6762,7 +6762,34 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.CONTENT_CREATOR,
             ],
-        },      
+        },
+        '/proxies/v8/sso/craete/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+                ROLE.CBP_ADMIN,
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/sso/update/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+                ROLE.CBP_ADMIN,
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/sso/read/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+                ROLE.CBP_ADMIN,
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
     },
     URL_PATTERN:
         [
