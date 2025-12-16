@@ -6763,7 +6763,7 @@ export const API_LIST = {
                 ROLE.CONTENT_CREATOR,
             ],
         },
-        '/proxies/v8/sso/craete/:id': {
+        '/proxies/v8/sso/create/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7678,7 +7678,7 @@ export const API_LIST = {
             '/proxies/v8/content/v1/retirement/schedule',
             '/proxies/v8/content/v1/retirement/validate/:identifier',
             '/proxies/v8/content/v4/copy',
-            '/proxies/v8/sso/craete/:id',
+            '/proxies/v8/sso/create/:id',
             '/proxies/v8/sso/update/:id',
             '/proxies/v8/sso/read/:id',
             '/proxies/v8/contentpartner/register/v1/update',
