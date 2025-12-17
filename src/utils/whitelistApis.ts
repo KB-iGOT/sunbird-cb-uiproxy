@@ -6707,6 +6707,17 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/storage/v1/report/form/:reportType/:date/:formId/:fileName': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CBP_ADMIN,
+                ROLE.PROGRAM_COORDINATOR,
+                ROLE.CONTENT_CREATOR,
+                ROLE.CONTENT_REVIEWER,
+                ROLE.CONTENT_PUBLISHER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7560,5 +7571,6 @@ export const API_LIST = {
             '/proxies/v8/forms/v2/bulkGetApplicationsById',
             '/proxies/v8/workflow/blendedprogram/nominate',
             '/proxies/v8/promotionalcontent/v1/assignedto/users',
+            '/proxies/v8/storage/v1/report/form/:reportType/:date/:formId/:fileName',
             ],
 }
