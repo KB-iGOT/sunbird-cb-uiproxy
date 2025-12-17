@@ -6741,7 +6741,7 @@ export const API_LIST = {
             ROLE_CHECK: [
               ROLE.PUBLIC,
             ],
-        },   
+        },
         '/proxies/v8/event/v1/cancel/:identifier': {
          checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -6750,7 +6750,14 @@ export const API_LIST = {
               ROLE.SPV_ADMIN,
               ROLE.MDO_LEADER,
             ],
-        },      
+        },
+        '/proxies/v8/masterdata/v1/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7609,6 +7616,7 @@ export const API_LIST = {
             '/proxies/v8/otp/v4/verify',
             '/proxies/v8/user/v3/extPatch',
             '/proxies/v8/user/v1/assigned/externalcourses',
-            '/proxies/v8/event/v1/cancel/:identifier'
+            '/proxies/v8/event/v1/cancel/:identifier',
+            '/proxies/v8/masterdata/v1/search',
             ],
 }
