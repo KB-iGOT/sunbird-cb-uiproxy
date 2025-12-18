@@ -25,6 +25,7 @@ const API_END_POINTS = {
   publicFormSubmit: `${CONSTANTS.KONG_API_BASE}/public/forms/v2/saveFormSubmit`,
   publicGetApplicationsById: `${CONSTANTS.KONG_API_BASE}/forms/v2/getApplicationsById`,
   publicGetFormById: `${CONSTANTS.KONG_API_BASE}/public/forms/v2/getFormById`,
+  publicOrgHierarchySearch: `${CONSTANTS.KONG_API_BASE}/org/hierarchy/search`,
 }
 
 publicApiV8.get('/', (_req, res) => {
@@ -301,3 +302,23 @@ const fetchContentDetailsList = async (resourceCategoryString: string, req: Requ
     res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERR_MSG)
   }
 }
+
+publicApiV8.post('/org/hierarchy/search', async (req: Request, res: express.Response) => {
+  try {
+    const response = await axios.post(API_END_POINTS.publicOrgHierarchySearch, req.body, {
+      ...axiosRequestConfig,
+      headers: {
+        ...req.headers,
+      },
+    })
+    const resCode = response.data.responseCode
+    if (!resCode || resCode.toLowerCase() !== 'ok') {
+      res.status(400).send(response.data)
+    } else {
+      res.status(200).send(response.data)
+    }
+  } catch (error) {
+    logError(`Failed to get the hierarchy search Response. Error: ${error}`)
+    res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERR_MSG)
+  }
+})
