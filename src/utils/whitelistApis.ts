@@ -6626,6 +6626,7 @@ export const API_LIST = {
                     ROLE.CONTENT_REVIEWER,
                     ROLE.CONTENT_PUBLISHER,
                     ROLE.SPV_PUBLISHER,
+                    ROLE.PUBLIC
             ],
         },
         '/proxies/v8/consent/v1/acknowledge/read/:contentId/:consentId': {
@@ -6636,6 +6637,7 @@ export const API_LIST = {
                     ROLE.CONTENT_REVIEWER,
                     ROLE.CONTENT_PUBLISHER,
                     ROLE.SPV_PUBLISHER,
+                    ROLE.PUBLIC
             ],
         },
         '/proxies/v8/org/level/hierarchy' : {
