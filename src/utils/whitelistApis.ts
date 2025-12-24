@@ -6762,7 +6762,76 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.CONTENT_CREATOR,
             ],
+        },
+        '/proxies/v8/content/v1/retirement/request/decide': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/content/v1/retirement/status': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CONTENT_CREATOR,
+                ROLE.SPV_PUBLISHER,
+            ],
         },      
+        '/proxies/v8/sso/create/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+                ROLE.CBP_ADMIN,
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/sso/update/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+                ROLE.CBP_ADMIN,
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/sso/read/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+                ROLE.CBP_ADMIN,
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/contentpartner/register/v1/update': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+                ROLE.CBP_ADMIN,
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/contentpartner/register/v1/read/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+                ROLE.CBP_ADMIN,
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/contentpartner/register/v1/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+                ROLE.CBP_ADMIN,
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7624,5 +7693,13 @@ export const API_LIST = {
             '/proxies/v8/content/v1/retirement/schedule',
             '/proxies/v8/content/v1/retirement/validate/:identifier',
             '/proxies/v8/content/v4/copy',
+            '/proxies/v8/content/v1/retirement/request/decide',
+            '/proxies/v8/content/v1/retirement/status',
+            '/proxies/v8/sso/create/:id',
+            '/proxies/v8/sso/update/:id',
+            '/proxies/v8/sso/read/:id',
+            '/proxies/v8/contentpartner/register/v1/update',
+            '/proxies/v8/contentpartner/register/v1/read/:id',
+            '/proxies/v8/contentpartner/register/v1/search',
             ],
 }
