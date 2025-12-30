@@ -6626,7 +6626,7 @@ export const API_LIST = {
                     ROLE.CONTENT_REVIEWER,
                     ROLE.CONTENT_PUBLISHER,
                     ROLE.SPV_PUBLISHER,
-                    ROLE.PUBLIC
+                    ROLE.PUBLIC,
             ],
         },
         '/proxies/v8/consent/v1/acknowledge/read/:contentId/:consentId': {
@@ -6637,7 +6637,7 @@ export const API_LIST = {
                     ROLE.CONTENT_REVIEWER,
                     ROLE.CONTENT_PUBLISHER,
                     ROLE.SPV_PUBLISHER,
-                    ROLE.PUBLIC
+                    ROLE.PUBLIC,
             ],
         },
         '/proxies/v8/org/level/hierarchy' : {
@@ -6777,6 +6777,13 @@ export const API_LIST = {
                     ROLE_CHECK: [
                       ROLE.PUBLIC,
                     ],
+        },
+        '/proxies/v8/user/v2/password/reset': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
         },
     },
     URL_PATTERN:
@@ -7640,5 +7647,6 @@ export const API_LIST = {
             '/proxies/v8/event/v1/cancel/:identifier',
             '/proxies/v8/masterdata/v1/search',
             '/proxies/v8/cios-enroll/v1/validation',
+            '/proxies/v8/user/v2/password/reset',
             ],
 }
