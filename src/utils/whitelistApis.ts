@@ -6626,6 +6626,7 @@ export const API_LIST = {
                     ROLE.CONTENT_REVIEWER,
                     ROLE.CONTENT_PUBLISHER,
                     ROLE.SPV_PUBLISHER,
+                    ROLE.PUBLIC,
             ],
         },
         '/proxies/v8/consent/v1/acknowledge/read/:contentId/:consentId': {
@@ -6636,6 +6637,7 @@ export const API_LIST = {
                     ROLE.CONTENT_REVIEWER,
                     ROLE.CONTENT_PUBLISHER,
                     ROLE.SPV_PUBLISHER,
+                    ROLE.PUBLIC,
             ],
         },
         '/proxies/v8/org/level/hierarchy' : {
@@ -6707,6 +6709,17 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/storage/v1/report/form/:reportType/:date/:formId/:fileName': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CBP_ADMIN,
+                ROLE.PROGRAM_COORDINATOR,
+                ROLE.CONTENT_CREATOR,
+                ROLE.CONTENT_REVIEWER,
+                ROLE.CONTENT_PUBLISHER,
+            ],
+          },
         '/proxies/v8/promotionalcontent/v1/metadata/upsert': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -6741,7 +6754,7 @@ export const API_LIST = {
             ROLE_CHECK: [
               ROLE.PUBLIC,
             ],
-        },  
+        },
         '/proxies/v8/content/v1/retirement/schedule': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -6777,7 +6790,7 @@ export const API_LIST = {
                 ROLE.CONTENT_CREATOR,
                 ROLE.SPV_PUBLISHER,
             ],
-        },      
+        },
         '/proxies/v8/sso/create/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -6830,6 +6843,36 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
                 ROLE.CBP_ADMIN,
                 ROLE.SPV_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/event/v1/cancel/:identifier': {
+         checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+              ROLE.MDO_ADMIN,
+              ROLE.SPV_ADMIN,
+              ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/masterdata/v1/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/cios-enroll/v1/validation': {
+                    checksNeeded: [CHECK.ROLE],
+                    // tslint:disable-next-line: object-literal-sort-keys
+                    ROLE_CHECK: [
+                      ROLE.PUBLIC,
+                    ],
+        },
+        '/proxies/v8/user/v2/password/reset': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
             ],
         },
     },
@@ -6895,7 +6938,7 @@ export const API_LIST = {
             '/proxies/v8/action/content/v3/reject/:do_id',
             '/proxies/v8/user/private/v1/assign/role',
             '/proxies/v8/user/v1/search',
-            `/proxies/v8/user/v1/admin/search`,
+`/proxies/v8/user/v1/admin/search`,
             '/proxies/v8/org/v1/read',
             '/proxies/v8/org/v1/profile/read',
             '/proxies/v8/org/v1/profile/patch',
@@ -7685,11 +7728,16 @@ export const API_LIST = {
             '/proxies/v8/forms/v2/bulkGetApplicationsById',
             '/proxies/v8/workflow/blendedprogram/nominate',
             '/proxies/v8/promotionalcontent/v1/assignedto/users',
+            '/proxies/v8/storage/v1/report/form/:reportType/:date/:formId/:fileName',
             '/proxies/v8/promotionalcontent/v1/metadata/upsert',
             '/proxies/v8/promotionalcontent/v1/delete/:identifier',
+            '/proxies/v8/event/v1/cancel/:identifier',
+            '/proxies/v8/masterdata/v1/search',
+            '/proxies/v8/cios-enroll/v1/validation',
+            '/proxies/v8/user/v2/password/reset',
             '/proxies/v8/otp/v4/verify',
             '/proxies/v8/user/v3/extPatch',
-            '/proxies/v8/user/v1/assigned/externalcourses',          
+            '/proxies/v8/user/v1/assigned/externalcourses',
             '/proxies/v8/content/v1/retirement/schedule',
             '/proxies/v8/content/v1/retirement/validate/:identifier',
             '/proxies/v8/content/v4/copy',
