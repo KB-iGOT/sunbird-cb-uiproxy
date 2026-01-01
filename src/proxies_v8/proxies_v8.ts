@@ -1370,3 +1370,7 @@ proxiesV8.use('/promotionalcontent/*',
 proxiesV8.use('/sso/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/learningpathway/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
