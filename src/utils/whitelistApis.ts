@@ -6875,6 +6875,13 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/learningpathway/v1/enrol/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7749,5 +7756,6 @@ export const API_LIST = {
             '/proxies/v8/contentpartner/register/v1/update',
             '/proxies/v8/contentpartner/register/v1/read/:id',
             '/proxies/v8/contentpartner/register/v1/search',
+            '/proxies/v8/learningpathway/v1/enrol/:id',
             ],
 }
