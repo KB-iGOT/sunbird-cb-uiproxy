@@ -86,6 +86,7 @@
     "husky": "^2.3.0",
     "jest": "^30.2.0",
     "nodemon": "^1.19.1",
+    "owasp-dependency-check": "^1.0.1",
     "sonarqube-scanner": "^2.4.1",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
