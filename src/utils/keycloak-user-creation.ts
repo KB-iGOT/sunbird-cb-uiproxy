@@ -1,6 +1,5 @@
 import cassandraDriver from 'cassandra-driver'
-import KcAdminClient from 'keycloak-admin'
-import { RequiredActionAlias } from 'keycloak-admin/lib/defs/requiredActionProviderRepresentation'
+import KcAdminClient from '@keycloak/keycloak-admin-client'
 import request from 'request'
 import { CONSTANTS } from './env'
 import { logError, logInfo } from './logger'
@@ -22,13 +21,8 @@ function getIPList() {
 }
 
 const keycloakConfig = {
-    baseUrl: `${CONSTANTS.HTTPS_HOST}/auth`,
+    baseUrl: CONSTANTS.PORTAL_AUTH_SERVER_URL,
     realmName: CONSTANTS.KEYCLOAK_REALM,
-    requestConfig: {
-        retry: 3,
-        retryDelay: 1,
-        timeout: Number(CONSTANTS.TIMEOUT) || 10000,
-    },
 }
 
 const kcAdminClient = new KcAdminClient(keycloakConfig)
@@ -164,7 +158,7 @@ export async function getAuthToken(email: any): Promise<any> {
 
         return new Promise((resolve, reject) => {
             request.post({
-                url: `${CONSTANTS.HTTPS_HOST}/auth/realms/${CONSTANTS.KEYCLOAK_REALM}/protocol/openid-connect/token`,
+                url: `${CONSTANTS.PORTAL_AUTH_SERVER_URL}/realms/${CONSTANTS.KEYCLOAK_REALM}/protocol/openid-connect/token`,
                 // tslint:disable-next-line: object-literal-sort-keys
                 form: request1,
             }, (err, _httpResponse, body) => {
@@ -233,7 +227,7 @@ export async function sendActionsEmail(userId: string) {
     logInfo(`Sending email to ${userId}`)
     logInfo(`redirect Uri: `, CONSTANTS.HTTPS_HOST)
     return kcAdminClient.users.executeActionsEmail({
-        actions: [RequiredActionAlias.VERIFY_EMAIL],
+        actions: ['VERIFY_EMAIL'],
         clientId: 'portal',
         id: userId,
         lifespan: 2592000,

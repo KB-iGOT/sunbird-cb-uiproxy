@@ -52,7 +52,7 @@ export const CONSTANTS = {
   KC_NEW_USER_DEFAULT_PWD: env.KC_NEW_USER_DEFAULT_PWD || 'User@123',
   KEYCLOAK_REALM: env.KEYCLOAK_REALM || 'sunbird',
   // tslint:disable-next-line: ban
-  KEYCLOAK_SESSION_TTL:  parseInt(env.KEYCLOAK_SESSION_TTL || '0', 10) || 24 * 60 * 60 * 1000,
+  KEYCLOAK_SESSION_TTL: parseInt(env.KEYCLOAK_SESSION_TTL || '0', 10) || 24 * 60 * 60 * 1000,
   KHUB_CLIENT_SECRET: env.KHUB_CLIENT_SECRET || 'axc123',
   KHUB_GRAPH_DATA: env.KHUB_GRAPH_DATA || 'http://localhost:3016',
   KHUB_SEARCH_BASE: env.KHUB_SEARCH_BASE || 'http://localhost:3014',
@@ -168,7 +168,7 @@ export const CONSTANTS = {
   PARICHAY_CLIENT_SECRET: env.PARICHAY_CLIENT_SECRET || 'parichayClientSecret',
   KEYCLOAK_GOOGLE_CLIENT_ID: env.KEYCLOAK_GOOGLE_CLIENT_ID || 'keycloakGoogleClientId',
   KEYCLOAK_GOOGLE_CLIENT_SECRET: env.KEYCLOAK_GOOGLE_CLIENT_SECRET || 'keycloakGoogleClientSecret',
-  PORTAL_AUTH_SERVER_URL: env.PORTAL_AUTH_SERVER_URL || 'https://portal.karmayogi.nic.in/auth',
+  PORTAL_AUTH_SERVER_URL: env.PORTAL_AUTH_SERVER_URL || 'http://localhost:8080',
   PARICHAY_CODE_CHALLENGE: env.PARICHAY_CODE_CHALLENGE || 'parichayCodeChallenge',
   PARICHAY_CODE_VERIFIER: env.PARICHAY_CODE_VERIFIER || 'parichayCodeVerfifier',
   PARICHAY_AUTH_URL: env.PARICHAY_AUTH_URL || 'parichayAuthUrl',
