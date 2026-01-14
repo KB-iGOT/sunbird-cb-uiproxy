@@ -32,7 +32,8 @@ export async function getUserDetailsFromApi(userId: string): Promise<IUserDetail
       `${apiEndpoints.details}/${userId}`,
       axiosRequestConfig
     )
-    return res.data || {}
+    // tslint:disable-next-line: no-any
+    return res.data || {} as any
   } catch (err) {
     return null
   }

@@ -381,7 +381,7 @@ export async function createUser(req: any) {
 
 // tslint:disable-next-line: no-any
 export async function performNewUserSteps(userId: any, req: any, email: any, roles?: any) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
         await UpdateKeycloakUserPassword(userId, false)
             .catch((error) => {
                 logError('performNewUserSteps:: ERROR ON UpdateKeycloakUserPassword', error)

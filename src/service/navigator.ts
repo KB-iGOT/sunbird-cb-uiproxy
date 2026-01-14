@@ -3,9 +3,12 @@ import { ILpData, INsoData, IProfile, IRole } from '../models/navigator.model'
 export function transformNsoData(nsoData: INsoData) {
   nsoData.roles = nsoData.roles.map((role) => {
     role.variants.forEach((variant) => {
-      delete variant.variant_image
-      delete variant.variant_description
-      delete variant.group
+      // tslint:disable-next-line: no-any
+      delete (variant as any).variant_image
+      // tslint:disable-next-line: no-any
+      delete (variant as any).variant_description
+      // tslint:disable-next-line: no-any
+      delete (variant as any).group
       return variant
     })
 

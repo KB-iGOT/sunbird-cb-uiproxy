@@ -4,7 +4,7 @@
   "description": "SB CB UI PROXY",
   "main": "index.js",
   "scripts": {
-    "build": "gulp build",
+    "build": "node -r ts-node/register ./node_modules/gulp/bin/gulp.js build",
     "gulp": "gulp",
     "lint": "tslint -c tslint.json -p tsconfig.json --fix",
     "prebuild": "npm run lint",
@@ -72,7 +72,7 @@
     "@types/express-session": "^1.15.12",
     "@types/helmet": "0.0.43",
     "@types/http-proxy": "^1.17.0",
-    "@types/jest": "^24.9.1",
+    "@types/jest": "^30.0.0",
     "@types/lodash": "^4.14.170",
     "@types/morgan": "^1.7.35",
     "@types/node": "^12.0.4",
@@ -84,14 +84,14 @@
     "gulp-typescript": "^5.0.1",
     "gulpclass": "^0.2.0",
     "husky": "^2.3.0",
-    "jest": "^24.9.0",
+    "jest": "^30.2.0",
     "nodemon": "^1.19.1",
     "sonarqube-scanner": "^2.4.1",
-    "ts-jest": "^24.3.0",
-    "ts-node": "^8.2.0",
+    "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
     "tslint": "^5.17.0",
     "tslint-config-airbnb": "^5.11.1",
     "tslint-sonarts": "^1.9.0",
-    "typescript": "^3.5.1"
+    "typescript": "^4.9.5"
   }
 }
