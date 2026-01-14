@@ -23,28 +23,28 @@ export const extractUserIdFromRequest = (req: IAuthorizedRequest): string => {
   if (wid) {
     return wid
   }
-  return (req.kauth && req.kauth.grant.access_token.content.sub) as string
+  return (req.kauth && req.kauth.grant.access_token.content.sub)
 }
 
 export const extractUserId = (req: IAuthorizedRequest): string => {
   const wid = req.header('wid')
   if (wid) {
-   return wid
+    return wid
   }
-  const userId = (req.kauth && req.kauth.grant.access_token.content.sub) as string
+  const userId = (req.kauth && req.kauth.grant.access_token.content.sub)
   return userId.split(':')[2]
 }
 
 export const extractUserNameFromRequest = (req: IAuthorizedRequest) =>
-  (req.kauth && req.kauth.grant.access_token.content.name) as string
+  (req.kauth && req.kauth.grant.access_token.content.name)
 
 export const extractUserEmailFromRequest = (req: IAuthorizedRequest) =>
-  ((req.kauth && req.kauth.grant.access_token.content.email) ||
-    (req.kauth &&
-      req.kauth.grant.access_token.content.preferred_username)) as string
+((req.kauth && req.kauth.grant.access_token.content.email) ||
+  (req.kauth &&
+    req.kauth.grant.access_token.content.preferred_username))
 
 export const extractUserSessionState = (req: IAuthorizedRequest) =>
-  (req.kauth && req.kauth.grant.access_token.content.session_state) as string
+  (req.kauth && req.kauth.grant.access_token.content.session_state)
 
 export const extractUserTokenContent = (req: IAuthorizedRequest) => {
   return req.kauth && req.kauth.grant.access_token.content
@@ -60,17 +60,11 @@ export const extractAuthorizationFromRequest = (req: IAuthorizedRequest): string
   return 'Bearer ' + token
 }
 export const extractUserTokenFromRequest = (req: IAuthorizedRequest): string => {
-  const xAuthorization = req.header('X-Authenticated-User-Token')
-
-  return xAuthorization as string
-
+  return req.header('X-Authenticated-User-Token')
 }
 
 export const extractRootOrgFromRequest = (req: IAuthorizedRequest): string => {
-  const rootOrg = req.header('rootorg')
-
-  return rootOrg as string
-
+  return req.header('rootorg')
 }
 
 export const getUUID = () => uuid.v1()
