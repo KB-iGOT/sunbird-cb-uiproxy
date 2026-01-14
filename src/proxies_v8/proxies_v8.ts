@@ -1378,3 +1378,7 @@ proxiesV8.use('/learningpathway/*',
 proxiesV8.use('/extended/content/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/achievement/dynamic/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
