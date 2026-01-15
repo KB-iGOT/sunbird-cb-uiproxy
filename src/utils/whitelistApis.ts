@@ -6905,6 +6905,13 @@ export const API_LIST = {
             ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/learningpathway/v1/retire/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7783,5 +7790,6 @@ export const API_LIST = {
             '/proxies/v8/contentpartner/register/v1/readbyid',
             '/proxies/v8/extended/content/v1/read/:identifier',
             '/proxies/v8/achievement/dynamic/v1/generate',
+            '/proxies/v8/learningpathway/v1/retire/:id',
             ],
 }
