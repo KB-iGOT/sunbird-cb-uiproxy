@@ -1,3 +1,4 @@
+// tslint:disable: no-console no-any cognitive-complexity
 import { allocationService, extractCourseId, extractPartner, validateKeycloak } from './authz'
 
 const pass = (msg: string) => console.log(`✅ PASS: ${msg}`)

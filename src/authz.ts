@@ -54,6 +54,7 @@ export const allocationService = {
             return false
         }
     },
+    // tslint:disable-next-line: no-any
     async readByUserIdCourseId(userId: string, courseId: string, token: string): Promise<any> {
         try {
             const response = await axios.get(
@@ -67,6 +68,7 @@ export const allocationService = {
             )
             return response.data
         } catch (error) {
+            // tslint:disable-next-line: no-console
             console.error('Error in readByUserIdCourseId:', error)
             return null
         }
@@ -94,6 +96,7 @@ authzApi.get('/', async (req: Request, res: Response) => {
 
         res.sendStatus(200)
     } catch (err) {
+        // tslint:disable-next-line: no-console
         console.error('Error in /authz:', err)
         res.sendStatus(500)
     }

@@ -1,4 +1,4 @@
-// import KcAdminClient from '@keycloak/keycloak-admin-client'
+
 import cassandraDriver from 'cassandra-driver'
 import request from 'request'
 import { CONSTANTS } from './env'
@@ -25,10 +25,12 @@ const keycloakConfig = {
     realmName: CONSTANTS.KEYCLOAK_REALM,
 }
 
+// tslint:disable-next-line: no-any
 let kcAdminClient: any
 
 const getKcAdminClient = async () => {
     if (kcAdminClient) { return kcAdminClient }
+    // tslint:disable-next-line: variable-name
     const { default: KcAdminClient } = await import('@keycloak/keycloak-admin-client')
     kcAdminClient = new KcAdminClient(keycloakConfig)
     return kcAdminClient
