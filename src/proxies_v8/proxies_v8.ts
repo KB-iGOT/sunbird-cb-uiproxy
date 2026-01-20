@@ -3,8 +3,8 @@ import express from 'express'
 import { UploadedFile } from 'express-fileupload'
 import FormData from 'form-data'
 import lodash from 'lodash'
-import { axiosRequestConfig } from '../configs/request.config'
 import { allocationService } from '../authz'
+import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { logError, logInfo } from '../utils/logger'
 import {
@@ -1069,13 +1069,13 @@ proxiesV8.get('/cios/v1/content/read/:contentId', async (req, res) => {
     const response = await allocationService.readByUserIdCourseId(userId, contentId, token)
     if (response) {
       // Assuming the response itself is valid for redirection or contains a redirectUrl
-      // If the API returns a redirectUrl, we use it. 
+      // If the API returns a redirectUrl, we use it.
       // Example: response.result.redirectUrl or just response if it's the url string.
       // Since I don't have the API contract, I will log and check if response has a redirect url property.
       // If not, I'll comment on what to do.
       // For now, let's assume if we get a successful response, we might redirect to a player or similar.
       // But the user said "read this api for redirecting", maybe the API response IS the redirect.
-      // I'll try to redirect to the original content URL if no specific redirect is given, OR 
+      // I'll try to redirect to the original content URL if no specific redirect is given, OR
       // if the response contains a location.
 
       // Let's assume the response is the enrollment details.

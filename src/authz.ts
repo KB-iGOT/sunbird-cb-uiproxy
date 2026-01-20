@@ -70,7 +70,7 @@ export const allocationService = {
             console.error('Error in readByUserIdCourseId:', error)
             return null
         }
-    }
+    },
 }
 
 authzApi.get('/', async (req: Request, res: Response) => {
@@ -81,7 +81,7 @@ authzApi.get('/', async (req: Request, res: Response) => {
             return
         }
 
-        const userId = extractUserIdFromRequest(req as IAuthorizedRequest) || user.id;
+        const userId = extractUserIdFromRequest(req as IAuthorizedRequest) || user.id
         const courseId = extractCourseId(req.headers['x-original-uri'])
         const partner = extractPartner(req.headers['x-original-uri'])
 

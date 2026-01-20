@@ -1,4 +1,4 @@
-import { validateKeycloak, extractPartner, extractCourseId, allocationService } from './authz'
+import { allocationService, extractCourseId, extractPartner, validateKeycloak } from './authz'
 
 const pass = (msg: string) => console.log(`✅ PASS: ${msg}`)
 const fail = (msg: string, err?: any) => {
@@ -73,7 +73,7 @@ async function runTests() {
     console.log('All tests passed!')
 }
 
-runTests().catch(e => {
+runTests().catch((e) => {
     console.error(e)
     process.exit(1)
 })

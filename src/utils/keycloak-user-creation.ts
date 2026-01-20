@@ -1,5 +1,5 @@
+// import KcAdminClient from '@keycloak/keycloak-admin-client'
 import cassandraDriver from 'cassandra-driver'
-import KcAdminClient from '@keycloak/keycloak-admin-client'
 import request from 'request'
 import { CONSTANTS } from './env'
 import { logError, logInfo } from './logger'
@@ -25,7 +25,14 @@ const keycloakConfig = {
     realmName: CONSTANTS.KEYCLOAK_REALM,
 }
 
-const kcAdminClient = new KcAdminClient(keycloakConfig)
+let kcAdminClient: any
+
+const getKcAdminClient = async () => {
+    if (kcAdminClient) { return kcAdminClient }
+    const { default: KcAdminClient } = await import('@keycloak/keycloak-admin-client')
+    kcAdminClient = new KcAdminClient(keycloakConfig)
+    return kcAdminClient
+}
 
 // tslint:disable-next-line: no-any
 export function checkUniqueKey(uniqueKey: any, callback: (arg0: Error, arg1: any) => void) {
@@ -106,13 +113,14 @@ export function updateUUIDMaster(uniqueKey: any, email: string): Promise<any> {
 // tslint:disable-next-line: no-any
 export async function createKeycloakUser(req: any) {
     try {
-        await kcAdminClient.auth({
+        const client = await getKcAdminClient()
+        await client.auth({
             clientId: 'admin-cli',
             grantType: 'password',
             password: CONSTANTS.KEYCLOAK_ADMIN_PASSWORD,
             username: CONSTANTS.KEYCLOAK_ADMIN_USERNAME,
         })
-        kcAdminClient.setConfig({
+        client.setConfig({
             realmName: CONSTANTS.KEYCLOAK_REALM,
         })
 
@@ -125,7 +133,7 @@ export async function createKeycloakUser(req: any) {
             username: req.body.email,
         }
 
-        return kcAdminClient.users.create(createReq)
+        return client.users.create(createReq)
             // tslint:disable-next-line: no-any
             .then((resp: any) => {
                 return resp
@@ -203,7 +211,7 @@ export async function UpdateKeycloakUserPassword(keycloakId: string, isTemporary
         },
         id: keycloakId,
     }
-    return kcAdminClient.users.resetPassword(req)
+    return (await getKcAdminClient()).users.resetPassword(req)
         // tslint:disable-next-line: no-any
         .then((resp: any) => {
             return resp
@@ -215,18 +223,19 @@ export async function UpdateKeycloakUserPassword(keycloakId: string, isTemporary
 
 export async function sendActionsEmail(userId: string) {
     // try {
-    await kcAdminClient.auth({
+    const client = await getKcAdminClient()
+    await client.auth({
         clientId: 'portal',
         grantType: 'password',
         password: CONSTANTS.KEYCLOAK_ADMIN_PASSWORD,
         username: CONSTANTS.KEYCLOAK_ADMIN_USERNAME,
     })
-    kcAdminClient.setConfig({
+    client.setConfig({
         realmName: CONSTANTS.KEYCLOAK_REALM,
     })
     logInfo(`Sending email to ${userId}`)
     logInfo(`redirect Uri: `, CONSTANTS.HTTPS_HOST)
-    return kcAdminClient.users.executeActionsEmail({
+    return client.users.executeActionsEmail({
         actions: ['VERIFY_EMAIL'],
         clientId: 'portal',
         id: userId,
