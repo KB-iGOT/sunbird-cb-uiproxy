@@ -400,7 +400,7 @@ playlistApi.get('/', async (req, res) => {
     res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
     return
   }
-  const params = req.query as any
+  const params = req.query as unknown as IPlaylistParams
   const allPlaylists = await getPlaylistsAllTypes(userId, rootOrg, params)
 
   if (allPlaylists.error) {
