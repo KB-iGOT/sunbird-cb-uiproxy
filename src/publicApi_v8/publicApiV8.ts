@@ -25,7 +25,9 @@ const API_END_POINTS = {
   publicFormSubmit: `${CONSTANTS.KONG_API_BASE}/public/forms/v2/saveFormSubmit`,
   publicGetApplicationsById: `${CONSTANTS.KONG_API_BASE}/forms/v2/getApplicationsById`,
   publicGetFormById: `${CONSTANTS.KONG_API_BASE}/public/forms/v2/getFormById`,
+  publicOrgHierarchyMinistrySearch: `${CONSTANTS.KONG_API_BASE}/org/hierarchy/ministry/search`,
   publicOrgHierarchySearch: `${CONSTANTS.KONG_API_BASE}/org/hierarchy/search`,
+  publicOrgHierarchyStateSearch: `${CONSTANTS.KONG_API_BASE}/org/hierarchy/state/search`,
 }
 
 publicApiV8.get('/', (_req, res) => {
@@ -319,6 +321,46 @@ publicApiV8.post('/org/hierarchy/search', async (req: Request, res: express.Resp
     }
   } catch (error) {
     logError(`Failed to get the hierarchy search Response. Error: ${error}`)
+    res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERR_MSG)
+  }
+})
+
+publicApiV8.post('/org/hierarchy/ministry/search', async (req: Request, res: express.Response) => {
+  try {
+    const response = await axios.post(API_END_POINTS.publicOrgHierarchyMinistrySearch, req.body, {
+      ...axiosRequestConfig,
+      headers: {
+        ...req.headers,
+      },
+    })
+    const resCode = response.data.responseCode
+    if (!resCode || resCode.toLowerCase() !== 'ok') {
+      res.status(400).send(response.data)
+    } else {
+      res.status(200).send(response.data)
+    }
+  } catch (error) {
+    logError(`Failed to get the hierarchy search Response for Ministry. Error: ${error}`)
+    res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERR_MSG)
+  }
+})
+
+publicApiV8.post('/org/hierarchy/state/search', async (req: Request, res: express.Response) => {
+  try {
+    const response = await axios.post(API_END_POINTS.publicOrgHierarchyStateSearch, req.body, {
+      ...axiosRequestConfig,
+      headers: {
+        ...req.headers,
+      },
+    })
+    const resCode = response.data.responseCode
+    if (!resCode || resCode.toLowerCase() !== 'ok') {
+      res.status(400).send(response.data)
+    } else {
+      res.status(200).send(response.data)
+    }
+  } catch (error) {
+    logError(`Failed to get the hierarchy search Response for state. Error: ${error}`)
     res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERR_MSG)
   }
 })

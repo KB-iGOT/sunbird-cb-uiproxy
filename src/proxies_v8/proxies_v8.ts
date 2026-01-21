@@ -157,6 +157,10 @@ proxiesV8.use('/content/v4/*',
   proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
+proxiesV8.use('/content/v1/retirement/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
 proxiesV8.use(
   '/content',
   proxyCreatorRoute(express.Router(), CONSTANTS.CONTENT_API_BASE + '/content')
@@ -1401,5 +1405,13 @@ proxiesV8.use('/v1/notifyAssignment/*',
 )
 
 proxiesV8.use('/promotionalcontent/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
+proxiesV8.use('/sso/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
+proxiesV8.use('/learningpathway/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
