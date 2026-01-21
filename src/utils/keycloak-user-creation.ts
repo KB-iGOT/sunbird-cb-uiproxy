@@ -1,6 +1,5 @@
+
 import cassandraDriver from 'cassandra-driver'
-import KcAdminClient from 'keycloak-admin'
-import { RequiredActionAlias } from 'keycloak-admin/lib/defs/requiredActionProviderRepresentation'
 import request from 'request'
 import { CONSTANTS } from './env'
 import { logError, logInfo } from './logger'
@@ -22,22 +21,26 @@ function getIPList() {
 }
 
 const keycloakConfig = {
-    baseUrl: `${CONSTANTS.HTTPS_HOST}/auth`,
+    baseUrl: CONSTANTS.PORTAL_AUTH_SERVER_URL,
     realmName: CONSTANTS.KEYCLOAK_REALM,
-    requestConfig: {
-        retry: 3,
-        retryDelay: 1,
-        timeout: Number(CONSTANTS.TIMEOUT) || 10000,
-    },
 }
 
-const kcAdminClient = new KcAdminClient(keycloakConfig)
+// tslint:disable-next-line: no-any
+let kcAdminClient: any
+
+const getKcAdminClient = async () => {
+    if (kcAdminClient) { return kcAdminClient }
+    // tslint:disable-next-line: variable-name
+    const { default: KcAdminClient } = await import('@keycloak/keycloak-admin-client')
+    kcAdminClient = new KcAdminClient(keycloakConfig)
+    return kcAdminClient
+}
 
 // tslint:disable-next-line: no-any
-export function checkUniqueKey(uniqueKey: any, callback: (arg0: Error, arg1: any) => void) {
+export function checkUniqueKey(uniqueKey: any, callback: (arg0: Error | null, arg1: any) => void) {
     const clientConnect = new cassandraDriver.Client(cassandraClientOptions)
     clientConnect.execute(`SELECT * FROM ${CASSANDRA_KEYSPACE}.eagle_unique_identifiers
-     WHERE key=${uniqueKey}`, (err, result) => {
+     WHERE key=${uniqueKey}`, (err: Error | null, result: cassandraDriver.types.ResultSet) => {
         if (!err && result && result.rows.length > 0) {
             const key = result.rows[0]
             callback(err, key)
@@ -55,7 +58,7 @@ export function checkUUIDMaster(uniqueKey: any): Promise<any> {
         const clientConnect = new cassandraDriver.Client(cassandraClientOptions)
         return new Promise((resolve, reject) => {
             clientConnect.execute(`SELECT * FROM ${CASSANDRA_KEYSPACE}.eagle_uuid_master
-            WHERE key=${uniqueKey} allow filtering`, (error, result) => {
+            WHERE key=${uniqueKey} allow filtering`, (error: Error | null, result: cassandraDriver.types.ResultSet) => {
                 if (!error && result && result.rows.length > 0) {
                     const key = result.rows[0]
                     resolve(key)
@@ -73,11 +76,11 @@ export function checkUUIDMaster(uniqueKey: any): Promise<any> {
 }
 
 // tslint:disable-next-line: no-any
-export function updateUniqueKey(uniqueKey: any, callback: (arg0: Error, arg1: any) => void) {
+export function updateUniqueKey(uniqueKey: any, callback: (arg0: Error | null, arg1: any) => void) {
     const clientConnect = new cassandraDriver.Client(cassandraClientOptions)
     clientConnect.execute(`UPDATE ${CASSANDRA_KEYSPACE}.eagle_unique_identifiers
     SET active = false WHERE key = ${uniqueKey}`,
-        (err, result) => {
+        (err: Error | null, result: cassandraDriver.types.ResultSet) => {
             if (result) {
                 callback(err, result)
             } else {
@@ -94,7 +97,7 @@ export function updateUUIDMaster(uniqueKey: any, email: string): Promise<any> {
         return new Promise((resolve, reject) => {
             clientConnect.execute(`UPDATE ${CASSANDRA_KEYSPACE}.eagle_uuid_master
             SET active = false WHERE key = ${uniqueKey} and email = '${email}'`,
-                (_err, result) => {
+                (_err: Error | null, result: cassandraDriver.types.ResultSet) => {
                     if (result) {
                         resolve(result)
                     } else {
@@ -112,13 +115,14 @@ export function updateUUIDMaster(uniqueKey: any, email: string): Promise<any> {
 // tslint:disable-next-line: no-any
 export async function createKeycloakUser(req: any) {
     try {
-        await kcAdminClient.auth({
+        const client = await getKcAdminClient()
+        await client.auth({
             clientId: 'admin-cli',
             grantType: 'password',
             password: CONSTANTS.KEYCLOAK_ADMIN_PASSWORD,
             username: CONSTANTS.KEYCLOAK_ADMIN_USERNAME,
         })
-        kcAdminClient.setConfig({
+        client.setConfig({
             realmName: CONSTANTS.KEYCLOAK_REALM,
         })
 
@@ -131,7 +135,7 @@ export async function createKeycloakUser(req: any) {
             username: req.body.email,
         }
 
-        return kcAdminClient.users.create(createReq)
+        return client.users.create(createReq)
             // tslint:disable-next-line: no-any
             .then((resp: any) => {
                 return resp
@@ -142,7 +146,7 @@ export async function createKeycloakUser(req: any) {
             })
 
     } catch (err) {
-        logError('ERROR IN METHOD createKeycloakUser >', err)
+        logError('ERROR IN METHOD createKeycloakUser >', String(err))
         throw err
     }
 
@@ -164,7 +168,7 @@ export async function getAuthToken(email: any): Promise<any> {
 
         return new Promise((resolve, reject) => {
             request.post({
-                url: `${CONSTANTS.HTTPS_HOST}/auth/realms/${CONSTANTS.KEYCLOAK_REALM}/protocol/openid-connect/token`,
+                url: `${CONSTANTS.PORTAL_AUTH_SERVER_URL}/realms/${CONSTANTS.KEYCLOAK_REALM}/protocol/openid-connect/token`,
                 // tslint:disable-next-line: object-literal-sort-keys
                 form: request1,
             }, (err, _httpResponse, body) => {
@@ -179,7 +183,7 @@ export async function getAuthToken(email: any): Promise<any> {
         })
 
     } catch (err) {
-        logError('ERROR ON Keycloak openid-connect/token >', err)
+        logError('ERROR ON Keycloak openid-connect/token >', String(err))
         return err
     }
 }
@@ -209,7 +213,7 @@ export async function UpdateKeycloakUserPassword(keycloakId: string, isTemporary
         },
         id: keycloakId,
     }
-    return kcAdminClient.users.resetPassword(req)
+    return (await getKcAdminClient()).users.resetPassword(req)
         // tslint:disable-next-line: no-any
         .then((resp: any) => {
             return resp
@@ -221,19 +225,20 @@ export async function UpdateKeycloakUserPassword(keycloakId: string, isTemporary
 
 export async function sendActionsEmail(userId: string) {
     // try {
-    await kcAdminClient.auth({
+    const client = await getKcAdminClient()
+    await client.auth({
         clientId: 'portal',
         grantType: 'password',
         password: CONSTANTS.KEYCLOAK_ADMIN_PASSWORD,
         username: CONSTANTS.KEYCLOAK_ADMIN_USERNAME,
     })
-    kcAdminClient.setConfig({
+    client.setConfig({
         realmName: CONSTANTS.KEYCLOAK_REALM,
     })
     logInfo(`Sending email to ${userId}`)
     logInfo(`redirect Uri: `, CONSTANTS.HTTPS_HOST)
-    return kcAdminClient.users.executeActionsEmail({
-        actions: [RequiredActionAlias.VERIFY_EMAIL],
+    return client.users.executeActionsEmail({
+        actions: ['VERIFY_EMAIL'],
         clientId: 'portal',
         id: userId,
         lifespan: 2592000,

@@ -11,7 +11,7 @@ const async = require('async')
 const composable = require('composable-middleware')
 
 export class CustomKeycloak {
-  private multiTenantKeycloak = new Map<string, keycloakConnect>()
+  private multiTenantKeycloak = new Map<string, InstanceType<typeof keycloakConnect>>()
 
   constructor(sessionConfig: expressSession.SessionOptions) {
     if (CONSTANTS.MULTI_TENANT_KEYCLOAK) {
@@ -37,7 +37,7 @@ export class CustomKeycloak {
     middleware(req, res, next)
   }
 
-  getKeyCloakObject(req: express.Request): keycloakConnect {
+  getKeyCloakObject(req: express.Request): InstanceType<typeof keycloakConnect> {
     const rootOrg =
       (req.headers ? req.header('rootOrg') : '') || (req.cookies ? req.cookies.rootorg : '')
     let domain = ''
@@ -51,7 +51,7 @@ export class CustomKeycloak {
 
     return (this.multiTenantKeycloak.get(req.hostname) ||
       this.multiTenantKeycloak.get(domain) ||
-      this.multiTenantKeycloak.get('common')) as keycloakConnect
+      this.multiTenantKeycloak.get('common')!)
   }
 
   // tslint:disable-next-line: no-any
@@ -72,7 +72,7 @@ export class CustomKeycloak {
     })
 
     // tslint:disable-next-line: no-any
-    async.series(postLoginRequest, (err: any) =>  {
+    async.series(postLoginRequest, (err: any) => {
       if (err) {
         logError('error loggin in user', '------', new Date().toString())
         next(err, null)
@@ -104,8 +104,8 @@ export class CustomKeycloak {
         const tokenObject = JSON.parse(keycloakToken)
         const refreshToken = tokenObject.refresh_token
         if (refreshToken) {
-          const host = reqObj.get('host')
-          const urlValue = `https://${host}` + '/auth/realms/' + CONSTANTS.KEYCLOAK_REALM + '/protocol/openid-connect/logout'
+
+          const urlValue = `${CONSTANTS.PORTAL_AUTH_SERVER_URL}/realms/${CONSTANTS.KEYCLOAK_REALM}/protocol/openid-connect/logout`
           const formData: Record<string, string> = {
             client_id: 'portal',
             refresh_token: refreshToken,
@@ -117,23 +117,23 @@ export class CustomKeycloak {
           }
           logInfo('formData used in logout: ' + JSON.stringify(formData))
           try {
-              request.post({
-                  form: formData,
-                  url: urlValue,
-              })
+            request.post({
+              form: formData,
+              url: urlValue,
+            })
           } catch (err) {
-              // tslint:disable-next-line: no-console
-              console.log('Failed to call keycloak logout API ', err, '------', new Date().toString())
+            // tslint:disable-next-line: no-console
+            console.log('Failed to call keycloak logout API ', err, '------', new Date().toString())
           }
 
           if (reqObj.session.parichayToken) {
             logInfo('Parichay login found... trying to logout from Parichay...')
             try {
               request.get({
-                  headers: {
-                    Authorization: reqObj.session.parichayToken.access_token,
-                  },
-                  url: CONSTANTS.PARICHAY_REVOKE_URL,
+                headers: {
+                  Authorization: reqObj.session.parichayToken.access_token,
+                },
+                url: CONSTANTS.PARICHAY_REVOKE_URL,
               }, (err, res, body) => {
                 if (err) {
                   logError('Received error when calling Parichay logout... ')
@@ -149,8 +149,8 @@ export class CustomKeycloak {
                 }
               })
             } catch (err) {
-                // tslint:disable-next-line: no-console
-                console.log('Failed to call parichay revoke API ', err, '------', new Date().toString())
+              // tslint:disable-next-line: no-console
+              console.log('Failed to call parichay revoke API ', err, '------', new Date().toString())
             }
           }
         } else {
@@ -179,12 +179,13 @@ export class CustomKeycloak {
     sessionConfig: expressSession.SessionOptions,
     url?: string,
     realm?: string
-  ): keycloakConnect {
+  ): InstanceType<typeof keycloakConnect> {
     const keycloak = new keycloakConnect(
       { store: sessionConfig.store },
       getKeycloakConfig(url, realm)
     )
-    keycloak.authenticated = this.authenticated
+    // tslint:disable-next-line: no-any
+    keycloak.authenticated = this.authenticated as any
     keycloak.deauthenticated = this.deauthenticatedNew
     return keycloak
   }

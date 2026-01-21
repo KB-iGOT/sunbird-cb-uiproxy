@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
@@ -17,7 +17,7 @@ const API_END_POINTS = {
 export const attendedContentApi = Router()
 
 attendedContentApi.get('/attendedCourses', async (req, res) => {
-  const sourceFields = req.query.sourceFields || ''
+  const sourceFields = (req.query.sourceFields as string) || ''
   const userId = extractUserIdFromRequest(req)
   try {
     const rootOrg = req.header('rootOrg')
@@ -35,7 +35,8 @@ attendedContentApi.get('/attendedCourses', async (req, res) => {
     }
 
     res.json(finalResponse)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || err)
@@ -56,7 +57,8 @@ attendedContentApi.get('/attendedUsers/:contentId', async (req, res) => {
     })
 
     res.status(response.status).send(response.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || err)
@@ -64,7 +66,7 @@ attendedContentApi.get('/attendedUsers/:contentId', async (req, res) => {
 })
 
 attendedContentApi.get('/verifyAttendedUsers', async (req, res) => {
-  const contentIds = req.query.contentIds
+  const contentIds = req.query.contentIds as string
   const userId = extractUserIdFromRequest(req)
   try {
     const rootOrg = req.header('rootOrg')
@@ -78,7 +80,8 @@ attendedContentApi.get('/verifyAttendedUsers', async (req, res) => {
     })
 
     res.status(response.status).send(response.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || err)
