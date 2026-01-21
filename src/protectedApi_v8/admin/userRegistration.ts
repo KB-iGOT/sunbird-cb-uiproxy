@@ -43,7 +43,8 @@ userRegistrationApi.get('/listUsers/:source', async (req, res) => {
             { headers: { rootOrg } }
         )
         res.json(response.data)
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError('ERROR ON GET ALL REGISTERED USERS >', err)
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
@@ -60,7 +61,8 @@ userRegistrationApi.post('/deregisterUsers/:source', async (req, res) => {
             { headers: { rootOrg } }
         )
         res.json(response.data)
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError('ERROR ON DEREGISTER USERS >', err)
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
@@ -76,7 +78,8 @@ userRegistrationApi.get('/getAllSources', async (req, res) => {
         })
         const data = response.data.filter((o: { registrationUrl: string | null }) => o.registrationUrl !== null)
         res.json(data || {})
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError('ERROR ON GET ALL SOURCES >', err)
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
@@ -92,7 +95,8 @@ userRegistrationApi.get('/getSourceDetail/:id', async (req, res) => {
             headers: { rootOrg },
         })
         res.json(response.data || {})
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError('ERROR ON GET SOURCE DETAILS >', err)
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
@@ -110,7 +114,8 @@ userRegistrationApi.get('/checkUserRegistrationContent/:source', async (req, res
             headers: { rootOrg },
         })
         res.json(response.data || {})
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError('ERROR ON CHECK SOURCE REGISTRATION STATUS >', err)
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
@@ -132,7 +137,8 @@ userRegistrationApi.post('/register', async (req, res) => {
             }
         )
         res.json(response.data || {})
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError('ERROR ON REGISTRATIO USERS >', err)
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
@@ -143,7 +149,7 @@ userRegistrationApi.post('/create-user', async (req, res) => {
     try {
         let createKeycloak: void | { id: string }
         createKeycloak = await createKeycloakUser(req)
-            .catch((error) => {
+            .catch((error: any) => {
                 if (error.response.status === 409) {
                     res.status(400).send(`1005: User with email ${req.body.email} is already exists !!`)
                 } else {
@@ -152,7 +158,7 @@ userRegistrationApi.post('/create-user', async (req, res) => {
             })
         if (createKeycloak && createKeycloak.id) {
             await UpdateKeycloakUserPassword(createKeycloak.id, false)
-                .catch((error) => {
+                .catch((error: any) => {
                     // tslint:disable-next-line: no-duplicate-string
                     logError('/create-user ERROR ON UpdateKeycloakUserPassword', error)
                     res.status(400).send('1003: User default password could not be set !!' || {})
@@ -171,19 +177,20 @@ userRegistrationApi.post('/create-user', async (req, res) => {
                 res.status(400).send('1004: User getAuthToken failed !!' || {})
             })
             await UpdateKeycloakUserPassword(createKeycloak.id, true)
-                .catch((error) => {
+                .catch((error: any) => {
                     logError('/create-user ERROR ON UpdateKeycloakUserPassword after getAuthtoken', error)
                     res.status(400).send('1003: User default password could not be set !!' || {})
                 })
             await sendActionsEmail(createKeycloak.id)
-                .catch((error) => {
+                .catch((error: any) => {
                     logError('ERROR ON sendActionsEmail', error)
                     // res.status(400).send('1003: Email could not be set !!' || {})
                 })
             // console.log('kcaAuthToken', kcaAuthToken)
             res.json({ data: 'User Created successfully!' })
         }
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError('ERROR ON CREATE USERS >', err)
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
@@ -196,7 +203,7 @@ userRegistrationApi.post('/user/access-path', async (req, res) => {
         // return new Promise((resolve, _reject) => {
         const query = `SELECT * FROM ${CONSTANTS.CASSANDRA_KEYSPACE}.user_access_paths
             WHERE user_id=${req.body.wid}`
-        clientConnect.execute(query, (err, result) => {
+        clientConnect.execute(query, (err: any, result: any) => {
             if (!err && result && result.rows) {
                 const key = result.rows
                 clientConnect.shutdown()
@@ -207,7 +214,8 @@ userRegistrationApi.post('/user/access-path', async (req, res) => {
             }
         })
         // })
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError('/user/access-path:: ERROR ON access-path >', err)
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
@@ -228,7 +236,7 @@ userRegistrationApi.post('/user/update-access-path', async (req, res) => {
             req.body.temporary,
             req.body.ttl,
         ]
-        clientConnect.execute(query, params, (err, _result) => {
+        clientConnect.execute(query, params, (err: any, _result: any) => {
             if (!err) {
                 clientConnect.shutdown()
                 logInfo('Update Query to user_access_paths successful')
@@ -240,7 +248,8 @@ userRegistrationApi.post('/user/update-access-path', async (req, res) => {
             }
         })
         // })
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError('/user/update-access-path:: ERROR ON access-path >', err)
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
@@ -320,7 +329,7 @@ userRegistrationApi.post('/bulkUpload', async (req, res) => {
                                 },
                             }
                             const userId = await createUser(reqToNewUser)
-                                .catch((err) => {
+                                .catch((err: any) => {
                                     if (err.response.status === 409) {
                                         reportData.push([`\n${email}`, `User with email ${email} already exists`])
                                     } else {
@@ -330,7 +339,7 @@ userRegistrationApi.post('/bulkUpload', async (req, res) => {
                             if (userId) {
                                 let msg = ''
                                 await performNewUserSteps(userId, req, reqToNewUser.body.email, yesRoles)
-                                    .catch((err) => {
+                                    .catch((err: any) => {
                                         // reportData.push([`\n${email}`, `${err}`])
                                         msg = `${err}`
                                     })
@@ -354,7 +363,8 @@ userRegistrationApi.post('/bulkUpload', async (req, res) => {
         }
         await insertBulkUploadStatus(reqToUpdate)
 
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError('ERROR ON BULK UPLOAD >', err)
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
@@ -367,13 +377,14 @@ export async function createUser(req: any) {
         try {
             let createKeycloak: void | { id: string }
             createKeycloak = await createKeycloakUser(req)
-                .catch((err) => {
+                .catch((err: any) => {
                     reject(err)
                 })
             if (createKeycloak && createKeycloak.id) {
                 resolve(createKeycloak.id)
             }
-        } catch (err) {
+        } catch (errAny) {
+            const err = errAny as any
             logError('ERROR ON CREATE USERS >', err)
         }
     })
@@ -383,7 +394,7 @@ export async function createUser(req: any) {
 export async function performNewUserSteps(userId: any, req: any, email: any, roles?: any) {
     return new Promise(async (resolve, reject) => {
         await UpdateKeycloakUserPassword(userId, false)
-            .catch((error) => {
+            .catch((error: any) => {
                 logError('performNewUserSteps:: ERROR ON UpdateKeycloakUserPassword', error)
                 reject('User default password could not be set')
             })
@@ -406,7 +417,7 @@ export async function performNewUserSteps(userId: any, req: any, email: any, rol
                         const rootOrg = req.header('rootOrg')
                         logInfo('Updating the roles for wid:', wTokenResponse.user.wid)
                         await updateRolesV2Mock(actionByWid, updateRolesReq, rootOrg)
-                            .catch((err) => {
+                            .catch((err: any) => {
                                 logError('performNewUserSteps:: ERROR ON updateRolesV2Mock', err)
                                 reject('Roles could not be updated')
                             })
@@ -419,12 +430,12 @@ export async function performNewUserSteps(userId: any, req: any, email: any, rol
         })
         await UpdateKeycloakUserPassword(userId, true)
             // tslint:disable-next-line: no-identical-functions
-            .catch((error) => {
+            .catch((error: any) => {
                 logError('performNewUserSteps:: ERROR ON UpdateKeycloakUserPassword after getAuthToken', error)
                 reject('User default password could not be set')
             })
         await sendActionsEmail(userId)
-            .catch((error) => {
+            .catch((error: any) => {
                 logError('ERROR ON sendActionsEmail', error)
                 reject('Email could not be sent')
             })
@@ -439,17 +450,18 @@ export async function insertBulkUploadStatus(req: any) {
         const query = `INSERT INTO ${CONSTANTS.CASSANDRA_KEYSPACE}.bulk_user_upload_detail
             (id, name, user_id, status, report) VALUES
             (${req.uuid}, \'${req.name}\', ${req.user_id}, \'${req.status}\', textAsblob\(\'${req.report}\'\))`
-        return clientConnect.execute(query, async (err, _result) => {
+        clientConnect.execute(query, async (err: any, _result: any) => {
             if (!err) {
                 clientConnect.shutdown()
                 logInfo('Insert Query to bulk_user_upload_detail successful')
-            } else if (err) {
+            } else {
                 clientConnect.shutdown()
                 logError(`ERROR executing the query >> ${query}`)
             }
         })
         // })
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError('ERROR ON insertBulkUploadStatus >', err)
     }
 }
@@ -460,7 +472,7 @@ userRegistrationApi.get('/bulkUploadData', async (req, res) => {
         const query = `SELECT id,name,status FROM ${CONSTANTS.CASSANDRA_KEYSPACE}.bulk_user_upload_detail
             WHERE user_id=${extractUserIdFromRequest(req)}  allow filtering`
         // tslint:disable-next-line: no-identical-functions
-        clientConnect.execute(query, (err, result) => {
+        clientConnect.execute(query, (err: any, result: any) => {
             if (!err && result && result.rows) {
                 const key = result.rows
                 clientConnect.shutdown()
@@ -470,7 +482,8 @@ userRegistrationApi.get('/bulkUploadData', async (req, res) => {
                 res.status(400).send('Something went wrong!')
             }
         })
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError('ERROR ON bulkUploadData >', err)
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
@@ -484,7 +497,7 @@ userRegistrationApi.get('/bulkUploadReport/:id', async (req, res) => {
         const query = `SELECT report FROM ${CONSTANTS.CASSANDRA_KEYSPACE}.bulk_user_upload_detail
             WHERE id=${req.params.id}  allow filtering`
         // tslint:disable-next-line: no-identical-functions
-        clientConnect.execute(query, async (err, result) => {
+        clientConnect.execute(query, async (err: any, result: any) => {
             if (!err && result && result.rows.length > 0) {
                 const key = result.rows[0]
                 clientConnect.shutdown()
@@ -494,7 +507,8 @@ userRegistrationApi.get('/bulkUploadReport/:id', async (req, res) => {
                 res.status(400).send('Something went wrong!')
             }
         })
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError('ERROR ON /bulkUploadReport/:id >', err)
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
@@ -518,7 +532,8 @@ userRegistrationApi.get('/user/department', async (req, res) => {
             }
         )
         res.json(response.data || {})
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError('ERROR ON /user/department >', err)
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
@@ -543,7 +558,8 @@ userRegistrationApi.post('/user/department/update', async (req, res) => {
             }
         )
         res.json(response.data || {})
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError('ERROR ON /user/department >', err)
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})

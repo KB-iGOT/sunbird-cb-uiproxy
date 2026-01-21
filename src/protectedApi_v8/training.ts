@@ -25,8 +25,8 @@ trainingApi.get('/content/:contentId/trainings', async (req: Request, res: Respo
 
     const queryParamObj = {
       email: emailId,
-      end_dt: formatDate(new Date(toDate), 'dd MMM yyyy'),
-      start_dt: formatDate(new Date(fromDate), 'dd MMM yyyy'),
+      end_dt: formatDate(new Date(toDate as string), 'dd MMM yyyy'),
+      start_dt: formatDate(new Date(fromDate as string), 'dd MMM yyyy'),
     }
 
     const queryParams: string = getStringifiedQueryParams(queryParamObj)
@@ -42,7 +42,8 @@ trainingApi.get('/content/:contentId/trainings', async (req: Request, res: Respo
       .then((response) => response.data)
 
     return res.send(trainings)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -61,7 +62,8 @@ trainingApi.get('/trainingsId/sessions', async (req: Request, res: Response) => 
       .then((response) => response.data)
 
     return res.send(trainingSessions)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -82,7 +84,8 @@ trainingApi.get('/content/:contentId/trainings/count', async (req: Request, res:
       .then((response) => response.data)
 
     return res.send(countsObj)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -99,7 +102,8 @@ trainingApi.post('/count', async (req: Request, res: Response) => {
       .then((response) => response.data)
 
     return res.send(apiResult)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -124,7 +128,8 @@ trainingApi.post(TRAINING_ENDPOINT, async (req: Request, res: Response) => {
       })
 
     return res.send(apiResult)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -146,7 +151,8 @@ trainingApi.delete(TRAINING_ENDPOINT, async (req: Request, res: Response) => {
       .then((response) => response.data)
 
     return res.send(apiResult)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -181,7 +187,8 @@ trainingApi.post('/:trainingId/nominees', async (req: Request, res: Response) =>
       .then((response) => response.data)
 
     return res.send(resp)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -212,7 +219,8 @@ trainingApi.post('/:trainingId/share', async (req: Request, res: Response) => {
       .then((response) => response.data)
 
     return res.send(apiResult)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -231,7 +239,8 @@ trainingApi.get('/watchlist', async (req: Request, res: Response) => {
       .then((response) => response.data)
 
     return res.send(watchlist)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -258,7 +267,8 @@ trainingApi.get('/watchlist/content/:contentId/status', async (req: Request, res
       })
 
     return res.send({ inWatchlist })
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -278,7 +288,8 @@ trainingApi.post('/watchlist/content/:contentId', async (req: Request, res: Resp
       .then((response) => response.data)
 
     return res.send(apiResult)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -300,7 +311,8 @@ trainingApi.delete('/watchlist/content/:contentId', async (req: Request, res: Re
       .then((response) => response.data)
 
     return res.send(apiResult)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -319,7 +331,8 @@ trainingApi.get('/trainings/jit', async (req: Request, res: Response) => {
       .then((response) => response.data)
 
     return res.send(jitRequests)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -351,7 +364,8 @@ trainingApi.post('/trainings/jit', async (req: Request, res: Response) => {
       .then((response) => response.data)
 
     return res.send(apiResult)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -370,7 +384,8 @@ trainingApi.get('/trainingsForApproval', async (req: Request, res: Response) => 
       .then((response) => response.data)
 
     return res.send(trainingRequests)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -393,7 +408,8 @@ trainingApi.patch(TRAINING_ENDPOINT, async (req: Request, res: Response) => {
       .then((response) => response.data)
 
     return res.send(apiResult)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -418,7 +434,8 @@ trainingApi.get('/trainings/feedback', async (req: Request, res: Response) => {
       })
 
     return res.send(trainingsForFeedback)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -437,7 +454,8 @@ trainingApi.get('/feedback/:formId', async (req: Request, res: Response) => {
       .then((response) => response.data)
 
     return res.send(feedbackQuestions)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -457,7 +475,7 @@ trainingApi.post('/trainings/:trainingId/feedback', async (req: Request, res: Re
     const emailId = getEmailLocalPart(extractUserEmailFromRequest(req))
 
     const queryParams: string = getStringifiedQueryParams({
-      template: formId,
+      template: formId as string,
     })
 
     const apiResult: ITrainingApiResponse = await axios
@@ -468,7 +486,8 @@ trainingApi.post('/trainings/:trainingId/feedback', async (req: Request, res: Re
       .then((response) => response.data)
 
     return res.send(apiResult)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -490,7 +509,8 @@ trainingApi.get('/userInfo', async (req: Request, res: Response) => {
       }))
 
     return res.send(isJL6OrAbove)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,

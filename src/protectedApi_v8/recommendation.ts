@@ -32,7 +32,7 @@ recommendationApi.get('/', async (req, res) => {
       res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
       return
     }
-    const filters = req.query.filters
+    const filters = req.query.filters as string
     let decodedFilters = {
       recommendationCategory: 'org',
     }
@@ -72,7 +72,8 @@ recommendationApi.get('/', async (req, res) => {
       hasMore: false,
     }
     res.json(result)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     logError('RECOMMENDATIONS FETCH ERROR >', err)
     res.status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -125,7 +126,8 @@ recommendationApi.get('/interestBased', async (req, res) => {
       hasMore: false,
     }
     res.json(result)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     logError('INTEREST BASED RECOMMENDATIONS FETCH ERROR >', err)
     res.status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -225,7 +227,8 @@ recommendationApi.get('/usageBased', async (req, res) => {
       hasMore: false,
     }
     res.json(result)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     logError('USAGE BASED RECOMMENDATIONS FETCH ERROR >', err)
     res.status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -243,7 +246,7 @@ recommendationApi.get('/:recommendationType', async (req, res) => {
       res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
       return
     }
-    const filters = req.query.filters
+    const filters = req.query.filters as string
     let decodedFilters = {
       recommendationCategory: 'org',
     }
@@ -253,7 +256,7 @@ recommendationApi.get('/:recommendationType', async (req, res) => {
     const recommendationCategory = decodedFilters.recommendationCategory
     const pageNo = req.query.pageNo || 0
     const pageSize = req.query.pageSize || 20
-    const sourceFields = req.query.sourceFields
+    const sourceFields = req.query.sourceFields as string
     const recommendationType = req.params.recommendationType
     // tslint:disable-next-line: no-any
     const params: any = {
@@ -270,7 +273,7 @@ recommendationApi.get('/:recommendationType', async (req, res) => {
         params.excludeContentType = `${EContentTypes.KNOWLEDGE_ARTIFACT},${EContentTypes.RESOURCE},${EContentTypes.MODULE},${EContentTypes.CHANNEL}`
       } else {
         if (req.query.excludeContentType) {
-          params.excludeContentType = req.query.excludeContentType
+          params.excludeContentType = req.query.excludeContentType as string as string
         }
       }
       if (rootOrg !== 'PNG' && org !== 'PNG') {

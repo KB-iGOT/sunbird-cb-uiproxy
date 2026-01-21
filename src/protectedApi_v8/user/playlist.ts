@@ -108,7 +108,8 @@ async function getPlaylistsAllTypes(
       },
       error: undefined,
     }
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return { data: undefined, error: err }
   }
 }
@@ -179,7 +180,8 @@ playlistApi.get('/sync/:playlistId', async (req, res) => {
     })
     res.send(result.content)
     return
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     logError('SYNC PLAYLIST ERROR >', err)
     res
       .status((err && err.response && err.response.status) || 500)
@@ -222,7 +224,8 @@ playlistApi.get('/recent', async (req, res) => {
       hasMore: false,
     }
     res.send(result)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     logError('RECENT PLAYLIST CONTENTS FETCH ERROR >', err)
     res
       .status((err && err.response && err.response.status) || 500)
@@ -261,7 +264,8 @@ playlistApi.post('/accept/:playlistId', async (req, res) => {
     }
 
     res.status(404).send()
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -292,7 +296,8 @@ playlistApi.post('/reject/:playlistId', async (req, res) => {
     })
     res.status(response.status).send()
     return
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -315,7 +320,8 @@ playlistApi.post('/share/:playlistId', async (req, res) => {
     const auth = req.header('Authorization')
     const response = await sharePlaylist(userId, playlistId, request, auth)
     res.status(response.status).send()
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -346,7 +352,8 @@ playlistApi.get('/:type/:playlistId', async (req, res) => {
       params,
     })
     res.status(response.status).send(transformToPlaylistV3(response.data, playlistId))
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -375,7 +382,8 @@ playlistApi.delete('/:playlistId', async (req, res) => {
       url,
     })
     res.status(response.status).send(true)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -386,13 +394,13 @@ playlistApi.delete('/:playlistId', async (req, res) => {
 
 playlistApi.get('/', async (req, res) => {
   /* get all playlists of an user */
-  const userId = req.query.wid || extractUserIdFromRequest(req)
+  const userId = (req.query.wid as string) || extractUserIdFromRequest(req)
   const rootOrg = req.header('rootOrg')
   if (!rootOrg) {
     res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
     return
   }
-  const params = req.query
+  const params = req.query as any
   const allPlaylists = await getPlaylistsAllTypes(userId, rootOrg, params)
 
   if (allPlaylists.error) {
@@ -445,7 +453,8 @@ playlistApi.patch('/:playlistId', async (req, res) => {
       url: urll,
     })
     res.status(response.status || response1.status).send()
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     logError(err)
     res
       .status((err && err.response && err.response.status) || 500)
@@ -496,7 +505,8 @@ playlistApi.post('/create', async (req, res) => {
     })
 
     res.status(response1.status).send()
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -533,7 +543,7 @@ playlistApi.post('/:playlistId/:type', async (req, res) => {
 
     const urll = `https://igot-dev.in/apis/proxies/v8/action/content/v3/hierarchy/update`
 
-    const hierarchy = {}
+    const hierarchy: any = {}
     const childern = response1.data.result.content.childNodes
     if (type === EPlaylistUpsertTypes.add) {
       childern.push(req.body.contentIds[0])
@@ -588,7 +598,8 @@ playlistApi.post('/:playlistId/:type', async (req, res) => {
     //   return
     // }
     // res.status(500).send()
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -608,7 +619,8 @@ playlistApi.get('/:type', async (req, res) => {
     }
     const playlists = await getPlaylists(userId, rootOrg)
     res.send(playlists)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {

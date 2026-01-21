@@ -4,7 +4,7 @@ import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
 import { logError } from '../../utils/logger'
 import { ERROR } from '../../utils/message'
-import { extractUserIdFromRequest} from '../../utils/requestExtract'
+import { extractUserIdFromRequest } from '../../utils/requestExtract'
 const apiEndpoints = {
   acceptTnC: `${CONSTANTS.TNC_API_BASE}/v1/terms/accept`,
   sbacceptTnc: `${CONSTANTS.LEARNER_SERVICE_API_BASE}/v1/user/tnc/accept`,
@@ -27,7 +27,8 @@ export async function getCommonTnc(rootOrg: string, org: string) {
       method: 'GET',
       url: apiEndpoints.tnc,
     })
-  } catch (e) {
+  } catch (eAny) {
+    const e = eAny as any
     throw new Error(e)
   }
 }
@@ -52,7 +53,8 @@ export async function getTnc(userId: string, rootOrg: string, org: string, local
         !tncData.isAccepted && hasTerms && !tncData.termsAndConditions[0].acceptedVersion
       ),
     }
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     logError('Error occurred while getting user TNC. Trying to fetch common tnc >', err)
     try {
       const commonTnc = await getCommonTnc(rootOrg, org)
@@ -60,7 +62,8 @@ export async function getTnc(userId: string, rootOrg: string, org: string, local
         ...commonTnc.data,
         isNewUser: true,
       }
-    } catch (e) {
+    } catch (eAny) {
+      const e = eAny as any
       logError('Error occurred while getting COMMON TNC >', e)
       throw new Error(e)
     }
@@ -76,7 +79,8 @@ export async function getTncStatus(
   try {
     const tnc = await getTnc(userId, rootOrg, org, locale)
     return tnc.isAccepted
-  } catch (e) {
+  } catch (eAny) {
+    const e = eAny as any
     logError(`TNC STATUS ERROR:`, e)
     return false
   }
@@ -97,11 +101,12 @@ protectedTnc.get('/status', async (req, res) => {
       return
     }
     if (req.query.locale) {
-      locale = req.query.locale
+      locale = req.query.locale as string
     }
     const response = await getTncStatus(userId, rootOrg, org, locale)
     res.send(response)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -123,11 +128,12 @@ protectedTnc.get('/', async (req, res) => {
       return
     }
     if (req.query.locale) {
-      locale = req.query.locale
+      locale = req.query.locale as string
     }
     const response = await getTnc(userId, rootOrg, org, locale)
     res.send(response)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     logError('TNC SEND ERROR', err)
     res
       .status((err && err.response && err.response.status) || 500)
@@ -168,7 +174,8 @@ protectedTnc.post('/accept', async (req, res) => {
       return
     }
     res.status(500).send(response.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     logError('ERROR WHILE ACCEPTING TNC', err)
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
@@ -199,7 +206,8 @@ protectedTnc.patch('/postprocessing', async (req, res) => {
       url: apiEndpoints.tncPostProcessing(extractUserIdFromRequest(req)),
     })
     res.status(response.data ? 200 : 204).send(response.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     logError('ERROR WHILE POSTPROCESSING', err)
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
@@ -219,9 +227,10 @@ protectedTnc.get('/system/settings/:configName', async (req, res) => {
     const response = await axios.get(apiEndpoints.systemConfigEndPoint(configName), {
       ...axiosRequestConfig,
       headers: {},
-  })
+    })
     res.status(response.status).send(response.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     logError('Getting error while searching the system config', err)
     res
       .status((err && err.response && err.response.status) || 500)
@@ -235,22 +244,23 @@ protectedTnc.post('/sbacceptTnc', async (req, res) => {
   try {
     const userToken = String(req.header('Authorization')).replace('bearer ', '')
     const response = await axios.post(
-        apiEndpoints.sbacceptTnc,
-          req.body,
-          {
-              ...axiosRequestConfig,
-              headers: {
-                'X-Authenticated-User-Token': userToken,
-              },
-          }
-      )
+      apiEndpoints.sbacceptTnc,
+      req.body,
+      {
+        ...axiosRequestConfig,
+        headers: {
+          'X-Authenticated-User-Token': userToken,
+        },
+      }
+    )
     res.status(response.status).send(response.data)
-  } catch (err) {
-      logError(err)
-      res.status((err && err.response && err.response.status) || 500).send(
-          (err && err.response && err.response.data) || {
-              error: GENERAL_ERROR_MSG,
-          }
-      )
+  } catch (errAny) {
+    const err = errAny as any
+    logError(err)
+    res.status((err && err.response && err.response.status) || 500).send(
+      (err && err.response && err.response.data) || {
+        error: GENERAL_ERROR_MSG,
+      }
+    )
   }
 })

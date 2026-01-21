@@ -11,7 +11,7 @@ const async = require('async')
 const composable = require('composable-middleware')
 
 export class CustomKeycloak {
-  private multiTenantKeycloak = new Map<string, keycloakConnect>()
+  private multiTenantKeycloak = new Map<string, any>()
 
   constructor(sessionConfig: expressSession.SessionOptions) {
     if (CONSTANTS.MULTI_TENANT_KEYCLOAK) {
@@ -37,7 +37,7 @@ export class CustomKeycloak {
     middleware(req, res, next)
   }
 
-  getKeyCloakObject(req: express.Request): keycloakConnect {
+  getKeyCloakObject(req: express.Request): any {
     const rootOrg =
       (req.headers ? req.header('rootOrg') : '') || (req.cookies ? req.cookies.rootorg : '')
     let domain = ''
@@ -51,7 +51,7 @@ export class CustomKeycloak {
 
     return (this.multiTenantKeycloak.get(req.hostname) ||
       this.multiTenantKeycloak.get(domain) ||
-      this.multiTenantKeycloak.get('common')) as keycloakConnect
+      this.multiTenantKeycloak.get('common')) as any
   }
 
   // tslint:disable-next-line: no-any
@@ -104,7 +104,7 @@ export class CustomKeycloak {
         const tokenObject = JSON.parse(keycloakToken)
         const refreshToken = tokenObject.refresh_token
         if (refreshToken) {
-          const host = reqObj.get('host')
+
           const urlValue = `${CONSTANTS.PORTAL_AUTH_SERVER_URL}/realms/${CONSTANTS.KEYCLOAK_REALM}/protocol/openid-connect/logout`
           const formData: Record<string, string> = {
             client_id: 'portal',
@@ -179,12 +179,12 @@ export class CustomKeycloak {
     sessionConfig: expressSession.SessionOptions,
     url?: string,
     realm?: string
-  ): keycloakConnect {
+  ): any {
     const keycloak = new keycloakConnect(
       { store: sessionConfig.store },
       getKeycloakConfig(url, realm)
     )
-    keycloak.authenticated = this.authenticated
+    keycloak.authenticated = this.authenticated as any
     keycloak.deauthenticated = this.deauthenticatedNew
     return keycloak
   }

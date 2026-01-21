@@ -59,7 +59,8 @@ portalApi.get('/listDeptNames', async (req, res) => {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError(failedToProcess + req.originalUrl + err)
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
@@ -71,7 +72,7 @@ portalApi.get('/listDeptNames', async (req, res) => {
 
 portalApi.get('/spv/mydepartment', async (req, res) => {
     try {
-        let isUserInfoRequired = req.query.allUsers as boolean
+        let isUserInfoRequired = req.query.allUsers as unknown as boolean
         if (!isUserInfoRequired) {
             isUserInfoRequired = false
         }
@@ -80,7 +81,8 @@ portalApi.get('/spv/mydepartment', async (req, res) => {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError(failedToProcess + req.originalUrl + err)
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
@@ -102,7 +104,8 @@ portalApi.get(spvDeptPath, async (req, res) => {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError(failedToProcess + err)
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
@@ -131,7 +134,8 @@ portalApi.get(spvDeptPath + '/:deptId', async (req, res) => {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError(failedToProcess + err)
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
@@ -160,7 +164,8 @@ portalApi.post(spvDeptPath, async (req, res) => {
             },
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError(failedToProcess + err)
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
@@ -189,7 +194,8 @@ portalApi.delete(spvDeleteDepartment + '/:deptId', async (req, res) => {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError(failedToProcess + err)
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
@@ -264,7 +270,8 @@ portalApi.get(cbcDeptPath, async (req, res) => {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError(failedToProcess + err)
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
@@ -292,7 +299,8 @@ portalApi.get(cbcDeptPath + '/:deptId', async (req, res) => {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError(failedToProcess + err)
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
@@ -326,7 +334,8 @@ portalApi.get('/deptRole', async (req, res) => {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError(failedToProcess + err)
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
@@ -345,7 +354,8 @@ portalApi.get('/deptRole/:deptTypeName', async (req, res) => {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError(failedToProcess + err)
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
@@ -359,7 +369,7 @@ portalApi.get('/deptRole/:deptTypeName', async (req, res) => {
 // tslint:disable-next-line: no-any
 export async function getMyDepartment(portalName: string, req: any, res: any) {
     try {
-        let isUserInfoRequired = req.query.allUsers as boolean
+        let isUserInfoRequired = req.query.allUsers as unknown as boolean
         if (!isUserInfoRequired) {
             isUserInfoRequired = false
         }
@@ -368,7 +378,8 @@ export async function getMyDepartment(portalName: string, req: any, res: any) {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError(failedToProcess + req.originalUrl + err)
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
@@ -391,7 +402,8 @@ export async function updateDepartment(portalName: string, req: any, res: any) {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError(failedToProcess + err)
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
@@ -409,7 +421,8 @@ export async function addUserRole(portalName: string, req: any, res: any) {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError(failedToProcess + err)
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
@@ -427,7 +440,8 @@ export async function updateUserRole(portalName: string, req: any, res: any) {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError(failedToProcess + err)
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
@@ -441,7 +455,8 @@ portalApi.get(departmentType, async (req, res) => {
     try {
         const response = await axios.get(API_END_POINTS.deptType)
         res.status(response.status).send(response.data)
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError(failedToProcess + req.originalUrl + err)
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
@@ -457,7 +472,8 @@ portalApi.get(departmentType + '/:deptType', async (req, res) => {
         const deptType = req.params.deptType as string
         const response = await axios.get(API_END_POINTS.deptTypeByName(deptType))
         res.status(response.status).send(response.data)
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError(failedToProcess + req.originalUrl + err)
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
@@ -473,7 +489,8 @@ portalApi.get('/userrole/:userId', async (req, res) => {
         const userId = req.params.userId as string
         const response = await axios.get(API_END_POINTS.userRolesApi(userId))
         res.status(response.status).send(response.data)
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError(failedToProcess + req.originalUrl + err)
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
@@ -487,7 +504,8 @@ export async function getRoles(userId: string) {
     try {
         const response = await axios.get(API_END_POINTS.userRolesApi(userId))
         return response.data
-    } catch (error) {
+    } catch (errorAny) {
+        const error = errorAny as any
         logError('ERROR WHILE FETCHING THE USER ROLES --> ', error)
         return []
     }
@@ -502,7 +520,8 @@ export async function getUserStatus(userId: string) {
             },
         })
         return response.data
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError(failedToProcess + err)
     }
 }

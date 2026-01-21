@@ -25,7 +25,7 @@ export const protectedPreference = Router()
 
 protectedPreference.get('/', async (req, res) => {
   try {
-    const userId = req.query.wid || extractUserIdFromRequest(req)
+    const userId = (req.query.wid as string) || extractUserIdFromRequest(req)
     const rootOrg = req.header('rootOrg')
     if (!rootOrg) {
       res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
@@ -33,7 +33,8 @@ protectedPreference.get('/', async (req, res) => {
     }
     const response = await getUserPreference(userId, rootOrg)
     res.json(response)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || err)
@@ -55,7 +56,8 @@ protectedPreference.put('/', async (req, res) => {
     )
 
     res.status(response.status).send(response.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || err)

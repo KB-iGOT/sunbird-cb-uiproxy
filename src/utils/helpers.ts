@@ -8,7 +8,7 @@ export function* range(end: number, step = 1) {
 }
 
 export function getStringifiedQueryParams(obj: {
-  [key: string]: string | number | undefined;
+  [key: string]: any;
 }) {
   return Object.entries(obj)
     .filter((u) => u[1])

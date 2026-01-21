@@ -27,7 +27,8 @@ badgeApi.get('/', async (req, res) => {
       headers: { rootOrg, langCode },
     })
     res.send(processAllBadges(response.data))
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return err
   }
 })
@@ -43,7 +44,8 @@ badgeApi.get('/for/:wid', async (req, res) => {
       headers: { rootOrg, langCode },
     })
     res.send(processAllBadges(response.data))
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return err
   }
 })
@@ -52,7 +54,7 @@ badgeApi.get('/badgeDetail', async (req, res) => {
   const userId = extractUserIdFromRequest(req)
   const rootOrg = req.header('rootOrg')
   const langCode = req.header('locale')
-  const badgeIds = req.query('badgeIds')
+  const badgeIds = req.query.badgeIds
   const url = `${API_END_POINTS.newBadges(userId)}/newUser/${badgeIds}`
   try {
     const response = await axios.get(url, {
@@ -60,7 +62,8 @@ badgeApi.get('/badgeDetail', async (req, res) => {
       headers: { rootOrg, langCode },
     })
     res.send(processAllBadges(response.data))
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     return err
   }
 })
@@ -80,7 +83,8 @@ badgeApi.post('/newUser', async (req, res) => {
     )
 
     res.json(response.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res.status(500).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -104,7 +108,8 @@ badgeApi.post('/update', async (req, res) => {
     )
 
     res.json(response.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res.status(500).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -133,7 +138,8 @@ badgeApi.get('/notification', async (req, res) => {
       result = processRecentBadges(response.data.result.response)
     }
     res.send(result)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,

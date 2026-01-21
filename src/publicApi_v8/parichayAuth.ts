@@ -10,7 +10,7 @@ export const parichayAuth = express.Router()
 
 parichayAuth.get('/auth', async (req, res) => {
     logInfo('Received host : ' + req.hostname)
-    const rawIiidem = Array.isArray(req.query.iiidem) ? req.query.iiidem[0] : req.query.iiidem
+    const rawIiidem = Array.isArray(req.query.iiidem) ? req.query.iiidem[0] : req.query.iiidem as string
     const iiidemFlag = rawIiidem === '1'
     if (req.session) {
         req.session.parichayIsEclogin = iiidemFlag
@@ -35,8 +35,8 @@ parichayAuth.get('/callback', async (req, res) => {
         logInfo('Received host : ' + host)
         logError('Failed to login in Parichay, authorization code is missing. Redirecting to /error')
         const errorMessage = 'Failed to login using Parichay. Your Parichay session has expired.'
-                          + ' Please logoff from Parichay and retry [Login with Parichay] option on iGOT Portal Login page.'
-                          + ' If issue persists, then please try the same in incognito/private window.'
+            + ' Please logoff from Parichay and retry [Login with Parichay] option on iGOT Portal Login page.'
+            + ' If issue persists, then please try the same in incognito/private window.'
         res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
         return
     }
@@ -52,7 +52,7 @@ parichayAuth.get('/callback', async (req, res) => {
             data: {
                 client_id: CONSTANTS.PARICHAY_CLIENT_ID,
                 client_secret: CONSTANTS.PARICHAY_CLIENT_SECRET,
-                code: decodeURIComponent(req.query.code),
+                code: decodeURIComponent(req.query.code as string),
                 // tslint:disable-next-line: max-line-length
                 code_verifier: CONSTANTS.PARICHAY_CODE_VERIFIER,
                 grant_type: 'authorization_code',
@@ -80,17 +80,17 @@ parichayAuth.get('/callback', async (req, res) => {
         logInfo('User information from Parichay : ' + JSON.stringify(userDetailResponse.data))
         const loginId = userDetailResponse.data.loginId
         if (!loginId) {
-          const errorMessage = 'iGOT login failed. You must allow Email id on the consent form for Login. '
-            + 'Please logout from Parichay and try iGOT Login with Parichay again.'
-          // Redirect to the logout page with an error message
-          res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
-          return
+            const errorMessage = 'iGOT login failed. You must allow Email id on the consent form for Login. '
+                + 'Please logout from Parichay and try iGOT Login with Parichay again.'
+            // Redirect to the logout page with an error message
+            res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
+            return
         }
 
         let result: { errMessage: string, rootOrgId: string, userExist: boolean, }
-        result =  await fetchUserByEmailId(userDetailResponse.data.loginId)
+        result = await fetchUserByEmailId(userDetailResponse.data.loginId)
         logInfo('For Parichay emailId ? ' + userDetailResponse.data.loginId + ', isUserExist ? ' + result.userExist
-          + ', rootOrgId ? ' + result.rootOrgId + ', errorMessage ? ' + result.errMessage)
+            + ', rootOrgId ? ' + result.rootOrgId + ', errorMessage ? ' + result.errMessage)
         let isFirstTimeUser = false
         if (result.errMessage === '') {
             let createResult: { errMessage: string, userCreated: boolean, userId: string }
@@ -99,11 +99,11 @@ parichayAuth.get('/callback', async (req, res) => {
                 const mobileNo = userDetailResponse.data.MobileNo
 
                 if (!loginId || !mobileNo) {
-                   const errorMessage = 'Parichay user registration failed. You must allow Email id and Mobile number on the consent form. '
-                          + 'Please logout from Parichay and try iGOT Login with Parichay again.'
+                    const errorMessage = 'Parichay user registration failed. You must allow Email id and Mobile number on the consent form. '
+                        + 'Please logout from Parichay and try iGOT Login with Parichay again.'
                     // Redirect to the logout page with an error message
-                   res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
-                   return
+                    res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
+                    return
                 }
                 createResult = await createUserWithMailId(userDetailResponse.data.loginId,
                     userDetailResponse.data.FirstName, userDetailResponse.data.LastName, userDetailResponse.data.MobileNo)
@@ -112,10 +112,10 @@ parichayAuth.get('/callback', async (req, res) => {
                 }
                 isFirstTimeUser = true
                 logInfo('New user is created for Parichay email id:' + userDetailResponse.data.loginId
-                  + ', new User id:' + createResult.userId)
+                    + ', new User id:' + createResult.userId)
             } else {
                 logInfo('User exists for Parichay email id:' + userDetailResponse.data.loginId
-                  + ', result.rootOrgId = ' + result.rootOrgId + ', XChannelId = ' + CONSTANTS.X_Channel_Id)
+                    + ', result.rootOrgId = ' + result.rootOrgId + ', XChannelId = ' + CONSTANTS.X_Channel_Id)
                 if (result.rootOrgId !== '' && result.rootOrgId === CONSTANTS.X_Channel_Id) {
                     isFirstTimeUser = true
                 }
@@ -126,24 +126,25 @@ parichayAuth.get('/callback', async (req, res) => {
                 }
                 keycloakResult = await updateKeycloakSession(userDetailResponse.data.loginId, req, res)
                 if (keycloakResult.errMessage !== '') {
-                  logError('For Parichay emailId:' + userDetailResponse.data.loginId
-                    + ', Received a keycloak error: ' + keycloakResult.errMessage)
-                  result.errMessage = keycloakResult.errMessage
+                    logError('For Parichay emailId:' + userDetailResponse.data.loginId
+                        + ', Received a keycloak error: ' + keycloakResult.errMessage)
+                    result.errMessage = keycloakResult.errMessage
                 }
                 logInfo('Parichay user session established in Keycloak: ' + JSON.stringify(keycloakResult))
             }
         }
         if (result.errMessage !== '') {
             logError('For Parichay emailId:' + userDetailResponse.data.loginId
-              + ', Received error from user search. Error Message: ' + result.errMessage)
+                + ', Received error from user search. Error Message: ' + result.errMessage)
             resRedirectUrl = `https://${host}/public/logout?error=` + encodeURIComponent(JSON.stringify(result.errMessage))
         } else {
-          logInfo('Parichay login is successful for emailId:' + userDetailResponse.data.loginId)
-          if (isFirstTimeUser) {
-              resRedirectUrl = `https://${host}/public/welcome`
+            logInfo('Parichay login is successful for emailId:' + userDetailResponse.data.loginId)
+            if (isFirstTimeUser) {
+                resRedirectUrl = `https://${host}/public/welcome`
             }
         }
-    } catch (err) {
+    } catch (errAny) {
+        const err = errAny as any
         logError('Failed to process callback API for Parichay code : ' + req.query.code + '..with the error: ' + JSON.stringify(err))
         resRedirectUrl = `https://${host}/public/logout?error=` + encodeURIComponent('Internal Server Error. Please contact administrator.')
     }

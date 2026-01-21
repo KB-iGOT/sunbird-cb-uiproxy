@@ -36,7 +36,8 @@ navigatorApi.get('/roles', async (_req, res) => {
       {}
     )
     res.json(processRolesData(response))
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     logError('ERR FETCHING NSODATA -> ', err)
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
@@ -72,7 +73,7 @@ navigatorApi.get('/lp', async (req, res) => {
   const [pageNumber, pageSize, topics] = [
     Number(req.query.pageNumber) || 0,
     Number(req.query.pageSize) || 10000,
-    req.query.topics ? req.query.topics.split(',') : [],
+    req.query.topics ? (req.query.topics as string).split(',') : [],
   ]
   if (isNaN(pageNumber) || isNaN(pageSize)) {
     res

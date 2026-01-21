@@ -46,7 +46,7 @@ export const goalsApi = Router()
 goalsApi.get('/updateDurationCommonGoal/:goalType/:goalId', async (req, res) => {
   const { goalType, goalId } = req.params
   const userId = extractUserIdFromRequest(req)
-  const duration = req.query.duration
+  const duration = req.query.duration as string
   try {
     const rootOrg = req.header('rootOrg')
     if (!rootOrg) {
@@ -60,7 +60,8 @@ goalsApi.get('/updateDurationCommonGoal/:goalType/:goalId', async (req, res) => 
     )
 
     res.status(response.status).send(response.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -106,7 +107,8 @@ goalsApi.post('/', async (req, res) => {
     })
 
     res.status(response1.status).send(response1.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && transformGoalUpsertResponse(err.response.data)) || {
@@ -153,7 +155,8 @@ goalsApi.patch('/:goalId', async (req, res) => {
       url: urll,
     })
     res.status(response.status || response1.status).send()
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     logError(err)
     res
       .status((err && err.response && err.response.status) || 500)
@@ -178,7 +181,8 @@ goalsApi.post('/share/:goalType/:goalId', async (req, res) => {
       headers: { rootOrg },
     })
     res.status(response.status).send(response.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -202,7 +206,8 @@ goalsApi.post('/sharev2/:goalType/:goalId', async (req, res) => {
       headers: { rootOrg },
     })
     res.status(response.status).send(response.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -213,7 +218,7 @@ goalsApi.post('/sharev2/:goalType/:goalId', async (req, res) => {
 
 goalsApi.post('/action/:type/:goalType/:goalId', async (req, res) => {
   const { type, goalType, goalId } = req.params
-  const confirm = req.query.confirm
+  const confirm = req.query.confirm as string
   const userId = extractUserIdFromRequest(req)
   try {
     const rootOrg = req.header('rootOrg')
@@ -235,7 +240,8 @@ goalsApi.post('/action/:type/:goalType/:goalId', async (req, res) => {
       headers: { rootOrg },
     })
     res.status(response.status).send(response.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -246,7 +252,7 @@ goalsApi.post('/action/:type/:goalType/:goalId', async (req, res) => {
 
 goalsApi.get('/action', async (req, res) => {
   const userId = extractUserIdFromRequest(req)
-  const sourceFields = req.query.sourceFields
+  const sourceFields = req.query.sourceFields as string
   try {
     const rootOrg = req.header('rootOrg')
     if (!rootOrg) {
@@ -260,7 +266,8 @@ goalsApi.get('/action', async (req, res) => {
 
     const goals = response.data.map(transformToGoalForOthers)
     res.status(response.status).send(goals)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -283,7 +290,8 @@ goalsApi.get('/common', async (req, res) => {
     })
     const goalGroups = response.data.map(transformToCommonGoalGroup)
     res.status(response.status).send(goalGroups)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -306,7 +314,8 @@ goalsApi.get('/common/:groupId', async (req, res) => {
       headers: { rootOrg },
     })
     res.status(response.status).send(transformToCommonGoalGroup(response.data))
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -317,7 +326,7 @@ goalsApi.get('/common/:groupId', async (req, res) => {
 
 goalsApi.get('/for-others', async (req, res) => {
   const userId = extractUserIdFromRequest(req)
-  const sourceFields = req.query.sourceFields
+  const sourceFields = req.query.sourceFields as string
 
   try {
     const rootOrg = req.header('rootOrg')
@@ -331,7 +340,8 @@ goalsApi.get('/for-others', async (req, res) => {
     })
     const goals = response.data.map(transformToGoalForOthers)
     res.status(response.status).send(goals)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -356,7 +366,8 @@ goalsApi.get('/track/:goalType/:goalId', async (req, res) => {
 
     const trackData: ITrackStatus = transformToTrackStatus(response.data)
     res.status(response.status).send(trackData)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -381,7 +392,8 @@ goalsApi.delete('/:goalType/:goalId', async (req, res) => {
     })
 
     res.status(response.status).send(response.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -405,7 +417,8 @@ goalsApi.post('/removeUsers/:goalType/:goalId', async (req, res) => {
       { ...axiosRequestConfig, headers: { rootOrg } }
     )
     res.status(response.status).send(response.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -416,8 +429,8 @@ goalsApi.post('/removeUsers/:goalType/:goalId', async (req, res) => {
 
 goalsApi.get('/:type', async (req, res) => {
   const goalType = req.params.type
-  const userId = req.query.wid || extractUserIdFromRequest(req)
-  const sourceFields = req.query.sourceFields
+  const userId = (req.query.wid as string) || extractUserIdFromRequest(req)
+  const sourceFields = req.query.sourceFields as string
   try {
     const rootOrg = req.header('rootOrg')
     if (!rootOrg) {
@@ -430,7 +443,8 @@ goalsApi.get('/:type', async (req, res) => {
     })
 
     res.status(response.status).send(transformToUserGoals(response.data))
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -441,7 +455,7 @@ goalsApi.get('/:type', async (req, res) => {
 
 goalsApi.patch('/addContent/:goalId/:contentId', async (req, res) => {
   const { goalId, contentId } = req.params
-  const goalType = req.query.goal_type
+  const goalType = req.query.goal_type as string
   const userId = extractUserIdFromRequest(req)
   try {
     const rootOrg = req.header('rootOrg')
@@ -456,7 +470,8 @@ goalsApi.patch('/addContent/:goalId/:contentId', async (req, res) => {
     )
 
     res.status(response.status).send(response.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -467,7 +482,7 @@ goalsApi.patch('/addContent/:goalId/:contentId', async (req, res) => {
 
 goalsApi.delete('/removeContent/:goalId/:contentId', async (req, res) => {
   const { goalId, contentId } = req.params
-  const goalType = req.query.goal_type
+  const goalType = req.query.goal_type as string
   const userId = extractUserIdFromRequest(req)
   try {
     const rootOrg = req.header('rootOrg')
@@ -481,7 +496,8 @@ goalsApi.delete('/removeContent/:goalId/:contentId', async (req, res) => {
     )
 
     res.status(response.status).send(response.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as any
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {

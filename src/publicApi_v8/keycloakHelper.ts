@@ -25,7 +25,7 @@ const deauthenticated = async (reqObj: any) => {
       const tokenObject = JSON.parse(keycloakToken)
       const refreshToken = tokenObject.refresh_token
       if (refreshToken) {
-        const host = reqObj.get('host')
+
         const urlValue = `${CONSTANTS.PORTAL_AUTH_SERVER_URL}/realms/${CONSTANTS.KEYCLOAK_REALM}/protocol/openid-connect/logout`
         try {
           request.post({
