@@ -34,7 +34,7 @@ userAuthKeyCloakApi.get('/', (req, res) => {
         })
         res.cookie(COOKIE_NAME, req.cookies[COOKIE_NAME], {
             domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
-            sameSite: 'none', ...COOKIE_OPTIONS
+            sameSite: 'none', ...COOKIE_OPTIONS,
         })
 
         // res.cookie('express.sid', req.cookies['express.sid'], {
@@ -94,7 +94,7 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
         })
         res.cookie(COOKIE_NAME, req.cookies[COOKIE_NAME], {
             domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
-            sameSite: 'none', ...COOKIE_OPTIONS
+            sameSite: 'none', ...COOKIE_OPTIONS,
         })
 
         // res.cookie('express.sid', req.cookies['express.sid'], {

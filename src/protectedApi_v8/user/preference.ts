@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
@@ -34,7 +34,7 @@ protectedPreference.get('/', async (req, res) => {
     const response = await getUserPreference(userId, rootOrg)
     res.json(response)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || err)
@@ -57,7 +57,7 @@ protectedPreference.put('/', async (req, res) => {
 
     res.status(response.status).send(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || err)

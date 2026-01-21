@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { ITrackStatus } from '../../models/goal.model'
@@ -61,7 +61,7 @@ goalsApi.get('/updateDurationCommonGoal/:goalType/:goalId', async (req, res) => 
 
     res.status(response.status).send(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -108,7 +108,7 @@ goalsApi.post('/', async (req, res) => {
 
     res.status(response1.status).send(response1.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && transformGoalUpsertResponse(err.response.data)) || {
@@ -156,8 +156,8 @@ goalsApi.patch('/:goalId', async (req, res) => {
     })
     res.status(response.status || response1.status).send()
   } catch (errAny) {
-    const err = errAny as any
-    logError(err)
+    const err = errAny as AxiosError
+    logError(String(err))
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -182,7 +182,7 @@ goalsApi.post('/share/:goalType/:goalId', async (req, res) => {
     })
     res.status(response.status).send(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -207,7 +207,7 @@ goalsApi.post('/sharev2/:goalType/:goalId', async (req, res) => {
     })
     res.status(response.status).send(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -241,7 +241,7 @@ goalsApi.post('/action/:type/:goalType/:goalId', async (req, res) => {
     })
     res.status(response.status).send(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -267,7 +267,7 @@ goalsApi.get('/action', async (req, res) => {
     const goals = response.data.map(transformToGoalForOthers)
     res.status(response.status).send(goals)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -291,7 +291,7 @@ goalsApi.get('/common', async (req, res) => {
     const goalGroups = response.data.map(transformToCommonGoalGroup)
     res.status(response.status).send(goalGroups)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -315,7 +315,7 @@ goalsApi.get('/common/:groupId', async (req, res) => {
     })
     res.status(response.status).send(transformToCommonGoalGroup(response.data))
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -341,7 +341,7 @@ goalsApi.get('/for-others', async (req, res) => {
     const goals = response.data.map(transformToGoalForOthers)
     res.status(response.status).send(goals)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -367,7 +367,7 @@ goalsApi.get('/track/:goalType/:goalId', async (req, res) => {
     const trackData: ITrackStatus = transformToTrackStatus(response.data)
     res.status(response.status).send(trackData)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -393,7 +393,7 @@ goalsApi.delete('/:goalType/:goalId', async (req, res) => {
 
     res.status(response.status).send(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -418,7 +418,7 @@ goalsApi.post('/removeUsers/:goalType/:goalId', async (req, res) => {
     )
     res.status(response.status).send(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -444,7 +444,7 @@ goalsApi.get('/:type', async (req, res) => {
 
     res.status(response.status).send(transformToUserGoals(response.data))
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -471,7 +471,7 @@ goalsApi.patch('/addContent/:goalId/:contentId', async (req, res) => {
 
     res.status(response.status).send(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -497,7 +497,7 @@ goalsApi.delete('/removeContent/:goalId/:contentId', async (req, res) => {
 
     res.status(response.status).send(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {

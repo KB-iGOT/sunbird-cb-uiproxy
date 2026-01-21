@@ -99,7 +99,8 @@ parichayAuth.get('/callback', async (req, res) => {
                 const mobileNo = userDetailResponse.data.MobileNo
 
                 if (!loginId || !mobileNo) {
-                    const errorMessage = 'Parichay user registration failed. You must allow Email id and Mobile number on the consent form. '
+                    const errorMessage = 'Parichay user registration failed. ' +
+                        'You must allow Email id and Mobile number on the consent form. '
                         + 'Please logout from Parichay and try iGOT Login with Parichay again.'
                     // Redirect to the logout page with an error message
                     res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
@@ -143,8 +144,7 @@ parichayAuth.get('/callback', async (req, res) => {
                 resRedirectUrl = `https://${host}/public/welcome`
             }
         }
-    } catch (errAny) {
-        const err = errAny as any
+    } catch (err) {
         logError('Failed to process callback API for Parichay code : ' + req.query.code + '..with the error: ' + JSON.stringify(err))
         resRedirectUrl = `https://${host}/public/logout?error=` + encodeURIComponent('Internal Server Error. Please contact administrator.')
     }

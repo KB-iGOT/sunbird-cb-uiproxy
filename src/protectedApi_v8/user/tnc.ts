@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
@@ -28,8 +28,7 @@ export async function getCommonTnc(rootOrg: string, org: string) {
       url: apiEndpoints.tnc,
     })
   } catch (eAny) {
-    const e = eAny as any
-    throw new Error(e)
+    throw new Error(String(eAny))
   }
 }
 
@@ -54,8 +53,7 @@ export async function getTnc(userId: string, rootOrg: string, org: string, local
       ),
     }
   } catch (errAny) {
-    const err = errAny as any
-    logError('Error occurred while getting user TNC. Trying to fetch common tnc >', err)
+    logError('Error occurred while getting user TNC. Trying to fetch common tnc >', String(errAny))
     try {
       const commonTnc = await getCommonTnc(rootOrg, org)
       return {
@@ -63,9 +61,8 @@ export async function getTnc(userId: string, rootOrg: string, org: string, local
         isNewUser: true,
       }
     } catch (eAny) {
-      const e = eAny as any
-      logError('Error occurred while getting COMMON TNC >', e)
-      throw new Error(e)
+      logError('Error occurred while getting COMMON TNC >', String(eAny))
+      throw new Error(String(eAny))
     }
   }
 }
@@ -80,8 +77,7 @@ export async function getTncStatus(
     const tnc = await getTnc(userId, rootOrg, org, locale)
     return tnc.isAccepted
   } catch (eAny) {
-    const e = eAny as any
-    logError(`TNC STATUS ERROR:`, e)
+    logError(`TNC STATUS ERROR:`, String(eAny))
     return false
   }
 }
@@ -106,7 +102,7 @@ protectedTnc.get('/status', async (req, res) => {
     const response = await getTncStatus(userId, rootOrg, org, locale)
     res.send(response)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -133,8 +129,8 @@ protectedTnc.get('/', async (req, res) => {
     const response = await getTnc(userId, rootOrg, org, locale)
     res.send(response)
   } catch (errAny) {
-    const err = errAny as any
-    logError('TNC SEND ERROR', err)
+    const err = errAny as AxiosError
+    logError('TNC SEND ERROR', String(err))
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -175,8 +171,8 @@ protectedTnc.post('/accept', async (req, res) => {
     }
     res.status(500).send(response.data)
   } catch (errAny) {
-    const err = errAny as any
-    logError('ERROR WHILE ACCEPTING TNC', err)
+    const err = errAny as AxiosError
+    logError('ERROR WHILE ACCEPTING TNC', String(err))
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -207,8 +203,8 @@ protectedTnc.patch('/postprocessing', async (req, res) => {
     })
     res.status(response.data ? 200 : 204).send(response.data)
   } catch (errAny) {
-    const err = errAny as any
-    logError('ERROR WHILE POSTPROCESSING', err)
+    const err = errAny as AxiosError
+    logError('ERROR WHILE POSTPROCESSING', String(err))
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -230,8 +226,8 @@ protectedTnc.get('/system/settings/:configName', async (req, res) => {
     })
     res.status(response.status).send(response.data)
   } catch (errAny) {
-    const err = errAny as any
-    logError('Getting error while searching the system config', err)
+    const err = errAny as AxiosError
+    logError('Getting error while searching the system config', String(err))
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -255,8 +251,8 @@ protectedTnc.post('/sbacceptTnc', async (req, res) => {
     )
     res.status(response.status).send(response.data)
   } catch (errAny) {
-    const err = errAny as any
-    logError(err)
+    const err = errAny as AxiosError
+    logError(String(err))
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,

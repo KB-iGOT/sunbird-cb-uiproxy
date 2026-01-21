@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
@@ -35,8 +35,8 @@ usersApi.post('/createuser', async (req, res) => {
     })
     res.send(response.data)
   } catch (errAny) {
-    const err = errAny as any
-    logError('CREATE USER ERR -> ', err)
+    const err = errAny as AxiosError
+    logError('CREATE USER ERR -> ', String(err))
     res.status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
         error: 'Failed due to unknown reason',

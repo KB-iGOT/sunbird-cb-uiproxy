@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { IBadgeRecent, IBadgeResponse } from '../../models/badge.model'
@@ -26,10 +26,9 @@ badgeApi.get('/', async (req, res) => {
       ...axiosRequestConfig,
       headers: { rootOrg, langCode },
     })
-    res.send(processAllBadges(response.data))
+    return res.send(processAllBadges(response.data))
   } catch (errAny) {
-    const err = errAny as any
-    return err
+    return res.status(500).send(errAny)
   }
 })
 
@@ -43,10 +42,9 @@ badgeApi.get('/for/:wid', async (req, res) => {
       ...axiosRequestConfig,
       headers: { rootOrg, langCode },
     })
-    res.send(processAllBadges(response.data))
+    return res.send(processAllBadges(response.data))
   } catch (errAny) {
-    const err = errAny as any
-    return err
+    return res.status(500).send(errAny)
   }
 })
 
@@ -61,10 +59,9 @@ badgeApi.get('/badgeDetail', async (req, res) => {
       ...axiosRequestConfig,
       headers: { rootOrg, langCode },
     })
-    res.send(processAllBadges(response.data))
+    return res.send(processAllBadges(response.data))
   } catch (errAny) {
-    const err = errAny as any
-    return err
+    return res.status(500).send(errAny)
   }
 })
 
@@ -84,7 +81,7 @@ badgeApi.post('/newUser', async (req, res) => {
 
     res.json(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res.status(500).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -109,7 +106,7 @@ badgeApi.post('/update', async (req, res) => {
 
     res.json(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res.status(500).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -139,7 +136,7 @@ badgeApi.get('/notification', async (req, res) => {
     }
     res.send(result)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,

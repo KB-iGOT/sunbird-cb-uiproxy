@@ -11,7 +11,7 @@ const async = require('async')
 const composable = require('composable-middleware')
 
 export class CustomKeycloak {
-  private multiTenantKeycloak = new Map<string, any>()
+  private multiTenantKeycloak = new Map<string, InstanceType<typeof keycloakConnect>>()
 
   constructor(sessionConfig: expressSession.SessionOptions) {
     if (CONSTANTS.MULTI_TENANT_KEYCLOAK) {
@@ -37,7 +37,7 @@ export class CustomKeycloak {
     middleware(req, res, next)
   }
 
-  getKeyCloakObject(req: express.Request): any {
+  getKeyCloakObject(req: express.Request): InstanceType<typeof keycloakConnect> {
     const rootOrg =
       (req.headers ? req.header('rootOrg') : '') || (req.cookies ? req.cookies.rootorg : '')
     let domain = ''
@@ -51,7 +51,7 @@ export class CustomKeycloak {
 
     return (this.multiTenantKeycloak.get(req.hostname) ||
       this.multiTenantKeycloak.get(domain) ||
-      this.multiTenantKeycloak.get('common')) as any
+      this.multiTenantKeycloak.get('common')!)
   }
 
   // tslint:disable-next-line: no-any
@@ -179,11 +179,12 @@ export class CustomKeycloak {
     sessionConfig: expressSession.SessionOptions,
     url?: string,
     realm?: string
-  ): any {
+  ): InstanceType<typeof keycloakConnect> {
     const keycloak = new keycloakConnect(
       { store: sessionConfig.store },
       getKeycloakConfig(url, realm)
     )
+    // tslint:disable-next-line: no-any
     keycloak.authenticated = this.authenticated as any
     keycloak.deauthenticated = this.deauthenticatedNew
     return keycloak

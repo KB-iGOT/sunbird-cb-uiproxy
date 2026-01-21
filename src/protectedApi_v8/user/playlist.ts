@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { IPaginatedApiResponse } from '../../models/paginatedApi.model'
@@ -109,7 +109,7 @@ async function getPlaylistsAllTypes(
       error: undefined,
     }
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return { data: undefined, error: err }
   }
 }
@@ -181,8 +181,8 @@ playlistApi.get('/sync/:playlistId', async (req, res) => {
     res.send(result.content)
     return
   } catch (errAny) {
-    const err = errAny as any
-    logError('SYNC PLAYLIST ERROR >', err)
+    const err = errAny as AxiosError
+    logError('SYNC PLAYLIST ERROR >', String(err))
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -225,8 +225,8 @@ playlistApi.get('/recent', async (req, res) => {
     }
     res.send(result)
   } catch (errAny) {
-    const err = errAny as any
-    logError('RECENT PLAYLIST CONTENTS FETCH ERROR >', err)
+    const err = errAny as AxiosError
+    logError('RECENT PLAYLIST CONTENTS FETCH ERROR >', String(err))
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -265,7 +265,7 @@ playlistApi.post('/accept/:playlistId', async (req, res) => {
 
     res.status(404).send()
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -297,7 +297,7 @@ playlistApi.post('/reject/:playlistId', async (req, res) => {
     res.status(response.status).send()
     return
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -321,7 +321,7 @@ playlistApi.post('/share/:playlistId', async (req, res) => {
     const response = await sharePlaylist(userId, playlistId, request, auth)
     res.status(response.status).send()
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -353,7 +353,7 @@ playlistApi.get('/:type/:playlistId', async (req, res) => {
     })
     res.status(response.status).send(transformToPlaylistV3(response.data, playlistId))
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -383,7 +383,7 @@ playlistApi.delete('/:playlistId', async (req, res) => {
     })
     res.status(response.status).send(true)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -454,8 +454,8 @@ playlistApi.patch('/:playlistId', async (req, res) => {
     })
     res.status(response.status || response1.status).send()
   } catch (errAny) {
-    const err = errAny as any
-    logError(err)
+    const err = errAny as AxiosError
+    logError(String(err))
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -506,7 +506,7 @@ playlistApi.post('/create', async (req, res) => {
 
     res.status(response1.status).send()
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -543,7 +543,7 @@ playlistApi.post('/:playlistId/:type', async (req, res) => {
 
     const urll = `https://igot-dev.in/apis/proxies/v8/action/content/v3/hierarchy/update`
 
-    const hierarchy: any = {}
+    const hierarchy: Record<string, any> = {}
     const childern = response1.data.result.content.childNodes
     if (type === EPlaylistUpsertTypes.add) {
       childern.push(req.body.contentIds[0])
@@ -599,7 +599,7 @@ playlistApi.post('/:playlistId/:type', async (req, res) => {
     // }
     // res.status(500).send()
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
@@ -620,7 +620,7 @@ playlistApi.get('/:type', async (req, res) => {
     const playlists = await getPlaylists(userId, rootOrg)
     res.send(playlists)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {

@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { format as formatDate } from 'date-fns'
 import { Request, Response, Router } from 'express'
 import { IFeedbackTraining, IIGOTJLStatus, IJITForm, IJITRequest, ITraining, ITrainingApiResponse, ITrainingCounts, ITrainingFeedbackQuestion, ITrainingRequest, ITrainingSession, ITrainingShareBody, ITrainingUserPrivileges } from '../models/training.model'
@@ -43,7 +43,7 @@ trainingApi.get('/content/:contentId/trainings', async (req: Request, res: Respo
 
     return res.send(trainings)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -63,7 +63,7 @@ trainingApi.get('/trainingsId/sessions', async (req: Request, res: Response) => 
 
     return res.send(trainingSessions)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -85,7 +85,7 @@ trainingApi.get('/content/:contentId/trainings/count', async (req: Request, res:
 
     return res.send(countsObj)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -103,7 +103,7 @@ trainingApi.post('/count', async (req: Request, res: Response) => {
 
     return res.send(apiResult)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -129,7 +129,7 @@ trainingApi.post(TRAINING_ENDPOINT, async (req: Request, res: Response) => {
 
     return res.send(apiResult)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -152,7 +152,7 @@ trainingApi.delete(TRAINING_ENDPOINT, async (req: Request, res: Response) => {
 
     return res.send(apiResult)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -188,7 +188,7 @@ trainingApi.post('/:trainingId/nominees', async (req: Request, res: Response) =>
 
     return res.send(resp)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -220,7 +220,7 @@ trainingApi.post('/:trainingId/share', async (req: Request, res: Response) => {
 
     return res.send(apiResult)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -240,7 +240,7 @@ trainingApi.get('/watchlist', async (req: Request, res: Response) => {
 
     return res.send(watchlist)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -268,7 +268,7 @@ trainingApi.get('/watchlist/content/:contentId/status', async (req: Request, res
 
     return res.send({ inWatchlist })
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -289,7 +289,7 @@ trainingApi.post('/watchlist/content/:contentId', async (req: Request, res: Resp
 
     return res.send(apiResult)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -312,7 +312,7 @@ trainingApi.delete('/watchlist/content/:contentId', async (req: Request, res: Re
 
     return res.send(apiResult)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -332,7 +332,7 @@ trainingApi.get('/trainings/jit', async (req: Request, res: Response) => {
 
     return res.send(jitRequests)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -365,7 +365,7 @@ trainingApi.post('/trainings/jit', async (req: Request, res: Response) => {
 
     return res.send(apiResult)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -385,7 +385,7 @@ trainingApi.get('/trainingsForApproval', async (req: Request, res: Response) => 
 
     return res.send(trainingRequests)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -409,7 +409,7 @@ trainingApi.patch(TRAINING_ENDPOINT, async (req: Request, res: Response) => {
 
     return res.send(apiResult)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -435,7 +435,7 @@ trainingApi.get('/trainings/feedback', async (req: Request, res: Response) => {
 
     return res.send(trainingsForFeedback)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -455,7 +455,7 @@ trainingApi.get('/feedback/:formId', async (req: Request, res: Response) => {
 
     return res.send(feedbackQuestions)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -487,7 +487,7 @@ trainingApi.post('/trainings/:trainingId/feedback', async (req: Request, res: Re
 
     return res.send(apiResult)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -510,7 +510,7 @@ trainingApi.get('/userInfo', async (req: Request, res: Response) => {
 
     return res.send(isJL6OrAbove)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     return res.status((err && err.response && err.response.status) || 400).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,

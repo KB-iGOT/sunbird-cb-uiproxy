@@ -118,6 +118,7 @@
     "no-angle-bracket-type-assertion": true,
     "no-any": false,
     "no-unnecessary-type-assertion": false,
+    "sonar-no-useless-cast": false,
     "no-arg": true,
     "no-conditional-assignment": true,
     "no-construct": true,

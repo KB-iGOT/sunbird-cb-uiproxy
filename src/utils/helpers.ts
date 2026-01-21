@@ -7,7 +7,9 @@ export function* range(end: number, step = 1) {
   }
 }
 
+// tslint:disable-next-line: no-any
 export function getStringifiedQueryParams(obj: {
+  // tslint:disable-next-line: no-any
   [key: string]: any;
 }) {
   return Object.entries(obj)

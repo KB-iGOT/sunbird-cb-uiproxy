@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { getRootOrg } from '../../authoring/utils/header'
 import { axiosRequestConfig } from '../../configs/request.config'
@@ -37,13 +37,13 @@ topicsApi.get('/recent', async (req, res) => {
                     rootOrg,
                     // tslint:disable-next-line: all
                     'x-authenticated-user-token': extractUserToken(req)
-                }
+                },
             }
         )
         res.send(response.data)
     } catch (errAny) {
-        const err = errAny as any
-        logError('ERROR ON GET topicsApi /recent >', err)
+        const err = errAny as AxiosError
+        logError('ERROR ON GET topicsApi /recent >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -63,13 +63,13 @@ topicsApi.get('/top', async (req, res) => {
                     rootOrg,
                     // tslint:disable-next-line: all
                     'x-authenticated-user-token': extractUserToken(req)
-                }
+                },
             }
         )
         res.send(response.data)
     } catch (errAny) {
-        const err = errAny as any
-        logError('ERROR ON GET topicsApi /top >', err)
+        const err = errAny as AxiosError
+        logError('ERROR ON GET topicsApi /top >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -90,13 +90,13 @@ topicsApi.get('/popular', async (req, res) => {
                     rootOrg,
                     // tslint:disable-next-line: all
                     'x-authenticated-user-token': extractUserToken(req)
-                }
+                },
             }
         )
         res.send(response.data)
     } catch (errAny) {
-        const err = errAny as any
-        logError('ERROR ON GET topicsApi /popular >', err)
+        const err = errAny as AxiosError
+        logError('ERROR ON GET topicsApi /popular >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -122,8 +122,8 @@ topicsApi.get('/unread', async (req, res) => {
         )
         res.send(response.data)
     } catch (errAny) {
-        const err = errAny as any
-        logError('ERROR ON GET topicsApi /unread >', err)
+        const err = errAny as AxiosError
+        logError('ERROR ON GET topicsApi /unread >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -144,13 +144,13 @@ topicsApi.get('/unread/total', async (req, res) => {
                     rootOrg,
                     // tslint:disable-next-line: all
                     'x-authenticated-user-token': extractUserToken(req)
-                }
+                },
             }
         )
         res.send(response.data)
     } catch (errAny) {
-        const err = errAny as any
-        logError('ERROR ON GET topicsApi /unread >', err)
+        const err = errAny as AxiosError
+        logError('ERROR ON GET topicsApi /unread >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -174,13 +174,13 @@ topicsApi.get('/:tid', async (req, res) => {
                     rootOrg,
                     // tslint:disable-next-line: all
                     'x-authenticated-user-token': extractUserToken(req)
-                }
+                },
             }
         )
         res.send(response.data)
     } catch (errAny) {
-        const err = errAny as any
-        logError('ERROR ON GET topicsApi /:tid >', err)
+        const err = errAny as AxiosError
+        logError('ERROR ON GET topicsApi /:tid >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }

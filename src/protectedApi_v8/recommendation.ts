@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { EContentTypes, IContent } from '../models/content.model'
@@ -73,8 +73,8 @@ recommendationApi.get('/', async (req, res) => {
     }
     res.json(result)
   } catch (errAny) {
-    const err = errAny as any
-    logError('RECOMMENDATIONS FETCH ERROR >', err)
+    const err = errAny as AxiosError
+    logError('RECOMMENDATIONS FETCH ERROR >', String(err))
     res.status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
         error: ERROR.GENERAL_ERR_MSG,
@@ -127,8 +127,8 @@ recommendationApi.get('/interestBased', async (req, res) => {
     }
     res.json(result)
   } catch (errAny) {
-    const err = errAny as any
-    logError('INTEREST BASED RECOMMENDATIONS FETCH ERROR >', err)
+    const err = errAny as AxiosError
+    logError('INTEREST BASED RECOMMENDATIONS FETCH ERROR >', String(err))
     res.status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
         error: ERROR.GENERAL_ERR_MSG,
@@ -181,8 +181,9 @@ recommendationApi.get('/keyword', async (req, res) => {
       }
       res.json(result)
     }
-  } catch (err) {
-    logError('RECOMMENDATIONS TYPE FETCH ERROR >', err)
+  } catch (errAny) {
+    const err = errAny as AxiosError
+    logError('RECOMMENDATIONS TYPE FETCH ERROR >', String(err))
     res.status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
         error: ERROR.GENERAL_ERR_MSG,
@@ -228,8 +229,8 @@ recommendationApi.get('/usageBased', async (req, res) => {
     }
     res.json(result)
   } catch (errAny) {
-    const err = errAny as any
-    logError('USAGE BASED RECOMMENDATIONS FETCH ERROR >', err)
+    const err = errAny as AxiosError
+    logError('USAGE BASED RECOMMENDATIONS FETCH ERROR >', String(err))
     res.status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
         error: ERROR.GENERAL_ERR_MSG,
@@ -273,7 +274,7 @@ recommendationApi.get('/:recommendationType', async (req, res) => {
         params.excludeContentType = `${EContentTypes.KNOWLEDGE_ARTIFACT},${EContentTypes.RESOURCE},${EContentTypes.MODULE},${EContentTypes.CHANNEL}`
       } else {
         if (req.query.excludeContentType) {
-          params.excludeContentType = req.query.excludeContentType as string as string
+          params.excludeContentType = req.query.excludeContentType as string
         }
       }
       if (rootOrg !== 'PNG' && org !== 'PNG') {
@@ -298,8 +299,9 @@ recommendationApi.get('/:recommendationType', async (req, res) => {
       hasMore: false,
     }
     res.json(result)
-  } catch (err) {
-    logError('RECOMMENDATIONS TYPE FETCH ERROR >', err)
+  } catch (errAny) {
+    const err = errAny as AxiosError
+    logError('RECOMMENDATIONS TYPE FETCH ERROR >', String(err))
     res.status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
         error: ERROR.GENERAL_ERR_MSG,

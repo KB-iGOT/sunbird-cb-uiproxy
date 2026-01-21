@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { IFsData, IGroup, ILpData, INsoData, IOfferings, IProfile, IRole, IVariant } from '../models/navigator.model'
@@ -37,8 +37,8 @@ navigatorApi.get('/roles', async (_req, res) => {
     )
     res.json(processRolesData(response))
   } catch (errAny) {
-    const err = errAny as any
-    logError('ERR FETCHING NSODATA -> ', err)
+    const err = errAny as AxiosError
+    logError('ERR FETCHING NSODATA -> ', String(err))
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
         error: 'Failed due to unknown reason',

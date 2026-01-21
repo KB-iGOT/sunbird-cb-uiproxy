@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { IUserGroup } from '../../models/usergroup.model'
@@ -45,8 +45,8 @@ userGroupApi.get('/groupContent', async (req, res) => {
     }
     res.json(finalResponse)
   } catch (errAny) {
-    const err = errAny as any
-    logError('SEARCH V6 API ERROR >', err)
+    const err = errAny as AxiosError
+    logError('SEARCH V6 API ERROR >', String(err))
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
         error: 'Failed due to unknown reason',
@@ -67,8 +67,8 @@ userGroupApi.get('/fetchUserGroup', async (req, res) => {
     const response = await axios.get(API_END_POINTS.userGroup(userId))
     res.status(response.status).send(response.data)
   } catch (errAny) {
-    const err = errAny as any
-    logError('GROUP COHORT CONTENT >', err)
+    const err = errAny as AxiosError
+    logError('GROUP COHORT CONTENT >', String(err))
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
         error: 'Failed due to unknown reason',

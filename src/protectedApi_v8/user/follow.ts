@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
@@ -38,7 +38,7 @@ followApi.post('/fetchAll', async (req, res) => {
     const response = await axios.post(API_END_POINTS.getAll, requestBody, axiosRequestConfig)
     res.status(response.status).send(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || err)
@@ -54,7 +54,7 @@ followApi.get('/followers/:targetId', async (req, res) => {
     const response = await axios.get(`${API_END_POINTS.followers}/${targetId}`, axiosRequestConfig)
     res.json(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || err)
@@ -83,7 +83,7 @@ followApi.get('/following/:type', async (req, res) => {
     const response = await axios.post(API_END_POINTS.getFollowing, requestBody, axiosRequestConfig)
     res.json(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || err)
@@ -112,7 +112,7 @@ followApi.get('/getFollowing', async (req, res) => {
     const response = await axios.post(API_END_POINTS.getFollowing, requestBody, axiosRequestConfig)
     res.json(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || err)
@@ -145,7 +145,7 @@ followApi.post('/getFollowingv3', async (req, res) => {
     )
     res.json(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || err)
@@ -174,7 +174,7 @@ followApi.post('/getFollowersv3', async (req, res) => {
     )
     res.json(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || err)
@@ -199,7 +199,7 @@ followApi.post('/', async (req, res) => {
     const response = await axios.post(API_END_POINTS.follow, requestBody, axiosRequestConfig)
     res.status(response.status).send(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || err)
@@ -223,7 +223,7 @@ followApi.post('/unfollow', async (req, res) => {
     const response = await axios.post(API_END_POINTS.unFollow, requestBody, axiosRequestConfig)
     res.status(response.status).send(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || err)
@@ -248,7 +248,7 @@ followApi.post('/getFollowers', async (req, res) => {
     const response = await axios.post(API_END_POINTS.getFollowers, requestBody, axiosRequestConfig)
     res.status(response.status).send(response.data)
   } catch (errAny) {
-    const err = errAny as any
+    const err = errAny as AxiosError
     res
       .status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || err)

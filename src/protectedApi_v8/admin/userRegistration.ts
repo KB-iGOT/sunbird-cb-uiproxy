@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import cassandraDriver from 'cassandra-driver'
 import { Router } from 'express'
 import * as fs from 'fs'
@@ -44,8 +44,8 @@ userRegistrationApi.get('/listUsers/:source', async (req, res) => {
         )
         res.json(response.data)
     } catch (errAny) {
-        const err = errAny as any
-        logError('ERROR ON GET ALL REGISTERED USERS >', err)
+        const err = errAny as AxiosError
+        logError('ERROR ON GET ALL REGISTERED USERS >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -62,8 +62,8 @@ userRegistrationApi.post('/deregisterUsers/:source', async (req, res) => {
         )
         res.json(response.data)
     } catch (errAny) {
-        const err = errAny as any
-        logError('ERROR ON DEREGISTER USERS >', err)
+        const err = errAny as AxiosError
+        logError('ERROR ON DEREGISTER USERS >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -79,8 +79,8 @@ userRegistrationApi.get('/getAllSources', async (req, res) => {
         const data = response.data.filter((o: { registrationUrl: string | null }) => o.registrationUrl !== null)
         res.json(data || {})
     } catch (errAny) {
-        const err = errAny as any
-        logError('ERROR ON GET ALL SOURCES >', err)
+        const err = errAny as AxiosError
+        logError('ERROR ON GET ALL SOURCES >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -96,8 +96,8 @@ userRegistrationApi.get('/getSourceDetail/:id', async (req, res) => {
         })
         res.json(response.data || {})
     } catch (errAny) {
-        const err = errAny as any
-        logError('ERROR ON GET SOURCE DETAILS >', err)
+        const err = errAny as AxiosError
+        logError('ERROR ON GET SOURCE DETAILS >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -115,8 +115,8 @@ userRegistrationApi.get('/checkUserRegistrationContent/:source', async (req, res
         })
         res.json(response.data || {})
     } catch (errAny) {
-        const err = errAny as any
-        logError('ERROR ON CHECK SOURCE REGISTRATION STATUS >', err)
+        const err = errAny as AxiosError
+        logError('ERROR ON CHECK SOURCE REGISTRATION STATUS >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -138,8 +138,8 @@ userRegistrationApi.post('/register', async (req, res) => {
         )
         res.json(response.data || {})
     } catch (errAny) {
-        const err = errAny as any
-        logError('ERROR ON REGISTRATIO USERS >', err)
+        const err = errAny as AxiosError
+        logError('ERROR ON REGISTRATIO USERS >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -153,7 +153,7 @@ userRegistrationApi.post('/create-user', async (req, res) => {
                 if (error.response.status === 409) {
                     res.status(400).send(`1005: User with email ${req.body.email} is already exists !!`)
                 } else {
-                    res.status(400).send('1003: User could not be created in Keycloack !!' || {})
+                    res.status(400).send('1003: User could not be created in Keycloack !!')
                 }
             })
         if (createKeycloak && createKeycloak.id) {
@@ -161,7 +161,7 @@ userRegistrationApi.post('/create-user', async (req, res) => {
                 .catch((error: any) => {
                     // tslint:disable-next-line: no-duplicate-string
                     logError('/create-user ERROR ON UpdateKeycloakUserPassword', error)
-                    res.status(400).send('1003: User default password could not be set !!' || {})
+                    res.status(400).send('1003: User default password could not be set !!')
                 })
             getAuthToken(req.body.email).then(async (kcaAuthToken) => {
                 if (kcaAuthToken && kcaAuthToken.access_token) {
@@ -174,12 +174,12 @@ userRegistrationApi.post('/create-user', async (req, res) => {
                 }
             }).catch((error) => {
                 logError('ERROR ON getAuthToken', error)
-                res.status(400).send('1004: User getAuthToken failed !!' || {})
+                res.status(400).send('1004: User getAuthToken failed !!')
             })
             await UpdateKeycloakUserPassword(createKeycloak.id, true)
                 .catch((error: any) => {
                     logError('/create-user ERROR ON UpdateKeycloakUserPassword after getAuthtoken', error)
-                    res.status(400).send('1003: User default password could not be set !!' || {})
+                    res.status(400).send('1003: User default password could not be set !!')
                 })
             await sendActionsEmail(createKeycloak.id)
                 .catch((error: any) => {
@@ -190,8 +190,8 @@ userRegistrationApi.post('/create-user', async (req, res) => {
             res.json({ data: 'User Created successfully!' })
         }
     } catch (errAny) {
-        const err = errAny as any
-        logError('ERROR ON CREATE USERS >', err)
+        const err = errAny as AxiosError
+        logError('ERROR ON CREATE USERS >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -215,8 +215,8 @@ userRegistrationApi.post('/user/access-path', async (req, res) => {
         })
         // })
     } catch (errAny) {
-        const err = errAny as any
-        logError('/user/access-path:: ERROR ON access-path >', err)
+        const err = errAny as AxiosError
+        logError('/user/access-path:: ERROR ON access-path >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -249,8 +249,8 @@ userRegistrationApi.post('/user/update-access-path', async (req, res) => {
         })
         // })
     } catch (errAny) {
-        const err = errAny as any
-        logError('/user/update-access-path:: ERROR ON access-path >', err)
+        const err = errAny as AxiosError
+        logError('/user/update-access-path:: ERROR ON access-path >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -364,8 +364,8 @@ userRegistrationApi.post('/bulkUpload', async (req, res) => {
         await insertBulkUploadStatus(reqToUpdate)
 
     } catch (errAny) {
-        const err = errAny as any
-        logError('ERROR ON BULK UPLOAD >', err)
+        const err = errAny as AxiosError
+        logError('ERROR ON BULK UPLOAD >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -384,8 +384,8 @@ export async function createUser(req: any) {
                 resolve(createKeycloak.id)
             }
         } catch (errAny) {
-            const err = errAny as any
-            logError('ERROR ON CREATE USERS >', err)
+            const err = errAny as AxiosError
+            logError('ERROR ON CREATE USERS >', String(err))
         }
     })
 }
@@ -439,7 +439,7 @@ export async function performNewUserSteps(userId: any, req: any, email: any, rol
                 logError('ERROR ON sendActionsEmail', error)
                 reject('Email could not be sent')
             })
-        resolve()
+        resolve(undefined)
     })
 }
 
@@ -461,8 +461,8 @@ export async function insertBulkUploadStatus(req: any) {
         })
         // })
     } catch (errAny) {
-        const err = errAny as any
-        logError('ERROR ON insertBulkUploadStatus >', err)
+        const err = errAny as AxiosError
+        logError('ERROR ON insertBulkUploadStatus >', String(err))
     }
 }
 
@@ -483,8 +483,8 @@ userRegistrationApi.get('/bulkUploadData', async (req, res) => {
             }
         })
     } catch (errAny) {
-        const err = errAny as any
-        logError('ERROR ON bulkUploadData >', err)
+        const err = errAny as AxiosError
+        logError('ERROR ON bulkUploadData >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -508,8 +508,8 @@ userRegistrationApi.get('/bulkUploadReport/:id', async (req, res) => {
             }
         })
     } catch (errAny) {
-        const err = errAny as any
-        logError('ERROR ON /bulkUploadReport/:id >', err)
+        const err = errAny as AxiosError
+        logError('ERROR ON /bulkUploadReport/:id >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -533,8 +533,8 @@ userRegistrationApi.get('/user/department', async (req, res) => {
         )
         res.json(response.data || {})
     } catch (errAny) {
-        const err = errAny as any
-        logError('ERROR ON /user/department >', err)
+        const err = errAny as AxiosError
+        logError('ERROR ON /user/department >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -559,8 +559,8 @@ userRegistrationApi.post('/user/department/update', async (req, res) => {
         )
         res.json(response.data || {})
     } catch (errAny) {
-        const err = errAny as any
-        logError('ERROR ON /user/department >', err)
+        const err = errAny as AxiosError
+        logError('ERROR ON /user/department >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }

@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 
 import { axiosRequestConfig } from '../configs/request.config'
@@ -17,7 +17,7 @@ deptApi.get('/getAllDept', async (_req, res) => {
         const response = await axios.get(API_END_POINTS.getAllDepartment, axiosRequestConfig)
         res.status(response.status).send(response.data)
     } catch (errAny) {
-        const err = errAny as any
+        const err = errAny as AxiosError
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
                 error: unknownError,
@@ -32,7 +32,7 @@ deptApi.get('/searchDept', async (req, res) => {
         const response = await axios.get(API_END_POINTS.searchDepartment(friendlyNameValue as string), axiosRequestConfig)
         res.status(response.status).send(response.data)
     } catch (errAny) {
-        const err = errAny as any
+        const err = errAny as AxiosError
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
                 error: unknownError,
