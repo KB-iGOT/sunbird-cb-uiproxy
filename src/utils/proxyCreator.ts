@@ -4,7 +4,7 @@ import { extractUserEmailFromRequest, extractUserId, extractUserToken } from '..
 import { CONSTANTS } from './env'
 import { logInfo } from './logger'
 
-const _ = require('lodash')
+import _ from 'lodash'
 
 const proxyCreator = (timeout = 10000) => createProxyServer({
   timeout,
