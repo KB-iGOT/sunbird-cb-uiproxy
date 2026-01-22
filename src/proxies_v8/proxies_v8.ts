@@ -1070,7 +1070,7 @@ proxiesV8.get('/cios/v1/content/read/:contentId', async (req, res) => {
   const userId = extractUserIdFromRequest(req)
   const token = extractUserToken(req)
   try {
-    const response = await allocationService.readByUserIdCourseId(userId, contentId, token as string)
+    const response = await allocationService.readByUserIdCourseId(userId, contentId, token)
     if (response) {
       // Assuming the response itself is valid for redirection or contains a redirectUrl
       // If the API returns a redirectUrl, we use it.

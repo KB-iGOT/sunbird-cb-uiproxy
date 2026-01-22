@@ -51,7 +51,7 @@ export class CustomKeycloak {
 
     return (this.multiTenantKeycloak.get(req.hostname) ||
       this.multiTenantKeycloak.get(domain) ||
-      this.multiTenantKeycloak.get('common')!)
+      this.multiTenantKeycloak.get('common'))
   }
 
   // tslint:disable-next-line: no-any
