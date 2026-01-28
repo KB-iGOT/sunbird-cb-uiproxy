@@ -224,6 +224,8 @@ export const CONSTANTS = {
   OIL_TOKEN_URL: env.OIL_TOKEN_URL || 'oilTokenUrl',
   OIL_USER_DETAILS_URL: env.OIL_USER_DETAILS_URL || 'oilUserDetailsUrl',
   OIL_REVOKE_URL: env.OIL_REVOKE_URL || 'oilRevokeUrl',
+  IGOT_REDIS_HOST: env.IGOT_REDIS_HOST || 'localhost',
+  IGOT_REDIS_PORT: env.IGOT_REDIS_PORT || 6379,
 }
 
 export const RESTRICTED_PYTHON_STMT: string[] = process.env.RESTRICTED_CHARACTERS

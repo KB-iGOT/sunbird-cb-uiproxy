@@ -5,6 +5,7 @@ import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { getCurrnetExpiryTime } from '../utils/jwtHelper'
 import { logError, logInfo } from '../utils/logger'
+import { redis } from '../utils/redis'
 import { createUserWithMailId, fetchUserByEmailId, updateKeycloakSession } from './ssoUserHelper'
 
 export const oilAuth = express.Router()
@@ -26,7 +27,10 @@ oilAuth.get('/auth', async (req, res) => {
     oAuthParams = oAuthParams + '&response_type=code'
     oAuthParams = oAuthParams + '&response_mode=query'
     oAuthParams = oAuthParams + '&scope=openid profile email'
-    oAuthParams = oAuthParams + '&state=' + uuid.v4()
+    const state = uuid.v4()
+    oAuthParams = oAuthParams + '&state=' + state
+    // Store state in Redis with 5 minutes expiration
+    await redis.set(`oil_auth_state:${state}`, 'VALID', 'EX', 300)
     const oilUrl = CONSTANTS.OIL_AUTH_URL + '?' + oAuthParams
     res.redirect(oilUrl)
 })
@@ -42,6 +46,17 @@ oilAuth.get('/login/callback', async (req, res) => {
         res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
         return
     }
+    const state = req.query.state
+    const stateKey = `oil_auth_state:${state}`
+    const isStateValid = await redis.get(stateKey)
+    if (!isStateValid) {
+        logError('State validation failed or expired for state: ' + state)
+        const errorMessage = 'Login failed. Security check failed or session expired. Please try again.'
+        res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
+        return
+    }
+    // Delete state after successful validation to prevent replay
+    await redis.del(stateKey)
     logInfo('Received host :: ' + host)
     let resRedirectUrl = `https://${host}/page/home`
     if (host === CONSTANTS.IIIDEM_PORTAL_HOST) {
