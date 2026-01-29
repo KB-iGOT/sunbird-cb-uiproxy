@@ -3,6 +3,8 @@ import express from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { logError, logInfo } from '../utils/logger'
+import { extractUserTokenFromRequest } from '../utils/requestExtract'
+import { ERROR } from '../utils/message'
 
 const ACCEPT_ENCODING = 'accept-encoding'
 const CONTENT_ENCODING = 'content-encoding'
@@ -11,6 +13,16 @@ export const chatBotTranscoderAPIIntegration = express.Router()
 
 chatBotTranscoderAPIIntegration.use('/*', async (req: express.Request, res: express.Response) => {
     try {
+
+        if (!req.headers.authorization) {
+            res.status(400).send(ERROR.ERROR_NO_AUTHORIZATION)
+            return
+        }
+
+        if (!extractUserTokenFromRequest(req)) {
+            res.status(400).send(ERROR.ERROR_NO_USER_TOKEN)
+            return
+        }
 
         const baseUrl = removePrefix('/public/v8/chatbot/v3/mobile/transcoder', req.originalUrl)
         logInfo(`The url is... ${baseUrl} : originalUrl: ${req.originalUrl}`)
@@ -40,6 +52,7 @@ chatBotTranscoderAPIIntegration.use('/*', async (req: express.Request, res: expr
             headers: {
                 'Content-Type': 'application/json',
                 ...(req.headers.authorization && { Authorization: req.headers.authorization }),
+                ...(extractUserTokenFromRequest(req) && { 'X-Authenticated-User-Token': extractUserTokenFromRequest(req) }),
                 ...requestHeaders,
             },
             ...axiosRequestConfig,
