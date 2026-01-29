@@ -3,8 +3,8 @@ import express from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { logError, logInfo } from '../utils/logger'
-import { extractUserTokenFromRequest } from '../utils/requestExtract'
 import { ERROR } from '../utils/message'
+import { extractUserTokenFromRequest } from '../utils/requestExtract'
 
 const ACCEPT_ENCODING = 'accept-encoding'
 const CONTENT_ENCODING = 'content-encoding'
@@ -52,7 +52,7 @@ chatBotTranscoderAPIIntegration.use('/*', async (req: express.Request, res: expr
             headers: {
                 'Content-Type': 'application/json',
                 ...(req.headers.authorization && { Authorization: req.headers.authorization }),
-                ...(extractUserTokenFromRequest(req) && { 'X-Authenticated-User-Token': extractUserTokenFromRequest(req) }),
+                ...(extractUserTokenFromRequest(req) && { 'x-authenticated-user-token': extractUserTokenFromRequest(req) }),
                 ...requestHeaders,
             },
             ...axiosRequestConfig,
