@@ -4,6 +4,7 @@ import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { logError } from '../utils/logger'
 import { proxyCreatorRoute } from '../utils/proxyCreator'
+import { chatBotTranscoderAPIIntegration } from './chatBotTranscoderAPIIntegration'
 import { oilAuth } from './oilAuth'
 import { parichayAuth } from './parichayAuth'
 import { workallocationPublic } from './workallocationPublic'
@@ -113,6 +114,8 @@ publicApiV8.use('/org/v1/read', proxyCreatorRoute(express.Router(), CONSTANTS.KO
 publicApiV8.use('/public/forms/v2/getFormById', proxyCreatorRoute(express.Router(), API_END_POINTS.publicGetFormById))
 
 publicApiV8.use('/forms/v2/getApplicationsById', proxyCreatorRoute(express.Router(), API_END_POINTS.publicGetApplicationsById))
+
+publicApiV8.use('/chatbot/v3/mobile/transcoder', chatBotTranscoderAPIIntegration)
 
 publicApiV8.post('/public/forms/v2/saveFormSubmit', async (req: Request, res: express.Response) => {
   try {

@@ -1,6 +1,8 @@
 export const ERROR = {
+  ERROR_NO_AUTHORIZATION: 'No Authorization header found in request headers',
   ERROR_NO_DEPT_DATA: 'Department details not available',
   ERROR_NO_ORG_DATA: 'ERROR_NO_ORG_DATA',
+  ERROR_NO_USER_TOKEN: 'No X-Authenticated-User-Token found in request headers',
   GENERAL_ERR_MSG: 'Failed due to unknown reason',
   fetchErrorElasticSearch: 'ERROR_ELASTIC_SEARCH_CONNECTION',
   fetchErrorFullStack: 'ERROR_FETCHING_FULLSTACK_DATA',
