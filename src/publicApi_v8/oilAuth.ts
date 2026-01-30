@@ -26,7 +26,7 @@ oilAuth.get('/auth', async (req, res) => {
     oAuthParams = oAuthParams + '&redirect_uri=' + redirectUrl
     oAuthParams = oAuthParams + '&response_type=code'
     oAuthParams = oAuthParams + '&response_mode=query'
-    oAuthParams = oAuthParams + '&scope=openid profile email'
+    oAuthParams = oAuthParams + '&scope=openid profile email User.Read'
     const state = uuid.v4()
     oAuthParams = oAuthParams + '&state=' + state
     // Store state in Redis with 5 minutes expiration
