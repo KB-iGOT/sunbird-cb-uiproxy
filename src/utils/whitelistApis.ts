@@ -7801,5 +7801,6 @@ export const API_LIST = {
             '/proxies/v8/achievement/dynamic/v1/generate',
             '/proxies/v8/learningpathway/v1/retire/:id',
             '/proxies/v8/contentpartner/v1/activate/:id',
+            
             ],
 }
