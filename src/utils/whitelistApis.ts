@@ -6921,6 +6921,14 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN
             ],
         },
+        '/proxies/v8/sso/validateSaml': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.SPV_ADMIN,
+               ROLE.SPV_PUBLISHER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7801,5 +7809,6 @@ export const API_LIST = {
             '/proxies/v8/achievement/dynamic/v1/generate',
             '/proxies/v8/learningpathway/v1/retire/:id',
             '/proxies/v8/contentpartner/v1/activate',
+            '/proxies/v8/sso/validateSaml',
             ],
 }
