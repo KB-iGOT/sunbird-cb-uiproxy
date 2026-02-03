@@ -6912,7 +6912,7 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
             ],
         },
-        '/proxies/v8/contentpartner/v1/activate/:id': {
+        '/proxies/v8/contentpartner/v1/activate': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7800,6 +7800,6 @@ export const API_LIST = {
             '/proxies/v8/extended/content/v1/read/:identifier',
             '/proxies/v8/achievement/dynamic/v1/generate',
             '/proxies/v8/learningpathway/v1/retire/:id',
-            '/proxies/v8/contentpartner/v1/activate/:id',
+            '/proxies/v8/contentpartner/v1/activate',
             ],
 }
