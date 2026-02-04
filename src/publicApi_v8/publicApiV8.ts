@@ -5,6 +5,7 @@ import { CONSTANTS } from '../utils/env'
 import { logError } from '../utils/logger'
 import { proxyCreatorRoute } from '../utils/proxyCreator'
 import { chatBotTranscoderAPIIntegration } from './chatBotTranscoderAPIIntegration'
+import { ntpcAuth } from './ntpcAuth'
 import { oilAuth } from './oilAuth'
 import { parichayAuth } from './parichayAuth'
 import { workallocationPublic } from './workallocationPublic'
@@ -86,6 +87,8 @@ publicApiV8.use('/org/v1/list', proxyCreatorRoute(express.Router(), CONSTANTS.KO
 publicApiV8.use('/parichay', parichayAuth)
 
 publicApiV8.use('/oil', oilAuth)
+
+publicApiV8.use('/ntpc', ntpcAuth)
 
 publicApiV8.use('/halloffame/read', proxyCreatorRoute(express.Router(), CONSTANTS.KONG_API_BASE + '/halloffame/read'))
 

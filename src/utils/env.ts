@@ -224,6 +224,13 @@ export const CONSTANTS = {
   OIL_TOKEN_URL: env.OIL_TOKEN_URL || 'oilTokenUrl',
   OIL_USER_DETAILS_URL: env.OIL_USER_DETAILS_URL || 'oilUserDetailsUrl',
   OIL_REVOKE_URL: env.OIL_REVOKE_URL || 'oilRevokeUrl',
+  NTPC_AUTH_CALLBACK_URL: env.NTPC_AUTH_CALLBACK_URL || '/apis/public/v8/ntpc/login/callback',
+  NTPC_CLIENT_ID: env.NTPC_CLIENT_ID || 'ntpcClientId',
+  NTPC_CLIENT_SECRET: env.NTPC_CLIENT_SECRET || 'ntpcClientSecret',
+  NTPC_AUTH_URL: env.NTPC_AUTH_URL || 'ntpcAuthUrl',
+  NTPC_TOKEN_URL: env.NTPC_TOKEN_URL || 'ntpcTokenUrl',
+  NTPC_USER_DETAILS_URL: env.NTPC_USER_DETAILS_URL || 'ntpcUserDetailsUrl',
+  NTPC_REVOKE_URL: env.NTPC_REVOKE_URL || 'ntpcRevokeUrl',
   IGOT_REDIS_HOST: env.IGOT_REDIS_HOST || 'localhost',
   IGOT_REDIS_PORT: env.IGOT_REDIS_PORT || 6379,
 }
