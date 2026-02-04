@@ -130,7 +130,7 @@ oilAuth.get('/login/callback', async (req, res) => {
                     return
                 }
                 createResult = await createUserWithMailId(userDetailResponse.data.mail,
-                    userDetailResponse.data.givenName, userDetailResponse.data.surname, userDetailResponse.data.mobilePhone)
+                    userDetailResponse.data.givenName, userDetailResponse.data.surname, userDetailResponse.data.mobilePhone, 'oilIndia')
                 if (createResult.errMessage !== '') {
                     result.errMessage = createResult.errMessage
                 }

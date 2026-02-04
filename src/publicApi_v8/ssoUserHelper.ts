@@ -8,20 +8,23 @@ import { getKeyCloakClient } from './keycloakHelper'
 const API_END_POINTS = {
     // cbExtSignUpUser: `${CONSTANTS.KONG_API_BASE}/user/v1/ext/signup`,
     cbExtSignUpUser: `${CONSTANTS.KONG_API_BASE}/user/v5/parichay/create`,
+    cbExtSignUpUserOilIndia: `${CONSTANTS.KONG_API_BASE}/user/v5/oilindia/create`,
 }
 
 export async function fetchUserByEmailId(emailId: string) {
     const sbUserSearchRes = await axios({
         ...axiosRequestConfig,
-        data: { request: {
-            fields : ['userId', 'status', 'channel', 'rootOrgId', 'organisations'],
-            filters: { email: emailId.toLowerCase() },
-        } },
+        data: {
+            request: {
+                fields: ['userId', 'status', 'channel', 'rootOrgId', 'organisations'],
+                filters: { email: emailId.toLowerCase() },
+            },
+        },
         method: 'POST',
         url: CONSTANTS.LEARNER_SERVICE_API_BASE + '/private/user/v1/search',
     })
     const result = {
-        errMessage : '', rootOrgId: '', userExist : false,
+        errMessage: '', rootOrgId: '', userExist: false,
     }
 
     if (sbUserSearchRes.data.responseCode.toUpperCase() === 'OK') {
@@ -49,9 +52,9 @@ export async function fetchUserByEmailId(emailId: string) {
     return Promise.resolve(result)
 }
 
-export async function createUserWithMailId(emailId: string, firstNameStr: string, lastNameStr: string, mobileNoStr = '') {
+export async function createUserWithMailId(emailId: string, firstNameStr: string, lastNameStr: string, mobileNoStr = '', source = '') {
     const result = {
-        errMessage : '', userCreated : false, userId: '',
+        errMessage: '', userCreated: false, userId: '',
     }
     const signUpErr = 'SIGN_UP_ERR-'
     let statusString = ''
@@ -62,7 +65,7 @@ export async function createUserWithMailId(emailId: string, firstNameStr: string
             emailVerified: true,
             firstName: firstNameStr.trim() + ' ' + lastNameStr.trim(),
             phone: '',
-            roles: [ 'PUBLIC' ],
+            roles: ['PUBLIC'],
         },
     }
     let _validPhone
@@ -92,6 +95,10 @@ export async function createUserWithMailId(emailId: string, firstNameStr: string
     }
     let signUpResponse
     try {
+        let createUrl = API_END_POINTS.cbExtSignUpUser
+        if (source === 'oilIndia') {
+            createUrl = API_END_POINTS.cbExtSignUpUserOilIndia
+        }
         signUpResponse = await axios({
             ...axiosRequestConfig,
             data: _reqPayload,
@@ -99,7 +106,7 @@ export async function createUserWithMailId(emailId: string, firstNameStr: string
                 Authorization: CONSTANTS.SB_API_KEY,
             },
             method: 'POST',
-            url: API_END_POINTS.cbExtSignUpUser,
+            url: createUrl,
         })
         statusString = signUpResponse.data.params.status
         if (statusString.toUpperCase() !== 'SUCCESS') {
@@ -110,7 +117,7 @@ export async function createUserWithMailId(emailId: string, firstNameStr: string
         }
     } catch (signUpErr) {
         const errMsg = signUpErr.response.data.params.errmsg
-        logError ('Failed to create User, error msg : ' + errMsg)
+        logError('Failed to create User, error msg : ' + errMsg)
         result.errMessage = errMsg
     }
     return Promise.resolve(result)
@@ -123,7 +130,7 @@ export async function updateKeycloakSession(emailId: string, req: any, res: any)
     // tslint:disable-next-line: no-any
     let grant: { access_token: { token: any }; refresh_token: { token: any } }
     const result = {
-        access_token: '', errMessage : '', keycloakSessionCreated: false, refresh_token: '',
+        access_token: '', errMessage: '', keycloakSessionCreated: false, refresh_token: '',
     }
     try {
         grant = await keycloakClient.grantManager.obtainDirectly(emailId, undefined, undefined, scope)
