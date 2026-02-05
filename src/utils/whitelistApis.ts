@@ -6944,6 +6944,34 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/learner/achievement/create': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/learner/achievement/update': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/learner/achievement/read/:achievementId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/learner/achievement/delete': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },      
     },
     URL_PATTERN:
         [
@@ -7827,5 +7855,9 @@ export const API_LIST = {
             '/proxies/v8/sso/validateSaml',
             '/proxies/v8/learner/achievement/status/update',
             '/proxies/v8/learner/achievement/search',
+            '/proxies/v8/learner/achievement/create',
+            '/proxies/v8/learner/achievement/update',
+            '/proxies/v8/learner/achievement/read/:id',
+            '/proxies/v8/learner/achievement/delete',
             ],
 }
