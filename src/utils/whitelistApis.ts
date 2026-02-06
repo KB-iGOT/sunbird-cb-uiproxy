@@ -7802,7 +7802,6 @@ export const API_LIST = {
             '/proxies/v8/contentpartner/register/v1/readbyid',
             '/public/v8/chatbot/v3/mobile/transcoder/stats',
             '/proxies/v8/extended/content/v1/read/:identifier',
-            '/proxies/v8/achievement/dynamic/v1/generate',
             '/proxies/v8/learningpathway/v1/retire/:id',
             '/proxies/v8/extended/content/v1/read/:identifier',
             '/proxies/v8/achievement/dynamic/v1/generate',
