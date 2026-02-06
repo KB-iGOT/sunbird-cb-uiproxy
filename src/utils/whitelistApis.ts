@@ -6896,6 +6896,11 @@ export const API_LIST = {
             ROLE.PUBLIC,
             ],
         },
+         '/proxies/v8/learner/certreg/v2/achievement/validate': {
+            checksNeeded: [],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [],
+        },
     },
     URL_PATTERN:
         [
@@ -7772,6 +7777,7 @@ export const API_LIST = {
             '/proxies/v8/contentpartner/register/v1/search',
             '/proxies/v8/learningpathway/v1/enrol/:id',
             '/proxies/v8/extended/content/v1/read/:identifier',
-            '/proxies/v8/achievement/dynamic/v1/generate'
+            '/proxies/v8/achievement/dynamic/v1/generate',
+            '/proxies/v8/learner/certreg/v2/achievement/validate',
             ],
 }
