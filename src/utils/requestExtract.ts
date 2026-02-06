@@ -60,7 +60,7 @@ export const extractAuthorizationFromRequest = (req: IAuthorizedRequest): string
   return 'Bearer ' + token
 }
 export const extractUserTokenFromRequest = (req: IAuthorizedRequest): string => {
-  const xAuthorization = req.header('X-Authenticated-User-Token')
+  const xAuthorization = req.header('X-Authenticated-User-Token') || req.header('x-authenticated-user-token')
 
   return xAuthorization as string
 

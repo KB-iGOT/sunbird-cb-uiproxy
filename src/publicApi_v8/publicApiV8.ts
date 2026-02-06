@@ -4,6 +4,9 @@ import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { logError } from '../utils/logger'
 import { proxyCreatorRoute } from '../utils/proxyCreator'
+import { chatBotTranscoderAPIIntegration } from './chatBotTranscoderAPIIntegration'
+import { ntpcAuth } from './ntpcAuth'
+import { oilAuth } from './oilAuth'
 import { parichayAuth } from './parichayAuth'
 import { workallocationPublic } from './workallocationPublic'
 import { youtubePlaylist } from './youtubePlaylist'
@@ -83,6 +86,10 @@ publicApiV8.use('/org/v1/list', proxyCreatorRoute(express.Router(), CONSTANTS.KO
 
 publicApiV8.use('/parichay', parichayAuth)
 
+publicApiV8.use('/oil', oilAuth)
+
+publicApiV8.use('/ntpc', ntpcAuth)
+
 publicApiV8.use('/halloffame/read', proxyCreatorRoute(express.Router(), CONSTANTS.KONG_API_BASE + '/halloffame/read'))
 
 publicApiV8.use('/walloffame/read', proxyCreatorRoute(express.Router(), CONSTANTS.KONG_API_BASE + '/walloffame/read'))
@@ -111,6 +118,8 @@ publicApiV8.use('/public/forms/v2/getFormById', proxyCreatorRoute(express.Router
 
 publicApiV8.use('/forms/v2/getApplicationsById', proxyCreatorRoute(express.Router(), API_END_POINTS.publicGetApplicationsById))
 
+publicApiV8.use('/chatbot/v3/mobile/transcoder', chatBotTranscoderAPIIntegration)
+
 publicApiV8.post('/public/forms/v2/saveFormSubmit', async (req: Request, res: express.Response) => {
   try {
     const response = await axios.post(API_END_POINTS.publicFormSubmit, req.body, {
@@ -133,12 +142,12 @@ publicApiV8.post('/public/forms/v2/saveFormSubmit', async (req: Request, res: ex
 })
 
 publicApiV8.get('/careers/list', async (_, res) => {
-   await fetchList('Jobs', res)
- })
+  await fetchList('Jobs', res)
+})
 
 publicApiV8.get('/tenders/list', async (_, res) => {
-   await fetchList('Tenders', res)
- })
+  await fetchList('Tenders', res)
+})
 
 const fetchList = async (resourceCategoryString: string, res: express.Response) => {
   const reqBody = {
@@ -150,7 +159,7 @@ const fetchList = async (resourceCategoryString: string, res: express.Response) 
       },
       limit: 500,
       offset: 0,
-      sort_by : {
+      sort_by: {
         lastUpdatedOn: 'desc',
       },
     },
@@ -176,7 +185,7 @@ const fetchList = async (resourceCategoryString: string, res: express.Response) 
 
 publicApiV8.use('/org/v2/list', proxyCreatorRoute(express.Router(), CONSTANTS.KONG_API_BASE + '/org/v2/list'))
 publicApiV8.use('/liveness', (_req, res) => {
-    res.status(200).send('ok')
+  res.status(200).send('ok')
 })
 
 publicApiV8.post('/designation/search', async (req, res) => {
@@ -238,13 +247,13 @@ publicApiV8.post('/designation/search', async (req, res) => {
 
 const publicDesignationSearch = async (req: Request, res: express.Response) => {
   const reqBody = {
-      filterCriteriaMap: {
-        status: CONSTANTS.ACTIVE,
-      },
-      pageNumber: req.body.pageNumber,
-      pageSize: req.body.pageSize,
-      requestedFields: req.body.requestedFields,
-      searchString: req.body.searchString,
+    filterCriteriaMap: {
+      status: CONSTANTS.ACTIVE,
+    },
+    pageNumber: req.body.pageNumber,
+    pageSize: req.body.pageSize,
+    requestedFields: req.body.requestedFields,
+    searchString: req.body.searchString,
   }
   try {
     const response = await axios.post(API_END_POINTS.designationSearch, reqBody, {
@@ -274,7 +283,7 @@ const fetchContentDetailsList = async (resourceCategoryString: string, req: Requ
     request: {
       facets: ['courseCategory', 'resourceCategory'],
       filters: {
-        additionalTags : ['Public Course'],
+        additionalTags: ['Public Course'],
         courseCategory: resourceCategoryString,
         resourceCategory: resourceCategoryString,
         status: ['Live'],

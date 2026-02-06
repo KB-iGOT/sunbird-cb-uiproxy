@@ -52,7 +52,7 @@ export const CONSTANTS = {
   KC_NEW_USER_DEFAULT_PWD: env.KC_NEW_USER_DEFAULT_PWD || 'User@123',
   KEYCLOAK_REALM: env.KEYCLOAK_REALM || 'sunbird',
   // tslint:disable-next-line: ban
-  KEYCLOAK_SESSION_TTL:  parseInt(env.KEYCLOAK_SESSION_TTL || '0', 10) || 24 * 60 * 60 * 1000,
+  KEYCLOAK_SESSION_TTL: parseInt(env.KEYCLOAK_SESSION_TTL || '0', 10) || 24 * 60 * 60 * 1000,
   KHUB_CLIENT_SECRET: env.KHUB_CLIENT_SECRET || 'axc123',
   KHUB_GRAPH_DATA: env.KHUB_GRAPH_DATA || 'http://localhost:3016',
   KHUB_SEARCH_BASE: env.KHUB_SEARCH_BASE || 'http://localhost:3014',
@@ -217,7 +217,22 @@ export const CONSTANTS = {
   STRING_TYPE: 'string',
   ACTIVE: 'Active',
   INTERNAL_SERVER_ERR_MSG: 'Internal server error',
-
+  OIL_AUTH_CALLBACK_URL: env.OIL_AUTH_CALLBACK_URL || '/apis/public/v8/oil/login/callback',
+  OIL_CLIENT_ID: env.OIL_CLIENT_ID || 'oilClientId',
+  OIL_CLIENT_SECRET: env.OIL_CLIENT_SECRET || 'oilClientSecret',
+  OIL_AUTH_URL: env.OIL_AUTH_URL || 'oilAuthUrl',
+  OIL_TOKEN_URL: env.OIL_TOKEN_URL || 'oilTokenUrl',
+  OIL_USER_DETAILS_URL: env.OIL_USER_DETAILS_URL || 'oilUserDetailsUrl',
+  OIL_REVOKE_URL: env.OIL_REVOKE_URL || 'oilRevokeUrl',
+  NTPC_AUTH_CALLBACK_URL: env.NTPC_AUTH_CALLBACK_URL || '/apis/public/v8/ntpc/login/callback',
+  NTPC_CLIENT_ID: env.NTPC_CLIENT_ID || 'ntpcClientId',
+  NTPC_CLIENT_SECRET: env.NTPC_CLIENT_SECRET || 'ntpcClientSecret',
+  NTPC_AUTH_URL: env.NTPC_AUTH_URL || 'ntpcAuthUrl',
+  NTPC_TOKEN_URL: env.NTPC_TOKEN_URL || 'ntpcTokenUrl',
+  NTPC_USER_DETAILS_URL: env.NTPC_USER_DETAILS_URL || 'ntpcUserDetailsUrl',
+  NTPC_REVOKE_URL: env.NTPC_REVOKE_URL || 'ntpcRevokeUrl',
+  IGOT_REDIS_HOST: env.IGOT_REDIS_HOST || 'localhost',
+  IGOT_REDIS_PORT: env.IGOT_REDIS_PORT || 6379,
 }
 
 export const RESTRICTED_PYTHON_STMT: string[] = process.env.RESTRICTED_CHARACTERS
