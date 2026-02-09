@@ -6919,7 +6919,7 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
             ],
         },
-         '/proxies/v8/learner/certreg/v2/achievement/validate': {
+        '/proxies/v8/learner/certreg/v2/achievement/validate': {
             checksNeeded: [],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [],
@@ -7803,7 +7803,6 @@ export const API_LIST = {
             '/public/v8/chatbot/v3/mobile/transcoder/stats',
             '/proxies/v8/extended/content/v1/read/:identifier',
             '/proxies/v8/learningpathway/v1/retire/:id',
-            '/proxies/v8/extended/content/v1/read/:identifier',
             '/proxies/v8/achievement/dynamic/v1/generate',
             '/proxies/v8/learner/certreg/v2/achievement/validate',
         ],
