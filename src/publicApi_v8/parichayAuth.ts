@@ -35,8 +35,8 @@ parichayAuth.get('/callback', async (req, res) => {
         logInfo('Received host : ' + host)
         logError('Failed to login in Parichay, authorization code is missing. Redirecting to /error')
         const errorMessage = 'Failed to login using Parichay. Your Parichay session has expired.'
-                          + ' Please logoff from Parichay and retry [Login with Parichay] option on iGOT Portal Login page.'
-                          + ' If issue persists, then please try the same in incognito/private window.'
+            + ' Please logoff from Parichay and retry [Login with Parichay] option on iGOT Portal Login page.'
+            + ' If issue persists, then please try the same in incognito/private window.'
         res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
         return
     }
@@ -80,17 +80,17 @@ parichayAuth.get('/callback', async (req, res) => {
         logInfo('User information from Parichay : ' + JSON.stringify(userDetailResponse.data))
         const loginId = userDetailResponse.data.loginId
         if (!loginId) {
-          const errorMessage = 'iGOT login failed. You must allow Email id on the consent form for Login. '
-            + 'Please logout from Parichay and try iGOT Login with Parichay again.'
-          // Redirect to the logout page with an error message
-          res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
-          return
+            const errorMessage = 'iGOT login failed. You must allow Email id on the consent form for Login. '
+                + 'Please logout from Parichay and try iGOT Login with Parichay again.'
+            // Redirect to the logout page with an error message
+            res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
+            return
         }
 
         let result: { errMessage: string, rootOrgId: string, userExist: boolean, }
-        result =  await fetchUserByEmailId(userDetailResponse.data.loginId)
+        result = await fetchUserByEmailId(userDetailResponse.data.loginId)
         logInfo('For Parichay emailId ? ' + userDetailResponse.data.loginId + ', isUserExist ? ' + result.userExist
-          + ', rootOrgId ? ' + result.rootOrgId + ', errorMessage ? ' + result.errMessage)
+            + ', rootOrgId ? ' + result.rootOrgId + ', errorMessage ? ' + result.errMessage)
         let isFirstTimeUser = false
         if (result.errMessage === '') {
             let createResult: { errMessage: string, userCreated: boolean, userId: string }
@@ -99,23 +99,23 @@ parichayAuth.get('/callback', async (req, res) => {
                 const mobileNo = userDetailResponse.data.MobileNo
 
                 if (!loginId || !mobileNo) {
-                   const errorMessage = 'Parichay user registration failed. You must allow Email id and Mobile number on the consent form. '
-                          + 'Please logout from Parichay and try iGOT Login with Parichay again.'
+                    let errorMessage = 'Parichay user registration failed. You must allow Email id and Mobile number on the consent form. '
+                    errorMessage += 'Please logout from Parichay and try iGOT Login with Parichay again.'
                     // Redirect to the logout page with an error message
-                   res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
-                   return
+                    res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
+                    return
                 }
                 createResult = await createUserWithMailId(userDetailResponse.data.loginId,
-                    userDetailResponse.data.FirstName, userDetailResponse.data.LastName, userDetailResponse.data.MobileNo)
+                    userDetailResponse.data.FirstName, userDetailResponse.data.LastName, userDetailResponse.data.MobileNo, 'parichay')
                 if (createResult.errMessage !== '') {
                     result.errMessage = createResult.errMessage
                 }
                 isFirstTimeUser = true
                 logInfo('New user is created for Parichay email id:' + userDetailResponse.data.loginId
-                  + ', new User id:' + createResult.userId)
+                    + ', new User id:' + createResult.userId)
             } else {
                 logInfo('User exists for Parichay email id:' + userDetailResponse.data.loginId
-                  + ', result.rootOrgId = ' + result.rootOrgId + ', XChannelId = ' + CONSTANTS.X_Channel_Id)
+                    + ', result.rootOrgId = ' + result.rootOrgId + ', XChannelId = ' + CONSTANTS.X_Channel_Id)
                 if (result.rootOrgId !== '' && result.rootOrgId === CONSTANTS.X_Channel_Id) {
                     isFirstTimeUser = true
                 }
@@ -126,21 +126,21 @@ parichayAuth.get('/callback', async (req, res) => {
                 }
                 keycloakResult = await updateKeycloakSession(userDetailResponse.data.loginId, req, res)
                 if (keycloakResult.errMessage !== '') {
-                  logError('For Parichay emailId:' + userDetailResponse.data.loginId
-                    + ', Received a keycloak error: ' + keycloakResult.errMessage)
-                  result.errMessage = keycloakResult.errMessage
+                    logError('For Parichay emailId:' + userDetailResponse.data.loginId
+                        + ', Received a keycloak error: ' + keycloakResult.errMessage)
+                    result.errMessage = keycloakResult.errMessage
                 }
                 logInfo('Parichay user session established in Keycloak: ' + JSON.stringify(keycloakResult))
             }
         }
         if (result.errMessage !== '') {
             logError('For Parichay emailId:' + userDetailResponse.data.loginId
-              + ', Received error from user search. Error Message: ' + result.errMessage)
+                + ', Received error from user search. Error Message: ' + result.errMessage)
             resRedirectUrl = `https://${host}/public/logout?error=` + encodeURIComponent(JSON.stringify(result.errMessage))
         } else {
-          logInfo('Parichay login is successful for emailId:' + userDetailResponse.data.loginId)
-          if (isFirstTimeUser) {
-              resRedirectUrl = `https://${host}/public/welcome`
+            logInfo('Parichay login is successful for emailId:' + userDetailResponse.data.loginId)
+            if (isFirstTimeUser) {
+                resRedirectUrl = `https://${host}/public/welcome`
             }
         }
     } catch (err) {
