@@ -6919,7 +6919,7 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
             ],
         },
-         '/proxies/v8/learner/certreg/v2/achievement/validate': {
+        '/proxies/v8/learner/certreg/v2/achievement/validate': {
             checksNeeded: [],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [],
