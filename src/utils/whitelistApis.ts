@@ -6984,6 +6984,13 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/learner/achievement/list': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7872,6 +7879,6 @@ export const API_LIST = {
             '/proxies/v8/learner/achievement/read/:id',
             '/proxies/v8/learner/achievement/delete',
             '/proxies/v8/learner/achievement/status/update',
-            '/proxies/v8/learner/achievement/search',
+            '/proxies/v8/learner/achievement/list',
         ],
 }
