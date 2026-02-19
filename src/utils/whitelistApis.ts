@@ -6924,6 +6924,16 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [],
         },
+        '/proxies/v8/accessSettings/admin/v1/upsert': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.SPV_ADMIN,
+                ROLE.CBP_ADMIN,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7805,5 +7815,6 @@ export const API_LIST = {
             '/proxies/v8/learningpathway/v1/retire/:id',
             '/proxies/v8/achievement/dynamic/v1/generate',
             '/proxies/v8/learner/certreg/v2/achievement/validate',
+            '/proxies/v8/accessSettings/admin/v1/upsert',
         ],
 }
