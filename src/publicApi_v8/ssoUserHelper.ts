@@ -8,6 +8,7 @@ import { getKeyCloakClient } from './keycloakHelper'
 const API_END_POINTS = {
     // cbExtSignUpUser: `${CONSTANTS.KONG_API_BASE}/user/v1/ext/signup`,
     cbExtSignUpUser: `${CONSTANTS.KONG_API_BASE}/user/v5/parichay/create`,
+    cbExtSignUpUserNtpc: `${CONSTANTS.KONG_API_BASE}/user/v5/ntpc/create`,
     cbExtSignUpUserOilIndia: `${CONSTANTS.KONG_API_BASE}/user/v5/oilindia/create`,
 }
 
@@ -52,6 +53,7 @@ export async function fetchUserByEmailId(emailId: string) {
     return Promise.resolve(result)
 }
 
+// tslint:disable-next-line: all
 export async function createUserWithMailId(emailId: string, firstNameStr: string, lastNameStr: string, mobileNoStr = '', source = '') {
     const result = {
         errMessage: '', userCreated: false, userId: '',
@@ -98,6 +100,8 @@ export async function createUserWithMailId(emailId: string, firstNameStr: string
         let createUrl = API_END_POINTS.cbExtSignUpUser
         if (source === 'oilIndia') {
             createUrl = API_END_POINTS.cbExtSignUpUserOilIndia
+        } else if (source === 'ntpc') {
+            createUrl = API_END_POINTS.cbExtSignUpUserNtpc
         }
         signUpResponse = await axios({
             ...axiosRequestConfig,
