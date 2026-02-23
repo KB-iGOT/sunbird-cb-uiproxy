@@ -130,7 +130,7 @@ ntpcAuth.get('/login/callback', async (req, res) => {
                     return
                 }
                 createResult = await createUserWithMailId(userDetailResponse.data.mail,
-                    userDetailResponse.data.givenName, userDetailResponse.data.surname, userDetailResponse.data.mobilePhone, 'oilIndia')
+                    userDetailResponse.data.givenName, userDetailResponse.data.surname, userDetailResponse.data.mobilePhone, 'ntpc')
                 if (createResult.errMessage !== '') {
                     result.errMessage = createResult.errMessage
                 }
