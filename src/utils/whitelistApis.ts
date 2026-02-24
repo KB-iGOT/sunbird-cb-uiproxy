@@ -7005,7 +7005,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
             ],
         },
-        '/proxies/v8/knowledge/centre/publish/:type/:id': {
+        '/proxies/v8/knowledge/centre/publish/:type': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7013,6 +7013,13 @@ export const API_LIST = {
             ],
         },
         '/proxies/v8/knowledge/centre/delete/:type/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/knowledge/centre/spv/search': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7912,7 +7919,8 @@ export const API_LIST = {
             '/proxies/v8/learner/achievement/list',
             '/proxies/v8/knowledge/centre/create/:type',
             '/proxies/v8/knowledge/centre/update/:type/:id',
-            '/proxies/v8/knowledge/centre/publish/:type/:id',
+            '/proxies/v8/knowledge/centre/publish/:type',
             '/proxies/v8/knowledge/centre/delete/:type/:id',
+            '/proxies/v8/knowledge/centre/spv/search',
         ],
 }
