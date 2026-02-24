@@ -6991,6 +6991,35 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/knowledge/centre/create/:type': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/knowledge/centre/update/:type/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/knowledge/centre/publish/:type/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/knowledge/centre/delete/:type/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+            ],
+        },
+        
     },
     URL_PATTERN:
         [
@@ -7881,5 +7910,9 @@ export const API_LIST = {
             '/proxies/v8/learner/achievement/status/update',
             '/proxies/v8/learner/achievement/search',
             '/proxies/v8/learner/achievement/list',
+            '/proxies/v8/knowledge/centre/create/:type',
+            '/proxies/v8/knowledge/centre/update/:type/:id',
+            '/proxies/v8/knowledge/centre/publish/:type/:id',
+            '/proxies/v8/knowledge/centre/delete/:type/:id',
         ],
 }
