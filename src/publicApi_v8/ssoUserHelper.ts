@@ -72,18 +72,21 @@ export async function createUserWithMailId(emailId: string, firstNameStr: string
     }
     let _validPhone
     try {
+        // Remove all whitespace from phone number before validation
+        const cleanedMobileNo = mobileNoStr ? mobileNoStr.replace(/\s+/g, '') : ''
         // Check mobile number is valid for length
-        if (mobileNoStr && mobileNoStr.length >= 10) {
+        if (cleanedMobileNo && cleanedMobileNo.length >= 10) {
             // Check phone number starts with `+` and country code belongs to 91
-            if (mobileNoStr.charAt(0) === '+' && mobileNoStr.slice(1, 3) === '91' &&
-                mobileNoStr.slice(3, mobileNoStr.length).length === 10) {
-                _validPhone = mobileNoStr.slice(3, mobileNoStr.length)
-            } else if (mobileNoStr.slice(0, 2) === '91' && mobileNoStr.slice(2, mobileNoStr.length).length === 10) {
+            if (cleanedMobileNo.charAt(0) === '+' && cleanedMobileNo.slice(1, 3) === '91' &&
+                cleanedMobileNo.slice(3, cleanedMobileNo.length).length === 10) {
+                _validPhone = cleanedMobileNo.slice(3, cleanedMobileNo.length)
+            } else if (cleanedMobileNo.slice(0, 2) === '91' &&
+              cleanedMobileNo.slice(2, cleanedMobileNo.length).length === 10) {
                 // Check phone number starts with 91
-                _validPhone = mobileNoStr.slice(2, mobileNoStr.length)
+                _validPhone = cleanedMobileNo.slice(2, cleanedMobileNo.length)
             } else {
                 // Accept the incoming phone number as it is; since it is not prefixed with `+` or country code
-                _validPhone = mobileNoStr
+                _validPhone = cleanedMobileNo
             }
         }
     } catch (error) {
