@@ -7026,7 +7026,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
             ],
         },
-        
+
     },
     URL_PATTERN:
         [
