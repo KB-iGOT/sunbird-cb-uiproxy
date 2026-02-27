@@ -134,8 +134,7 @@ oilAuth.get('/login/callback', async (req, res) => {
                 if (createResult.errMessage !== '') {
                     result.errMessage = createResult.errMessage
                 }
-                isFirstTimeUser = true
-                logInfo('New user is created for OIL email id:' + userDetailResponse.data.mail
+                logInfo('New user is created for OIL email id: ' + userDetailResponse.data.mail
                     + ', new User id:' + createResult.userId)
             } else {
                 logInfo('User exists for OIL email id:' + userDetailResponse.data.mail
