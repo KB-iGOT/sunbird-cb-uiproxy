@@ -6937,8 +6937,29 @@ export const API_LIST = {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
-               ROLE.SPV_ADMIN,
-               ROLE.SPV_PUBLISHER,
+                ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/v1/notifications/mandatory': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/v1/notifications/mandatory/list': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/v1/notifications/mandatory/read': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
             ],
         },
         '/proxies/v8/learner/achievement/create': {
@@ -7026,7 +7047,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
             ],
         },
-        
+
     },
     URL_PATTERN:
         [
@@ -7910,6 +7931,9 @@ export const API_LIST = {
             '/proxies/v8/learner/certreg/v2/achievement/validate',
             '/proxies/v8/contentpartner/v1/activate',
             '/proxies/v8/sso/validateSaml',
+            '/proxies/v8/v1/notifications/mandatory/read',
+            '/proxies/v8/v1/notifications/mandatory/list',
+            '/proxies/v8/v1/notifications/mandatory',
             '/proxies/v8/learner/achievement/create',
             '/proxies/v8/learner/achievement/update',
             '/proxies/v8/learner/achievement/read/:id',
