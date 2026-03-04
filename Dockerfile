@@ -16,14 +16,16 @@ RUN apt-get install -y fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fon
 RUN apt-get install -y libdrm2 libgbm1 libnss3 --allow-unauthenticated
 
 
-RUN mkdir -p /usr/src/app/user_upload
-RUN mkdir -p /usr/src/app/logs
+RUN mkdir -p /usr/src/app/user_upload \
+    /usr/src/app/logs && \
+    chown -R node:node /usr/src/app
 
-COPY package*.json ./
+COPY --chown=node:node package*.json ./
+USER node
+
 RUN npm install --only=production
-COPY dist/ .
+COPY --chown=node:node dist/ .
 
 EXPOSE 8080
 
 CMD [ "node", "index.js" ]
-
