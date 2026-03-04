@@ -69,7 +69,7 @@ export const CONSTANTS = {
   LIKE_API_BASE: env.LIKE_API_BASE || env.SB_EXT_API_BASE_2,
   MULTI_TENANT_KEYCLOAK:
     env.MULTI_TENANT_KEYCLOAK ||
-    'igot,https://portal.karmayogi.nic.in/auth,sunbird',
+    'igot,https://portal.karmayogi.nic.in,sunbird',
   NAVIGATOR_JSON_HOST:
     env.NAVIGATOR_JSON_HOST || 'http://localhost:3007/web-hosted/navigator/json',
   NODE_API_BASE: env.NODE_API_BASE || 'http://localhost:5001',
