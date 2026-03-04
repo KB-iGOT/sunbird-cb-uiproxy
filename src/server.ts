@@ -116,7 +116,9 @@ export class Server {
     )
     // TODO: See what needs to be logged
     this.app.use((req, _, next) => {
-       logInfo('req object with protocol:'  + req.protocol + ' and hostname: ' + req.hostname + ' and url: ' + req.url  + ' and headers: ' + JSON.stringify(req.headers));
+       logInfo('req object with protocol:'  + 
+        req.protocol + ' and hostname: ' + req.hostname 
+        + ' and url: ' + req.url  + ' and headers: ' + JSON.stringify(req.headers));
       logInfo('adding x-forward-proto header with https to request...')
       req.headers['x-forwarded-proto'] = 'https'
       logInfo(`Server:ConfigureMiddleWare:: Worker ${process.pid} : ${req.protocol}://${req.hostname}/${req.url}`)
