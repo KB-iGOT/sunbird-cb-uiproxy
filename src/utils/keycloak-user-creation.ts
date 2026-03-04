@@ -116,6 +116,7 @@ export function updateUUIDMaster(uniqueKey: any, email: string): Promise<any> {
 export async function createKeycloakUser(req: any) {
     try {
         const client = await getKcAdminClient()
+        // Keycloak 24: Using password grant - ensure admin-cli client has 'Direct Access Grants Enabled' in Keycloak realm config
         await client.auth({
             clientId: 'admin-cli',
             grantType: 'password',
@@ -226,6 +227,7 @@ export async function UpdateKeycloakUserPassword(keycloakId: string, isTemporary
 export async function sendActionsEmail(userId: string) {
     // try {
     const client = await getKcAdminClient()
+    // Keycloak 24: Using password grant - ensure portal client has 'Direct Access Grants Enabled' in Keycloak realm config
     await client.auth({
         clientId: 'portal',
         grantType: 'password',
