@@ -6924,6 +6924,36 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [],
         },
+        '/proxies/v8/forms/mdo/peer-survey': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/forms/spv/peer-survey': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+            ],
+        },
+         '/proxies/v8/forms/spv/peer-survey/:surveyId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+            ],
+        },
+         '/proxies/v8/forms/mdo/peer-survey/:surveyId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
         '/proxies/v8/contentpartner/v1/activate': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -7908,6 +7938,10 @@ export const API_LIST = {
             '/proxies/v8/learningpathway/v1/retire/:id',
             '/proxies/v8/achievement/dynamic/v1/generate',
             '/proxies/v8/learner/certreg/v2/achievement/validate',
+            '/proxies/v8/forms/mdo/peer-survey',
+            '/proxies/v8/forms/spv/peer-survey',
+            '/proxies/v8/forms/spv/peer-survey/:surveyId',
+            '/proxies/v8/forms/mdo/peer-survey/:surveyId',
             '/proxies/v8/contentpartner/v1/activate',
             '/proxies/v8/sso/validateSaml',
             '/proxies/v8/learner/achievement/create',
