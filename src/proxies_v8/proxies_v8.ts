@@ -522,7 +522,7 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
           }
         })
         if (err) {
-          res.status(response?.statusCode || 500).send(err)
+          res.status((response && response.statusCode) || 500).send(err)
         }
       }
     )
@@ -592,7 +592,7 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
           }
         })
         if (err) {
-          res.status(response?.statusCode || 500).send(err)
+          res.status((response && response.statusCode) || 500).send(err)
         }
       }
     )
