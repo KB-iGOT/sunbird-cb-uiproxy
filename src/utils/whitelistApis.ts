@@ -6939,14 +6939,14 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
             ],
         },
-         '/proxies/v8/forms/spv/peersurvey/:surveyId': {
+         '/proxies/v8/forms/spv/update/peersurvey/:surveyId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.SPV_ADMIN,
             ],
         },
-         '/proxies/v8/forms/mdo/peersurvey/:surveyId': {
+         '/proxies/v8/forms/mdo/update/peersurvey/:surveyId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7056,7 +7056,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
             ],
         },
-        '/proxies/v8/forms/peersurvey/:surveyId/archive': {
+        '/proxies/v8/forms/peersurvey/archive/:surveyId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7065,7 +7065,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
             ],
         },
-        '/proxies/v8/forms/peersurvey/:surveyId/publish': {
+        '/proxies/v8/forms/peersurvey/publish/:surveyId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7979,8 +7979,8 @@ export const API_LIST = {
             '/proxies/v8/learner/certreg/v2/achievement/validate',
             '/proxies/v8/forms/mdo/peersurvey',
             '/proxies/v8/forms/spv/peersurvey',
-            '/proxies/v8/forms/spv/peersurvey/:surveyId',
-            '/proxies/v8/forms/mdo/peersurvey/:surveyId',
+            '/proxies/v8/forms/spv/update/peersurvey/:surveyId',
+            '/proxies/v8/forms/mdo/update/peersurvey/:surveyId',
             '/proxies/v8/contentpartner/v1/activate',
             '/proxies/v8/sso/validateSaml',
             '/proxies/v8/learner/achievement/create',
@@ -7995,8 +7995,8 @@ export const API_LIST = {
             '/proxies/v8/knowledge/centre/publish/:type',
             '/proxies/v8/knowledge/centre/delete/:type/:id',
             '/proxies/v8/knowledge/centre/spv/search',
-            '/proxies/v8/forms/peersurvey/:surveyId/archive',
-            '/proxies/v8/forms/peersurvey/:surveyId/publish',
+            '/proxies/v8/forms/peersurvey/archive/:surveyId',
+            '/proxies/v8/forms/peersurvey/publish/:surveyId',
             '/proxies/v8/forms/mdo/peersurvey/search',
             '/proxies/v8/forms/spv/peersurvey/search',
             '/proxies/v8/learner/v1/competency/read',
