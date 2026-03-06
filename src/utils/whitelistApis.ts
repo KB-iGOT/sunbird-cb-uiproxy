@@ -7056,6 +7056,13 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
             ],
         },
+        '/proxies/v8/learner/v1/competency/read': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },      
         
     },
     URL_PATTERN:
@@ -7956,5 +7963,6 @@ export const API_LIST = {
             '/proxies/v8/knowledge/centre/publish/:type',
             '/proxies/v8/knowledge/centre/delete/:type/:id',
             '/proxies/v8/knowledge/centre/spv/search',
+            '/proxies/v8/learner/v1/competency/read',
         ],
 }
