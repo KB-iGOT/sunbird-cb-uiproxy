@@ -6924,7 +6924,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [],
         },
-        '/proxies/v8/forms/mdo/peer-survey': {
+        '/proxies/v8/forms/mdo/peersurvey': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -6932,21 +6932,21 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
             ],
         },
-        '/proxies/v8/forms/spv/peer-survey': {
+        '/proxies/v8/forms/spv/peersurvey': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.SPV_ADMIN,
             ],
         },
-         '/proxies/v8/forms/spv/peer-survey/:surveyId': {
+         '/proxies/v8/forms/spv/peersurvey/:surveyId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.SPV_ADMIN,
             ],
         },
-         '/proxies/v8/forms/mdo/peer-survey/:surveyId': {
+         '/proxies/v8/forms/mdo/peersurvey/:surveyId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7056,7 +7056,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
             ],
         },
-        '/proxies/v8/forms/peer-survey/:surveyId/archive': {
+        '/proxies/v8/forms/peersurvey/:surveyId/archive': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7065,7 +7065,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
             ],
         },
-        '/proxies/v8/forms/peer-survey/:surveyId/publish': {
+        '/proxies/v8/forms/peersurvey/:surveyId/publish': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7074,7 +7074,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
             ],
         },
-        '/proxies/v8/forms/mdo/peer-survey/search': {
+        '/proxies/v8/forms/mdo/peersurvey/search': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7082,7 +7082,7 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
             ],
         },
-        '/proxies/v8/forms/spv/peer-survey/search': {
+        '/proxies/v8/forms/spv/peersurvey/search': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7977,10 +7977,10 @@ export const API_LIST = {
             '/proxies/v8/learningpathway/v1/retire/:id',
             '/proxies/v8/achievement/dynamic/v1/generate',
             '/proxies/v8/learner/certreg/v2/achievement/validate',
-            '/proxies/v8/forms/mdo/peer-survey',
-            '/proxies/v8/forms/spv/peer-survey',
-            '/proxies/v8/forms/spv/peer-survey/:surveyId',
-            '/proxies/v8/forms/mdo/peer-survey/:surveyId',
+            '/proxies/v8/forms/mdo/peersurvey',
+            '/proxies/v8/forms/spv/peersurvey',
+            '/proxies/v8/forms/spv/peersurvey/:surveyId',
+            '/proxies/v8/forms/mdo/peersurvey/:surveyId',
             '/proxies/v8/contentpartner/v1/activate',
             '/proxies/v8/sso/validateSaml',
             '/proxies/v8/learner/achievement/create',
@@ -7995,10 +7995,10 @@ export const API_LIST = {
             '/proxies/v8/knowledge/centre/publish/:type',
             '/proxies/v8/knowledge/centre/delete/:type/:id',
             '/proxies/v8/knowledge/centre/spv/search',
-            '/proxies/v8/forms/peer-survey/:surveyId/archive',
-            '/proxies/v8/forms/peer-survey/:surveyId/publish',
-            '/proxies/v8/forms/mdo/peer-survey/search',
-            '/proxies/v8/forms/spv/peer-survey/search',
+            '/proxies/v8/forms/peersurvey/:surveyId/archive',
+            '/proxies/v8/forms/peersurvey/:surveyId/publish',
+            '/proxies/v8/forms/mdo/peersurvey/search',
+            '/proxies/v8/forms/spv/peersurvey/search',
             '/proxies/v8/learner/v1/competency/read',
         ],
 }
