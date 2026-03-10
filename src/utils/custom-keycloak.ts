@@ -58,14 +58,39 @@ export class CustomKeycloak {
   // tslint:disable-next-line: no-any
   authenticated = (reqObj: any, next: any) => {
     logInfo('Step 3: authenticated function', '------', new Date().toString())
+    
+    // Ensure session object exists
+    if (!reqObj.session) {
+      reqObj.session = {}
+    }
+    
     reqObj.session.authenticated = true
+    
     try {
       logInfo('KC24 test ::', '------', JSON.stringify(reqObj))
-      const userId = reqObj.kauth.grant.access_token.content.sub.split(':')
-      reqObj.session.userId = userId[userId.length - 1]
+      let userId: string
+      
+      // Handle Keycloak 24 format (direct token structure)
+      if (reqObj.content && reqObj.content.sub) {
+        const userIdParts = reqObj.content.sub.split(':')
+        userId = userIdParts[userIdParts.length - 1]
+        logInfo('KC24 format - userId extracted from reqObj.content.sub:', userId, '------', new Date().toString())
+      }
+      // Handle Keycloak 7 format (kauth structure) 
+      else if (reqObj.kauth && reqObj.kauth.grant && reqObj.kauth.grant.access_token && reqObj.kauth.grant.access_token.content && reqObj.kauth.grant.access_token.content.sub) {
+        const userIdParts = reqObj.kauth.grant.access_token.content.sub.split(':')
+        userId = userIdParts[userIdParts.length - 1]
+        logInfo('KC7 format - userId extracted from reqObj.kauth.grant.access_token.content.sub:', userId, '------', new Date().toString())
+      }
+      else {
+        throw new Error('Unable to extract user ID from token - unsupported token format')
+      }
+      
+      reqObj.session.userId = userId
       logInfo('userId ::', userId, '------', new Date().toString())
     } catch (err) {
-      logError('userId conversation error' + reqObj.kauth.grant.access_token.content.sub, '------', new Date().toString())
+      const errorMsg = reqObj.content?.sub || reqObj.kauth?.grant?.access_token?.content?.sub || 'unknown token format'
+      logError('userId conversation error: ' + errorMsg + ' - ' + err.message, '------', new Date().toString())
     }
     const postLoginRequest = []
     // tslint:disable-next-line: no-any
@@ -100,6 +125,13 @@ export class CustomKeycloak {
   // tslint:disable-next-line: no-any
   deauthenticated = (reqObj: any) => {
     const keyCloakPropertyName = 'keycloak-token'
+    
+    // Check if session exists before attempting to access its properties
+    if (!reqObj.session) {
+      logInfo(`${process.pid}: User Deauthenticated - No session found`)
+      return
+    }
+    
     if (reqObj.session.hasOwnProperty(keyCloakPropertyName)) {
       const keycloakToken = reqObj.session[keyCloakPropertyName]
       if (keycloakToken) {
@@ -164,11 +196,16 @@ export class CustomKeycloak {
     } else {
       logError('Session does not have property with name: ' + keyCloakPropertyName)
     }
-    delete reqObj.session.userRoles
-    delete reqObj.session.userId
-    delete reqObj.session.keycloakClientId
-    delete reqObj.session.keycloakClientSecret
-    reqObj.session.destroy()
+    
+    // Clean up session properties if session exists
+    if (reqObj.session) {
+      delete reqObj.session.userRoles
+      delete reqObj.session.userId
+      delete reqObj.session.keycloakClientId
+      delete reqObj.session.keycloakClientSecret
+      reqObj.session.destroy()
+    }
+    
     logInfo(`${process.pid}: User Deauthenticated`)
   }
 
