@@ -70,6 +70,7 @@ export const PERMISSION_HELPER = {
     getCurrentUserRoles(reqObj: any, callback: any) {
         const userId = reqObj.session.userId
         logInfo('Step 3: getCurrentUserRoles for user ' + userId, '------', new Date().toString())
+        logInfo('KC24 test ::', '------', JSON.stringify(reqObj.kauth.grant.access_token))
         const readUrl = `${CONSTANTS.KONG_API_BASE}/user/v2/read/` + userId
         const options = {
             headers: {
