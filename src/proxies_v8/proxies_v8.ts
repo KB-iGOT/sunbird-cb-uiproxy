@@ -1390,3 +1390,7 @@ proxiesV8.use('/achievement/dynamic/*',
 proxiesV8.use('/knowledge/centre/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/externaltraining/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
