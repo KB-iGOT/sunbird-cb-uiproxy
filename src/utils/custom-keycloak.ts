@@ -6,6 +6,7 @@ import { getKeycloakConfig } from '../configs/keycloak.config'
 import { CONSTANTS } from './env'
 import { logError, logInfo } from './logger'
 import { PERMISSION_HELPER } from './permissionHelper'
+
 const async = require('async')
 
 const composable = require('composable-middleware')
@@ -59,6 +60,7 @@ export class CustomKeycloak {
     logInfo('Step 3: authenticated function', '------', new Date().toString())
     reqObj.session.authenticated = true
     try {
+      logInfo('KC24 test ::', '------', JSON.stringify(reqObj))
       const userId = reqObj.kauth.grant.access_token.content.sub.split(':')
       reqObj.session.userId = userId[userId.length - 1]
       logInfo('userId ::', userId, '------', new Date().toString())
