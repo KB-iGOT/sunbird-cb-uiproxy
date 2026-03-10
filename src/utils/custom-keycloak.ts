@@ -67,13 +67,22 @@ export class CustomKeycloak {
     reqObj.session.authenticated = true
     
     try {
-      logInfo('KC24 test ::', '------', JSON.stringify(reqObj))
+      // Log token information safely without circular references
+      const tokenInfo = {
+        hasContent: !!reqObj.content,
+        hasKauth: !!reqObj.kauth,
+        contentSub: reqObj.content?.sub,
+        kauthSub: reqObj.kauth?.grant?.access_token?.content?.sub
+      }
+      logInfo('KC24 test ::', '------', JSON.stringify(tokenInfo))
+      
       let userId: string
       
       // Handle Keycloak 24 format (direct token structure)
       if (reqObj.content && reqObj.content.sub) {
         const userIdParts = reqObj.content.sub.split(':')
         userId = userIdParts[userIdParts.length - 1]
+        reqObj.session.userId = userId
         logInfo(
           'KC24 format - userId extracted from reqObj.content.sub:',
           userId,
@@ -91,6 +100,7 @@ export class CustomKeycloak {
       ) {
         const userIdParts = reqObj.kauth.grant.access_token.content.sub.split(':')
         userId = userIdParts[userIdParts.length - 1]
+        reqObj.session.userId = userId
         logInfo(
           'KC7 format - userId extracted from reqObj.kauth.grant.access_token.content.sub:',
           userId,
@@ -102,7 +112,6 @@ export class CustomKeycloak {
         throw new Error('Unable to extract user ID from token - unsupported token format')
       }
       
-      reqObj.session.userId = userId
       logInfo('userId ::', userId, '------', new Date().toString())
     } catch (err: any) {
       const errorMsg = reqObj.content?.sub ||
@@ -113,6 +122,16 @@ export class CustomKeycloak {
         '------',
         new Date().toString()
       )
+      // Set a fallback userId to prevent undefined issues
+      if (reqObj.content?.sub) {
+        try {
+          const userIdParts = reqObj.content.sub.split(':')
+          reqObj.session.userId = userIdParts[userIdParts.length - 1]
+          logInfo('Fallback userId set from content.sub:', reqObj.session.userId, '------', new Date().toString())
+        } catch (fallbackErr) {
+          logError('Failed to set fallback userId', '------', new Date().toString())
+        }
+      }
     }
     const postLoginRequest = []
     // tslint:disable-next-line: no-any
