@@ -74,13 +74,29 @@ export class CustomKeycloak {
       if (reqObj.content && reqObj.content.sub) {
         const userIdParts = reqObj.content.sub.split(':')
         userId = userIdParts[userIdParts.length - 1]
-        logInfo('KC24 format - userId extracted from reqObj.content.sub:', userId, '------', new Date().toString())
+        logInfo(
+          'KC24 format - userId extracted from reqObj.content.sub:',
+          userId,
+          '------',
+          new Date().toString()
+        )
       }
-      // Handle Keycloak 7 format (kauth structure) 
-      else if (reqObj.kauth && reqObj.kauth.grant && reqObj.kauth.grant.access_token && reqObj.kauth.grant.access_token.content && reqObj.kauth.grant.access_token.content.sub) {
+      // Handle Keycloak 7 format (kauth structure)
+      else if (
+        reqObj.kauth &&
+        reqObj.kauth.grant &&
+        reqObj.kauth.grant.access_token &&
+        reqObj.kauth.grant.access_token.content &&
+        reqObj.kauth.grant.access_token.content.sub
+      ) {
         const userIdParts = reqObj.kauth.grant.access_token.content.sub.split(':')
         userId = userIdParts[userIdParts.length - 1]
-        logInfo('KC7 format - userId extracted from reqObj.kauth.grant.access_token.content.sub:', userId, '------', new Date().toString())
+        logInfo(
+          'KC7 format - userId extracted from reqObj.kauth.grant.access_token.content.sub:',
+          userId,
+          '------',
+          new Date().toString()
+        )
       }
       else {
         throw new Error('Unable to extract user ID from token - unsupported token format')
@@ -88,9 +104,15 @@ export class CustomKeycloak {
       
       reqObj.session.userId = userId
       logInfo('userId ::', userId, '------', new Date().toString())
-    } catch (err) {
-      const errorMsg = reqObj.content?.sub || reqObj.kauth?.grant?.access_token?.content?.sub || 'unknown token format'
-      logError('userId conversation error: ' + errorMsg + ' - ' + err.message, '------', new Date().toString())
+    } catch (err: any) {
+      const errorMsg = reqObj.content?.sub ||
+        reqObj.kauth?.grant?.access_token?.content?.sub ||
+        'unknown token format'
+      logError(
+        'userId conversation error: ' + errorMsg + ' - ' + (err.message || err),
+        '------',
+        new Date().toString()
+      )
     }
     const postLoginRequest = []
     // tslint:disable-next-line: no-any
@@ -112,11 +134,11 @@ export class CustomKeycloak {
 
   // tslint:disable-next-line: no-any
   deauthenticatedNew = (reqObj: any) => {
-    delete reqObj.session.userRoles
-    delete reqObj.session.userId
-    delete reqObj.session.keycloakClientId
-    delete reqObj.session.keycloakClientSecret
     if (reqObj.session) {
+      delete reqObj.session.userRoles
+      delete reqObj.session.userId
+      delete reqObj.session.keycloakClientId
+      delete reqObj.session.keycloakClientSecret
       reqObj.session.destroy()
     }
     logInfo(`${process.pid}: User Deauthenticated New`)
@@ -145,7 +167,7 @@ export class CustomKeycloak {
             refresh_token: refreshToken,
           }
 
-          if (reqObj.session.hasOwnProperty('keycloakClientId') && (reqObj.session.keycloakClientId !== '')) {
+          if (reqObj.session.hasOwnProperty('keycloakClientId') && reqObj.session.keycloakClientId !== '') {
             formData.client_id = reqObj.session.keycloakClientId
             formData.client_secret = reqObj.session.keycloakClientSecret
           }
