@@ -7129,6 +7129,13 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
             ],
         },
+        '/proxies/v8/learner/achievement/v2/list': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },      
     },
     URL_PATTERN:
         [
@@ -8037,5 +8044,6 @@ export const API_LIST = {
             '/proxies/v8/externaltraining/v4/publish/:do_id',
             '/proxies/v8/externaltraining/v4/create',
             '/proxies/v8/externaltraining/v4/update/:do_id',
+            '/proxies/v8/learner/achievement/v2/list',
         ],
 }
