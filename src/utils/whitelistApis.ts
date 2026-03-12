@@ -7144,7 +7144,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
             ],
         },
-        '/proxies/v8/forms/peersurvey//:surveyId': {
+        '/proxies/v8/forms/peersurvey/end/:surveyId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
