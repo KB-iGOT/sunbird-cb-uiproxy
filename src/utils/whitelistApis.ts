@@ -7144,6 +7144,15 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
             ],
         },
+        '/proxies/v8/forms/peersurvey//:surveyId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.SPV_ADMIN,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -8054,5 +8063,6 @@ export const API_LIST = {
             '/proxies/v8/externaltraining/v4/update/:do_id',
             '/proxies/v8/learner/achievement/v2/list',
             '/proxies/v8/externaltraining/batch/create',
+            '/proxies/v8/forms/peersurvey/end/:surveyId',
         ],
 }
