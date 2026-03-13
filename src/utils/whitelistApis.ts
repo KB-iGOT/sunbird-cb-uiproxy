@@ -8071,6 +8071,6 @@ export const API_LIST = {
             '/proxies/v8/learner/achievement/v2/list',
             '/proxies/v8/externaltraining/batch/create',
             '/proxies/v8/forms/peersurvey/end/:surveyId',
-            '/proxies/v8/forms/peersurvey/submit'
+            '/proxies/v8/forms/peersurvey/submit',
         ],
 }
