@@ -7153,6 +7153,13 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
             ],
         },
+        '/proxies/v8/forms/peersurvey/submit': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -8064,5 +8071,6 @@ export const API_LIST = {
             '/proxies/v8/learner/achievement/v2/list',
             '/proxies/v8/externaltraining/batch/create',
             '/proxies/v8/forms/peersurvey/end/:surveyId',
+            '/proxies/v8/forms/peersurvey/submit'
         ],
 }
