@@ -7160,6 +7160,20 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/v1/notifications/peervalidation/list': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/v1/notifications/v2/read': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -8072,5 +8086,7 @@ export const API_LIST = {
             '/proxies/v8/externaltraining/batch/create',
             '/proxies/v8/forms/peersurvey/end/:surveyId',
             '/proxies/v8/forms/peersurvey/submit',
+            '/proxies/v8/v1/notifications/peervalidation/list',
+            '/proxies/v8/v1/notifications/v2/read',
         ],
 }
