@@ -7160,6 +7160,59 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/v1/notifications/peervalidation/list': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/v1/notifications/v2/read': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/externaltraining/v1/batch/getParticipants': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/externaltraining/v1/bulkupload/:eventId/:batchId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/externaltraining/v1/bulkupload/status': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/externaltraining/v1/bulkupload/download/:fileName': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/user/v1/badge/details': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
         '/proxies/v8/storage/v1/peervalidation/report/download': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -8081,6 +8134,13 @@ export const API_LIST = {
             '/proxies/v8/externaltraining/batch/create',
             '/proxies/v8/forms/peersurvey/end/:surveyId',
             '/proxies/v8/forms/peersurvey/submit',
+            '/proxies/v8/v1/notifications/peervalidation/list',
+            '/proxies/v8/v1/notifications/v2/read',
+            '/proxies/v8/externaltraining/v1/batch/getParticipants',
+            '/proxies/v8/externaltraining/v1/bulkupload/:eventId/:batchId',
+            '/proxies/v8/externaltraining/v1/bulkupload/status',
+            '/proxies/v8/externaltraining/v1/bulkupload/download/:fileName',
+            '/proxies/v8/user/v1/badge/details',
             '/proxies/v8/storage/v1/peervalidation/report/download',
         ],
 }
