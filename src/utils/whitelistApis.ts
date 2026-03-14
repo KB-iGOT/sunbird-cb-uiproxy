@@ -7182,7 +7182,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
             ],
         },
-        '/proxies/v8/externaltraining/v1/bulkupload': {
+        '/proxies/v8/externaltraining/v1/bulkupload/:eventId/:batchId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -8128,7 +8128,7 @@ export const API_LIST = {
             '/proxies/v8/v1/notifications/peervalidation/list',
             '/proxies/v8/v1/notifications/v2/read',
             '/proxies/v8/externaltraining/v1/batch/getParticipants',
-            '/proxies/v8/externaltraining/v1/bulkupload',
+            '/proxies/v8/externaltraining/v1/bulkupload/:eventId/:batchId',
             '/proxies/v8/externaltraining/v1/bulkupload/status',
             '/proxies/v8/externaltraining/v1/bulkupload/download/:fileName',
             '/proxies/v8/user/v1/badge/details',
