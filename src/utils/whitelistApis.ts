@@ -8121,7 +8121,7 @@ export const API_LIST = {
             '/proxies/v8/v1/notifications/peervalidation/list',
             '/proxies/v8/v1/notifications/v2/read',
             '/proxies/v8/externaltraining/v1/batch/getParticipants',
-            '/proxies/v8/externaltraining/v1/bulkupload',
+            '/proxies/v8/externaltraining/v1/bulkupload/:eventId/:batchId',
             '/proxies/v8/externaltraining/v1/bulkupload/status',
             '/proxies/v8/externaltraining/v1/bulkupload/download/:fileName'
         ],
