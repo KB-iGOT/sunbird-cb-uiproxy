@@ -7182,7 +7182,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
             ],
         },
-        '/proxies/v8/externaltraining/v1/bulkupload': {
+        '/proxies/v8/externaltraining/v1/bulkupload/:eventId/:batchId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
