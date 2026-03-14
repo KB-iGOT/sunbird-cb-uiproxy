@@ -36,6 +36,7 @@ import { lookerDashboard } from './lookerIntegration'
 const API_END_POINTS = {
   batchParticipantsApi: `${CONSTANTS.KONG_API_BASE}/course/v1/batch/participants/list`,
   contentNotificationEmail: `${CONSTANTS.NOTIFICATION_SERVIC_API_BASE}/v1/notification/send/sync`,
+  externalContentbatchParticipantsApi: `${CONSTANTS.KONG_API_BASE}/externaltraining/v1/batch/participants/list`,
   kongExtOrgSearch: `${CONSTANTS.KONG_API_BASE}/org/v1/cb/ext/search`,
   kongSearchOrg: `${CONSTANTS.KONG_API_BASE}/org/v1/search`,
   // tslint:disable-next-line: all
@@ -1390,6 +1391,65 @@ proxiesV8.use('/achievement/dynamic/*',
 proxiesV8.use('/knowledge/centre/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.post('/externaltraining/v1/batch/getParticipants', async (req, res) => {
+  try {
+    const { batchId, deptName, limit, currentOffSet } = req.body.request.filters
+    const reqBody = {
+      request: {
+        batch: {
+          active: true,
+          batchId,
+          currentOffSet,
+          limit,
+
+        },
+      },
+    }
+    const userlist: ICohortsUser[] = []
+    const response = await axios.post(API_END_POINTS.externalContentbatchParticipantsApi, reqBody, {
+      ...axiosRequestConfig,
+      headers: {
+        Authorization: CONSTANTS.SB_API_KEY,
+        /* tslint:disable-next-line */
+        'x-authenticated-user-token': extractUserToken(req),
+      },
+    })
+    const totalCount = response.data.result.batch.count != null ? response.data.result.batch.count : 0
+    if ((typeof response.data.result.batch.participants !== 'undefined' && response.data.result.batch.participants.length > 0)) {
+      const searchresponse = await axios({
+        ...axiosRequestConfig,
+        data: { request: { filters: { userId: response.data.result.batch.participants } } },
+        headers: {
+          Authorization: CONSTANTS.SB_API_KEY,
+          // tslint:disable-next-line: all
+          'x-authenticated-user-token': extractUserToken(req),
+        },
+        method: 'POST',
+        // tslint:disable-next-line: all
+        url: API_END_POINTS.kongSearchUser,
+      })
+      if (searchresponse.data.result.response.count > 0) {
+        for (const profileObj of searchresponse.data.result.response.content) {
+          const user: ICohortsUser = getUsers(profileObj)
+          if (!deptName || (profileObj.channel && profileObj.channel === deptName)) {
+            user.department = profileObj.rootOrgName
+            userlist.push(user)
+          }
+        }
+      }
+    }
+    res.status(response.status).send({userlist, totalCount})
+  } catch (err) {
+    logError(err)
+
+    res.status((err && err.response && err.response.status) || 500).send(
+      (err && err.response && err.response.data) || {
+        error: unknownError,
+      }
+    )
+  }
+})
 
 proxiesV8.use('/externaltraining/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)

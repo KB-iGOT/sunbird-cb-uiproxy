@@ -7174,6 +7174,14 @@ export const API_LIST = {
                ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/externaltraining/v1/batch/getParticipants': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -8088,5 +8096,6 @@ export const API_LIST = {
             '/proxies/v8/forms/peersurvey/submit',
             '/proxies/v8/v1/notifications/peervalidation/list',
             '/proxies/v8/v1/notifications/v2/read',
+            '/proxies/v8/externaltraining/v1/batch/getParticipants',
         ],
 }
