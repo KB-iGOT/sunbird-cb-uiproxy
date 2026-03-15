@@ -1392,6 +1392,10 @@ proxiesV8.use('/knowledge/centre/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
+proxiesV8.use('/peersurvey/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
 proxiesV8.post('/externaltraining/v1/batch/getParticipants', async (req, res) => {
   try {
     const { batchId, deptName, limit, currentOffSet } = req.body.request.filters
