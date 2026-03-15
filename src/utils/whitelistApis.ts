@@ -7222,6 +7222,13 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
             ],
         },
+        '/proxies/v8/peersurvey/upload': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -8142,5 +8149,6 @@ export const API_LIST = {
             '/proxies/v8/externaltraining/v1/bulkupload/download/:fileName',
             '/proxies/v8/user/v1/badge/details',
             '/proxies/v8/storage/v1/peervalidation/report/download',
+            '/proxies/v8/peersurvey/upload',
         ],
 }
