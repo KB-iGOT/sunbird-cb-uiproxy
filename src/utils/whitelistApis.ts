@@ -7228,6 +7228,8 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.CONTENT_PUBLISHER,
                 ROLE.SPV_PUBLISHER,
+            ],
+        },
         '/proxies/v8/peersurvey/upload': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
