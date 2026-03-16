@@ -7266,6 +7266,14 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
             ],
         },
+        '/proxies/v8/event/batch/cert/template/add': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },      
     },
     URL_PATTERN:
         [
@@ -8192,5 +8200,6 @@ export const API_LIST = {
             '/proxies/v8/dashboard/badgedetails/summary',
             '/proxies/v8/peersurvey/upload',
             '/proxies/v8/externaltraining/v1/bulkupload/sample',
+            '/proxies/v8/event/batch/cert/template/add'
         ],
 }
