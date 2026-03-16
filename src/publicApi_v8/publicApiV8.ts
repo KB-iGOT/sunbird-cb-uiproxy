@@ -4,6 +4,7 @@ import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { logError } from '../utils/logger'
 import { proxyCreatorRoute } from '../utils/proxyCreator'
+import { redis } from '../utils/redis'
 import { chatBotTranscoderAPIIntegration } from './chatBotTranscoderAPIIntegration'
 import { ntpcAuth } from './ntpcAuth'
 import { oilAuth } from './oilAuth'
@@ -370,6 +371,43 @@ publicApiV8.post('/org/hierarchy/state/search', async (req: Request, res: expres
     }
   } catch (error) {
     logError(`Failed to get the hierarchy search Response for state. Error: ${error}`)
+    res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERR_MSG)
+  }
+})
+
+publicApiV8.get('/igot/consumption/status', async (_req, res) => {
+  try {
+    const [
+      courses,
+      karmayogiOnboarded,
+      courseProgramCompletionCount,
+      courseProgramCompletionYesterdayCount,
+      monthyActiveUsers,
+    ] = await Promise.all([
+      redis.get('lp_es_live_course_count'),
+      redis.get('lp_es_user_count'),
+      redis.get('dashboard_completed_count'),
+      redis.get('lp_completed_yesterday_count'),
+      redis.get('lp_monthly_active_users'),
+    ])
+
+    const response = {
+      id: 'igot.consumption.stats',
+      responseCode: 'OK',
+      result: {
+        response: {
+          courseProgramCompletionCount: courseProgramCompletionCount || '0',
+          courseProgramCompletionYesterdayCount: courseProgramCompletionYesterdayCount || '0',
+          courses: courses || '0',
+          karmayogiOnboarded: karmayogiOnboarded || '0',
+          monthyActiveUsers: monthyActiveUsers || '0',
+        },
+      },
+    }
+
+    res.status(200).send(response)
+  } catch (error) {
+    logError(`Failed to fetch consumption stats. Error: ${error}`)
     res.status(500).send(CONSTANTS.INTERNAL_SERVER_ERR_MSG)
   }
 })
