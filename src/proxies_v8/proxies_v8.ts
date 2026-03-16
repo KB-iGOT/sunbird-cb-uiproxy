@@ -519,11 +519,11 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
               }
             }
           } else {
-            res.status(500).send(fullData.toString('utf8'))
+            res.status(response.statusCode || 500).send(fullData.toString('utf8'))
           }
         })
         if (err) {
-          res.status(500).send(err)
+          res.status((response && response.statusCode) || 500).send(err)
         }
       }
     )
@@ -589,11 +589,11 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
               }
             }
           } else {
-            res.status(500).send(fullData.toString('utf8'))
+            res.status(response.statusCode || 500).send(fullData.toString('utf8'))
           }
         })
         if (err) {
-          res.status(500).send(err)
+          res.status((response && response.statusCode) || 500).send(err)
         }
       }
     )
