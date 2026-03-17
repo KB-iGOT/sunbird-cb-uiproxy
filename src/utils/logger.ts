@@ -11,6 +11,7 @@ const pinoOptions = {
     },
   },
   level: CONSTANTS.IS_DEVELOPMENT ? 'debug' : 'info',
+  timestamp: pino.stdTimeFunctions.isoTime,
 }
 
 const logger = pino(pinoOptions)
