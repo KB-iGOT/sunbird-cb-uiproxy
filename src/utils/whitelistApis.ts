@@ -2731,7 +2731,6 @@ export const API_LIST = {
                 ROLE.PROGRAM_COORDINATOR,
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
-                
             ],
         },
         '/proxies/v8/course/batch/cert/v1/template/add': {
