@@ -1,6 +1,24 @@
-import chalk from 'chalk'
+import pino from 'pino'
+import { CONSTANTS } from './env'
 
-export const log = console.log // tslint:disable-line:no-console
+// Configure Pino instance
+// In development, keep simple formatted logs if pino-pretty isn't available,
+// in production use blazing fast JSON logging
+const pinoOptions = {
+  formatters: {
+    level: (label: string) => {
+      return { level: label }
+    },
+  },
+  level: CONSTANTS.IS_DEVELOPMENT ? 'debug' : 'info',
+}
+
+const logger = pino(pinoOptions)
+
+// tslint:disable-next-line: no-any
+export const log = (msg: any, ...args: any[]) => {
+  logger.info(msg, ...args)
+}
 
 type TObjectValueType = string | number | boolean | undefined | null
 export function logObject(
@@ -15,35 +33,38 @@ export function logObject(
   const msg = kv
     .map(([k, v]) => k.padStart(padStart) + ' : ' + v.padEnd(padEnd))
     .join('\n')
-  logInfoHeading(msgPrefix)
-  logInfo('_'.repeat(padStart + padEnd + 3))
-  logInfo(msg)
+
+  logger.info(`${msgPrefix}\n${'_'.repeat(padStart + padEnd + 3)}\n${msg}`)
 }
 
 export function logInfoHeading(msg: string) {
-  log(chalk.bgBlue(msg))
+  logger.info(`--- ${msg} ---`)
 }
+
 export function logInfo(...msgs: string[]) {
-  log(chalk.blue(...msgs))
+  logger.info(msgs.join(' '))
 }
 
 export function logWarnHeading(msg: string) {
-  log(chalk.bgYellow(msg))
+  logger.warn(`--- ${msg} ---`)
 }
+
 export function logWarn(...msgs: string[]) {
-  log(chalk.yellow(...msgs))
+  logger.warn(msgs.join(' '))
 }
 
 export function logErrorHeading(msg: string) {
-  log(chalk.bgRed(msg))
+  logger.error(`--- ${msg} ---`)
 }
+
 export function logError(...msgs: string[]) {
-  log(chalk.red(...msgs))
+  logger.error(msgs.join(' '))
 }
 
 export function logSuccessHeading(msg: string) {
-  log(chalk.bgGreen(msg))
+  logger.info(`[SUCCESS] --- ${msg} ---`)
 }
+
 export function logSuccess(...msgs: string[]) {
-  log(chalk.green(...msgs))
+  logger.info(`[SUCCESS] ${msgs.join(' ')}`)
 }
