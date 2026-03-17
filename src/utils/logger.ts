@@ -31,11 +31,14 @@ export function logObject(
     .sort((a, b) => a[0].localeCompare(b[0]))
   const padStart = Math.max(...kv.map(([k]) => k.length))
   const padEnd = Math.max(...kv.map(([, v]) => v.length))
-  const msg = kv
+  const msgArr = kv
     .map(([k, v]) => k.padStart(padStart) + ' : ' + v.padEnd(padEnd))
-    .join('\n')
 
-  logger.info(`${msgPrefix}\n${'_'.repeat(padStart + padEnd + 3)}\n${msg}`)
+  logger.info(msgPrefix)
+  logger.info('_'.repeat(padStart + padEnd + 3))
+  msgArr.forEach((msg) => {
+    logger.info(msg)
+  })
 }
 
 export function logInfoHeading(msg: string) {
