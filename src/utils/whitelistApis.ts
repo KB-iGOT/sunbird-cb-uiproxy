@@ -7276,7 +7276,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
             ],
         },
-        '/proxies/v8/peervalidation/v1/report/initiate': {
+        '/proxies/v8/peervalidation/v1/report/initiate/:formId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -8221,7 +8221,7 @@ export const API_LIST = {
             '/proxies/v8/peersurvey/upload',
             '/proxies/v8/externaltraining/v1/bulkupload/sample',
             '/proxies/v8/event/batch/cert/template/add',
-            '/proxies/v8/peervalidation/v1/report/initiate',
+            '/proxies/v8/peervalidation/v1/report/initiate/:formId',
             '/proxies/v8/peervalidation/v1/list/report',
         ],
 }
