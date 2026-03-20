@@ -1458,3 +1458,7 @@ proxiesV8.post('/externaltraining/v1/batch/getParticipants', async (req, res) =>
 proxiesV8.use('/externaltraining/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/peervalidation/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)

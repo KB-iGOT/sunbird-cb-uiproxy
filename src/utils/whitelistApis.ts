@@ -2729,6 +2729,8 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.CONTENT_CREATOR,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
             ],
         },
         '/proxies/v8/course/batch/cert/v1/template/add': {
@@ -7266,6 +7268,32 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
             ],
         },
+        '/proxies/v8/event/batch/cert/template/add': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/peervalidation/v1/report/initiate/:formId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/peervalidation/v1/list/report': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.SPV_ADMIN,
+            ],
+        },      
     },
     URL_PATTERN:
         [
@@ -8192,5 +8220,8 @@ export const API_LIST = {
             '/proxies/v8/dashboard/badgedetails/summary',
             '/proxies/v8/peersurvey/upload',
             '/proxies/v8/externaltraining/v1/bulkupload/sample',
+            '/proxies/v8/event/batch/cert/template/add',
+            '/proxies/v8/peervalidation/v1/report/initiate/:formId',
+            '/proxies/v8/peervalidation/v1/list/report',
         ],
 }
