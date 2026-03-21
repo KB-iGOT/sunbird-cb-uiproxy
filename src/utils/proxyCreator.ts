@@ -2,14 +2,19 @@ import { Router } from 'express'
 import { createProxyServer } from 'http-proxy'
 import { extractUserEmailFromRequest, extractUserId, extractUserToken } from '../utils/requestExtract'
 import { CONSTANTS } from './env'
-import { logInfo } from './logger'
+import { logError, logInfo } from './logger'
 
 const _ = require('lodash')
 
-const proxyCreator = (timeout = 10000) => createProxyServer({
-  timeout,
-})
+// Singleton proxy — no timeout (used by 14 existing functions)
 const proxy = createProxyServer({})
+
+// Singleton proxy with timeout — replaces per-request factory (used by 10 routes)
+// Previously: const proxyCreator = (timeout) => createProxyServer({ timeout }) — leaked instances
+// TODO: This is a temporary workaround to prevent unbounded proxy object creation.
+// Proper fix: evaluate if these routes can use the main singleton proxy with a
+// timeout, or migrate to axios streaming, eliminating the need for http-proxy here.
+const proxyTimed = createProxyServer({ timeout: CONSTANTS.PROXY_TIMEOUT })
 const PROXY_SLUG = '/proxies/v8'
 const PROXY_SLUG_WAT = '/proxies/v8/wat'
 const PROXY_SLUG_FORMS = '/proxies/v8/ext-forms'
@@ -106,7 +111,20 @@ proxy.on('proxyRes', (proxyRes: any, req: any, _res: any, ) => {
 
 })
 
-export function proxyCreatorRoute(route: Router, targetUrl: string, timeout = 10000): Router {
+// Error handler — return 502 instead of crashing or hanging the connection
+// tslint:disable-next-line: no-any
+function handleProxyError(err: any, req: any, res: any) {
+  logError('Proxy error:', String(err.message || err), '| url:', req.originalUrl || req.url)
+  if (res && !res.headersSent) {
+    res.writeHead(502, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({ error: 'Bad Gateway', message: 'Upstream service unavailable' }))
+  }
+}
+
+proxy.on('error', handleProxyError)
+proxyTimed.on('error', handleProxyError)
+
+export function proxyCreatorRoute(route: Router, targetUrl: string, _timeout = 10000): Router {
   route.all('/*', (req, res) => {
     const downloadKeyword = '/download/'
     if (req.url.startsWith(downloadKeyword)) {
@@ -114,7 +132,7 @@ export function proxyCreatorRoute(route: Router, targetUrl: string, timeout = 10
     }
     logInfo('REQ_URL_ORIGINAL', req.originalUrl)
     logInfo('REQ_URL', req.url)
-    proxyCreator(timeout).web(req, res, {
+    proxyTimed.web(req, res, {
       target: targetUrl,
     })
   })
@@ -123,7 +141,7 @@ export function proxyCreatorRoute(route: Router, targetUrl: string, timeout = 10
 
 export function ilpProxyCreatorRoute(route: Router, baseUrl: string): Router {
   route.all('/*', (req, res) => {
-    proxyCreator().web(req, res, {
+    proxyTimed.web(req, res, {
       headers: { ...req.headers } as { [s: string]: string },
       target: baseUrl + req.url,
     })
@@ -133,7 +151,7 @@ export function ilpProxyCreatorRoute(route: Router, baseUrl: string): Router {
 
 export function scormProxyCreatorRoute(route: Router, baseUrl: string): Router {
   route.all('/*', (req, res) => {
-    proxyCreator().web(req, res, {
+    proxyTimed.web(req, res, {
       target: baseUrl,
     })
   })

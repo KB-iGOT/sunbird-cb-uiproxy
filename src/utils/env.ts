@@ -116,6 +116,9 @@ export const CONSTANTS = {
   TELEMETRY_SB_BASE: env.TELEMETRY_SB_BASE || 'http://localhost:9090',
   TIMEOUT: env.TIMEOUT || 10000,
 
+  // Proxy timeout for timed proxy routes (e.g. content, scorm, ilp)
+  PROXY_TIMEOUT: Number(env.PROXY_TIMEOUT) || 10000,
+
   // Upstream connection pool (shared keep-alive agent for all outbound calls)
   // Max active per upstream (e.g. Kong, Keycloak) per worker
   UPSTREAM_MAX_CONNECTIONS: Number(env.UPSTREAM_MAX_CONNECTIONS) || 50,
