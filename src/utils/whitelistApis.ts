@@ -7293,6 +7293,13 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
                 ROLE.SPV_ADMIN,
             ],
+        },
+        '/proxies/v8/badge/dynamic/v1/generate': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
         },      
     },
     URL_PATTERN:
@@ -8223,5 +8230,6 @@ export const API_LIST = {
             '/proxies/v8/event/batch/cert/template/add',
             '/proxies/v8/peervalidation/v1/report/initiate/:formId',
             '/proxies/v8/peervalidation/v1/list/report',
+            '/proxies/v8/badge/dynamic/v1/generate',
         ],
 }
