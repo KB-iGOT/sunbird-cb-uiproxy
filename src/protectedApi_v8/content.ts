@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { Router } from 'express'
-import request from 'request'
+import request from '../utils/request-adapter'
 import { axiosRequestConfig } from '../configs/request.config'
 import { ECollectionTypes, IContent, IContentMinimal } from '../models/content.model'
 import { IPaginatedApiResponse } from '../models/paginatedApi.model'

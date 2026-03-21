@@ -1,6 +1,6 @@
 const _                 = require('lodash')
 import axios from 'axios'
-import request from 'request'
+import request from './request-adapter'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from './env'
 import { logError, logInfo } from './logger'

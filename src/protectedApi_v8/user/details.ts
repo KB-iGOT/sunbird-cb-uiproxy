@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { Router } from 'express'
-import request from 'request'
+import request from '../../utils/request-adapter'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
 import { logError, logInfo } from '../../utils/logger'
@@ -129,7 +129,7 @@ export function wTokenApiMock(req: any, token: any): Promise<any> {
       let kcToken: any
       kcToken = token
       const url = API_END_POINTS.pidProfile
-      const options: request.CoreOptions = {
+      const options: any = { // tslint:disable-line: no-any
         headers: {
           org,
           rootOrg,

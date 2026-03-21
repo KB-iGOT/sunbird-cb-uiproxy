@@ -1,7 +1,7 @@
 import * as express from 'express'
 import expressSession from 'express-session'
 import keycloakConnect from 'keycloak-connect'
-import request from 'request'
+import request from './request-adapter'
 import { getKeycloakConfig } from '../configs/keycloak.config'
 import { CONSTANTS } from './env'
 import { logError, logInfo } from './logger'

@@ -1,6 +1,6 @@
 const keycloak = require('keycloak-connect')
 const async = require('async')
-import request from 'request'
+import request from '../utils/request-adapter'
 import { getOAuthKeycloakConfig } from '../configs/keycloak.config'
 import { getSessionConfig } from '../configs/session.config'
 import { CONSTANTS } from '../utils/env'

@@ -1,7 +1,7 @@
 import cassandraDriver from 'cassandra-driver'
 import KcAdminClient from 'keycloak-admin'
 import { RequiredActionAlias } from 'keycloak-admin/lib/defs/requiredActionProviderRepresentation'
-import request from 'request'
+import request from './request-adapter'
 import { CONSTANTS } from './env'
 import { logError, logInfo } from './logger'
 
