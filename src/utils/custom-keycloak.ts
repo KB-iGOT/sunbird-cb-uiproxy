@@ -1,11 +1,11 @@
 import * as express from 'express'
 import expressSession from 'express-session'
 import keycloakConnect from 'keycloak-connect'
-import request from './request-adapter'
 import { getKeycloakConfig } from '../configs/keycloak.config'
 import { CONSTANTS } from './env'
 import { logError, logInfo } from './logger'
 import { PERMISSION_HELPER } from './permissionHelper'
+import { request } from './request-adapter'
 const async = require('async')
 
 const composable = require('composable-middleware')

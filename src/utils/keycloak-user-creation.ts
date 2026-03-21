@@ -1,9 +1,9 @@
 import cassandraDriver from 'cassandra-driver'
 import KcAdminClient from 'keycloak-admin'
 import { RequiredActionAlias } from 'keycloak-admin/lib/defs/requiredActionProviderRepresentation'
-import request from './request-adapter'
 import { CONSTANTS } from './env'
 import { logError, logInfo } from './logger'
+import { request } from './request-adapter'
 
 const CASSANDRA_KEYSPACE = CONSTANTS.CASSANDRA_KEYSPACE
 const defaultNewUserPassword = CONSTANTS.KC_NEW_USER_DEFAULT_PWD

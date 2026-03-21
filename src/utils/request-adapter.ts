@@ -22,10 +22,13 @@ import axios from 'axios'
 import { axiosRequestConfig } from '../configs/request.config'
 import { logError } from './logger'
 
+const CONTENT_TYPE = 'Content-Type'
+
 // tslint:disable-next-line: no-any
 type Callback = (err: any, response: any, body: any) => void
 
-interface RequestOptions {
+// tslint:disable-next-line: interface-name
+interface IRequestOptions {
   url?: string
   // tslint:disable-next-line: no-any
   headers?: Record<string, any>
@@ -37,17 +40,11 @@ interface RequestOptions {
 }
 
 /**
- * Build an axios config from request-library-style options.
- *
- * Per cc docs for `request`:
- *   - { form: data } → urlencoded body + Content-Type header
- *   - { json: true } → parse response as JSON, set Content-Type
- *   - { json: <object> } → use as body, set Content-Type
- *   - { body: <data>, json: true } → stringify body as JSON
+ * Resolve URL and options from the overloaded argument patterns.
  */
-function buildAxiosConfig(method: string, urlOrOpts: string | RequestOptions, optsOrCb?: RequestOptions | Callback) {
+function resolveArgs(urlOrOpts: string | IRequestOptions, optsOrCb?: IRequestOptions | Callback) {
   let url: string
-  let opts: RequestOptions = {}
+  let opts: IRequestOptions = {}
 
   if (typeof urlOrOpts === 'string') {
     url = urlOrOpts
@@ -59,6 +56,16 @@ function buildAxiosConfig(method: string, urlOrOpts: string | RequestOptions, op
     url = opts.url || ''
   }
 
+  return { opts, url }
+}
+
+/**
+ * Build an axios config from request-library-style options.
+ */
+// tslint:disable-next-line: no-any
+function buildAxiosConfig(method: string, urlOrOpts: string | IRequestOptions, optsOrCb?: IRequestOptions | Callback): any {
+  const { url, opts } = resolveArgs(urlOrOpts, optsOrCb)
+
   // tslint:disable-next-line: no-any
   const axiosCfg: any = {
     ...axiosRequestConfig,
@@ -67,71 +74,61 @@ function buildAxiosConfig(method: string, urlOrOpts: string | RequestOptions, op
     url,
   }
 
-  // { form: data } — url-encoded body
   if (opts.form) {
     axiosCfg.data = new URLSearchParams(opts.form).toString()
-    axiosCfg.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-  }
-
-  // { json: <object> } — object is the body (not boolean true)
-  // { json: true, body: <data> } — body is separate, json means serialize+parse
-  if (opts.json && typeof opts.json !== 'boolean') {
+    axiosCfg.headers[CONTENT_TYPE] = 'application/x-www-form-urlencoded'
+  } else if (opts.json && typeof opts.json !== 'boolean') {
     axiosCfg.data = opts.json
-    axiosCfg.headers['Content-Type'] = 'application/json'
+    axiosCfg.headers[CONTENT_TYPE] = 'application/json'
   } else if (opts.json === true && opts.body) {
     axiosCfg.data = opts.body
-    axiosCfg.headers['Content-Type'] = 'application/json'
+    axiosCfg.headers[CONTENT_TYPE] = 'application/json'
   }
 
   return axiosCfg
 }
 
 /**
- * Execute request and invoke callback with request-lib (err, response, body) signature.
+ * Determine if caller expects parsed JSON response.
  */
-function execute(method: string, urlOrOpts: string | RequestOptions, optsOrCb?: RequestOptions | Callback, cb?: Callback) {
-  const callback = typeof optsOrCb === 'function' ? optsOrCb : cb
-
-  const axiosCfg = buildAxiosConfig(method, urlOrOpts, optsOrCb)
-
-  // Determine if caller expects parsed JSON (json:true or json:<object>)
-  let jsonMode = false
+function isJsonMode(urlOrOpts: string | IRequestOptions, optsOrCb?: IRequestOptions | Callback): boolean {
   if (typeof urlOrOpts !== 'string' && urlOrOpts.json) {
-    jsonMode = true
-  } else if (optsOrCb && typeof optsOrCb !== 'function' && optsOrCb.json) {
-    jsonMode = true
+    return true
+  }
+  if (optsOrCb && typeof optsOrCb !== 'function' && optsOrCb.json) {
+    return true
+  }
+  return false
+}
+
+/**
+ * Handle the axios response and invoke callback with request-lib signature.
+ */
+// tslint:disable-next-line: no-any
+function handleResponse(response: any, jsonMode: boolean, callback: Callback) {
+  // tslint:disable-next-line: no-any
+  let body: any
+  if (jsonMode) {
+    body = response.data
+  } else {
+    body = typeof response.data === 'object'
+      ? JSON.stringify(response.data)
+      : response.data
   }
 
-  const promise = axios(axiosCfg)
-    .then((response) => {
-      if (callback) {
-        // request lib: body is string unless json mode, then it's parsed object
-        let body: any  // tslint:disable-line: no-any
-        if (jsonMode) {
-          body = response.data
-        } else {
-          body = typeof response.data === 'object'
-            ? JSON.stringify(response.data)
-            : response.data
-        }
+  const res = {
+    body: response.data,
+    headers: response.headers,
+    statusCode: response.status,
+  }
+  callback(null, res, body)
+}
 
-        const res = {
-          body: response.data,
-          headers: response.headers,
-          statusCode: response.status,
-        }
-        callback(null, res, body)
-      }
-    })
-    .catch((err) => {
-      if (callback) {
-        callback(err, null, null)
-      } else {
-        logError('request-adapter fire-and-forget error:', String(err.message || err))
-      }
-    })
-
-  // Support .pipe() for streaming (per axios docs: responseType: 'stream')
+/**
+ * Attach .pipe() support to a promise for streaming responses.
+ */
+// tslint:disable-next-line: no-any
+function attachPipe(promise: Promise<any>, axiosCfg: any): any {
   // tslint:disable-next-line: no-any
   const pipeable: any = promise
   pipeable.pipe = (destination: NodeJS.WritableStream) => {
@@ -149,17 +146,40 @@ function execute(method: string, urlOrOpts: string | RequestOptions, optsOrCb?: 
       })
     return destination
   }
-
   return pipeable
 }
 
-export const request = {
-  get(urlOrOpts: string | RequestOptions, optsOrCb?: RequestOptions | Callback, cb?: Callback) {
+/**
+ * Execute request and invoke callback with request-lib (err, response, body) signature.
+ */
+function execute(method: string, urlOrOpts: string | IRequestOptions, optsOrCb?: IRequestOptions | Callback, cb?: Callback) {
+  const callback = typeof optsOrCb === 'function' ? optsOrCb : cb
+  const axiosCfg = buildAxiosConfig(method, urlOrOpts, optsOrCb)
+  const jsonMode = isJsonMode(urlOrOpts, optsOrCb)
+
+  const promise = axios(axiosCfg)
+    .then((response) => {
+      if (callback) {
+        handleResponse(response, jsonMode, callback)
+      }
+    })
+    .catch((err) => {
+      if (callback) {
+        callback(err, null, null)
+      } else {
+        logError('request-adapter fire-and-forget error:', String(err.message || err))
+      }
+    })
+
+  return attachPipe(promise, axiosCfg)
+}
+
+// tslint:disable-next-line: no-any
+export const request: any = {
+  get(urlOrOpts: string | IRequestOptions, optsOrCb?: IRequestOptions | Callback, cb?: Callback) {
     return execute('GET', urlOrOpts, optsOrCb, cb)
   },
-  post(urlOrOpts: string | RequestOptions, optsOrCb?: RequestOptions | Callback, cb?: Callback) {
+  post(urlOrOpts: string | IRequestOptions, optsOrCb?: IRequestOptions | Callback, cb?: Callback) {
     return execute('POST', urlOrOpts, optsOrCb, cb)
   },
 }
-
-export default request
