@@ -1,11 +1,11 @@
 import * as express from 'express'
 import expressSession from 'express-session'
 import keycloakConnect from 'keycloak-connect'
-import request from 'request'
 import { getKeycloakConfig } from '../configs/keycloak.config'
 import { CONSTANTS } from './env'
 import { logError, logInfo } from './logger'
 import { PERMISSION_HELPER } from './permissionHelper'
+import { request } from './request-adapter'
 const async = require('async')
 
 const composable = require('composable-middleware')
@@ -134,7 +134,7 @@ export class CustomKeycloak {
                     Authorization: reqObj.session.parichayToken.access_token,
                   },
                   url: CONSTANTS.PARICHAY_REVOKE_URL,
-              }, (err, res, body) => {
+              }, (err: any, res: any, body: any) => { // tslint:disable-line: no-any
                 if (err) {
                   logError('Received error when calling Parichay logout... ')
                   logError(JSON.stringify(err))

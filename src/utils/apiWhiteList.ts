@@ -9,6 +9,47 @@ import { logError, logInfo } from './logger'
 import { ROLE } from './roles'
 import { API_LIST } from './whitelistApis'
 
+// Pre-compile all 925 URL patterns at startup (once) instead of per-request.
+// Saves 2 × 925 = 1850 regex compilations per request.
+const compiledPatterns: Array<{ pattern: string, regex: RegExp }> = []
+
+function initCompiledPatterns() {
+    if (compiledPatterns.length > 0) {
+        return
+    }
+    if (API_LIST.URL_PATTERN && API_LIST.URL_PATTERN.length > 0) {
+        // tslint:disable-next-line: no-any
+        API_LIST.URL_PATTERN.forEach((url: any) => {
+            try {
+                compiledPatterns.push({ pattern: url, regex: pathToRegexp(url) })
+            } catch (err) {
+                logError('Failed to compile URL pattern:', url)
+            }
+        })
+        logInfo(`Compiled ${compiledPatterns.length} URL patterns for whitelist matching`)
+    }
+}
+
+// Compile eagerly — API_LIST is available since it's imported above
+initCompiledPatterns()
+
+/**
+ * Match a request path against pre-compiled URL patterns.
+ * Returns the matched pattern string, or null if no match.
+ */
+function matchUrlPattern(reqPath: string): string | null {
+    // Lazy fallback in case eager init ran before API_LIST was ready
+    if (compiledPatterns.length === 0) {
+        initCompiledPatterns()
+    }
+    for (const entry of compiledPatterns) {
+        if (entry.regex.test(reqPath)) {
+            return entry.pattern
+        }
+    }
+    return null
+}
+
 /**
  * @param  { String } REQ_URL - Request URL
  * @returns { Boolean } - Return boolean value based on exclude path criteria
@@ -297,16 +338,11 @@ export const isAllowed = () => {
                 next()
             } else {
 
-                // Pattern match for URL
-                // tslint:disable-next-line: no-any
-                _.forEach(API_LIST.URL_PATTERN, (url: any) => {
-                    const regExp = pathToRegexp(url)
-                    if (regExp.test(REQ_URL)) {
-                        REQ_URL = url
-                        return false
-                    }
-                    return true
-                })
+                // Pattern match for URL (uses pre-compiled regexes)
+                const matchedPattern = matchUrlPattern(REQ_URL)
+                if (matchedPattern) {
+                    REQ_URL = matchedPattern
+                }
                 // Is API whitelisted ?
                 if (_.get(API_LIST.URL, REQ_URL)) {
                     const URL_RULE_OBJ = _.get(API_LIST.URL, REQ_URL)
@@ -349,15 +385,11 @@ const redirectToLogin = (req: Request) => {
 
 const validateAPI = (req: Request, res: Response, next: NextFunction) => {
     let REQ_URL_ORIGINAL = req.path
-    // tslint:disable-next-line: no-any
-    _.forEach(API_LIST.URL_PATTERN, (url: any) => {
-        const regExp = pathToRegexp(url)
-        if (regExp.test(REQ_URL_ORIGINAL)) {
-            REQ_URL_ORIGINAL = url
-            return false
-        }
-        return true
-    })
+    // Pattern match for URL (uses pre-compiled regexes)
+    const matched = matchUrlPattern(REQ_URL_ORIGINAL)
+    if (matched) {
+        REQ_URL_ORIGINAL = matched
+    }
     if (_.get(API_LIST.URL, REQ_URL_ORIGINAL)) {
         next()
     } else {
