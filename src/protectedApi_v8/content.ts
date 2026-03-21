@@ -506,11 +506,11 @@ contentApi.post('/setCookie', async (req, res) => {
     const bodyWithConfigRequestOptions = { ...body, ...axiosRequestConfig, headers: { rootOrg } }
     request
       .post(`${url}?type=${type}`, bodyWithConfigRequestOptions)
-      .on('response', (_response) => {
+      .on('response', (_response: any) => { // tslint:disable-line: no-any
         // tslint:disable-next-line: no-console
         // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>\n SET COOKIE RESPONSE HEADERS >>\n', response.headers)
       })
-      .on('error', (err) => {
+      .on('error', (err: any) => { // tslint:disable-line: no-any
         // tslint:disable-next-line: no-console
         console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>\n ALERT! SET COOKIE ERROR >>\n', err)
       })

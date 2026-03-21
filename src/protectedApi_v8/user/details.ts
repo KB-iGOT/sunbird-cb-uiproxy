@@ -141,7 +141,7 @@ export function wTokenApiMock(req: any, token: any): Promise<any> {
         },
       }
 
-      request.post(url, options, async (error, _res, body) => {
+      request.post(url, options, async (error: any, _res: any, body: any) => { // tslint:disable-line: no-any
         if (error) {
           reject(error)
         }
