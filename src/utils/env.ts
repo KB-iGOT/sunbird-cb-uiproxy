@@ -158,8 +158,6 @@ export const CONSTANTS = {
   CONTENT_SERVICE_API_BASE: env.CONTENT_SERVICE_API_BASE || 'http://content-service:9000',
   VM_LEARNING_SERVICE_URL: env.VM_LEARNING_SERVICE_URL,
   // tslint:disable-next-line: max-line-length
-  CERT_AUTH_TOKEN: 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJRekw4VVA1dUtqUFdaZVpMd1ZtTFJvNHdqWTg2a2FrcSJ9.TPjV0xLacSbp3FbJ7XeqHoKFN35Rl4YHx3DZNN9pm0o',
-  // tslint:disable-next-line: max-line-length
   KEYCLOAK_PUBLIC_KEY: env.KEYCLOAK_PUBLIC_KEY || 'publicKey',
   KARMAYOGI_PORTAL_HOST: env.KARMAYOGI_PORTAL_HOST || 'portal.karmayogi.nic.in',
   GOOGLE_CLIENT_ID: env.GOOGLE_CLIENT_ID || 'googleClientId',
