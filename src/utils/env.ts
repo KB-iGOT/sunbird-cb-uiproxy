@@ -160,7 +160,7 @@ export const CONSTANTS = {
   // tslint:disable-next-line: max-line-length
   CERT_AUTH_TOKEN: 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJRekw4VVA1dUtqUFdaZVpMd1ZtTFJvNHdqWTg2a2FrcSJ9.TPjV0xLacSbp3FbJ7XeqHoKFN35Rl4YHx3DZNN9pm0o',
   // tslint:disable-next-line: max-line-length
-  KEYCLOAK_PUBLIC_KEY: 'publicKey',
+  KEYCLOAK_PUBLIC_KEY: env.KEYCLOAK_PUBLIC_KEY || 'publicKey',
   KARMAYOGI_PORTAL_HOST: env.KARMAYOGI_PORTAL_HOST || 'portal.karmayogi.nic.in',
   GOOGLE_CLIENT_ID: env.GOOGLE_CLIENT_ID || 'googleClientId',
   GOOGLE_CLIENT_SECRET: env.GOOGLE_CLIENT_SECRET || 'googleClientSecret',
