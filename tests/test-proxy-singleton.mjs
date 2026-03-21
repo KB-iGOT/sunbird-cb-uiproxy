@@ -62,7 +62,7 @@ for (let i = 0; i < REQUEST_COUNT; i++) {
 console.log(`  Requests: ${REQUEST_COUNT}`)
 console.log(`  Proxy instances created: ${factoryInstances.length}`)
 assert.equal(factoryInstances.length, REQUEST_COUNT, 'Old factory should create one instance per request')
-console.log(`  ❌ ${REQUEST_COUNT} instances (this is the leak)\n`)
+console.log(`  ⚠️  ${REQUEST_COUNT} instances (confirms the leak our fix addresses)\n`)
 
 serverOld.close()
 factoryInstances.forEach(p => p.close())
@@ -123,7 +123,7 @@ console.log(`  ✅ Returns 502 on upstream failure\n`)
 // =========================================================
 console.log('─'.repeat(50))
 console.log('✅ ALL PASS')
-console.log(`  Old pattern: ${REQUEST_COUNT} requests = ${REQUEST_COUNT} instances (leak)`)
+console.log(`  Old pattern: ${REQUEST_COUNT} requests = ${REQUEST_COUNT} instances (leak confirmed)`)
 console.log(`  New pattern: ${REQUEST_COUNT} requests = 1 instance (fixed)`)
 
 upstream.close()
