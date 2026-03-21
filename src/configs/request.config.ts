@@ -5,16 +5,16 @@ import { CONSTANTS } from '../utils/env'
 
 const sharedHttpAgent = new http.Agent({
   keepAlive: true,
-  maxFreeSockets: 10,
-  maxSockets: 50,
-  timeout: 60000,
+  maxFreeSockets: CONSTANTS.UPSTREAM_MAX_IDLE_CONNECTIONS,
+  maxSockets: CONSTANTS.UPSTREAM_MAX_CONNECTIONS,
+  timeout: CONSTANTS.UPSTREAM_KEEPALIVE_TIMEOUT,
 })
 
 const sharedHttpsAgent = new https.Agent({
   keepAlive: true,
-  maxFreeSockets: 10,
-  maxSockets: 50,
-  timeout: 60000,
+  maxFreeSockets: CONSTANTS.UPSTREAM_MAX_IDLE_CONNECTIONS,
+  maxSockets: CONSTANTS.UPSTREAM_MAX_CONNECTIONS,
+  timeout: CONSTANTS.UPSTREAM_KEEPALIVE_TIMEOUT,
 })
 
 export const axiosRequestConfig: AxiosRequestConfig = {
