@@ -11,19 +11,21 @@
 
 import http from 'node:http'
 import assert from 'node:assert/strict'
+import { createRequire } from 'node:module'
+import { fileURLToPath } from 'node:url'
+import path from 'node:path'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const require = createRequire(import.meta.url)
 
 let request
 try {
-  const mod = await import('../src/utils/request-adapter.ts')
-  request = mod.default || mod.request
-} catch {
-  try {
-    const mod = await import('../dist/utils/request-adapter.js')
-    request = mod.default || mod.request
-  } catch {
-    console.error('Cannot import request-adapter. Run with: npx tsx tests/test-request-adapter-connections.mjs')
-    process.exit(1)
-  }
+  const mod = require(path.join(__dirname, '..', 'dist', 'utils', 'request-adapter.js'))
+  request = mod.request
+} catch (err) {
+  console.error('Cannot import request-adapter. Build first: npm run build')
+  console.error(err.message)
+  process.exit(1)
 }
 
 const REQUESTS = 50
