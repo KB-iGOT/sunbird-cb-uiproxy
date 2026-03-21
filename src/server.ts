@@ -119,22 +119,10 @@ export class Server {
       logInfo(`Server:ConfigureMiddleWare:: Worker ${process.pid} : ${req.protocol}://${req.hostname}/${req.url}`)
       next()
     })
-    this.app.use(morgan('dev'))
-    this.app.use(
-      morgan((tokens: morgan.TokenIndexer, req, res) =>
-        [
-          process.pid,
-          tokens.method(req, res),
-          tokens.url(req, res),
-          tokens.status(req, res),
-          tokens.res(req, res, 'content-length'),
-          '-',
-          tokens['response-time'](req, res),
-          'ms',
-          `timeout: ${CONSTANTS.TIMEOUT}`,
-        ].join(' ')
-      )
-    )
+
+    // Using single configured morgan logger
+    this.app.use(morgan('short'))
+
     this.app.use(haltOnTimedOut)
   }
   // tslint:disable-next-line: no-any
