@@ -82,18 +82,26 @@ proxiesV8.post('/upload/*', (req, res) => {
         port: 9000,
       },
       (err, response) => {
-
+        if (err || !response) {
+          logError('FormData submit error in /upload/*', String(err))
+          if (!res.headersSent) {
+            res.status(502).json({ error: 'Upload failed', message: String(err) })
+          }
+          return
+        }
+        response.on('error', (streamErr) => {
+          logError('Response stream error in /upload/*', String(streamErr))
+          if (!res.headersSent) {
+            res.status(502).json({ error: 'Upload stream failed' })
+          }
+        })
         response.on('data', (data) => {
-          if (!err && (response.statusCode === 200 || response.statusCode === 201)) {
+          if (response.statusCode === 200 || response.statusCode === 201) {
             res.send(JSON.parse(data.toString('utf8')))
           } else {
             res.send(data.toString('utf8'))
           }
         })
-        if (err) {
-          res.send(err)
-        }
-
       }
     )
   } else {
@@ -126,18 +134,26 @@ proxiesV8.post('/private/upload/*', (_req, _res) => {
         port: 9000,
       },
       (_err, _response) => {
-
+        if (_err || !_response) {
+          logError('FormData submit error in /private/upload/*', String(_err))
+          if (!_res.headersSent) {
+            _res.status(502).json({ error: 'Upload failed', message: String(_err) })
+          }
+          return
+        }
+        _response.on('error', (streamErr) => {
+          logError('Response stream error in /private/upload/*', String(streamErr))
+          if (!_res.headersSent) {
+            _res.status(502).json({ error: 'Upload stream failed' })
+          }
+        })
         _response.on('data', (_data) => {
-          if (!_err && (_response.statusCode === 200 || _response.statusCode === 201)) {
+          if (_response.statusCode === 200 || _response.statusCode === 201) {
             _res.send(JSON.parse(_data.toString('utf8')))
           } else {
             _res.send(_data.toString('utf8'))
           }
         })
-        if (_err) {
-          _res.send(_err)
-        }
-
       }
     )
   } else {
@@ -421,30 +437,35 @@ proxiesV8.use('/notification/*',
 )
 
 proxiesV8.post('/org/v1/search', async (req, res) => {
-  // tslint:disable-next-line: all
-  const roleData = lodash.get(req, 'session.userRoles')  
-  // tslint:disable-next-line: all
-  const rootOrgId = lodash.get(req, 'session.rootOrgId')
-  logInfo('org search API call : Users Roles are...')
-  logInfo(roleData)
-  const urlPath = API_END_POINTS.kongSearchOrg
-  if (roleData.includes('STATE_ADMIN')) {
-    logInfo('roleData contains state admin')
-    req.body.request.filters.ministryOrStateId = rootOrgId
-    logInfo('updated urlPath -> ' + urlPath)
-  }
-  const searchResponse = await axios({
-    ...axiosRequestConfig,
-    data: req.body,
-    headers: {
+  try {
+    // tslint:disable-next-line: all
+    const roleData = lodash.get(req, 'session.userRoles')
+    // tslint:disable-next-line: all
+    const rootOrgId = lodash.get(req, 'session.rootOrgId')
+    logInfo('org search API call : Users Roles are...')
+    logInfo(roleData)
+    const urlPath = API_END_POINTS.kongSearchOrg
+    if (roleData.includes('STATE_ADMIN')) {
+      logInfo('roleData contains state admin')
+      req.body.request.filters.ministryOrStateId = rootOrgId
+      logInfo('updated urlPath -> ' + urlPath)
+    }
+    const searchResponse = await axios({
+      ...axiosRequestConfig,
+      data: req.body,
+      headers: {
         Authorization: CONSTANTS.SB_API_KEY,
         // tslint:disable-next-line: all
         'x-authenticated-user-token': extractUserToken(req),
-    },
-    method: 'POST',
-    url: urlPath,
-  })
-  res.status(200).send(searchResponse.data)
+      },
+      method: 'POST',
+      url: urlPath,
+    })
+    res.status(200).send(searchResponse.data)
+  } catch (err) {
+    logError('Org search API failed:', String(err))
+    res.status(500).json({ error: 'Failed to search organisations' })
+  }
 })
 
 proxiesV8.use('/org/*',
@@ -664,33 +685,38 @@ proxiesV8.use('/wat/dashboard/*',
 )
 
 proxiesV8.get('/data/v1/system/settings/get/orgTypeList', async (req, res) => {
-  const roleData = lodash.get(req, 'session.userRoles')
-  logInfo('orgTypeList API call : Users Roles are...')
-  logInfo(roleData)
-  const response = await axios({
-    ...axiosRequestConfig,
-    headers: {
-      Authorization: CONSTANTS.SB_API_KEY,
-      // tslint:disable-next-line: all
-      'x-authenticated-user-token': extractUserToken(req),
-    },
-    method: 'GET',
-    url: API_END_POINTS.orgTypeListEndPoint,
-  })
-  if (roleData.includes('STATE_ADMIN')) {
-    const hiddenList = ['CBC', 'CBP', 'STATE']
-    const orgTypeListObj = JSON.parse(response.data.result.response.value)
-    const orgTypeList = orgTypeListObj.orgTypeList
-    // tslint:disable-next-line: no-any
-    orgTypeList.forEach((element: any) => {
-      if (hiddenList.includes(element.name)) {
-        element.isHidden = true
-      }
+  try {
+    const roleData = lodash.get(req, 'session.userRoles')
+    logInfo('orgTypeList API call : Users Roles are...')
+    logInfo(roleData)
+    const response = await axios({
+      ...axiosRequestConfig,
+      headers: {
+        Authorization: CONSTANTS.SB_API_KEY,
+        // tslint:disable-next-line: all
+        'x-authenticated-user-token': extractUserToken(req),
+      },
+      method: 'GET',
+      url: API_END_POINTS.orgTypeListEndPoint,
     })
-    orgTypeListObj.orgTypeList = orgTypeList
-    response.data.result.response.value = JSON.stringify(orgTypeListObj)
+    if (roleData.includes('STATE_ADMIN')) {
+      const hiddenList = ['CBC', 'CBP', 'STATE']
+      const orgTypeListObj = JSON.parse(response.data.result.response.value)
+      const orgTypeList = orgTypeListObj.orgTypeList
+      // tslint:disable-next-line: no-any
+      orgTypeList.forEach((element: any) => {
+        if (hiddenList.includes(element.name)) {
+          element.isHidden = true
+        }
+      })
+      orgTypeListObj.orgTypeList = orgTypeList
+      response.data.result.response.value = JSON.stringify(orgTypeListObj)
+    }
+    res.status(200).send(response.data)
+  } catch (err) {
+    logError('OrgTypeList settings API failed:', String(err))
+    res.status(500).json({ error: 'Failed to fetch org type list' })
   }
-  res.status(200).send(response.data)
 })
 
 proxiesV8.use('/data/*',
