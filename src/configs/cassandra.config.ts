@@ -5,16 +5,6 @@ export const cassandraClientOptions: cassandraDriver.ClientOptions = {
     contactPoints: getIPList(),
     keyspace: CONSTANTS.CASSANDRA_KEYSPACE,
     localDataCenter: CONSTANTS.CASSANDRA_LOCAL_DC || 'datacenter1',
-    protocolOptions: {
-        maxVersion: 4,
-    },
-    queryOptions: {
-        prepare: true,
-    },
-    socketOptions: {
-        connectTimeout: 10000,
-        readTimeout: 12000,
-    },
     policies: {
         retry: new cassandraDriver.policies.retry.IdempotenceAwareRetryPolicy(
             new cassandraDriver.policies.retry.RetryPolicy()
@@ -29,6 +19,16 @@ export const cassandraClientOptions: cassandraDriver.ClientOptions = {
             [cassandraDriver.types.distance.local]: CONSTANTS.CASSANDRA_MAX_CONN_LOCAL,
             [cassandraDriver.types.distance.remote]: CONSTANTS.CASSANDRA_MAX_CONN_REMOTE,
         },
+    },
+    protocolOptions: {
+        maxVersion: 4,
+    },
+    queryOptions: {
+        prepare: true,
+    },
+    socketOptions: {
+        connectTimeout: 10000,
+        readTimeout: 12000,
     },
 }
 

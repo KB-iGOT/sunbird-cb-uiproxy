@@ -452,6 +452,7 @@ userRegistrationApi.get('/bulkUploadData', async (req, res) => {
         const clientConnect = getCassandraClient()
         const query = `SELECT id,name,status FROM ${CONSTANTS.CASSANDRA_KEYSPACE}.bulk_user_upload_detail
             WHERE user_id=? allow filtering`
+        // tslint:disable-next-line: no-identical-functions
         clientConnect.execute(query, [extractUserIdFromRequest(req)], { prepare: true }, (err, result) => {
             if (!err && result && result.rows) {
                 const key = result.rows

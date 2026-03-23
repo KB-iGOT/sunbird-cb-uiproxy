@@ -43,7 +43,7 @@ export async function isCassandraHealthy(): Promise<boolean> {
 export async function shutdownCassandraClient(): Promise<void> {
     if (sharedClient) {
         logDebug('Shutting down singleton Cassandra client...')
-        await sharedClient.shutdown()
+        sharedClient.shutdown()
         sharedClient = null
     }
 }
