@@ -3,7 +3,7 @@ const async = require('async')
 import { getOAuthKeycloakConfig } from '../configs/keycloak.config'
 import { getSessionConfig } from '../configs/session.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logError, logDebug } from '../utils/logger'
 import { PERMISSION_HELPER } from '../utils/permissionHelper'
 import { request } from '../utils/request-adapter'
 
@@ -17,7 +17,7 @@ export function getKeyCloakClient() {
 
 // tslint:disable-next-line: no-any
 const deauthenticated = async (reqObj: any) => {
-    logInfo('keycloakHelper::deauthenticated...')
+    logDebug('keycloakHelper::deauthenticated...')
     const keyCloakPropertyName = 'keycloak-token'
     if (reqObj.session.hasOwnProperty(keyCloakPropertyName)) {
       const keycloakToken = reqObj.session[keyCloakPropertyName]
@@ -52,12 +52,12 @@ const deauthenticated = async (reqObj: any) => {
     delete reqObj.session.userRoles
     delete reqObj.session.userId
     reqObj.session.destroy()
-    logInfo(`${process.pid}: User Deauthenticated`)
+    logDebug(`${process.pid}: User Deauthenticated`)
 }
 
 // tslint:disable-next-line: no-any
 const authenticated = async (reqObj: any, next: any) => {
-    logInfo('keycloakHelper::authenticated...')
+    logDebug('keycloakHelper::authenticated...')
     const postLoginRequest = []
     // tslint:disable-next-line: no-any
     postLoginRequest.push((callback: any) => {
@@ -70,7 +70,7 @@ const authenticated = async (reqObj: any, next: any) => {
             logError('error loggin in user', '------', new Date().toString())
             next(err, null)
         } else {
-            logInfo(`${process.pid}: User authenticated`, '------', new Date().toString())
+            logDebug(`${process.pid}: User authenticated`, '------', new Date().toString())
             next(null, 'loggedin')
         }
     })

@@ -1,6 +1,6 @@
 import express from 'express'
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logError, logDebug } from '../utils/logger'
 import { getGoogleProfile } from './googleOAuthHelper'
 import { createUserWithMailId, fetchUserByEmailId, updateKeycloakSession } from './ssoUserHelper'
 
@@ -31,13 +31,13 @@ googleAuth.get('/callback', async (req, res) => {
     const host = req.get('host')
     let resRedirectUrl = `https://${host}/page/home`
     try {
-        logInfo('Successfully received callback from google. Received query params -> ' + JSON.stringify(req.query))
+        logDebug('Successfully received callback from google. Received query params -> ' + JSON.stringify(req.query))
         const googleProfile = await getGoogleProfile(req)
-        logInfo('Successfully got authenticated with google...')
-        logInfo('Email: ' + googleProfile.emailId)
+        logDebug('Successfully got authenticated with google...')
+        logDebug('Email: ' + googleProfile.emailId)
         let result: { errMessage: string, rootOrgId: string, userExist: boolean, }
         result = await fetchUserByEmailId(googleProfile.emailId)
-        logInfo('isUserExist ? ' + result.userExist + 'rootOrgId: ? ' + result.rootOrgId + ', errorMessage ? ' + result.errMessage)
+        logDebug('isUserExist ? ' + result.userExist + 'rootOrgId: ? ' + result.rootOrgId + ', errorMessage ? ' + result.errMessage)
         let isFirstTimeUser = false
         if (result.errMessage === '') {
             let createResult: { errMessage: string, userCreated: boolean, userId: string }
@@ -49,7 +49,7 @@ googleAuth.get('/callback', async (req, res) => {
                 }
                 isFirstTimeUser = true
             } else {
-                logInfo('result.rootOrgId = ' + result.rootOrgId + ', XChannelId = ' + CONSTANTS.X_Channel_Id)
+                logDebug('result.rootOrgId = ' + result.rootOrgId + ', XChannelId = ' + CONSTANTS.X_Channel_Id)
                 if (result.rootOrgId !== '' && result.rootOrgId === CONSTANTS.X_Channel_Id) {
                     isFirstTimeUser = true
                 }
@@ -60,14 +60,14 @@ googleAuth.get('/callback', async (req, res) => {
                     access_token: string, errMessage: string, keycloakSessionCreated: boolean, refresh_token: string
                 }
                 keycloakResult = await updateKeycloakSession(googleProfile.emailId, req, res)
-                logInfo('Keycloak Session Details:: ' + JSON.stringify(keycloakResult))
+                logDebug('Keycloak Session Details:: ' + JSON.stringify(keycloakResult))
                 if (keycloakResult.errMessage !== '') {
                     result.errMessage = keycloakResult.errMessage
                 }
             }
         }
         if (result.errMessage !== '') {
-            logInfo('Received error in processing... Error ' + result.errMessage)
+            logDebug('Received error in processing... Error ' + result.errMessage)
             resRedirectUrl = `https://${host}/public/logout?error=` + encodeURIComponent(JSON.stringify(result.errMessage))
         } else if (isFirstTimeUser) {
             resRedirectUrl = `https://${host}/public/welcome`

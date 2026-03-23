@@ -3,7 +3,7 @@ import { Router } from 'express'
 import { getRootOrg } from '../../authoring/utils/header'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
-import { logError, logInfo } from '../../utils/logger'
+import { logError, logDebug } from '../../utils/logger'
 import { extractUserIdFromRequest, extractUserToken} from '../../utils/requestExtract'
 
 const API_ENDPOINTS = {
@@ -17,7 +17,7 @@ tagsApi.get('/', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const url = API_ENDPOINTS.getTags
         const response = await axios.get(
             url,
@@ -39,7 +39,7 @@ tagsApi.get('/:tagName', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const tagName = req.params.tagName
         const url = API_ENDPOINTS.getTagTopics(tagName)
         const response = await axios.get(

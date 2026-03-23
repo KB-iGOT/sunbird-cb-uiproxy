@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logError, logDebug } from '../utils/logger'
 import { ERROR } from '../utils/message'
 const API_END_POINTS = {
     getWAPdf: (waId: string) => `${CONSTANTS.SB_EXT_API_BASE_2}/getWOPublishedPdf/${waId}`,
@@ -17,7 +17,7 @@ workallocationPublic.get('/getWaPdf/:waId', async (req, res) => {
             ...axiosRequestConfig,
             headers: {},
         })
-        logInfo('Response ========>', JSON.stringify(response.data))
+        logDebug('Response ========>', JSON.stringify(response.data))
         res.redirect(response.data)
     } catch (err) {
         logError(err)

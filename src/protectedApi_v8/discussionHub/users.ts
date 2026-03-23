@@ -4,7 +4,7 @@ import { getRootOrg } from '../../authoring/utils/header'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { getUserSlug, getUserUIDBySession} from '../../utils/discussionHub-helper'
 import { CONSTANTS } from '../../utils/env'
-import { logError, logInfo } from '../../utils/logger'
+import { logError, logDebug } from '../../utils/logger'
 import { extractUserIdFromRequest, extractUserToken} from '../../utils/requestExtract'
 
 const API_ENDPOINTS = {
@@ -27,7 +27,7 @@ usersApi.get('/:slug/bookmarks', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const slug = req.params.slug
         const userUid = await getUserUIDBySession(req)
         const url = API_ENDPOINTS.getUserBookmarks(slug) + `?_uid=${userUid}`
@@ -52,7 +52,7 @@ usersApi.get('/:slug/downvoted', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const slug = req.params.slug
         const userUid = await getUserUIDBySession(req)
         const url = API_ENDPOINTS.getUserDownvotedPosts(slug) + `?_uid=${userUid}`
@@ -77,7 +77,7 @@ usersApi.get('/:slug/groups', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const slug = req.params.slug
         const userUid = await getUserUIDBySession(req)
         const url = API_ENDPOINTS.getUserGroups(slug) + `?_uid=${userUid}`
@@ -102,7 +102,7 @@ usersApi.get('/:slug/info', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const slug = req.params.slug
         const userUid = await getUserUIDBySession(req)
         const url = API_ENDPOINTS.getUserInfo(slug) + `?_uid=${userUid}`
@@ -127,7 +127,7 @@ usersApi.get('/me', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const userSlug = await getUserSlug(req, userId)
         const userUid = await getUserUIDBySession(req)
         const url = API_ENDPOINTS.getUserProfile(userSlug) + `?_uid=${userUid}`
@@ -152,7 +152,7 @@ usersApi.get('/:slug/posts', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const slug = req.params.slug
         const userUid = await getUserUIDBySession(req)
         const url = API_ENDPOINTS.getUserPosts(slug) + `?_uid=${userUid}`
@@ -177,7 +177,7 @@ usersApi.get('/:slug/upvoted', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const slug = req.params.slug
         const userUid = await getUserUIDBySession(req)
         const url = API_ENDPOINTS.getUserUpvotedPosts(slug) + `?_uid=${userUid}`
@@ -202,7 +202,7 @@ usersApi.get('/:slug/watched', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const slug = req.params.slug
         const userUid = await getUserUIDBySession(req)
         const url = API_ENDPOINTS.getUsersWatchedTopics(slug) + `?_uid=${userUid}`
@@ -227,7 +227,7 @@ usersApi.get('/email/:email', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const email = req.params.email
         const response = await getUserByEmail(req, email)
         res.send(response.data)
@@ -242,12 +242,12 @@ usersApi.get('/:slug/about', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const slug = req.params.slug
         const userUid = await getUserUIDBySession(req)
-        logInfo('called /:slug/about slug=> ', slug)
+        logDebug('called /:slug/about slug=> ', slug)
         const url = API_ENDPOINTS.getUserProfile(slug) + `?_uid=${userUid}`
-        logInfo('called /:slug/about url=> ', url)
+        logDebug('called /:slug/about url=> ', url)
         const response = await axios.get(
             url,
             { ...axiosRequestConfig, headers: {
@@ -266,7 +266,7 @@ usersApi.get('/:slug/about', async (req, res) => {
 
 // tslint:disable-next-line: no-any
 export async function getUserByEmail(req: any , email: any): Promise<any> {
-    logInfo('Finding user in NodeBB DiscussionHub...')
+    logDebug('Finding user in NodeBB DiscussionHub...')
     // tslint:disable-next-line: no-try-promise
     try {
         const url = API_ENDPOINTS.getUserByEmail(email)
@@ -293,7 +293,7 @@ export async function getUserByEmail(req: any , email: any): Promise<any> {
 
 // tslint:disable-next-line: no-any
 export async function getUserByUsername(req: any , username: any): Promise<any> {
-    logInfo('Finding user in NodeBB DiscussionHub...')
+    logDebug('Finding user in NodeBB DiscussionHub...')
     // tslint:disable-next-line: no-try-promise
     try {
         const url = API_ENDPOINTS.getUserByUsername(username)

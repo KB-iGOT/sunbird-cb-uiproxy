@@ -3,7 +3,7 @@ import expressSession from 'express-session'
 import keycloakConnect from 'keycloak-connect'
 import { getKeycloakConfig } from '../configs/keycloak.config'
 import { CONSTANTS } from './env'
-import { logError, logInfo } from './logger'
+import { logError, logDebug } from './logger'
 import { PERMISSION_HELPER } from './permissionHelper'
 import { request } from './request-adapter'
 const async = require('async')
@@ -56,12 +56,12 @@ export class CustomKeycloak {
 
   // tslint:disable-next-line: no-any
   authenticated = (reqObj: any, next: any) => {
-    logInfo('Step 3: authenticated function', '------', new Date().toString())
+    logDebug('Step 3: authenticated function', '------', new Date().toString())
     reqObj.session.authenticated = true
     try {
       const userId = reqObj.kauth.grant.access_token.content.sub.split(':')
       reqObj.session.userId = userId[userId.length - 1]
-      logInfo('userId ::', userId, '------', new Date().toString())
+      logDebug('userId ::', userId, '------', new Date().toString())
     } catch (err) {
       logError('userId conversation error' + reqObj.kauth.grant.access_token.content.sub, '------', new Date().toString())
     }
@@ -77,7 +77,7 @@ export class CustomKeycloak {
         logError('error loggin in user', '------', new Date().toString())
         next(err, null)
       } else {
-        logInfo(`${process.pid}: User authenticated`, '------', new Date().toString())
+        logDebug(`${process.pid}: User authenticated`, '------', new Date().toString())
         next(null, 'loggedin')
       }
     })
@@ -92,7 +92,7 @@ export class CustomKeycloak {
     if (reqObj.session) {
       reqObj.session.destroy()
     }
-    logInfo(`${process.pid}: User Deauthenticated New`)
+    logDebug(`${process.pid}: User Deauthenticated New`)
   }
 
   // tslint:disable-next-line: no-any
@@ -115,7 +115,7 @@ export class CustomKeycloak {
             formData.client_id = reqObj.session.keycloakClientId
             formData.client_secret = reqObj.session.keycloakClientSecret
           }
-          logInfo('formData used in logout: ' + JSON.stringify(formData))
+          logDebug('formData used in logout: ' + JSON.stringify(formData))
           try {
               request.post({
                   form: formData,
@@ -127,7 +127,7 @@ export class CustomKeycloak {
           }
 
           if (reqObj.session.parichayToken) {
-            logInfo('Parichay login found... trying to logout from Parichay...')
+            logDebug('Parichay login found... trying to logout from Parichay...')
             try {
               request.get({
                   headers: {
@@ -140,12 +140,12 @@ export class CustomKeycloak {
                   logError(JSON.stringify(err))
                 }
                 if (res) {
-                  logInfo('Received response from Parichay logout... ')
-                  logInfo(JSON.stringify(res.body))
+                  logDebug('Received response from Parichay logout... ')
+                  logDebug(JSON.stringify(res.body))
                 }
                 if (body) {
-                  logInfo('Received body from Parichay logout...')
-                  logInfo(JSON.stringify(body))
+                  logDebug('Received body from Parichay logout...')
+                  logDebug(JSON.stringify(body))
                 }
               })
             } catch (err) {
@@ -167,7 +167,7 @@ export class CustomKeycloak {
     delete reqObj.session.keycloakClientId
     delete reqObj.session.keycloakClientSecret
     reqObj.session.destroy()
-    logInfo(`${process.pid}: User Deauthenticated`)
+    logDebug(`${process.pid}: User Deauthenticated`)
   }
 
   protect = (req: express.Request, res: express.Response, next: express.NextFunction) => {

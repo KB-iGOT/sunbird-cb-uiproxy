@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
-import { logError, logErrorHeading, logInfo } from '../../utils/logger'
+import { logError, logErrorHeading, logDebug } from '../../utils/logger'
 import { ERROR } from '../../utils/message'
 import { extractUserId, extractUserIdFromRequest } from '../../utils/requestExtract'
 
@@ -29,7 +29,7 @@ progressApi.get('/:contentId', async (req, res) => {
     })
     // tslint:disable-next-line: no-console
     console.log('get/:contentId progress api response : ', response)
-    logInfo('get/:contentId progress api response.data : ', response.data)
+    logDebug('get/:contentId progress api response.data : ', response.data)
     res.json(response.data)
   } catch (err) {
     logError('FETCH MARK AS COMPLETE META => ', err)
@@ -59,7 +59,7 @@ progressApi.get('/', async (req, res) => {
     })
     // tslint:disable-next-line: no-console
     console.log('get progress api response : ', response)
-    logInfo('get progress api response.data : ', response.data)
+    logDebug('get progress api response.data : ', response.data)
     res.json(response.data)
   } catch (err) {
     logErrorHeading('PROGRESS HASH ERROR')
@@ -90,7 +90,7 @@ progressApi.post('/', async (req, res) => {
     )
     // tslint:disable-next-line: no-console
     console.log('post progress api response : ', response)
-    logInfo('post progress api response.data : ', response.data)
+    logDebug('post progress api response.data : ', response.data)
 
     res.status(response.status).send(response.data)
   } catch (err) {

@@ -8,7 +8,7 @@ import {
     updateUniqueKey,
     updateUUIDMaster,
 } from '../utils/keycloak-user-creation'
-import { logError, logInfo } from '../utils/logger'
+import { logError, logDebug } from '../utils/logger'
 
 export const signup = Router()
 
@@ -69,13 +69,13 @@ signup.post('/create/:uniqueId', async (req, res) => {
     try {
         const result = await checkUUIDMaster(req.params.uniqueId)
             .catch((err) => {
-                logInfo(`1001: Invalid Code ${req.params.uniqueId}`, err)
+                logDebug(`1001: Invalid Code ${req.params.uniqueId}`, err)
                 res.json({ msg: `1001: Invalid Code ${req.params.uniqueId}` })
             })
         if (result) {
             const maskedEmail = getMaskedEmail(result.email)
             if (result.active) {
-                logInfo('unique id found, creating new user in keycloak')
+                logDebug('unique id found, creating new user in keycloak')
                 const reqToNewUser = {
                     body: {
                         email: result.email,
@@ -92,7 +92,7 @@ signup.post('/create/:uniqueId', async (req, res) => {
                         }
                     })
                 if (userId) {
-                    logInfo('user created successfully. Now performing new user')
+                    logDebug('user created successfully. Now performing new user')
                     let msg = ''
                     await performNewUserSteps(userId, req, reqToNewUser.body.email)
                         .catch((err) => {

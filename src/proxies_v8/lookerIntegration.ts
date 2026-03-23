@@ -3,7 +3,7 @@ import express from 'express'
 import querystring from 'querystring'
 import { v4 as uuidv4 } from 'uuid'
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logError, logDebug } from '../utils/logger'
 
 export const lookerDashboard = express.Router()
 
@@ -116,7 +116,7 @@ lookerDashboard.post('/*', async (req, res) => {
 
     const signedUrl = createSignedEmbedUrl(lookerOptions)
 
-    logInfo(`Generated Looker dashboard URL: ${signedUrl}`)
+    logDebug(`Generated Looker dashboard URL: ${signedUrl}`)
     return res.status(200).json({ signedUrl })
   } catch (err) {
     logError('Error generating Looker dashboard URL:', err)
@@ -185,6 +185,6 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
     user_attributes: JSON.stringify(user_attributes),
   }
 
-  logInfo(`queryParams : ${queryParams}`)
+  logDebug(`queryParams : ${queryParams}`)
   return `https://${host}${embedPath}?${querystring.stringify(queryParams)}`
 }

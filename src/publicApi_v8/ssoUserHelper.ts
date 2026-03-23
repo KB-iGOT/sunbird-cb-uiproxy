@@ -2,7 +2,7 @@ import axios from 'axios'
 import lodash from 'lodash'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logError, logDebug } from '../utils/logger'
 import { getKeyCloakClient } from './keycloakHelper'
 
 const API_END_POINTS = {
@@ -30,17 +30,17 @@ export async function fetchUserByEmailId(emailId: string) {
 
     if (sbUserSearchRes.data.responseCode.toUpperCase() === 'OK') {
         if (sbUserSearchRes.data.result.response.count === 0) {
-            logInfo('user accound doesnot exist. returning false')
+            logDebug('user accound doesnot exist. returning false')
         } else if (sbUserSearchRes.data.result.response.count === 1) {
             const contentObj = sbUserSearchRes.data.result.response.content[0]
             const status = contentObj.status
-            logInfo('user account exist. Data: ' + JSON.stringify(sbUserSearchRes.data) + ', Status: ' + status)
+            logDebug('user account exist. Data: ' + JSON.stringify(sbUserSearchRes.data) + ', Status: ' + status)
             if (status === 1) {
-                logInfo('user account enabled. returning true')
+                logDebug('user account enabled. returning true')
                 result.userExist = true
                 result.rootOrgId = contentObj.rootOrgId
             } else {
-                logInfo('user account is diabled. throwing error')
+                logDebug('user account is diabled. throwing error')
                 result.errMessage = 'Account Disabled. Please contact Admin.'
             }
         } else {
@@ -142,7 +142,7 @@ export async function updateKeycloakSession(emailId: string, req: any, res: any)
         req.kauth.grant = grant
         const userId = req.kauth.grant.access_token.content.sub.split(':')
         req.session.userId = userId[userId.length - 1]
-        logInfo('userId ::', userId, '------', new Date().toString())
+        logDebug('userId ::', userId, '------', new Date().toString())
         req.session.keycloakClientId = CONSTANTS.KEYCLOAK_GOOGLE_CLIENT_ID
         req.session.keycloakClientSecret = CONSTANTS.KEYCLOAK_GOOGLE_CLIENT_SECRET
         result.access_token = grant.access_token.token
@@ -150,7 +150,7 @@ export async function updateKeycloakSession(emailId: string, req: any, res: any)
         result.keycloakSessionCreated = true
         // tslint:disable-next-line: no-any
         keycloakClient.authenticated(req, (error: any) => {
-            logInfo('ssoUserHelper::keycloakClient::authenticated..')
+            logDebug('ssoUserHelper::keycloakClient::authenticated..')
             if (error) {
                 logError('ssoUserHelper:: keycloak.authenticate failed Email: ' + emailId + ', Error: ' + JSON.stringify(error))
                 result.errMessage = 'FAILED_TO_CREATE_KEYCLOAK_SESSION'

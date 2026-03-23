@@ -3,7 +3,7 @@ import { Router } from 'express'
 
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logError, logDebug } from '../utils/logger'
 import { ERROR } from '../utils/message'
 import { extractAuthorizationFromRequest } from '../utils/requestExtract'
 
@@ -194,7 +194,7 @@ fracApi.get('/:type/:key', async (req, res) => {
                 },
             ],
         }
-        logInfo('Req body========>', JSON.stringify(searchBody))
+        logDebug('Req body========>', JSON.stringify(searchBody))
         const response = await axios.post(API_END_POINTS.searchNodes, searchBody, {
             ...axiosRequestConfig,
             headers: {

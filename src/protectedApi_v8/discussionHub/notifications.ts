@@ -4,7 +4,7 @@ import { getRootOrg } from '../../authoring/utils/header'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { getUserUIDBySession} from '../../utils/discussionHub-helper'
 import { CONSTANTS } from '../../utils/env'
-import { logError, logInfo } from '../../utils/logger'
+import { logError, logDebug } from '../../utils/logger'
 import { extractUserIdFromRequest , extractUserToken} from '../../utils/requestExtract'
 
 const API_ENDPOINTS = {
@@ -17,7 +17,7 @@ notificationsApi.get('/', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const userUid = await getUserUIDBySession(req)
         const url = API_ENDPOINTS.getNotifications + `?_uid=${userUid}`
         const response = await axios.get(

@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
-import { logError, logInfo } from '../../utils/logger'
+import { logError, logDebug } from '../../utils/logger'
 import { ERROR } from '../../utils/message'
 import { request } from '../../utils/request-adapter'
 import { extractUserIdFromRequest } from '../../utils/requestExtract'
@@ -104,7 +104,7 @@ detailsApi.get('/', async (req, res) => {
 //           }
 //         })
 //         if (userPresent) {
-//           logInfo('User already present in NodeBB DiscussionHub. Skiping create')
+//           logDebug('User already present in NodeBB DiscussionHub. Skiping create')
 //         }
 //       }
 //       res.send(body)
@@ -167,7 +167,7 @@ export function wTokenApiMock(req: any, token: any): Promise<any> {
             }
           })
           if (userPresent) {
-            logInfo('User already present in NodeBB DiscussionHub. Skiping create')
+            logDebug('User already present in NodeBB DiscussionHub. Skiping create')
           }
         }
         resolve(body)

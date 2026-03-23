@@ -2,14 +2,14 @@ import axios from 'axios'
 import express from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logError, logDebug } from '../utils/logger'
 
 export const contentTranscodeAPIIntegration = express.Router()
 
 contentTranscodeAPIIntegration.use('/*', async (req: express.Request, res: express.Response) => {
   try {
     const baseUrl = removePrefix('/proxies/v8/', req.originalUrl)
-    logInfo(`The url is... ${baseUrl} : originalUrl: ${req.originalUrl}`)
+    logDebug(`The url is... ${baseUrl} : originalUrl: ${req.originalUrl}`)
     const subPath = baseUrl.replace(/^\/+/, '')
     const url = `${CONSTANTS.KONG_API_BASE}/${subPath}`
     const requestBody = req.body

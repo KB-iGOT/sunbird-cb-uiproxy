@@ -5,7 +5,7 @@ import FormData from 'form-data'
 import lodash from 'lodash'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logError, logDebug } from '../utils/logger'
 import {
   ilpProxyCreatorRoute,
   // proxyCreatorDiscussion,
@@ -425,13 +425,13 @@ proxiesV8.post('/org/v1/search', async (req, res) => {
   const roleData = lodash.get(req, 'session.userRoles')  
   // tslint:disable-next-line: all
   const rootOrgId = lodash.get(req, 'session.rootOrgId')
-  logInfo('org search API call : Users Roles are...')
-  logInfo(roleData)
+  logDebug('org search API call : Users Roles are...')
+  logDebug(roleData)
   const urlPath = API_END_POINTS.kongSearchOrg
   if (roleData.includes('STATE_ADMIN')) {
-    logInfo('roleData contains state admin')
+    logDebug('roleData contains state admin')
     req.body.request.filters.ministryOrStateId = rootOrgId
-    logInfo('updated urlPath -> ' + urlPath)
+    logDebug('updated urlPath -> ' + urlPath)
   }
   const searchResponse = await axios({
     ...axiosRequestConfig,
@@ -514,7 +514,7 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
                   parsed = JSON.parse(fullData.toString('utf8'))
                   res.status(response.statusCode).json(parsed)
               } catch (e) {
-                  logInfo('Invalid JSON received as per Json Parse')
+                  logDebug('Invalid JSON received as per Json Parse')
                   res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
               }
             }
@@ -584,7 +584,7 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
                   parsed = JSON.parse(fullData.toString('utf8'))
                   res.status(response.statusCode).json(parsed)
               } catch (e) {
-                   logInfo('Invalid JSON received as per Json Parse')
+                   logDebug('Invalid JSON received as per Json Parse')
                    res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
               }
             }
@@ -665,8 +665,8 @@ proxiesV8.use('/wat/dashboard/*',
 
 proxiesV8.get('/data/v1/system/settings/get/orgTypeList', async (req, res) => {
   const roleData = lodash.get(req, 'session.userRoles')
-  logInfo('orgTypeList API call : Users Roles are...')
-  logInfo(roleData)
+  logDebug('orgTypeList API call : Users Roles are...')
+  logDebug(roleData)
   const response = await axios({
     ...axiosRequestConfig,
     headers: {
@@ -871,7 +871,7 @@ proxiesV8.post('/notifyContentState', async (req, res) => {
   if (!req.body || !req.body.contentState) {
     res.status(400).send('ContentState is missing in request body. ' + contentStateError)
   }
-  logInfo('Received req url is -> ' + req.protocol + '://' + req.get('host') + req.originalUrl)
+  logDebug('Received req url is -> ' + req.protocol + '://' + req.get('host') + req.originalUrl)
   let contentBody = ''
   let emailSubject = ''
   switch (req.body.contentState) {
@@ -907,7 +907,7 @@ proxiesV8.post('/notifyContentState', async (req, res) => {
   if (contentBody.includes('#contentLink') && req.body.contentLink && req.body.contentName) {
     contentBody = contentBody.replace('#contentLink', req.body.contentLink)
   }
-  logInfo('Composed contentBody -> ' + contentBody)
+  logDebug('Composed contentBody -> ' + contentBody)
   const notifyMailRequest = {
     config: {
       sender: req.body.sender,
@@ -936,7 +936,7 @@ proxiesV8.post('/notifyContentState', async (req, res) => {
     method: 'POST',
     url: API_END_POINTS.contentNotificationEmail,
   })
-  logInfo('Response -> ' + JSON.stringify(stateEmailResponse.data))
+  logDebug('Response -> ' + JSON.stringify(stateEmailResponse.data))
   if (!stateEmailResponse.data.result.response) {
     res.status(400).send(stateEmailResponse.data)
   } else {
