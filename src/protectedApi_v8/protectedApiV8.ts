@@ -39,6 +39,11 @@ import { workflowHandlerApi } from './workflow-handler'
 
 export const protectedApiV8 = express.Router()
 
+// Route-level body parsing — runs after keycloak.protect so unauthenticated
+// requests are rejected before spending CPU on JSON deserialization.
+protectedApiV8.use(express.json({ limit: '50mb' }))
+protectedApiV8.use(express.urlencoded({ extended: false, limit: '50mb' }))
+
 protectedApiV8.get('/', (_req, res) => {
   res.json({
     config: CONSTANTS.HTTPS_HOST,
