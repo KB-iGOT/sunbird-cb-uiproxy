@@ -232,13 +232,10 @@ export class Server {
   // }
 }
 
-process.on('SIGTERM', async () => {
-  logDebug('Received SIGTERM. Shutting down gracefully...')
+const gracefulShutdown = async (signal: string) => {
+  logDebug(`Received ${signal}. Shutting down gracefully...`)
   await shutdownCassandraClient()
   process.exit(0)
-})
-process.on('SIGINT', async () => {
-  logDebug('Received SIGINT. Shutting down gracefully...')
-  await shutdownCassandraClient()
-  process.exit(0)
-})
+}
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'))
+process.on('SIGINT', () => gracefulShutdown('SIGINT'))
