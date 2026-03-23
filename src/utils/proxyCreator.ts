@@ -61,7 +61,14 @@ proxy.on('proxyReq', (proxyReq: any, req: any, _res: any, _options: any) => {
     }
     logInfo('REQ_URL_ORIGINAL discussion', proxyReq.path)
   }
-  if (!req.originalUrl.includes('/storage/upload') && !req.originalUrl.includes('/storage/profilePhotoUpload/*') && req.body) {
+  // Re-write body only when Express body-parser has consumed the original stream.
+  // req._body is set by body-parser after parsing — without this guard,
+  // http-proxy pipes the (empty) original stream AND we write the serialized
+  // body, causing a double write.
+  // Skip upload routes where the raw stream must be forwarded untouched.
+  const isUpload = req.originalUrl.includes('/storage/upload') || req.originalUrl.includes('/storage/profilePhotoUpload/')
+  const alreadyHasBody = proxyReq.getHeader('Content-Length') !== undefined
+  if (!isUpload && !alreadyHasBody && req._body && req.body && Object.keys(req.body).length > 0) {
     const bodyData = JSON.stringify(req.body)
     proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData))
     proxyReq.write(bodyData)
