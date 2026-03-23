@@ -26,8 +26,8 @@ export const cassandraClientOptions: cassandraDriver.ClientOptions = {
             [cassandraDriver.types.distance.remote]: 1,
         },
         maxConnectionsPerHost: {
-            [cassandraDriver.types.distance.local]: 8,
-            [cassandraDriver.types.distance.remote]: 2,
+            [cassandraDriver.types.distance.local]: CONSTANTS.CASSANDRA_MAX_CONN_LOCAL,
+            [cassandraDriver.types.distance.remote]: CONSTANTS.CASSANDRA_MAX_CONN_REMOTE,
         },
     },
 }
