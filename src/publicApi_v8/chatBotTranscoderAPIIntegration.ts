@@ -24,8 +24,8 @@ chatBotTranscoderAPIIntegration.use('/*', async (req: express.Request, res: expr
             return
         }
 
-        const baseUrl = removePrefix('/public/v8/chatbot/v3/mobile/transcoder', req.originalUrl)
-        logInfo(`The url is... ${baseUrl} : originalUrl: ${req.originalUrl}`)
+        const baseUrl = removePrefix(req.baseUrl, req.originalUrl)
+        logInfo(`The url is... ${baseUrl} : originalUrl: ${req.originalUrl} : baseUrl: ${req.baseUrl}`)
         const subPath = baseUrl.replace(/^\/+/, '')
         const url = `${CONSTANTS.APP_FUEL_API_URL}/transcoder/${subPath}`
         const requestBody = req.body
