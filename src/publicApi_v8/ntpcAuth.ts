@@ -6,19 +6,19 @@ import uuid from 'uuid'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { getCurrnetExpiryTime } from '../utils/jwtHelper'
-import { logError, logInfo } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 import { redis } from '../utils/redis'
 import { createUserWithMailId, fetchUserByEmailId, updateKeycloakSession } from './ssoUserHelper'
 
 export const ntpcAuth = express.Router()
 
 ntpcAuth.get('/auth', async (req, res) => {
-    logInfo('Received host : ' + req.hostname)
+    logDebug('Received host : ' + req.hostname)
     const rawIiidem = Array.isArray(req.query.iiidem) ? req.query.iiidem[0] : req.query.iiidem
     const iiidemFlag = rawIiidem === '1'
     if (req.session) {
         req.session.ntpcIsEclogin = iiidemFlag
-        logInfo('Stored ntpcIsEclogin=' + iiidemFlag)
+        logDebug('Stored ntpcIsEclogin=' + iiidemFlag)
     } else if (iiidemFlag) {
         logError('iiidem flag present but session not available to persist it')
     }
@@ -40,7 +40,7 @@ ntpcAuth.get('/auth', async (req, res) => {
 ntpcAuth.get('/login/callback', async (req, res) => {
     const host = req.get('host')
     if (!req.query.code) {
-        logInfo('Received host : ' + host)
+        logDebug('Received host : ' + host)
         logError('Failed to login in NTPC, authorization code is missing. Redirecting to /error')
         const errorMessage = 'Failed to login using NTPC. Your NTPC session has expired.'
             + ' Please logoff from NTPC and retry [Login with NTPC] option on iGOT Portal Login page.'
@@ -59,7 +59,7 @@ ntpcAuth.get('/login/callback', async (req, res) => {
     }
     // Delete state after successful validation to prevent replay
     await redis.del(stateKey)
-    logInfo('Received host :: ' + host)
+    logDebug('Received host :: ' + host)
     let resRedirectUrl = `https://${host}/page/home`
     if (host === CONSTANTS.IIIDEM_PORTAL_HOST) {
         resRedirectUrl = `https://${host}${CONSTANTS.EC_REDIRECT_PATH}`
@@ -84,14 +84,14 @@ ntpcAuth.get('/login/callback', async (req, res) => {
         if (req.session) {
             req.session.ntpcToken = tokenResponse.data
             req.session.cookie.expires = new Date(getCurrnetExpiryTime(tokenResponse.data.access_token))
-            logInfo('NTPC Token is set in request Session.' + tokenResponse.data.access_token)
+            logDebug('NTPC Token is set in request Session.' + tokenResponse.data.access_token)
         } else {
             logError('Failed to set NTPC token in req session. Session not available...')
         }
         // tslint:disable-next-line: no-any
         const decodedToken: any = jwt_decode(tokenResponse.data.access_token)
         const userOid = decodedToken.oid
-        logInfo('User OID: ' + userOid)
+        logDebug('User OID: ' + userOid)
         const userDetailResponse = await axios({
             ...axiosRequestConfig,
             headers: {
@@ -101,7 +101,7 @@ ntpcAuth.get('/login/callback', async (req, res) => {
             url: `https://graph.microsoft.com/v1.0/users/${userOid}`,
         })
 
-        logInfo('User information from NTPC : ' + JSON.stringify(userDetailResponse.data))
+        logDebug('User information from NTPC : ' + JSON.stringify(userDetailResponse.data))
         const loginId = userDetailResponse.data.mail
         if (!loginId) {
             const errorMessage = 'iGOT login failed. You must allow Email id on the consent form for Login. '
@@ -113,13 +113,13 @@ ntpcAuth.get('/login/callback', async (req, res) => {
 
         let result: { errMessage: string, rootOrgId: string, userExist: boolean, }
         result = await fetchUserByEmailId(userDetailResponse.data.mail)
-        logInfo('For NTPC emailId ? ' + userDetailResponse.data.mail + ', isUserExist ? ' + result.userExist
+        logDebug('For NTPC emailId ? ' + userDetailResponse.data.mail + ', isUserExist ? ' + result.userExist
             + ', rootOrgId ? ' + result.rootOrgId + ', errorMessage ? ' + result.errMessage)
         let isFirstTimeUser = false
         if (result.errMessage === '') {
             let createResult: { errMessage: string, userCreated: boolean, userId: string }
             if (!result.userExist) {
-                logInfo('iGOT User does not exist for NTPC email: ' + userDetailResponse.data.mail)
+                logDebug('iGOT User does not exist for NTPC email: ' + userDetailResponse.data.mail)
                 const mobileNo = userDetailResponse.data.mobilePhone
 
                 if (!loginId || !mobileNo) {
@@ -135,10 +135,10 @@ ntpcAuth.get('/login/callback', async (req, res) => {
                     result.errMessage = createResult.errMessage
                 }
                 isFirstTimeUser = true
-                logInfo('New user is created for NTPC email id:' + userDetailResponse.data.mail
+                logDebug('New user is created for NTPC email id:' + userDetailResponse.data.mail
                     + ', new User id:' + createResult.userId)
             } else {
-                logInfo('User exists for NTPC email id:' + userDetailResponse.data.mail
+                logDebug('User exists for NTPC email id:' + userDetailResponse.data.mail
                     + ', result.rootOrgId = ' + result.rootOrgId + ', XChannelId = ' + CONSTANTS.X_Channel_Id)
                 if (result.rootOrgId !== '' && result.rootOrgId === CONSTANTS.X_Channel_Id) {
                     isFirstTimeUser = true
@@ -154,7 +154,7 @@ ntpcAuth.get('/login/callback', async (req, res) => {
                         + ', Received a keycloak error: ' + keycloakResult.errMessage)
                     result.errMessage = keycloakResult.errMessage
                 }
-                logInfo('NTPC user session established in Keycloak: ' + JSON.stringify(keycloakResult))
+                logDebug('NTPC user session established in Keycloak: ' + JSON.stringify(keycloakResult))
             }
         }
         if (result.errMessage !== '') {
@@ -162,7 +162,7 @@ ntpcAuth.get('/login/callback', async (req, res) => {
                 + ', Received error from user search. Error Message: ' + result.errMessage)
             resRedirectUrl = `https://${host}/public/logout?error=` + encodeURIComponent(JSON.stringify(result.errMessage))
         } else {
-            logInfo('NTPC login is successful for emailId:' + userDetailResponse.data.mail)
+            logDebug('NTPC login is successful for emailId:' + userDetailResponse.data.mail)
             if (isFirstTimeUser) {
                 resRedirectUrl = `https://${host}/public/welcome`
             }

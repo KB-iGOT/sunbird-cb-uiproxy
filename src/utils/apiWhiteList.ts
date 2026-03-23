@@ -5,7 +5,7 @@ const dateFormat        = require('dateformat')
 
 import { NextFunction, Request, Response } from 'express'
 import { CONSTANTS } from './env'
-import { logError, logInfo } from './logger'
+import { logDebug, logError } from './logger'
 import { ROLE } from './roles'
 import { API_LIST } from './whitelistApis'
 
@@ -26,7 +26,7 @@ function initCompiledPatterns() {
                 logError('Failed to compile URL pattern:', url)
             }
         })
-        logInfo(`Compiled ${compiledPatterns.length} URL patterns for whitelist matching`)
+        logDebug(`Compiled ${compiledPatterns.length} URL patterns for whitelist matching`)
     }
 }
 
@@ -128,13 +128,13 @@ const urlChecks = {
     ROLE_CHECK: (resolve: any, reject: any, req: Request, rolesForURL: any, REQ_URL: any) => {
         const roleData = _.get(req, 'session.userRoles')
         const data = (roleData) ? roleData : []
-        logInfo('Portal_API_WHITELIST : Middleware for URL [ ' + REQ_URL + ' ]')
-        logInfo('Configured Roles for URL -> ' + JSON.stringify(rolesForURL))
+        logDebug('Portal_API_WHITELIST : Middleware for URL [ ' + REQ_URL + ' ]')
+        logDebug('Configured Roles for URL -> ' + JSON.stringify(rolesForURL))
         if (_.includes(rolesForURL, 'ALL') && data.length > 0) {
-            logInfo('RolesForAll is getting called')
+            logDebug('RolesForAll is getting called')
             resolve()
         } else if (_.intersection(rolesForURL, data).length > 0) {
-            logInfo('RolesForUrl is getting called')
+            logDebug('RolesForUrl is getting called')
             resolve()
         } else {
             return reject('User doesn\'t have appropriate roles')
@@ -142,7 +142,7 @@ const urlChecks = {
     },
     // tslint:disable-next-line: no-any
     SCOPE_CHECK : (resolve: any, reject: any, req: Request, rolesForURL: any, REQ_URL: any) => {
-        logInfo('Portal_API_WHITELIST_SCOPE_CHECK : Middleware for URL [ ' + REQ_URL + ' ]')
+        logDebug('Portal_API_WHITELIST_SCOPE_CHECK : Middleware for URL [ ' + REQ_URL + ' ]')
         const orgData = (_.get(req, 'session.orgs')) ? _.get(req, 'session.orgs') : []
         const orgId = (_.get(req, 'query.orgId')) ? _.get(req, 'query.orgId') : ''
         if (_.isEmpty(orgId) || _.isEmpty(orgData)) {
@@ -334,7 +334,7 @@ export const isAllowed = () => {
         let REQ_URL = req.path
         if (CONSTANTS.PORTAL_API_WHITELIST_CHECK === 'true') {
             if (shouldAllow(req) || _.includes(REQ_URL, '/resource') || _.includes(REQ_URL, '/eclogin')) {
-                logInfo('Path : ' + REQ_URL + ' is in excluded list.')
+                logDebug('Path : ' + REQ_URL + ' is in excluded list.')
                 next()
             } else {
 
@@ -367,7 +367,7 @@ export const isAllowed = () => {
                     }
                 } else {
                     // If API is not whitelisted
-                    logInfo('Portal_API_WHITELIST: URL not whitelisted')
+                    logDebug('Portal_API_WHITELIST: URL not whitelisted')
                     respond403(req, res)
                 }
             }
@@ -394,7 +394,7 @@ const validateAPI = (req: Request, res: Response, next: NextFunction) => {
         next()
     } else {
         // If API is not whitelisted
-        logInfo('Portal_API_WHITELIST_LOGGER: URL not whitelisted')
+        logDebug('Portal_API_WHITELIST_LOGGER: URL not whitelisted')
         respond403(req, res)
     }
 }
@@ -409,14 +409,14 @@ export function apiWhiteListLogger() {
         }
         const REQ_URL = req.path
         if (!_.includes(REQ_URL, '/resource') && !_.includes(REQ_URL, '/eclogin') && (req.session)) {
-             logInfo('UIPROXY:: apiWhiteListLogger : checking if the login is to resource  and session is there')
+             logDebug('UIPROXY:: apiWhiteListLogger : checking if the login is to resource  and session is there')
              if (!('userRoles' in req.session) || (('userRoles' in req.session) && (req.session.userRoles.length === 0))) {
                 logError('Portal_API_WHITELIST_LOGGER: User needs to authenticated themselves', '------', new Date().toString())
-                logInfo('UIPROXY:: apiWhiteListLogger :  respond419 method will be called')
+                logDebug('UIPROXY:: apiWhiteListLogger :  respond419 method will be called')
                 respond419(req, res)
             } else {
                 // Pattern match for URL
-                logInfo('In WhilteList Call========' + REQ_URL, '------', new Date().toString())
+                logDebug('In WhilteList Call========' + REQ_URL, '------', new Date().toString())
                 validateAPI(req, res, next)
             }
         } else {
