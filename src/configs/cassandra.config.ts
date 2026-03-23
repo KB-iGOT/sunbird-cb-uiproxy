@@ -4,7 +4,10 @@ import { CONSTANTS } from '../utils/env'
 export const cassandraClientOptions: cassandraDriver.ClientOptions = {
     contactPoints: getIPList(),
     keyspace: CONSTANTS.CASSANDRA_KEYSPACE,
-    localDataCenter: 'datacenter1',
+    localDataCenter: CONSTANTS.CASSANDRA_LOCAL_DC || 'datacenter1',
+    protocolOptions: {
+        maxVersion: 4,
+    },
     queryOptions: {
         prepare: true,
     },
@@ -21,6 +24,10 @@ export const cassandraClientOptions: cassandraDriver.ClientOptions = {
         coreConnectionsPerHost: {
             [cassandraDriver.types.distance.local]: 2,
             [cassandraDriver.types.distance.remote]: 1,
+        },
+        maxConnectionsPerHost: {
+            [cassandraDriver.types.distance.local]: 8,
+            [cassandraDriver.types.distance.remote]: 2,
         },
     },
 }
