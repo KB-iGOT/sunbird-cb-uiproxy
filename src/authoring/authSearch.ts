@@ -5,6 +5,10 @@ import { AxiosRequestConfig } from './../models/axios-request-config.model'
 import { DEFAULT_META } from './constants/default-meta'
 export const authSearch = express.Router()
 
+// Route-level body parsing — global parsers removed, each router parses its own.
+authSearch.use(express.json({ limit: '50mb' }))
+authSearch.use(express.urlencoded({ extended: false, limit: '50mb' }))
+
 authSearch.all('*', (req, res) => {
   const body = {
     ...(req.body || {}),

@@ -44,6 +44,12 @@ const API_END_POINTS = {
   orgTypeListEndPoint: `${CONSTANTS.KONG_API_BASE}/data/v1/system/settings/get/orgTypeList`,
 }
 export const proxiesV8 = express.Router()
+
+// Route-level body parsing — runs after keycloak.protect so unauthenticated
+// requests are rejected before spending CPU on JSON deserialization.
+proxiesV8.use(express.json({ limit: '50mb' }))
+proxiesV8.use(express.urlencoded({ extended: false, limit: '50mb' }))
+
 const _ = require('lodash')
 
 const FILE_NOT_FOUND_ERR = 'File not found in the request'

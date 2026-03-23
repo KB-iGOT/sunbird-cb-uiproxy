@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Request, Response, Router } from 'express'
+import express, { Request, Response, Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { AxiosRequestConfig } from '../../models/axios-request-config.model'
 import { logError} from '../../utils/logger'
@@ -21,6 +21,12 @@ import { searchForOtherLanguage } from './language-search'
 const _ = require('lodash')
 
 export const authApi = Router()
+
+// Route-level body parsing — authApi is mounted without keycloak.protect,
+// so it doesn't get the global body parsers (which run after auth).
+authApi.use(express.json({ limit: '50mb' }))
+authApi.use(express.urlencoded({ extended: false, limit: '50mb' }))
+
 const failedToProcess = 'Failed to process the request. '
 const actionConst = '/action'
 

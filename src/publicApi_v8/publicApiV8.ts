@@ -15,6 +15,11 @@ import { youtubePlaylist } from './youtubePlaylist'
 const puppeteer = require('puppeteer')
 export const publicApiV8 = express.Router()
 
+// Route-level body parsing — publicApiV8 is mounted before global body parsers
+// (which run after keycloak auth). Public routes that use req.body need this.
+publicApiV8.use(express.json({ limit: '50mb' }))
+publicApiV8.use(express.urlencoded({ extended: false, limit: '50mb' }))
+
 const API_END_POINTS = {
   designationSearch: `${CONSTANTS.KONG_API_BASE}/designation/search`,
   kongCompositeSearch: `${CONSTANTS.KONG_API_BASE}/composite/v4/search`,

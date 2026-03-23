@@ -48,8 +48,6 @@ export class Server {
     }
     const sessionConfig = getSessionConfig()
     this.app.use(expressSession(sessionConfig))
-    this.app.use(express.urlencoded({ extended: false, limit: '50mb' }))
-    this.app.use(express.json({ limit: '50mb' }))
     this.setCookie()
     this.app.all('*', apiWhiteListLogger())
     if (CONSTANTS.PORTAL_API_WHITELIST_CHECK === 'true') {
@@ -58,6 +56,10 @@ export class Server {
     this.setKeyCloak(sessionConfig)
     this.authoringProxies()
     this.setExtFormsFramework()
+    // No global body parsers — each router has its own so that keycloak.protect
+    // rejects unauthenticated requests before body parsing runs.
+    // Public routes, authApi, protectedApiV8, and proxiesV8 each register
+    // express.json() and express.urlencoded() at router level.
     this.servePublicApi()
     this.configureMiddleware()
     this.serverProtectedApi()
