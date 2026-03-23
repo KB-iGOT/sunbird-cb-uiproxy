@@ -10,7 +10,7 @@ const pinoOptions = {
       return { level: label }
     },
   },
-  level: CONSTANTS.IS_DEVELOPMENT ? 'debug' : 'info',
+  level: CONSTANTS.LOG_LEVEL || 'info',
   timestamp: pino.stdTimeFunctions.isoTime,
 }
 
