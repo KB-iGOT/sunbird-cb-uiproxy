@@ -1,6 +1,6 @@
 import express from 'express'
 import { CONSTANTS } from '../utils/env'
-import { logError, logDebug } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 import { getGoogleProfile } from './googleOAuthHelper'
 import { createUserWithMailId, fetchUserByEmailId, updateKeycloakSession } from './ssoUserHelper'
 

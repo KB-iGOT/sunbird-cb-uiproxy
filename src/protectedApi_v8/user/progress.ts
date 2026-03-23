@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
-import { logError, logErrorHeading, logDebug } from '../../utils/logger'
+import { logDebug, logError, logErrorHeading } from '../../utils/logger'
 import { ERROR } from '../../utils/message'
 import { extractUserId, extractUserIdFromRequest } from '../../utils/requestExtract'
 

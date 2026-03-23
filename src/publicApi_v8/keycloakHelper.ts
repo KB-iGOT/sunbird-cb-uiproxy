@@ -3,7 +3,7 @@ const async = require('async')
 import { getOAuthKeycloakConfig } from '../configs/keycloak.config'
 import { getSessionConfig } from '../configs/session.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logDebug } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 import { PERMISSION_HELPER } from '../utils/permissionHelper'
 import { request } from '../utils/request-adapter'
 

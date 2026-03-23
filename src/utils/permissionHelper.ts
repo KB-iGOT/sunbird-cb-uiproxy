@@ -2,7 +2,7 @@ const _                 = require('lodash')
 import axios from 'axios'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from './env'
-import { logError, logDebug } from './logger'
+import { logDebug, logError } from './logger'
 import { request } from './request-adapter'
 import { extractUserToken } from './requestExtract'
 

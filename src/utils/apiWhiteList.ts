@@ -5,7 +5,7 @@ const dateFormat        = require('dateformat')
 
 import { NextFunction, Request, Response } from 'express'
 import { CONSTANTS } from './env'
-import { logError, logDebug } from './logger'
+import { logDebug, logError } from './logger'
 import { ROLE } from './roles'
 import { API_LIST } from './whitelistApis'
 

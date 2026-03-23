@@ -2,7 +2,7 @@ import cassandraDriver from 'cassandra-driver'
 import KcAdminClient from 'keycloak-admin'
 import { RequiredActionAlias } from 'keycloak-admin/lib/defs/requiredActionProviderRepresentation'
 import { CONSTANTS } from './env'
-import { logError, logDebug } from './logger'
+import { logDebug, logError } from './logger'
 import { request } from './request-adapter'
 
 const CASSANDRA_KEYSPACE = CONSTANTS.CASSANDRA_KEYSPACE

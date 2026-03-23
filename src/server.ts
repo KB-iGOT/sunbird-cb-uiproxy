@@ -17,7 +17,7 @@ import { proxiesV8 } from './proxies_v8/proxies_v8'
 import { publicApiV8 } from './publicApi_v8/publicApiV8'
 import { CustomKeycloak } from './utils/custom-keycloak'
 import { CONSTANTS } from './utils/env'
-import { logError, logDebug, logSuccess } from './utils/logger'
+import { logDebug, logError, logSuccess } from './utils/logger'
 const { frameworkAPI } = require('@project-sunbird/ext-framework-server/api')
 const frameworkConfig = require('./configs/framework.config')
 const cookieParser = require('cookie-parser')

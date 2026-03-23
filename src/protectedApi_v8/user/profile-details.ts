@@ -4,7 +4,7 @@ import * as fs from 'fs'
 import { axiosRequestConfig, axiosRequestConfigLong, axiosRequestConfigVeryLong } from '../../configs/request.config'
 import { IPersonalDetails, ISBUser, ISunbirdbUserResponse } from '../../models/user.model'
 import { CONSTANTS } from '../../utils/env'
-import { logError, logDebug } from '../../utils/logger'
+import { logDebug, logError } from '../../utils/logger'
 import { ERROR } from '../../utils/message'
 import { extractUserIdFromRequest, extractUserToken } from '../../utils/requestExtract'
 

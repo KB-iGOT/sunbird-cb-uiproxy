@@ -3,7 +3,7 @@ import express from 'express'
 import querystring from 'querystring'
 import { v4 as uuidv4 } from 'uuid'
 import { CONSTANTS } from '../utils/env'
-import { logError, logDebug } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 
 export const lookerDashboard = express.Router()
 

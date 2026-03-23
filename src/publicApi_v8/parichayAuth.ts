@@ -3,7 +3,7 @@ import express from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { getCurrnetExpiryTime } from '../utils/jwtHelper'
-import { logError, logDebug } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 import { createUserWithMailId, fetchUserByEmailId, updateKeycloakSession } from './ssoUserHelper'
 
 export const parichayAuth = express.Router()

@@ -2,7 +2,7 @@ import axios, { Method } from 'axios'
 import express from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logDebug } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 import { extractUserIdFromRequest, extractUserToken } from '../utils/requestExtract'
 
 export const frameworksApi = express.Router()

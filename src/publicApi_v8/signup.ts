@@ -8,7 +8,7 @@ import {
     updateUniqueKey,
     updateUUIDMaster,
 } from '../utils/keycloak-user-creation'
-import { logError, logDebug } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 
 export const signup = Router()
 

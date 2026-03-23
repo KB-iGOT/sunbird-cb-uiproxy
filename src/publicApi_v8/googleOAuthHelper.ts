@@ -1,6 +1,6 @@
 const { google } = require('googleapis')
 import { CONSTANTS } from '../utils/env'
-import { logError, logDebug } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 import { getKeyCloakClient } from './keycloakHelper'
 
 const redirectPath = '/apis/public/v8/google/callback'

@@ -1,6 +1,6 @@
 import { getUserByUsername } from '../protectedApi_v8/discussionHub/users'
 import { CONSTANTS } from './env'
-import { logError, logDebug } from './logger'
+import { logDebug, logError } from './logger'
 const usrNotFound = 'User not found'
 export function getWriteApiToken(): string {
     try {

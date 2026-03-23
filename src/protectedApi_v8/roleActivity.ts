@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { logError, logDebug } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 import { ERROR } from '../utils/message'
 
 import axios from 'axios'

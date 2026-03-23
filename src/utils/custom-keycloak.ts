@@ -3,7 +3,7 @@ import expressSession from 'express-session'
 import keycloakConnect from 'keycloak-connect'
 import { getKeycloakConfig } from '../configs/keycloak.config'
 import { CONSTANTS } from './env'
-import { logError, logDebug } from './logger'
+import { logDebug, logError } from './logger'
 import { PERMISSION_HELPER } from './permissionHelper'
 import { request } from './request-adapter'
 const async = require('async')

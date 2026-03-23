@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { createProxyServer } from 'http-proxy'
 import { extractUserEmailFromRequest, extractUserId, extractUserToken } from '../utils/requestExtract'
 import { CONSTANTS } from './env'
-import { logError, logDebug } from './logger'
+import { logDebug, logError } from './logger'
 
 const _ = require('lodash')
 

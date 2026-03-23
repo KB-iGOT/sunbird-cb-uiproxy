@@ -6,7 +6,7 @@ import uuid from 'uuid'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { getCurrnetExpiryTime } from '../utils/jwtHelper'
-import { logError, logDebug } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 import { redis } from '../utils/redis'
 import { createUserWithMailId, fetchUserByEmailId, updateKeycloakSession } from './ssoUserHelper'
 

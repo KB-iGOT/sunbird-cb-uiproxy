@@ -2,7 +2,7 @@ import axios from 'axios'
 import lodash from 'lodash'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logDebug } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 import { getKeyCloakClient } from './keycloakHelper'
 
 const API_END_POINTS = {

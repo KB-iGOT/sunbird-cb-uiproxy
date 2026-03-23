@@ -14,7 +14,7 @@ import {
     sendActionsEmail,
     UpdateKeycloakUserPassword,
 } from '../../utils/keycloak-user-creation'
-import { logError, logDebug } from '../../utils/logger'
+import { logDebug, logError } from '../../utils/logger'
 import { extractUserIdFromRequest } from '../../utils/requestExtract'
 import { wTokenApiMock } from '../user/details'
 import { updateRolesV2Mock } from '../user/roles'

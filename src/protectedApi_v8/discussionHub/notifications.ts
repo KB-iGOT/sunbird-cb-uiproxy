@@ -4,7 +4,7 @@ import { getRootOrg } from '../../authoring/utils/header'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { getUserUIDBySession} from '../../utils/discussionHub-helper'
 import { CONSTANTS } from '../../utils/env'
-import { logError, logDebug } from '../../utils/logger'
+import { logDebug, logError } from '../../utils/logger'
 import { extractUserIdFromRequest , extractUserToken} from '../../utils/requestExtract'
 
 const API_ENDPOINTS = {
