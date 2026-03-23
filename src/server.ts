@@ -23,6 +23,7 @@ const frameworkConfig = require('./configs/framework.config')
 const cookieParser = require('cookie-parser')
 const healthcheck = require('express-healthcheck')
 
+import { isCassandraHealthy, shutdownCassandraClient } from './utils/cassandra-client'
 import { apiWhiteListLogger, isAllowed } from './utils/apiWhiteList'
 
 function haltOnTimedOut(req: Express.Request, _: Express.Response, next: NextFunction) {
@@ -102,13 +103,16 @@ export class Server {
   }
 
   private configureMiddleware() {
-    this.app.use(connectTimeout('240s'))
+    this.app.use(connectTimeout('30s'))
     this.app.use(compression())
     this.app.use(fileUpload())
     // this.app.use(cors())
     this.app.use('/healthcheck', healthcheck({
       healthy() {
-        return { everything: 'is ok' }
+        return isCassandraHealthy().then((cassandraOk) => ({
+          cassandra: cassandraOk ? 'ok' : 'unreachable',
+          everything: cassandraOk ? 'is ok' : 'degraded',
+        }))
       },
     }))
     this.app.use(
@@ -226,4 +230,14 @@ export class Server {
   // private handleShutDowns() {
   //   await frameworkAPI.closeCassandraConnections();
   // }
+
+  static {
+    const gracefulShutdown = async (signal: string) => {
+      logDebug(`Received ${signal}. Shutting down gracefully...`)
+      await shutdownCassandraClient()
+      process.exit(0)
+    }
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'))
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'))
+  }
 }

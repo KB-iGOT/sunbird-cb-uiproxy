@@ -15,6 +15,10 @@ const cassandraClientOptions: cassandraDriver.ClientOptions = {
     consistency,
     prepare: true,
   },
+  socketOptions: {
+    connectTimeout: 10000,
+    readTimeout: 12000,
+  },
 }
 
 function getIPList() {

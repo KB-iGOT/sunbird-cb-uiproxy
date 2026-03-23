@@ -8,6 +8,21 @@ export const cassandraClientOptions: cassandraDriver.ClientOptions = {
     queryOptions: {
         prepare: true,
     },
+    socketOptions: {
+        connectTimeout: 10000,
+        readTimeout: 12000,
+    },
+    policies: {
+        retry: new cassandraDriver.policies.retry.IdempotenceAwareRetryPolicy(
+            new cassandraDriver.policies.retry.RetryPolicy()
+        ),
+    },
+    pooling: {
+        coreConnectionsPerHost: {
+            [cassandraDriver.types.distance.local]: 2,
+            [cassandraDriver.types.distance.remote]: 1,
+        },
+    },
 }
 
 function getIPList() {

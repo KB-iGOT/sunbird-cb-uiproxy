@@ -1,11 +1,10 @@
 import axios from 'axios'
-import cassandraDriver from 'cassandra-driver'
 import { Router } from 'express'
 import * as fs from 'fs'
 import xlsx from 'node-xlsx'
 import { v4 as uuidv4 } from 'uuid'
-import { cassandraClientOptions } from '../../configs/cassandra.config'
 import { axiosRequestConfig } from '../../configs/request.config'
+import { getCassandraClient } from '../../utils/cassandra-client'
 import { CONSTANTS } from '../../utils/env'
 import { validateInputWithRegex } from '../../utils/helpers'
 import {
@@ -192,14 +191,12 @@ userRegistrationApi.post('/create-user', async (req, res) => {
 
 userRegistrationApi.post('/user/access-path', async (req, res) => {
     try {
-        const clientConnect = new cassandraDriver.Client(cassandraClientOptions)
-        // return new Promise((resolve, _reject) => {
+        const clientConnect = getCassandraClient()
         const query = `SELECT * FROM ${CONSTANTS.CASSANDRA_KEYSPACE}.user_access_paths
-            WHERE user_id=${req.body.wid}`
-        clientConnect.execute(query, (err, result) => {
+            WHERE user_id=?`
+        clientConnect.execute(query, [req.body.wid], { prepare: true }, (err, result) => {
             if (!err && result && result.rows) {
                 const key = result.rows
-                clientConnect.shutdown()
                 res.json(key || {})
             } else if (err) {
                 logError(`ERROR executing the query >> ${query}`)
@@ -216,7 +213,7 @@ userRegistrationApi.post('/user/access-path', async (req, res) => {
 
 userRegistrationApi.post('/user/update-access-path', async (req, res) => {
     try {
-        const clientConnect = new cassandraDriver.Client(cassandraClientOptions)
+        const clientConnect = getCassandraClient()
         const query = `INSERT INTO ${CONSTANTS.CASSANDRA_KEYSPACE}.user_access_paths
             (root_org, org, user_id, cas_id, access_paths, temporary , ttl) VALUES (?, ?, ?, ?, ?, ?, ?)`
         const params = [
@@ -228,13 +225,11 @@ userRegistrationApi.post('/user/update-access-path', async (req, res) => {
             req.body.temporary,
             req.body.ttl,
         ]
-        clientConnect.execute(query, params, (err, _result) => {
+        clientConnect.execute(query, params, { prepare: true }, (err, _result) => {
             if (!err) {
-                clientConnect.shutdown()
                 logDebug('Update Query to user_access_paths successful')
                 res.json('User access paths updated successfully !!')
             } else if (err) {
-                clientConnect.shutdown()
                 logError(`ERROR executing the query >> ${query}`)
                 res.status(400).send('/user/update-access-path:: Something went wrong!')
             }
@@ -435,20 +430,18 @@ export async function performNewUserSteps(userId: any, req: any, email: any, rol
 // tslint:disable-next-line: no-any
 export async function insertBulkUploadStatus(req: any) {
     try {
-        const clientConnect = new cassandraDriver.Client(cassandraClientOptions)
+        const clientConnect = getCassandraClient()
         const query = `INSERT INTO ${CONSTANTS.CASSANDRA_KEYSPACE}.bulk_user_upload_detail
             (id, name, user_id, status, report) VALUES
-            (${req.uuid}, \'${req.name}\', ${req.user_id}, \'${req.status}\', textAsblob\(\'${req.report}\'\))`
-        return clientConnect.execute(query, async (err, _result) => {
+            (?, ?, ?, ?, textAsBlob(?))`
+        const params = [req.uuid, req.name, req.user_id, req.status, String(req.report)]
+        return clientConnect.execute(query, params, { prepare: true }, async (err, _result) => {
             if (!err) {
-                clientConnect.shutdown()
                 logDebug('Insert Query to bulk_user_upload_detail successful')
             } else if (err) {
-                clientConnect.shutdown()
                 logError(`ERROR executing the query >> ${query}`)
             }
         })
-        // })
     } catch (err) {
         logError('ERROR ON insertBulkUploadStatus >', err)
     }
@@ -456,14 +449,12 @@ export async function insertBulkUploadStatus(req: any) {
 
 userRegistrationApi.get('/bulkUploadData', async (req, res) => {
     try {
-        const clientConnect = new cassandraDriver.Client(cassandraClientOptions)
+        const clientConnect = getCassandraClient()
         const query = `SELECT id,name,status FROM ${CONSTANTS.CASSANDRA_KEYSPACE}.bulk_user_upload_detail
-            WHERE user_id=${extractUserIdFromRequest(req)}  allow filtering`
-        // tslint:disable-next-line: no-identical-functions
-        clientConnect.execute(query, (err, result) => {
+            WHERE user_id=?`
+        clientConnect.execute(query, [extractUserIdFromRequest(req)], { prepare: true }, (err, result) => {
             if (!err && result && result.rows) {
                 const key = result.rows
-                clientConnect.shutdown()
                 res.json(key || {})
             } else if (err) {
                 logError(`ERROR executing the query >> ${query}`)
@@ -480,14 +471,12 @@ userRegistrationApi.get('/bulkUploadData', async (req, res) => {
 userRegistrationApi.get('/bulkUploadReport/:id', async (req, res) => {
     logDebug('fetching bulk-upload-report with id: ', req.params.id)
     try {
-        const clientConnect = new cassandraDriver.Client(cassandraClientOptions)
+        const clientConnect = getCassandraClient()
         const query = `SELECT report FROM ${CONSTANTS.CASSANDRA_KEYSPACE}.bulk_user_upload_detail
-            WHERE id=${req.params.id}  allow filtering`
-        // tslint:disable-next-line: no-identical-functions
-        clientConnect.execute(query, async (err, result) => {
+            WHERE id=?`
+        clientConnect.execute(query, [req.params.id], { prepare: true }, async (err, result) => {
             if (!err && result && result.rows.length > 0) {
                 const key = result.rows[0]
-                clientConnect.shutdown()
                 res.json(key || {})
             } else if (err) {
                 logError(`ERROR executing the query >> ${query}`)
