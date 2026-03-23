@@ -1,20 +1,40 @@
 import { Router } from 'express'
 import { createProxyServer } from 'http-proxy'
+import { sharedHttpAgent, sharedHttpsAgent } from '../configs/request.config'
 import { extractUserEmailFromRequest, extractUserId, extractUserToken } from '../utils/requestExtract'
 import { CONSTANTS } from './env'
 import { logDebug, logError } from './logger'
 
 const _ = require('lodash')
 
+/** Pick the correct keep-alive agent based on target protocol */
+function pickAgent(target: string) {
+  return target.startsWith('https') ? sharedHttpsAgent : sharedHttpAgent
+}
+
+/** Wrap createProxyServer so every .web() call auto-injects the right keep-alive agent */
+function createPooledProxy(opts: Record<string, any> = {}) {
+  const instance = createProxyServer(opts)
+  const originalWeb = instance.web.bind(instance)
+  // tslint:disable-next-line: no-any
+  instance.web = (req: any, res: any, options: any = {}, ...args: any[]) => {
+    const target = options.target || ''
+    options.agent = pickAgent(typeof target === 'string' ? target : '')
+    return originalWeb(req, res, options, ...args)
+  }
+  return instance
+}
+
 // Singleton proxy — no timeout (used by 14 existing functions)
-const proxy = createProxyServer({})
+const proxy = createPooledProxy({})
 
 // Singleton proxy with timeout — replaces per-request factory (used by 10 routes)
 // Previously: const proxyCreator = (timeout) => createProxyServer({ timeout }) — leaked instances
 // TODO: This is a temporary workaround to prevent unbounded proxy object creation.
 // Proper fix: evaluate if these routes can use the main singleton proxy with a
 // timeout, or migrate to axios streaming, eliminating the need for http-proxy here.
-const proxyTimed = createProxyServer({ timeout: CONSTANTS.PROXY_TIMEOUT })
+const proxyTimed = createPooledProxy({ timeout: CONSTANTS.PROXY_TIMEOUT })
+
 const PROXY_SLUG = '/proxies/v8'
 const PROXY_SLUG_WAT = '/proxies/v8/wat'
 const PROXY_SLUG_FORMS = '/proxies/v8/ext-forms'

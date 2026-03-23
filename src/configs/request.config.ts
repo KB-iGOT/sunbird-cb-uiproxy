@@ -17,6 +17,8 @@ const sharedHttpsAgent = new https.Agent({
   timeout: CONSTANTS.UPSTREAM_KEEPALIVE_TIMEOUT,
 })
 
+export { sharedHttpAgent, sharedHttpsAgent }
+
 export const axiosRequestConfig: AxiosRequestConfig = {
   httpAgent: sharedHttpAgent,
   httpsAgent: sharedHttpsAgent,
