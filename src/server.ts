@@ -71,6 +71,7 @@ export class Server {
   // Must be registered after all routes — Express identifies error handlers by arity (4 params)
   // tslint:disable-next-line: no-any
   private registerGlobalErrorHandler() {
+    // tslint:disable-next-line: no-any
     this.app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
       logError('Unhandled server error:', String(err && err.message ? err.message : err))
       if (!res.headersSent) {
