@@ -6,19 +6,14 @@ export const cassandraClientOptions: cassandraDriver.ClientOptions = {
     keyspace: CONSTANTS.CASSANDRA_KEYSPACE,
     localDataCenter: CONSTANTS.CASSANDRA_LOCAL_DC || 'datacenter1',
     policies: {
-        retry: new cassandraDriver.policies.retry.IdempotenceAwareRetryPolicy(
-            new cassandraDriver.policies.retry.RetryPolicy()
-        ),
+        retry: new cassandraDriver.policies.retry.RetryPolicy(),
     },
     pooling: {
         coreConnectionsPerHost: {
             [cassandraDriver.types.distance.local]: 2,
             [cassandraDriver.types.distance.remote]: 1,
         },
-        maxConnectionsPerHost: {
-            [cassandraDriver.types.distance.local]: CONSTANTS.CASSANDRA_MAX_CONN_LOCAL,
-            [cassandraDriver.types.distance.remote]: CONSTANTS.CASSANDRA_MAX_CONN_REMOTE,
-        },
+        maxRequestsPerConnection: CONSTANTS.CASSANDRA_MAX_CONN_LOCAL * 256,
     },
     protocolOptions: {
         maxVersion: 4,
