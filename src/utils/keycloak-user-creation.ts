@@ -41,7 +41,7 @@ export function checkUUIDMaster(uniqueKey: any): Promise<any> {
         const clientConnect = getCassandraClient()
         return new Promise((resolve, reject) => {
             const query = `SELECT * FROM ${CASSANDRA_KEYSPACE}.eagle_uuid_master
-            WHERE key=?`
+            WHERE key=? allow filtering`
             clientConnect.execute(query, [uniqueKey], { prepare: true }, (error, result) => {
                 if (!error && result && result.rows.length > 0) {
                     const key = result.rows[0]

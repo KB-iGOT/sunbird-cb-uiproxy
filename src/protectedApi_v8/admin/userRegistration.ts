@@ -451,7 +451,7 @@ userRegistrationApi.get('/bulkUploadData', async (req, res) => {
     try {
         const clientConnect = getCassandraClient()
         const query = `SELECT id,name,status FROM ${CONSTANTS.CASSANDRA_KEYSPACE}.bulk_user_upload_detail
-            WHERE user_id=?`
+            WHERE user_id=? allow filtering`
         clientConnect.execute(query, [extractUserIdFromRequest(req)], { prepare: true }, (err, result) => {
             if (!err && result && result.rows) {
                 const key = result.rows
@@ -473,7 +473,7 @@ userRegistrationApi.get('/bulkUploadReport/:id', async (req, res) => {
     try {
         const clientConnect = getCassandraClient()
         const query = `SELECT report FROM ${CONSTANTS.CASSANDRA_KEYSPACE}.bulk_user_upload_detail
-            WHERE id=?`
+            WHERE id=? allow filtering`
         clientConnect.execute(query, [req.params.id], { prepare: true }, async (err, result) => {
             if (!err && result && result.rows.length > 0) {
                 const key = result.rows[0]
