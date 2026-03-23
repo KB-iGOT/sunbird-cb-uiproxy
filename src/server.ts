@@ -65,6 +65,18 @@ export class Server {
     this.authoringApi()
     this.resetCookies()
     this.app.use(haltOnTimedOut)
+    this.registerGlobalErrorHandler()
+  }
+
+  // Must be registered after all routes — Express identifies error handlers by arity (4 params)
+  // tslint:disable-next-line: no-any
+  private registerGlobalErrorHandler() {
+    this.app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+      logError('Unhandled server error:', String(err && err.message ? err.message : err))
+      if (!res.headersSent) {
+        res.status(500).json({ error: 'Internal Server Error' })
+      }
+    })
   }
 
   private setCookie() {
