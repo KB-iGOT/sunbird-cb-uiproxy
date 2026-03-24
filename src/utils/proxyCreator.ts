@@ -4,7 +4,7 @@ import { Readable } from 'stream'
 import { sharedHttpAgent, sharedHttpsAgent } from '../configs/request.config'
 import { extractUserEmailFromRequest, extractUserId, extractUserToken } from '../utils/requestExtract'
 import { CONSTANTS } from './env'
-import { logDebug, logError } from './logger'
+import { logDebug, logError, logInfo, logWarn } from './logger'
 
 const _ = require('lodash')
 
