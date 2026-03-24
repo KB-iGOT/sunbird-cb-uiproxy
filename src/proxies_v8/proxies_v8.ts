@@ -32,6 +32,7 @@ import { contentTranscodeAPIIntegration } from './contentTranscodeAPIIntegration
 import { frameworksApi } from './frameworks'
 import { jwtUserTokenHelper } from './jwtUserTokenHelper'
 import { lookerDashboard } from './lookerIntegration'
+import { jsonParser } from '../utils/shared'
 
 const API_END_POINTS = {
   batchParticipantsApi: `${CONSTANTS.KONG_API_BASE}/course/v1/batch/participants/list`,
@@ -56,7 +57,7 @@ proxiesV8.get('/', (_req, res) => {
   })
 })
 
-proxiesV8.post('/upload/*', (req, res) => {
+proxiesV8.post('/upload/*', jsonParser, (req, res) => {
   if (req.files && req.files.data) {
     const url = removePrefix('/proxies/v8/upload/action', req.originalUrl)
     const file: UploadedFile = req.files.data as UploadedFile
@@ -109,7 +110,7 @@ proxiesV8.post('/upload/*', (req, res) => {
   }
 })
 
-proxiesV8.post('/private/upload/*', (_req, _res) => {
+proxiesV8.post('/private/upload/*', jsonParser, (_req, _res) => {
   if (_req.files && _req.files.data) {
     const _url = removePrefix('/proxies/v8/private/upload', _req.originalUrl)
     const _file: UploadedFile = _req.files.data as UploadedFile
@@ -353,9 +354,9 @@ proxiesV8.get(['/api/user/v2/read', '/api/user/v2/read/:id'], async (req, res) =
   await axios({
     ...axiosRequestConfig,
     headers: {
-        Authorization: CONSTANTS.SB_API_KEY,
-        // tslint:disable-next-line: all
-        'x-authenticated-user-token': extractUserToken(req),
+      Authorization: CONSTANTS.SB_API_KEY,
+      // tslint:disable-next-line: all
+      'x-authenticated-user-token': extractUserToken(req),
     },
     method: 'GET',
     url: `${CONSTANTS.KONG_API_BASE}/user/v2/read/` + userId,
@@ -436,7 +437,7 @@ proxiesV8.use('/notification/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
-proxiesV8.post('/org/v1/search', async (req, res) => {
+proxiesV8.post('/org/v1/search', jsonParser, async (req, res) => {
   try {
     // tslint:disable-next-line: all
     const roleData = lodash.get(req, 'session.userRoles')
@@ -477,7 +478,7 @@ proxiesV8.use('/dashboard/*',
 )
 
 // tslint:disable-next-line:max-line-length
-proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workflow/admin/transition/bulkupdate', '/cloud-services/mlcore/v1/files/upload', '/calendar/v1/bulkUpload', '/storage/orgStoreUpload', '/workflow/admin/v2/bulkupdate/transition', '/user/v2/bulkupload', '/ciosIntegration/v1/loadContentFromExcel/*', '/storage/v1/uploadCiosIcon', '/storage/v1/uploadCiosContract', '/organisation/v1/competencyDesignationMappings/bulkUpload/*', '/template/api/v1/upload', '/designation/v1/orgMapping/bulkUpload/*', '/storage/v1/uploadCiosLogsFile', '/customselfregistration/upload/logo/gcpcontainer', '/ciosIntegration/v1/loadContentProgressFromExcel/*', '/feedDiscussion/uploadFile/*', '/community/v1/fileUpload/*', '/user/v2/event/bulkonboard/*', '/workflow/blendedprogram/bulkApprovalDataFromCsv/*', '/customFields/v1/masterList/*', '/organisation/v1/hierarchy/bulkUpload/*', '/user/v3/bulkupload', '/user/v1/org-migration/bulk-upload/*', '/storage/v1/bp/assignment/answer/*', '/peersurvey/upload', '/externaltraining/v1/bulkupload/*'], (req, res) => {
+proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workflow/admin/transition/bulkupdate', '/cloud-services/mlcore/v1/files/upload', '/calendar/v1/bulkUpload', '/storage/orgStoreUpload', '/workflow/admin/v2/bulkupdate/transition', '/user/v2/bulkupload', '/ciosIntegration/v1/loadContentFromExcel/*', '/storage/v1/uploadCiosIcon', '/storage/v1/uploadCiosContract', '/organisation/v1/competencyDesignationMappings/bulkUpload/*', '/template/api/v1/upload', '/designation/v1/orgMapping/bulkUpload/*', '/storage/v1/uploadCiosLogsFile', '/customselfregistration/upload/logo/gcpcontainer', '/ciosIntegration/v1/loadContentProgressFromExcel/*', '/feedDiscussion/uploadFile/*', '/community/v1/fileUpload/*', '/user/v2/event/bulkonboard/*', '/workflow/blendedprogram/bulkApprovalDataFromCsv/*', '/customFields/v1/masterList/*', '/organisation/v1/hierarchy/bulkUpload/*', '/user/v3/bulkupload', '/user/v1/org-migration/bulk-upload/*', '/storage/v1/bp/assignment/answer/*', '/peersurvey/upload', '/externaltraining/v1/bulkupload/*'], jsonParser, (req, res) => {
   if (req.files && req.files.data) {
     const url = removePrefix('/proxies/v8', req.originalUrl)
     const file: UploadedFile = req.files.data as UploadedFile
@@ -532,11 +533,11 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
             } else {
               let parsed
               try {
-                  parsed = JSON.parse(fullData.toString('utf8'))
-                  res.status(response.statusCode).json(parsed)
+                parsed = JSON.parse(fullData.toString('utf8'))
+                res.status(response.statusCode).json(parsed)
               } catch (e) {
-                  logDebug('Invalid JSON received as per Json Parse')
-                  res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
+                logDebug('Invalid JSON received as per Json Parse')
+                res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
               }
             }
           } else {
@@ -602,11 +603,11 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
             } else {
               let parsed
               try {
-                  parsed = JSON.parse(fullData.toString('utf8'))
-                  res.status(response.statusCode).json(parsed)
+                parsed = JSON.parse(fullData.toString('utf8'))
+                res.status(response.statusCode).json(parsed)
               } catch (e) {
-                   logDebug('Invalid JSON received as per Json Parse')
-                   res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
+                logDebug('Invalid JSON received as per Json Parse')
+                res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
               }
             }
           } else {
@@ -816,27 +817,27 @@ proxiesV8.use('/wheebox/*',
 )
 
 proxiesV8.use('/operationalreports/*',
-// tslint:disable-next-line: max-line-length
-proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+  // tslint:disable-next-line: max-line-length
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/surveys/*',
-proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/surveySubmissions/*',
-proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 proxiesV8.use('/cloud-services/*',
-proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/observations/*',
-proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/observationSubmissions/*',
-proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/demand/content/*',
@@ -891,9 +892,9 @@ function removePrefix(prefix: string, s: string) {
   return s.substr(prefix.length)
 }
 
-proxiesV8.post('/notifyContentState', async (req, res) => {
+proxiesV8.post('/notifyContentState', jsonParser, async (req, res) => {
   const contentStateError = 'It should be one of [sendForReview, reviewCompleted, reviewFailed,' +
-  ' sendForPublish, publishCompleted, publishFailed]'
+    ' sendForPublish, publishCompleted, publishFailed]'
   if (!req.body || !req.body.contentState) {
     res.status(400).send('ContentState is missing in request body. ' + contentStateError)
   }
@@ -954,7 +955,8 @@ proxiesV8.post('/notifyContentState', async (req, res) => {
 
   const stateEmailResponse = await axios({
     ...axiosRequestConfig,
-    data: { request:
+    data: {
+      request:
       {
         notifications: [notifyMailRequest],
       },
@@ -987,7 +989,7 @@ function getUsers(userprofile: IUserProfile): ICohortsUser {
         designationValue = userprofile.profileDetails.professionalDetails[0].designation
       } else {
         designationValue = userprofile.profileDetails.professionalDetails[0].designationOther === undefined ? '' :
-        userprofile.profileDetails.professionalDetails[0].designationOther
+          userprofile.profileDetails.professionalDetails[0].designationOther
       }
     }
     if (userprofile.profileDetails.personalDetails !== undefined) {
@@ -1011,7 +1013,7 @@ function getUsers(userprofile: IUserProfile): ICohortsUser {
   }
 }
 
-proxiesV8.post('/course/v1/batch/getParticipants', async (req, res) => {
+proxiesV8.post('/course/v1/batch/getParticipants', jsonParser, async (req, res) => {
   try {
     const { batchId, deptName, limit, currentOffSet } = req.body.request.filters
     const reqBody = {
@@ -1058,7 +1060,7 @@ proxiesV8.post('/course/v1/batch/getParticipants', async (req, res) => {
         }
       }
     }
-    res.status(response.status).send({userlist, totalCount})
+    res.status(response.status).send({ userlist, totalCount })
   } catch (err) {
     logError(err)
 
@@ -1422,7 +1424,7 @@ proxiesV8.use('/peersurvey/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
-proxiesV8.post('/externaltraining/v1/batch/getParticipants', async (req, res) => {
+proxiesV8.post('/externaltraining/v1/batch/getParticipants', jsonParser, async (req, res) => {
   try {
     const { batchId, deptName, limit, currentOffSet } = req.body.request.filters
     const reqBody = {
@@ -1469,7 +1471,7 @@ proxiesV8.post('/externaltraining/v1/batch/getParticipants', async (req, res) =>
         }
       }
     }
-    res.status(response.status).send({userlist, totalCount})
+    res.status(response.status).send({ userlist, totalCount })
   } catch (err) {
     logError(err)
 

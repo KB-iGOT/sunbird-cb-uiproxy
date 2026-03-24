@@ -4,11 +4,12 @@ import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { logDebug, logError } from '../utils/logger'
 import { extractUserIdFromRequest, extractUserToken } from '../utils/requestExtract'
+import { jsonParser } from '../utils/shared'
 
 export const frameworksApi = express.Router()
 const _ = require('lodash')
 
-frameworksApi.use('/*', async (req, res) => {
+frameworksApi.use('/*', jsonParser, async (req, res) => {
   try {
     const url = removePrefix('/proxies/v8', req.originalUrl)
     logDebug(`The url is... ${url} : rootOrgId: ${req.originalUrl}`)
@@ -34,16 +35,16 @@ frameworksApi.use('/*', async (req, res) => {
     if (url.includes('/publish/') || url.includes('/create/') || url.includes('/update/')) {
       logDebug(`The value is ${orgId}`)
       if (orgId && masterFrameworkCategory.includes(orgId)) { // To check the value from masterFrameworkCategory
-          const hasRole = userRoleData.some((role: string) => allowedRoles.includes(role))
-          if (!hasRole) {
-            return res.status(401).send('User does not have the required role to update the framework')
-          }
+        const hasRole = userRoleData.some((role: string) => allowedRoles.includes(role))
+        if (!hasRole) {
+          return res.status(401).send('User does not have the required role to update the framework')
+        }
       } else if (orgId && orgId !== userRootOrgId) {
         const hasAllowedRole = userRoleData.some((role: string) => allowedRoles.includes(role))
         if (!hasAllowedRole) {
-            return res.status(401).send(`You are not authorized to perform the action for org: ${userRootOrgId}`)
+          return res.status(401).send(`You are not authorized to perform the action for org: ${userRootOrgId}`)
         }
-    }
+      }
     }
 
     // Proceed with the API request if all conditions are met

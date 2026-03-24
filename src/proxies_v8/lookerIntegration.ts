@@ -4,6 +4,7 @@ import querystring from 'querystring'
 import { v4 as uuidv4 } from 'uuid'
 import { CONSTANTS } from '../utils/env'
 import { logDebug, logError } from '../utils/logger'
+import { jsonParser } from '../utils/shared'
 
 export const lookerDashboard = express.Router()
 
@@ -22,14 +23,14 @@ interface ILookerOptions {
   first_name: string
 }
 
-lookerDashboard.post('/*', async (req, res) => {
+lookerDashboard.post('/*', jsonParser, async (req, res) => {
 
   // Check if the request body is present and contains the required data
   if (!req.body.request) {
     return res.status(400).json({ error: 'Request body is missing or invalid' })
   }
 
-  const { embedUrl, sessionLengthInSec, userAttributes,  userPermissions, userModels, userGroupIds} = req.body.request
+  const { embedUrl, sessionLengthInSec, userAttributes, userPermissions, userModels, userGroupIds } = req.body.request
 
   if (!userAttributes || Object.keys(userAttributes).length === 0) {
     return res.status(400).json({ error: 'userAttributes are required and cannot be empty' })
@@ -51,7 +52,7 @@ lookerDashboard.post('/*', async (req, res) => {
   if (embedUrl) {
     embedUrlInfo = embedUrl
   } else {
-     return res.status(400).json({ error: 'embedUrl is are required and cannot be empty' })
+    return res.status(400).json({ error: 'embedUrl is are required and cannot be empty' })
   }
 
   if (sessionLengthInSec) {
@@ -68,28 +69,28 @@ lookerDashboard.post('/*', async (req, res) => {
   }
 
   if (userPermissions) {
-      if (!Array.isArray(userPermissions)) {
-          return res.status(400).json({ error: 'userPermissions should be array' })
-      }
-      userPermissionParam = userPermissions
+    if (!Array.isArray(userPermissions)) {
+      return res.status(400).json({ error: 'userPermissions should be array' })
+    }
+    userPermissionParam = userPermissions
   } else {
     userPermissionParam = CONSTANTS.LOOKER_USER_DASHBOARD_PERMISSION.split(',')
   }
 
   if (userModels) {
-      if (!Array.isArray(userModels)) {
-          return res.status(400).json({ error: 'userModels should be array' })
-      }
-      userModelsParam = userModels
+    if (!Array.isArray(userModels)) {
+      return res.status(400).json({ error: 'userModels should be array' })
+    }
+    userModelsParam = userModels
   } else {
     userModelsParam = CONSTANTS.LOOKER_USER_MODELS.split(',')
   }
 
   if (userGroupIds) {
-      if (!Array.isArray(userGroupIds)) {
-          return res.status(400).json({ error: 'userGroupIds should be array' })
-      }
-      userGroupIdsParam = userGroupIds
+    if (!Array.isArray(userGroupIds)) {
+      return res.status(400).json({ error: 'userGroupIds should be array' })
+    }
+    userGroupIdsParam = userGroupIds
   } else {
     userGroupIdsParam = CONSTANTS.LOOKER_GROUP_IDS.split(',')
   }
@@ -100,12 +101,12 @@ lookerDashboard.post('/*', async (req, res) => {
     external_user_id: userId,
     first_name: firstName,
     force_logout_login: Boolean(CONSTANTS.LOOKER_FORCE_LOGOUT_LOGIN),
-    group_ids:  userGroupIdsParam,
+    group_ids: userGroupIdsParam,
     host: CONSTANTS.LOOKER_HOST,
     models: userModelsParam,
     permissions: userPermissionParam,
     secret: CONSTANTS.LOOKER_SECRET,
-    session_length:  sessionTimeoutLength,
+    session_length: sessionTimeoutLength,
     user_attributes: { user_id: userId },
   }
 
@@ -173,15 +174,15 @@ function createSignedEmbedUrl(options: ILookerOptions): string {
   const queryParams = {
     access_filters: JSON.stringify(access_filters),
     external_user_id: JSON.stringify(external_user_id),
-    first_name:  JSON.stringify(first_name),
-    force_logout_login : JSON.stringify(force_logout_login),
+    first_name: JSON.stringify(first_name),
+    force_logout_login: JSON.stringify(force_logout_login),
     group_ids: JSON.stringify(group_ids),
     models: JSON.stringify(models),
     nonce: JSON.stringify(jsonNonce),
     permissions: JSON.stringify(permissions),
     session_length: JSON.stringify(session_length),
     signature,
-    time : JSON.stringify(time),
+    time: JSON.stringify(time),
     user_attributes: JSON.stringify(user_attributes),
   }
 

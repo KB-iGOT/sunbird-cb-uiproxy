@@ -3,10 +3,11 @@ import express from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { logDebug, logError } from '../utils/logger'
+import { jsonParser } from '../utils/shared'
 
 export const contentTranscodeAPIIntegration = express.Router()
 
-contentTranscodeAPIIntegration.use('/*', async (req: express.Request, res: express.Response) => {
+contentTranscodeAPIIntegration.use('/*', jsonParser, async (req: express.Request, res: express.Response) => {
   try {
     const baseUrl = removePrefix('/proxies/v8/', req.originalUrl)
     logDebug(`The url is... ${baseUrl} : originalUrl: ${req.originalUrl}`)
