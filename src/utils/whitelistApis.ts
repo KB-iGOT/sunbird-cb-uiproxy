@@ -777,6 +777,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
             ],
         },
         '/proxies/v8/user/private/v1/assign/role/userrole': {
@@ -4128,6 +4129,7 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
                 ROLE.SPV_ADMIN,
                 ROLE.SPV_PUBLISHER,
+                ROLE.STATE_ADMIN,
             ],
         },
         '/proxies/v8/user/v3/search': {
@@ -4137,6 +4139,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
             ],
         },
         '/proxies/v8/framework/v1/term/retire': {
