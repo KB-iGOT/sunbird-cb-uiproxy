@@ -4,7 +4,7 @@ import { Readable } from 'stream'
 import { sharedHttpAgent, sharedHttpsAgent } from '../configs/request.config'
 import { extractUserEmailFromRequest, extractUserId, extractUserToken } from '../utils/requestExtract'
 import { CONSTANTS } from './env'
-import { logDebug, logError } from './logger'
+import { logDebug, logError, logInfo, logWarn } from './logger'
 
 const _ = require('lodash')
 
@@ -62,6 +62,7 @@ function pickAgent(target: string) {
 }
 
 /** Wrap createProxyServer so every .web() call auto-injects the right keep-alive agent */
+// tslint:disable-next-line: no-any
 export function createPooledProxy(opts: Record<string, any> = {}) {
   const instance = createProxyServer(opts)
   const originalWeb = instance.web.bind(instance)
