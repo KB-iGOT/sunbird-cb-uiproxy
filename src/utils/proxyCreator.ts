@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { createProxyServer } from 'http-proxy'
 import { Readable } from 'stream'
 import { sharedHttpAgent, sharedHttpsAgent } from '../configs/request.config'
-import { extractUserEmailFromRequest, extractUserId, extractUserToken } from '../utils/requestExtract'
+import { extractUserId, extractUserToken } from '../utils/requestExtract'
 import { CONSTANTS } from './env'
 import { logDebug, logError, logInfo, logWarn } from './logger'
 
@@ -10,8 +10,6 @@ const _ = require('lodash')
 
 /** Upload paths that must not have their body re-serialised (binary streams) */
 const UPLOAD_EXCLUSIONS = ['/storage/upload', '/storage/profilePhotoUpload/']
-const DISCUSSION_PATH = '/discussion'
-const DISCUSSION_CREATE_PATH = '/discussion/user/v1/create'
 
 /**
  * Build a Readable stream from req.body for use as http-proxy's options.buffer.
@@ -26,7 +24,7 @@ const DISCUSSION_CREATE_PATH = '/discussion/user/v1/create'
  *
  * Returns undefined for GETs, empty bodies, and upload paths (binary streams).
  */
-  // tslint:disable-next-line: no-any
+// tslint:disable-next-line: no-any
 export function buildProxyBuffer(req: any): Readable | undefined {
   // No body to re-serialise
   if (!req.body || typeof req.body !== 'object' || Object.keys(req.body).length === 0) {
@@ -118,25 +116,7 @@ export function proxyHeaders(req: any, _res: any, next: any) {
     req.headers['x-authenticated-user-nodebb-uid'] = session.uid
   }
 
-  // Discussion route: set secure cookie + inject _uid into body
-  setDiscussionFields(req, session)
-
   next()
-}
-
-// tslint:disable-next-line: no-any
-function setDiscussionFields(req: any, session: any) {
-  const url = req.originalUrl || ''
-  if (!url.includes(DISCUSSION_PATH) || url.includes(DISCUSSION_CREATE_PATH)) {
-    return
-  }
-  if (session.cookie) {
-    session.cookie.secure = true
-  }
-  // Body mutation: inject _uid — must happen before buildProxyBuffer
-  if (req.body && session.uid) {
-    req.body._uid = session.uid
-  }
 }
 
 // Minimal proxyReq handler — only logging, wrapped in try/catch to prevent uncaughtException
@@ -150,46 +130,8 @@ proxy.on('proxyReq', (_proxyReq: any, req: any, _res: any, _options: any) => {
 })
 
 // tslint:disable-next-line: no-any
-proxy.on('proxyRes', (proxyRes: any, req: any, _res: any, ) => {
-  // res.removeHeader('access-control-allow-origin')
+proxy.on('proxyRes', (proxyRes: any, _req: any, _res: any) => {
   delete proxyRes.headers['access-control-allow-origin']
-  // write user session with roles
-  // if (req.originalUrl.includes('/user/v2/read')) {
-  //   // tslint:disable-next-line: no-any
-  //   proxyRes.on('data', (data: any) => {
-  //     if ((proxyRes.statusCode === 200 || proxyRes.statusCode === 201)) {
-  //       data = JSON.parse(data.toString('utf-8'))
-  //       const roles = data.result.response.roles
-  //       req.session.userId = data.result.response.id ? data.result.response.id : data.result.response.userId
-  //       req.session.userName = data.result.response.userName
-  //       req.session.userRoles = roles
-  //       // console.log(req);
-  //       // tslint:disable-next-line: only-arrow-functions
-  //       req.session.save(function(error: string) {
-  //         if (error) {
-  //           // tslint:disable-next-line: no-console
-  //           console.log(error)
-  //         }
-  //       })
-  //     }
-  //   })
-  // }
-  // tslint:disable-next-line: no-any
-  proxyRes.on('data', (data: any) => {
-    if (req.originalUrl.includes(DISCUSSION_CREATE_PATH)) {
-
-      if ((proxyRes.statusCode === 200 || proxyRes.statusCode === 201)) {
-        data = JSON.parse(data.toString('utf-8'))
-        logDebug('_res==>', data)
-        req.session.uid = data.result.userId.uid
-      }
-      const nodebbToken = '722686c6-2a2e-4b22-addf-c427261fbdc6'
-      if (req.session) {
-        req.session.nodebb_authorization_token = nodebbToken
-      }
-    }
-  })
-
 })
 
 /** Snapshot of agent pool for diagnostics */
@@ -294,20 +236,6 @@ export function proxyCreatorSunbird(route: Router, targetUrl: string, _timeout =
       url = removePrefix(`${PROXY_SLUG}`, req.originalUrl)
     }
 
-    if (req.originalUrl.includes(DISCUSSION_PATH) && !req.originalUrl.includes(DISCUSSION_CREATE_PATH) && req.session) {
-      if (req.session.hasOwnProperty('uid')) {
-        if (req.originalUrl.includes('?')) {
-          url = `${url}&_uid=${req.session.uid}`
-        } else {
-          url = `${url}?_uid=${req.session.uid}`
-        }
-      }
-      if (req.originalUrl.includes('/discussion/v2/topics')) {
-        req.body.email = extractUserEmailFromRequest(req)
-      }
-      logDebug('REQ_URL_ORIGINAL proxyCreatorSunbird  ======= discussion', url)
-    }
-
     if (req.originalUrl.includes('/dashboard') && !req.originalUrl.includes('/dashboard/analytics/getChartV2/Karmayogi') && req.session) {
       if (req.originalUrl.includes('?')) {
         url = `${url}&_uid=${_.get(req, 'session.rootOrgId')}`
@@ -393,7 +321,7 @@ export function proxyCreatorToAppentUserId(route: Router, targetUrl: string, _ti
   return route
 }
 
-export function proxyCreatorQML(route: Router, targetUrl: string, urlType: string, _timeout = 10000, ): Router {
+export function proxyCreatorQML(route: Router, targetUrl: string, urlType: string, _timeout = 10000): Router {
   route.all('/*', proxyHeaders, (req, res) => {
     const originalUrl = req.originalUrl.replace(urlType, '/')
     const url = removePrefix(`${PROXY_SLUG}`, originalUrl)
@@ -458,10 +386,10 @@ export function proxyAssessmentRead(route: Router, targetUrl: string, _timeout =
 export function proxyQuestionRead(route: Router, targetUrl: string, _timeout = 10000): Router {
   route.all('/*', proxyHeaders, (req, res) => {
     if (!targetUrl.includes('?')) {
-    // Split the URL into base URL and query parameters
-    const [, queryParams] = req.originalUrl.split('?')
-    // Construct the final target URL by appending query parameters
-    targetUrl = targetUrl + (queryParams ? `?${queryParams}` : '')
+      // Split the URL into base URL and query parameters
+      const [, queryParams] = req.originalUrl.split('?')
+      // Construct the final target URL by appending query parameters
+      targetUrl = targetUrl + (queryParams ? `?${queryParams}` : '')
     }
     logDebug('REQ_URL_UPDATED proxyAssessmentRead', targetUrl)
     proxy.web(req, res, {

@@ -5,13 +5,13 @@ import { CONSTANTS } from '../utils/env'
 import { logError } from '../utils/logger'
 import { proxyCreatorRoute } from '../utils/proxyCreator'
 import { redis } from '../utils/redis'
+import { jsonParser } from '../utils/shared'
 import { chatBotTranscoderAPIIntegration } from './chatBotTranscoderAPIIntegration'
 import { ntpcAuth } from './ntpcAuth'
 import { oilAuth } from './oilAuth'
 import { parichayAuth } from './parichayAuth'
 import { workallocationPublic } from './workallocationPublic'
 import { youtubePlaylist } from './youtubePlaylist'
-import { jsonParser } from '../utils/shared'
 
 const puppeteer = require('puppeteer')
 export const publicApiV8 = express.Router()

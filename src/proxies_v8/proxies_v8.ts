@@ -25,14 +25,14 @@ import {
   proxyQuestionRead,
   scormProxyCreatorRoute
 } from '../utils/proxyCreator'
-import { extractUserIdFromRequest, extractUserToken } from '../utils/requestExtract'
+import { extractUserEmailFromRequest, extractUserIdFromRequest, extractUserToken } from '../utils/requestExtract'
+import { jsonParser } from '../utils/shared'
 import { chatBotGenericAPIIntegration } from './chatBotGenericAPIIntegration'
 import { chatBotIntegrationAPI } from './chatBotIntegration'
 import { contentTranscodeAPIIntegration } from './contentTranscodeAPIIntegration'
 import { frameworksApi } from './frameworks'
 import { jwtUserTokenHelper } from './jwtUserTokenHelper'
 import { lookerDashboard } from './lookerIntegration'
-import { jsonParser } from '../utils/shared'
 
 const API_END_POINTS = {
   batchParticipantsApi: `${CONSTANTS.KONG_API_BASE}/course/v1/batch/participants/list`,
@@ -729,14 +729,58 @@ proxiesV8.use('/assets/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
-// proxiesV8.use('/discussion/user/v1/create',
-//   // tslint:disable-next-line: max-line-length
-//   proxyCreatorDiscussion(express.Router(), `${CONSTANTS.DISCUSSION_HUB_MIDDLEWARE}`)
-// )
-proxiesV8.use('/discussion/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+proxiesV8.use('/discussion/*', jsonParser, async (req, res) => {
+  try {
+    const url = removePrefix('/proxies/v8', req.originalUrl)
+    const isCreate = req.originalUrl.includes('/discussion/user/v1/create')
+
+    // Body mutation for non-create discussion routes
+    if (!isCreate && req.session) {
+      // Append _uid to query string
+      if (req.body) {
+        req.body._uid = req.session.uid
+      }
+
+      // Inject email for topics
+      if (req.originalUrl.includes('/discussion/v2/topics') && req.body) {
+        req.body.email = extractUserEmailFromRequest(req)
+      }
+    }
+
+    // Build upstream url with _uid query param
+    let targetUrl = `${CONSTANTS.KONG_API_BASE}${url}`
+    if (!isCreate && req.session && req.session.uid) {
+      const separator = targetUrl.includes('?') ? '&' : '?'
+      targetUrl = `${targetUrl}${separator}_uid=${req.session.uid}`
+    }
+
+    const response = await axios({
+      ...axiosRequestConfig,
+      data: req.body,
+      headers: {
+        Authorization: CONSTANTS.SB_API_KEY,
+        'Content-Type': 'application/json',
+        'x-authenticated-user-token': extractUserToken(req),
+      },
+      // tslint:disable-next-line: no-any
+      method: req.method as any,
+      url: targetUrl,
+    })
+
+    // On create success, write uid + nodebb token to session
+    if (isCreate && (response.status === 200 || response.status === 201) && req.session) {
+      if (response.data && response.data.result && response.data.result.userId) {
+        req.session.uid = response.data.result.userId.uid
+      }
+      req.session.nodebb_authorization_token = CONSTANTS.NODEBB_AUTH_TOKEN
+    }
+    res.status(response.status).send(response.data)
+  } catch (err) {
+    logError('Discussion proxy error:', err)
+    res.status((err && err.response && err.response.status) || 500)
+      .send((err && err.response && err.response.data) || { error: 'Discussion proxy failed' })
+  }
+})
 
 proxiesV8.use('/assessment/read/*',
   // tslint:disable-next-line: max-line-length
@@ -1138,162 +1182,162 @@ proxiesV8.use('/walloffame/*',
 )
 
 export interface IUserProfile {
-  channel: string
-  firstName: string
-  id: string
-  lastName: string
-  profileDetails: IUserProfileDetails
-  rootOrgName: string
+channel: string
+firstName: string
+id: string
+lastName: string
+profileDetails: IUserProfileDetails
+rootOrgName: string
 }
 
 export interface IUserProfileDetails {
-  personalDetails: IPersonalDetails
-  professionalDetails: IProfessionalDetailsEntity[]
-  employmentDetails: IEmploymentDetails
+personalDetails: IPersonalDetails
+professionalDetails: IProfessionalDetailsEntity[]
+employmentDetails: IEmploymentDetails
 }
 
 export interface IPersonalDetails {
-  firstname: string
-  middlename: string
-  surname: string
-  dob: string
-  nationality: string
-  domicileMedium: string
-  gender: string
-  maritalStatus: string
-  category: string
-  countryCode: string
-  mobile: number
-  telephone: string
-  primaryEmail: string
-  officialEmail: string
-  personalEmail: string
+firstname: string
+middlename: string
+surname: string
+dob: string
+nationality: string
+domicileMedium: string
+gender: string
+maritalStatus: string
+category: string
+countryCode: string
+mobile: number
+telephone: string
+primaryEmail: string
+officialEmail: string
+personalEmail: string
 }
 
 export interface IEmploymentDetails {
-  departmentName: string
+departmentName: string
 }
 
 export interface IProfessionalDetailsEntity {
-  description: string
-  industry: string
-  designationOther: string
-  nameOther: string
-  organisationType: string
-  responsibilities: string
-  name: string
-  location: string
-  designation: string
-  industryOther: string
-  completePostalAddress: string
-  doj: string
+description: string
+industry: string
+designationOther: string
+nameOther: string
+organisationType: string
+responsibilities: string
+name: string
+location: string
+designation: string
+industryOther: string
+completePostalAddress: string
+doj: string
 }
 
 export interface ICohortsUser {
-  first_name: string
-  last_name: string
-  email: string
-  desc: string
-  user_id: string
-  department: string
-  phone_No: number
-  designation: string
-  userLocation: string
-  city: string
+first_name: string
+last_name: string
+email: string
+desc: string
+user_id: string
+department: string
+phone_No: number
+designation: string
+userLocation: string
+city: string
 }
 
 proxiesV8.use('/ext-forms/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorForms(express.Router())
+// tslint:disable-next-line: max-line-length
+proxyCreatorForms(express.Router())
 )
 
 proxiesV8.use('/cios-enroll/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/contentpartner/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/serviceregistry/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/comment/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/private/mlsurvey/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/private/mlcore/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/template/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/organisation/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/national/learning/week/insights',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/national/learning/week/insights`)
+// tslint:disable-next-line: max-line-length
+proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/national/learning/week/insights`)
 )
 
 proxiesV8.use('/state/learning/week/insights',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/state/learning/week/insights`)
+// tslint:disable-next-line: max-line-length
+proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/state/learning/week/insights`)
 )
 
 proxiesV8.use('/eventprogress/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/bp/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+// tslint:disable-next-line: max-line-length
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/customselfregistration',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+// tslint:disable-next-line: max-line-length
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/feedDiscussion/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/customselfregistration/listallqrs',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+// tslint:disable-next-line: max-line-length
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/customselfregistration/isregistrationqractive',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+// tslint:disable-next-line: max-line-length
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/community/v1/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/looker/dashboard', lookerDashboard)
 
 proxiesV8.use('/courseRecommend/v1/courses',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/courseRecommend/v1/courses`)
+// tslint:disable-next-line: max-line-length
+proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/courseRecommend/v1/courses`)
 )
 
 proxiesV8.use('/interface/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/courseRecommendation/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/chatbot/v3/global', chatBotGenericAPIIntegration)
@@ -1301,192 +1345,192 @@ proxiesV8.use('/chatbot/v3/global', chatBotGenericAPIIntegration)
 proxiesV8.use('/chatbot/v3', chatBotIntegrationAPI)
 
 proxiesV8.use('/chatbot/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/nlp/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/thumbnail/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/fetchUserToken', jwtUserTokenHelper)
 
 proxiesV8.use('/certificate/dynamic/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/commentTree/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/search/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.get('/youtube/duration/:videoid', async (req, res) => {
-  const { videoid } = req.params  // Get videoid from URL path instead of query params
-  const apiKey = `${CONSTANTS.YOUTUBE_PLAYLIST_API_KEY}`  // Use your actual API key here
+const { videoid } = req.params  // Get videoid from URL path instead of query params
+const apiKey = `${CONSTANTS.YOUTUBE_PLAYLIST_API_KEY}`  // Use your actual API key here
 
-  try {
-    const response = await axios.get(
-      `${CONSTANTS.YOUTUBE_VIDEOS}?id=${videoid}&part=contentDetails&key=${apiKey}`
-    )
-    res.json(response.data)
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch video data' })
-  }
+try {
+  const response = await axios.get(
+    `${CONSTANTS.YOUTUBE_VIDEOS}?id=${videoid}&part=contentDetails&key=${apiKey}`
+  )
+  res.json(response.data)
+} catch (error) {
+  res.status(500).json({ error: 'Failed to fetch video data' })
+}
 })
 
 proxiesV8.use('/extendedprofile/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/masterdata/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/v1/notifications/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/notificationSetting/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/accessSettings*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/customFields/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/connections/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/support/ai/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/collection/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/moderation/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+// tslint:disable-next-line: max-line-length
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/pipeline/content/transcode/*', contentTranscodeAPIIntegration)
 
 proxiesV8.use('/assignment/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+// tslint:disable-next-line: max-line-length
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 proxiesV8.use('/consent/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+// tslint:disable-next-line: max-line-length
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/v1/notifyAssignment/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/promotionalcontent/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/sso/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/learningpathway/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/extended/content/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/achievement/dynamic/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/knowledge/centre/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/peersurvey/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.post('/externaltraining/v1/batch/getParticipants', jsonParser, async (req, res) => {
-  try {
-    const { batchId, deptName, limit, currentOffSet } = req.body.request.filters
-    const reqBody = {
-      request: {
-        batch: {
-          active: true,
-          batchId,
-          currentOffSet,
-          limit,
+try {
+  const { batchId, deptName, limit, currentOffSet } = req.body.request.filters
+  const reqBody = {
+    request: {
+      batch: {
+        active: true,
+        batchId,
+        currentOffSet,
+        limit,
 
-        },
       },
-    }
-    const userlist: ICohortsUser[] = []
-    const response = await axios.post(API_END_POINTS.externalContentbatchParticipantsApi, reqBody, {
+    },
+  }
+  const userlist: ICohortsUser[] = []
+  const response = await axios.post(API_END_POINTS.externalContentbatchParticipantsApi, reqBody, {
+    ...axiosRequestConfig,
+    headers: {
+      Authorization: CONSTANTS.SB_API_KEY,
+      /* tslint:disable-next-line */
+      'x-authenticated-user-token': extractUserToken(req),
+    },
+  })
+  const totalCount = response.data.result.batch.count != null ? response.data.result.batch.count : 0
+  if ((typeof response.data.result.batch.participants !== 'undefined' && response.data.result.batch.participants.length > 0)) {
+    const searchresponse = await axios({
       ...axiosRequestConfig,
+      data: { request: { filters: { userId: response.data.result.batch.participants } } },
       headers: {
         Authorization: CONSTANTS.SB_API_KEY,
-        /* tslint:disable-next-line */
+        // tslint:disable-next-line: all
         'x-authenticated-user-token': extractUserToken(req),
       },
+      method: 'POST',
+      // tslint:disable-next-line: all
+      url: API_END_POINTS.kongSearchUser,
     })
-    const totalCount = response.data.result.batch.count != null ? response.data.result.batch.count : 0
-    if ((typeof response.data.result.batch.participants !== 'undefined' && response.data.result.batch.participants.length > 0)) {
-      const searchresponse = await axios({
-        ...axiosRequestConfig,
-        data: { request: { filters: { userId: response.data.result.batch.participants } } },
-        headers: {
-          Authorization: CONSTANTS.SB_API_KEY,
-          // tslint:disable-next-line: all
-          'x-authenticated-user-token': extractUserToken(req),
-        },
-        method: 'POST',
-        // tslint:disable-next-line: all
-        url: API_END_POINTS.kongSearchUser,
-      })
-      if (searchresponse.data.result.response.count > 0) {
-        for (const profileObj of searchresponse.data.result.response.content) {
-          const user: ICohortsUser = getUsers(profileObj)
-          if (!deptName || (profileObj.channel && profileObj.channel === deptName)) {
-            user.department = profileObj.rootOrgName
-            userlist.push(user)
-          }
+    if (searchresponse.data.result.response.count > 0) {
+      for (const profileObj of searchresponse.data.result.response.content) {
+        const user: ICohortsUser = getUsers(profileObj)
+        if (!deptName || (profileObj.channel && profileObj.channel === deptName)) {
+          user.department = profileObj.rootOrgName
+          userlist.push(user)
         }
       }
     }
-    res.status(response.status).send({ userlist, totalCount })
-  } catch (err) {
-    logError(err)
-
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: unknownError,
-      }
-    )
   }
+  res.status(response.status).send({ userlist, totalCount })
+} catch (err) {
+  logError(err)
+
+  res.status((err && err.response && err.response.status) || 500).send(
+    (err && err.response && err.response.data) || {
+      error: unknownError,
+    }
+  )
+}
 })
 
 proxiesV8.use('/externaltraining/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/peervalidation/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )

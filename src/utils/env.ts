@@ -243,6 +243,8 @@ export const CONSTANTS = {
   NTPC_REVOKE_URL: env.NTPC_REVOKE_URL || 'ntpcRevokeUrl',
   IGOT_REDIS_HOST: env.IGOT_REDIS_HOST || 'localhost',
   IGOT_REDIS_PORT: env.IGOT_REDIS_PORT || 6379,
+  REQ_MAX_BODY_SIZE: env.REQ_MAX_BODY_SIZE || '50mb',
+  NODEBB_AUTH_TOKEN: env.NODEBB_AUTH_TOKEN || '722686c6-2a2e-4b22-addf-c427261fbdc6',
 }
 
 export const RESTRICTED_PYTHON_STMT: string[] = process.env.RESTRICTED_CHARACTERS
