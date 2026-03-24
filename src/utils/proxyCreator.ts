@@ -1,70 +1,150 @@
 import { Router } from 'express'
 import { createProxyServer } from 'http-proxy'
+import { Readable } from 'stream'
+import { sharedHttpAgent, sharedHttpsAgent } from '../configs/request.config'
 import { extractUserEmailFromRequest, extractUserId, extractUserToken } from '../utils/requestExtract'
 import { CONSTANTS } from './env'
 import { logDebug, logError } from './logger'
 
 const _ = require('lodash')
 
+/** Upload paths that must not have their body re-serialised (binary streams) */
+const UPLOAD_EXCLUSIONS = ['/storage/upload', '/storage/profilePhotoUpload/']
+const DISCUSSION_PATH = '/discussion'
+const DISCUSSION_CREATE_PATH = '/discussion/user/v1/create'
+
+/**
+ * Build a Readable stream from req.body for use as http-proxy's options.buffer.
+ *
+ * Why: http-proxy fires the 'proxyReq' event via the 'socket' event. When a
+ * keep-alive agent queues a request (no free socket), the empty pipe from the
+ * already-consumed req stream completes before the socket is assigned, flushing
+ * headers + EOF. The proxyReq event fires too late — setHeader/write throws
+ * ERR_HTTP_HEADERS_SENT. Passing a buffer stream bypasses this entirely: http-proxy
+ * pipes options.buffer instead of the consumed req, delivering the body regardless
+ * of socket timing.
+ *
+ * Returns undefined for GETs, empty bodies, and upload paths (binary streams).
+ */
+  // tslint:disable-next-line: no-any
+export function buildProxyBuffer(req: any): Readable | undefined {
+  // No body to re-serialise
+  if (!req.body || typeof req.body !== 'object' || Object.keys(req.body).length === 0) {
+    if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
+      logWarn(`buildProxyBuffer: ${req.method} ${req.originalUrl || req.url} has empty/missing req.body`)
+    }
+    return undefined
+  }
+
+  // Upload routes — preserve raw binary stream
+  const url = req.originalUrl || req.url || ''
+  if (UPLOAD_EXCLUSIONS.some((exc) => url.includes(exc))) {
+    return undefined
+  }
+
+  const bodyData = JSON.stringify(req.body)
+  const byteLength = Buffer.byteLength(bodyData)
+
+  // Set content-length on req.headers so setupOutgoing copies it into the outgoing request
+  req.headers['content-length'] = String(byteLength)
+  // Remove transfer-encoding if present — we have an explicit content-length
+  delete req.headers['transfer-encoding']
+
+  const stream = new Readable({ read() { /* noop */ } })
+  stream.push(bodyData)
+  stream.push(null)
+  return stream
+}
+
+/** Pick the correct keep-alive agent based on target protocol */
+function pickAgent(target: string) {
+  return target.startsWith('https') ? sharedHttpsAgent : sharedHttpAgent
+}
+
+/** Wrap createProxyServer so every .web() call auto-injects the right keep-alive agent */
+export function createPooledProxy(opts: Record<string, any> = {}) {
+  const instance = createProxyServer(opts)
+  const originalWeb = instance.web.bind(instance)
+  // tslint:disable-next-line: no-any
+  instance.web = (req: any, res: any, options: any = {}, ...args: any[]) => {
+    const target = options.target || ''
+    options.agent = pickAgent(typeof target === 'string' ? target : '')
+    return originalWeb(req, res, options, ...args)
+  }
+  return instance
+}
+
 // Singleton proxy — no timeout (used by 14 existing functions)
-const proxy = createProxyServer({})
+const proxy = createPooledProxy({})
 
 // Singleton proxy with timeout — replaces per-request factory (used by 10 routes)
 // Previously: const proxyCreator = (timeout) => createProxyServer({ timeout }) — leaked instances
 // TODO: This is a temporary workaround to prevent unbounded proxy object creation.
 // Proper fix: evaluate if these routes can use the main singleton proxy with a
 // timeout, or migrate to axios streaming, eliminating the need for http-proxy here.
-const proxyTimed = createProxyServer({ timeout: CONSTANTS.PROXY_TIMEOUT })
+const proxyTimed = createPooledProxy({ timeout: CONSTANTS.PROXY_TIMEOUT })
+
 const PROXY_SLUG = '/proxies/v8'
 const PROXY_SLUG_WAT = '/proxies/v8/wat'
 const PROXY_SLUG_FORMS = '/proxies/v8/ext-forms'
 
+/**
+ * Express middleware: injects upstream auth/routing headers onto req.headers
+ * BEFORE proxy.web() is called. setupOutgoing() copies req.headers into the
+ * outgoing request before socket assignment, so there is no race condition
+ * with keep-alive agent socket timing.
+ *
+ * Replaces the old proxy.on('proxyReq') header injection which threw
+ * ERR_HTTP_HEADERS_SENT when the agent queued the request.
+ */
 // tslint:disable-next-line: no-any
-proxy.on('proxyReq', (proxyReq: any, req: any, _res: any, _options: any) => {
-  logDebug('proxyReqOn method. Adding more headers in request...')
-  const rootOrg = req.headers ? req.headers.rootOrg : req.headers.rootorg
-  logDebug(`rootOrg is updated: ` + JSON.stringify(rootOrg))
+export function proxyHeaders(req: any, _res: any, next: any) {
+  const session = req.session || {}
+  const rootOrgId = session.rootOrgId || ''
+  const channel = session.channel || ''
+
   // tslint:disable-next-line: no-duplicate-string
-  proxyReq.setHeader('X-Channel-Id', (_.get(req, 'session.rootOrgId')) ? _.get(req, 'session.rootOrgId') : CONSTANTS.X_Channel_Id)
-  // tslint:disable-next-line: max-line-length
-  proxyReq.setHeader('Authorization', CONSTANTS.SB_API_KEY)
-  proxyReq.setHeader('x-authenticated-user-token', extractUserToken(req))
-  proxyReq.setHeader('x-authenticated-userid', extractUserId(req))
-  let rootOrgId = ''
-  if (req.session.hasOwnProperty('rootOrgId')) {
-    rootOrgId = req.session.rootOrgId
-  }
-  proxyReq.setHeader('x-authenticated-user-orgid', rootOrgId)
-  let userRoles = []
-  if (req.session.hasOwnProperty('userRoles')) {
-      userRoles = req.session.userRoles
-  }
-  proxyReq.setHeader('x-authenticated-user-roles', userRoles)
-  let channel = ''
-  if (req.session.hasOwnProperty('channel')) {
-    channel = req.session.channel
-  }
-  proxyReq.setHeader('x-authenticated-user-orgname', channel)
-  proxyReq.setHeader('x-authenticated-user-channel', channel)
-  if (req.session.hasOwnProperty('uid')) {
-    proxyReq.setHeader('x-authenticated-user-nodebb-uid', req.session.uid)
+  req.headers['x-channel-id'] = rootOrgId || CONSTANTS.X_Channel_Id
+  req.headers.authorization = CONSTANTS.SB_API_KEY
+  req.headers['x-authenticated-user-token'] = extractUserToken(req)
+  req.headers['x-authenticated-userid'] = extractUserId(req)
+  req.headers['x-authenticated-user-orgid'] = rootOrgId
+  req.headers['x-authenticated-user-roles'] = String(session.userRoles || [])
+  req.headers['x-authenticated-user-orgname'] = channel
+  req.headers['x-authenticated-user-channel'] = channel
+
+  if (session.uid) {
+    req.headers['x-authenticated-user-nodebb-uid'] = session.uid
   }
 
-  // condition has been added to set the session in nodebb req header
-  /* tslint:disable-next-line */
-  if (req.originalUrl.includes('/discussion') && !req.originalUrl.includes('/discussion/user/v1/create') && req.session) {
-    if (req.session) {
-      req.sesson.cookie.secure = true
-    }
-    if (req.body && req.session.hasOwnProperty('uid')) {
-      req.body._uid = req.session.uid
-    }
-    logDebug('REQ_URL_ORIGINAL discussion', proxyReq.path)
+  // Discussion route: set secure cookie + inject _uid into body
+  setDiscussionFields(req, session)
+
+  next()
+}
+
+// tslint:disable-next-line: no-any
+function setDiscussionFields(req: any, session: any) {
+  const url = req.originalUrl || ''
+  if (!url.includes(DISCUSSION_PATH) || url.includes(DISCUSSION_CREATE_PATH)) {
+    return
   }
-  if (!req.originalUrl.includes('/storage/upload') && !req.originalUrl.includes('/storage/profilePhotoUpload/*') && req.body) {
-    const bodyData = JSON.stringify(req.body)
-    proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData))
-    proxyReq.write(bodyData)
+  if (session.cookie) {
+    session.cookie.secure = true
+  }
+  // Body mutation: inject _uid — must happen before buildProxyBuffer
+  if (req.body && session.uid) {
+    req.body._uid = session.uid
+  }
+}
+
+// Minimal proxyReq handler — only logging, wrapped in try/catch to prevent uncaughtException
+// tslint:disable-next-line: no-any
+proxy.on('proxyReq', (_proxyReq: any, req: any, _res: any, _options: any) => {
+  try {
+    logInfo('proxyReq →', req.method, req.originalUrl || req.url)
+  } catch (err) {
+    logError('proxyReq event error:', String(err))
   }
 })
 
@@ -95,7 +175,7 @@ proxy.on('proxyRes', (proxyRes: any, req: any, _res: any, ) => {
   // }
   // tslint:disable-next-line: no-any
   proxyRes.on('data', (data: any) => {
-    if (req.originalUrl.includes('/discussion/user/v1/create')) {
+    if (req.originalUrl.includes(DISCUSSION_CREATE_PATH)) {
 
       if ((proxyRes.statusCode === 200 || proxyRes.statusCode === 201)) {
         data = JSON.parse(data.toString('utf-8'))
@@ -111,10 +191,27 @@ proxy.on('proxyRes', (proxyRes: any, req: any, _res: any, ) => {
 
 })
 
+/** Snapshot of agent pool for diagnostics */
+function poolStats(): string {
+  // tslint:disable-next-line: no-any
+  const agent: any = sharedHttpAgent
+  const key = Object.keys(agent.sockets || {})[0] || ''
+  if (!key) { return 'pool: empty' }
+  const active = (agent.sockets[key] || []).length
+  const free = ((agent.freeSockets || {})[key] || []).length
+  const queued = ((agent.requests || {})[key] || []).length
+  return `pool: active=${active} free=${free} queued=${queued}`
+}
+
 // Error handler — return 502 instead of crashing or hanging the connection
 // tslint:disable-next-line: no-any
 function handleProxyError(err: any, req: any, res: any) {
-  logError('Proxy error:', String(err.message || err), '| url:', req.originalUrl || req.url)
+  const code = err.code || 'UNKNOWN'
+  logError(
+    `Proxy error: ${code} ${String(err.message || err)}`,
+    `| ${req.method} ${req.originalUrl || req.url}`,
+    `| ${poolStats()}`
+  )
   if (res && !res.headersSent) {
     res.writeHead(502, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify({ error: 'Bad Gateway', message: 'Upstream service unavailable' }))
@@ -124,8 +221,18 @@ function handleProxyError(err: any, req: any, res: any) {
 proxy.on('error', handleProxyError)
 proxyTimed.on('error', handleProxyError)
 
+// Log connection resets with request context instead of silently swallowing
+// tslint:disable-next-line: no-any
+proxy.on('econnreset', (err: any, req: any, _res: any, _target: any) => {
+  logError(`Proxy ECONNRESET: ${req.method} ${req.originalUrl || req.url}`, String(err.message || err))
+})
+// tslint:disable-next-line: no-any
+proxyTimed.on('econnreset', (err: any, req: any, _res: any, _target: any) => {
+  logError(`Proxy ECONNRESET: ${req.method} ${req.originalUrl || req.url}`, String(err.message || err))
+})
+
 export function proxyCreatorRoute(route: Router, targetUrl: string, _timeout = 10000): Router {
-  route.all('/*', (req, res) => {
+  route.all('/*', proxyHeaders, (req, res) => {
     const downloadKeyword = '/download/'
     if (req.url.startsWith(downloadKeyword)) {
       req.url = downloadKeyword + req.url.split(downloadKeyword)[1].replace(/\//g, '%2F')
@@ -133,6 +240,7 @@ export function proxyCreatorRoute(route: Router, targetUrl: string, _timeout = 1
     logDebug('REQ_URL_ORIGINAL', req.originalUrl)
     logDebug('REQ_URL', req.url)
     proxyTimed.web(req, res, {
+      buffer: buildProxyBuffer(req),
       target: targetUrl,
     })
   })
@@ -140,8 +248,9 @@ export function proxyCreatorRoute(route: Router, targetUrl: string, _timeout = 1
 }
 
 export function ilpProxyCreatorRoute(route: Router, baseUrl: string): Router {
-  route.all('/*', (req, res) => {
+  route.all('/*', proxyHeaders, (req, res) => {
     proxyTimed.web(req, res, {
+      buffer: buildProxyBuffer(req),
       headers: { ...req.headers } as { [s: string]: string },
       target: baseUrl + req.url,
     })
@@ -150,8 +259,9 @@ export function ilpProxyCreatorRoute(route: Router, baseUrl: string): Router {
 }
 
 export function scormProxyCreatorRoute(route: Router, baseUrl: string): Router {
-  route.all('/*', (req, res) => {
+  route.all('/*', proxyHeaders, (req, res) => {
     proxyTimed.web(req, res, {
+      buffer: buildProxyBuffer(req),
       target: baseUrl,
     })
   })
@@ -159,11 +269,12 @@ export function scormProxyCreatorRoute(route: Router, baseUrl: string): Router {
 }
 
 export function proxyCreatorLearner(route: Router, targetUrl: string, _timeout = 10000): Router {
-  route.all('/*', (req, res) => {
-    logDebug('REQ_URL_ORIGINAL proxyCreatorLearner', req.originalUrl)
+  route.all('/*', proxyHeaders, (req, res) => {
+    logInfo('REQ_URL_ORIGINAL proxyCreatorLearner', req.originalUrl)
     const url = removePrefix(`${PROXY_SLUG}/learner`, req.originalUrl)
     logDebug('Final URL: ', targetUrl + url)
     proxy.web(req, res, {
+      buffer: buildProxyBuffer(req),
       changeOrigin: true,
       ignorePath: true,
       target: targetUrl + url,
@@ -173,8 +284,8 @@ export function proxyCreatorLearner(route: Router, targetUrl: string, _timeout =
 }
 // tslint:disable-next-line
 export function proxyCreatorSunbird(route: Router, targetUrl: string, _timeout = 10000): Router {
-  route.all('/*', (req, res) => {
-    logDebug('REQ_URL_ORIGINAL proxyCreatorSunbird', req.originalUrl)
+  route.all('/*', proxyHeaders, (req, res) => {
+    logInfo('REQ_URL_ORIGINAL proxyCreatorSunbird', req.originalUrl)
     let url = ''
     if (req.originalUrl.includes('/proxies/v8/wat')) {
       url = removePrefix(`${PROXY_SLUG_WAT}`, req.originalUrl)
@@ -182,7 +293,7 @@ export function proxyCreatorSunbird(route: Router, targetUrl: string, _timeout =
       url = removePrefix(`${PROXY_SLUG}`, req.originalUrl)
     }
 
-    if (req.originalUrl.includes('/discussion') && !req.originalUrl.includes('/discussion/user/v1/create') && req.session) {
+    if (req.originalUrl.includes(DISCUSSION_PATH) && !req.originalUrl.includes(DISCUSSION_CREATE_PATH) && req.session) {
       if (req.session.hasOwnProperty('uid')) {
         if (req.originalUrl.includes('?')) {
           url = `${url}&_uid=${req.session.uid}`
@@ -206,6 +317,7 @@ export function proxyCreatorSunbird(route: Router, targetUrl: string, _timeout =
     }
 
     proxy.web(req, res, {
+      buffer: buildProxyBuffer(req),
       changeOrigin: true,
       ignorePath: true,
       target: targetUrl + url,
@@ -215,11 +327,12 @@ export function proxyCreatorSunbird(route: Router, targetUrl: string, _timeout =
 }
 
 export function proxyCreatorKnowledge(route: Router, targetUrl: string, _timeout = 10000): Router {
-  route.all('/*', (req, res) => {
+  route.all('/*', proxyHeaders, (req, res) => {
 
     const url = removePrefix(`${PROXY_SLUG}`, req.originalUrl)
     logDebug('REQ_URL_ORIGINAL proxyCreatorKnowledge', targetUrl + url)
     proxy.web(req, res, {
+      buffer: buildProxyBuffer(req),
       changeOrigin: true,
       ignorePath: true,
       target: targetUrl + url,
@@ -229,10 +342,11 @@ export function proxyCreatorKnowledge(route: Router, targetUrl: string, _timeout
 }
 
 export function proxyCreatorUpload(route: Router, targetUrl: string, _timeout = 10000): Router {
-  route.all('/*', (req, res) => {
+  route.all('/*', proxyHeaders, (req, res) => {
     const url = removePrefix(`${PROXY_SLUG}/action`, req.originalUrl)
     logDebug('REQ_URL_ORIGINAL proxyCreatorUpload', targetUrl)
     proxy.web(req, res, {
+      buffer: buildProxyBuffer(req),
       changeOrigin: true,
       ignorePath: true,
       target: targetUrl + url,
@@ -246,9 +360,10 @@ function removePrefix(prefix: string, s: string) {
 }
 
 export function proxyCreatorSunbirdSearch(route: Router, targetUrl: string, _timeout = 10000): Router {
-  route.all('/*', (req, res) => {
-    logDebug('REQ_URL_ORIGINAL proxyCreatorSunbirdSearch', req.originalUrl)
+  route.all('/*', proxyHeaders, (req, res) => {
+    logInfo('REQ_URL_ORIGINAL proxyCreatorSunbirdSearch', req.originalUrl)
     proxy.web(req, res, {
+      buffer: buildProxyBuffer(req),
       changeOrigin: true,
       ignorePath: true,
       target: targetUrl,
@@ -258,7 +373,7 @@ export function proxyCreatorSunbirdSearch(route: Router, targetUrl: string, _tim
 }
 
 export function proxyCreatorToAppentUserId(route: Router, targetUrl: string, _timeout = 10000): Router {
-  route.all('/*', (req, res) => {
+  route.all('/*', proxyHeaders, (req, res) => {
     const originalUrl = req.originalUrl
     const lastIndex = originalUrl.lastIndexOf('/')
     const subStr = originalUrl.substr(lastIndex).substr(1).split('-').length
@@ -268,6 +383,7 @@ export function proxyCreatorToAppentUserId(route: Router, targetUrl: string, _ti
     }
     logDebug('REQ_URL_ORIGINAL proxyCreatorToAppentUserId', req.originalUrl)
     proxy.web(req, res, {
+      buffer: buildProxyBuffer(req),
       changeOrigin: true,
       ignorePath: true,
       target: targetUrl + userId, // [userId.length - 1],
@@ -277,11 +393,12 @@ export function proxyCreatorToAppentUserId(route: Router, targetUrl: string, _ti
 }
 
 export function proxyCreatorQML(route: Router, targetUrl: string, urlType: string, _timeout = 10000, ): Router {
-  route.all('/*', (req, res) => {
+  route.all('/*', proxyHeaders, (req, res) => {
     const originalUrl = req.originalUrl.replace(urlType, '/')
     const url = removePrefix(`${PROXY_SLUG}`, originalUrl)
     logDebug('REQ_URL_ORIGINAL proxyCreatorQML', targetUrl + url)
     proxy.web(req, res, {
+      buffer: buildProxyBuffer(req),
       changeOrigin: true,
       ignorePath: true,
       target: targetUrl + url,
@@ -291,10 +408,11 @@ export function proxyCreatorQML(route: Router, targetUrl: string, urlType: strin
 }
 
 export function proxyContent(route: Router, targetUrl: string, _timeout = 10000): Router {
-  route.all('/*', (req, res) => {
+  route.all('/*', proxyHeaders, (req, res) => {
     const url = removePrefix(`${PROXY_SLUG}/private`, req.originalUrl)
     logDebug('REQ_URL_ORIGINAL proxyCreatorUpload', targetUrl)
     proxy.web(req, res, {
+      buffer: buildProxyBuffer(req),
       changeOrigin: true,
       ignorePath: true,
       target: targetUrl + url,
@@ -304,10 +422,11 @@ export function proxyContent(route: Router, targetUrl: string, _timeout = 10000)
 }
 
 export function proxyContentLearnerVM(route: Router, targetUrl: string, _timeout = 10000): Router {
-  route.all('/*', (req, res) => {
+  route.all('/*', proxyHeaders, (req, res) => {
     const url = removePrefix(`${PROXY_SLUG}/learnervm/private`, req.originalUrl)
     logDebug('REQ_URL_ORIGINAL proxyContentLearnerVM', targetUrl)
     proxy.web(req, res, {
+      buffer: buildProxyBuffer(req),
       changeOrigin: true,
       ignorePath: true,
       target: targetUrl + url,
@@ -318,7 +437,7 @@ export function proxyContentLearnerVM(route: Router, targetUrl: string, _timeout
 
 export function proxyAssessmentRead(route: Router, targetUrl: string, _timeout = 10000): Router {
   const hierarchyQuery = 'hierarchy=detail'
-  route.all('/*', (req, res) => {
+  route.all('/*', proxyHeaders, (req, res) => {
     let url = removePrefix(`${PROXY_SLUG}/assessment/read`, req.originalUrl)
     // Check if the target URL already contains query parameters
     url = url.includes('?')
@@ -326,6 +445,7 @@ export function proxyAssessmentRead(route: Router, targetUrl: string, _timeout =
       : `${targetUrl}${url}?${hierarchyQuery}`
     logDebug('REQ_URL_UPDATED proxyAssessmentRead', url)
     proxy.web(req, res, {
+      buffer: buildProxyBuffer(req),
       changeOrigin: true,
       ignorePath: true,
       target: url,
@@ -335,7 +455,7 @@ export function proxyAssessmentRead(route: Router, targetUrl: string, _timeout =
 }
 
 export function proxyQuestionRead(route: Router, targetUrl: string, _timeout = 10000): Router {
-  route.all('/*', (req, res) => {
+  route.all('/*', proxyHeaders, (req, res) => {
     if (!targetUrl.includes('?')) {
     // Split the URL into base URL and query parameters
     const [, queryParams] = req.originalUrl.split('?')
@@ -344,6 +464,7 @@ export function proxyQuestionRead(route: Router, targetUrl: string, _timeout = 1
     }
     logDebug('REQ_URL_UPDATED proxyAssessmentRead', targetUrl)
     proxy.web(req, res, {
+      buffer: buildProxyBuffer(req),
       changeOrigin: true,
       ignorePath: true,
       target: targetUrl,
@@ -353,11 +474,12 @@ export function proxyQuestionRead(route: Router, targetUrl: string, _timeout = 1
 }
 
 export function proxyCreatorForms(route: Router, _timeout = 10000): Router {
-  route.all('/*', (req, res) => {
-    logDebug('REQ_URL_ORIGINAL proxyCreatorSunbird', req.originalUrl)
+  route.all('/*', proxyHeaders, (req, res) => {
+    logInfo('REQ_URL_ORIGINAL proxyCreatorSunbird', req.originalUrl)
     let url = ''
     url = removePrefix(`${PROXY_SLUG_FORMS}`, req.originalUrl)
     proxy.web(req, res, {
+      buffer: buildProxyBuffer(req),
       target: 'http://localhost:3003/' + url,
     })
   })
@@ -365,7 +487,7 @@ export function proxyCreatorForms(route: Router, _timeout = 10000): Router {
 }
 
 export function proxyAssessmentReadV2(route: Router, targetUrl: string, _timeout = 10000): Router {
-  route.all('/*', (req, res) => {
+  route.all('/*', proxyHeaders, (req, res) => {
     let url = removePrefix(`${PROXY_SLUG}/assessment/v5/read`, req.originalUrl)
     // Check if the target URL already contains query parameters
     if (url.includes('?')) {
@@ -375,6 +497,7 @@ export function proxyAssessmentReadV2(route: Router, targetUrl: string, _timeout
     }
     logDebug('REQ_URL_UPDATED proxyAssessmentReadV5', url)
     proxy.web(req, res, {
+      buffer: buildProxyBuffer(req),
       changeOrigin: true,
       ignorePath: true,
       target: url,
@@ -385,7 +508,7 @@ export function proxyAssessmentReadV2(route: Router, targetUrl: string, _timeout
 
 export function proxyAssessmentReadV7(route: Router, targetUrl: string, _timeout = 10000): Router {
   const hierarchyQuery = 'hierarchy=detail'
-  route.all('/*', (req, res) => {
+  route.all('/*', proxyHeaders, (req, res) => {
     let url = removePrefix(`${PROXY_SLUG}/assessment/v7/read`, req.originalUrl)
     // Append query parameter
     url = url.includes('?')
@@ -393,6 +516,7 @@ export function proxyAssessmentReadV7(route: Router, targetUrl: string, _timeout
       : `${targetUrl}${url}?${hierarchyQuery}`
     logDebug('REQ_URL_UPDATED proxyAssessmentReadV7', url)
     proxy.web(req, res, {
+      buffer: buildProxyBuffer(req),
       changeOrigin: true,
       ignorePath: true,
       target: url,
