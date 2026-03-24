@@ -62,6 +62,7 @@ function pickAgent(target: string) {
 }
 
 /** Wrap createProxyServer so every .web() call auto-injects the right keep-alive agent */
+// tslint:disable-next-line: no-any
 export function createPooledProxy(opts: Record<string, any> = {}) {
   const instance = createProxyServer(opts)
   const originalWeb = instance.web.bind(instance)
