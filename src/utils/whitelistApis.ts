@@ -2559,6 +2559,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
+                ROLE.STATE_ADMIN,
             ],
         },
         '/proxies/v8/trending/content/search': {
