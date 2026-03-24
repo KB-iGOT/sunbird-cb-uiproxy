@@ -11,6 +11,7 @@ import { oilAuth } from './oilAuth'
 import { parichayAuth } from './parichayAuth'
 import { workallocationPublic } from './workallocationPublic'
 import { youtubePlaylist } from './youtubePlaylist'
+import { jsonParser } from '../utils/shared'
 
 const puppeteer = require('puppeteer')
 export const publicApiV8 = express.Router()
@@ -46,7 +47,7 @@ publicApiV8.get('/systemDate', (_req, res) => {
   })
 })
 
-publicApiV8.post('/course/batch/cert/download/mobile', async (req, res) => {
+publicApiV8.post('/course/batch/cert/download/mobile', jsonParser, async (req, res) => {
   try {
     const svgContent = req.body.printUri
     if (req.body.outputFormat === 'svg') {
@@ -121,7 +122,7 @@ publicApiV8.use('/forms/v2/getApplicationsById', proxyCreatorRoute(express.Route
 
 publicApiV8.use('/chatbot/v3/mobile/transcoder', chatBotTranscoderAPIIntegration)
 
-publicApiV8.post('/public/forms/v2/saveFormSubmit', async (req: Request, res: express.Response) => {
+publicApiV8.post('/public/forms/v2/saveFormSubmit', jsonParser, async (req: Request, res: express.Response) => {
   try {
     const response = await axios.post(API_END_POINTS.publicFormSubmit, req.body, {
       ...axiosRequestConfig,
@@ -189,7 +190,7 @@ publicApiV8.use('/liveness', (_req, res) => {
   res.status(200).send('ok')
 })
 
-publicApiV8.post('/designation/search', async (req, res) => {
+publicApiV8.post('/designation/search', jsonParser, async (req, res) => {
   const { searchString } = req.body
   let { pageSize, pageNumber, requestedFields } = req.body
 
@@ -275,7 +276,7 @@ const publicDesignationSearch = async (req: Request, res: express.Response) => {
   }
 }
 
-publicApiV8.post('/public/content/search', async (req, res) => {
+publicApiV8.post('/public/content/search', jsonParser, async (req, res) => {
   await fetchContentDetailsList('Case Study', req, res)
 })
 
@@ -315,7 +316,7 @@ const fetchContentDetailsList = async (resourceCategoryString: string, req: Requ
   }
 }
 
-publicApiV8.post('/org/hierarchy/search', async (req: Request, res: express.Response) => {
+publicApiV8.post('/org/hierarchy/search', jsonParser, async (req: Request, res: express.Response) => {
   try {
     const response = await axios.post(API_END_POINTS.publicOrgHierarchySearch, req.body, {
       ...axiosRequestConfig,
@@ -335,7 +336,7 @@ publicApiV8.post('/org/hierarchy/search', async (req: Request, res: express.Resp
   }
 })
 
-publicApiV8.post('/org/hierarchy/ministry/search', async (req: Request, res: express.Response) => {
+publicApiV8.post('/org/hierarchy/ministry/search', jsonParser, async (req: Request, res: express.Response) => {
   try {
     const response = await axios.post(API_END_POINTS.publicOrgHierarchyMinistrySearch, req.body, {
       ...axiosRequestConfig,
@@ -355,7 +356,7 @@ publicApiV8.post('/org/hierarchy/ministry/search', async (req: Request, res: exp
   }
 })
 
-publicApiV8.post('/org/hierarchy/state/search', async (req: Request, res: express.Response) => {
+publicApiV8.post('/org/hierarchy/state/search', jsonParser, async (req: Request, res: express.Response) => {
   try {
     const response = await axios.post(API_END_POINTS.publicOrgHierarchyStateSearch, req.body, {
       ...axiosRequestConfig,

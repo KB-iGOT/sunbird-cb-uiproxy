@@ -1,6 +1,6 @@
 import compression from 'compression'
 import connectTimeout from 'connect-timeout'
-import cors from 'cors'
+import cors from 'cors'
 import express, { NextFunction } from 'express'
 import fileUpload from 'express-fileupload'
 import expressSession from 'express-session'
@@ -22,6 +22,7 @@ const { frameworkAPI } = require('@project-sunbird/ext-framework-server/api')
 const frameworkConfig = require('./configs/framework.config')
 const cookieParser = require('cookie-parser')
 const healthcheck = require('express-healthcheck')
+import { jsonParser, urlEncodedParser } from './utils/shared'
 
 import { apiWhiteListLogger, isAllowed } from './utils/apiWhiteList'
 
@@ -42,14 +43,12 @@ export class Server {
   private keycloak?: CustomKeycloak
   private constructor() {
     if (CONSTANTS.CORS_ENVIRONMENT === 'dev') {
-      this.app.use(cors({origin: 'https://local.igot-dev.in:3000', credentials: true}))
+      this.app.use(cors({ origin: 'https://local.igot-dev.in:3000', credentials: true }))
     } else {
       this.app.use(cors())
     }
     const sessionConfig = getSessionConfig()
     this.app.use(expressSession(sessionConfig))
-    this.app.use(express.urlencoded({ extended: false, limit: '50mb' }))
-    this.app.use(express.json({ limit: '50mb' }))
     this.setCookie()
     this.app.all('*', apiWhiteListLogger())
     if (CONSTANTS.PORTAL_API_WHITELIST_CHECK === 'true') {
@@ -155,8 +154,8 @@ export class Server {
     frameworkAPI.bootstrap(frameworkConfig, this.app).then((data: any) => {
       logDebug('Successfuly bootstrapped frameworkAPI', data)
     })
-    // tslint:disable-next-line: no-any
-    .catch((error: any ) => logError('Error in frameworkAPI bootstrap', error))
+      // tslint:disable-next-line: no-any
+      .catch((error: any) => logError('Error in frameworkAPI bootstrap', error))
   }
   private servePublicApi() {
     this.app.use('/public/v8', publicApiV8)
@@ -164,7 +163,7 @@ export class Server {
 
   private serverProtectedApi() {
     if (this.keycloak) {
-      this.app.use('/protected/v8', this.keycloak.protect, protectedApiV8)
+      this.app.use('/protected/v8', this.keycloak.protect, jsonParser, urlEncodedParser, protectedApiV8)
     }
   }
   private serverProxies() {
@@ -181,8 +180,8 @@ export class Server {
   }
   private authoringApi() {
     if (this.keycloak) {
-      this.app.use('/authSearchApi', this.keycloak.protect, authSearch)
-      this.app.use('/authApi', authApi)
+      this.app.use('/authSearchApi', this.keycloak.protect, jsonParser, authSearch)
+      this.app.use('/authApi', jsonParser, authApi)
     }
   }
   private resetCookies() {
@@ -207,7 +206,7 @@ export class Server {
           }
         }
       }
-      res.clearCookie('connect.sid', {httpOnly: true, secure: true, })
+      res.clearCookie('connect.sid', { httpOnly: true, secure: true, })
       res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: false, path: '/', secure: true, })
       logDebug('After delete Cookies::::' + JSON.stringify(_req.cookies))
       if (_req.session) {
