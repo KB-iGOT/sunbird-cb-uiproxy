@@ -4120,6 +4120,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
                 ROLE.SPV_PUBLISHER,
                 ROLE.MDO_LEADER,
+                ROLE.STATE_ADMIN,
             ],
         },
         '/proxies/v8/org/framework/read': {
@@ -4716,6 +4717,7 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
                 ROLE.MDO_ADMIN,
                 ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
             ],
         },
         '/proxies/v8/designation/v1/orgMapping/bulkUpload/progress/details/:orgId': {
