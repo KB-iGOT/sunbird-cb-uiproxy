@@ -5,7 +5,7 @@ const dateFormat        = require('dateformat')
 
 import { NextFunction, Request, Response } from 'express'
 import { CONSTANTS } from './env'
-import { logError, logInfo } from './logger'
+import { logError, logInfo, logDebug } from './logger'
 import { ROLE } from './roles'
 import { API_LIST } from './whitelistApis'
 
@@ -87,13 +87,13 @@ const urlChecks = {
     ROLE_CHECK: (resolve: any, reject: any, req: Request, rolesForURL: any, REQ_URL: any) => {
         const roleData = _.get(req, 'session.userRoles')
         const data = (roleData) ? roleData : []
-        logInfo('Portal_API_WHITELIST : Middleware for URL [ ' + REQ_URL + ' ]')
-        logInfo('Configured Roles for URL -> ' + JSON.stringify(rolesForURL))
+        logDebug('Portal_API_WHITELIST : Middleware for URL [ ' + REQ_URL + ' ]')
+        logDebug('Configured Roles for URL -> ' + JSON.stringify(rolesForURL))
         if (_.includes(rolesForURL, 'ALL') && data.length > 0) {
-            logInfo('RolesForAll is getting called')
+            logDebug('RolesForAll is getting called')
             resolve()
         } else if (_.intersection(rolesForURL, data).length > 0) {
-            logInfo('RolesForUrl is getting called')
+            logDebug('RolesForUrl is getting called')
             resolve()
         } else {
             return reject('User doesn\'t have appropriate roles')
@@ -101,7 +101,7 @@ const urlChecks = {
     },
     // tslint:disable-next-line: no-any
     SCOPE_CHECK : (resolve: any, reject: any, req: Request, rolesForURL: any, REQ_URL: any) => {
-        logInfo('Portal_API_WHITELIST_SCOPE_CHECK : Middleware for URL [ ' + REQ_URL + ' ]')
+        logDebug('Portal_API_WHITELIST_SCOPE_CHECK : Middleware for URL [ ' + REQ_URL + ' ]')
         const orgData = (_.get(req, 'session.orgs')) ? _.get(req, 'session.orgs') : []
         const orgId = (_.get(req, 'query.orgId')) ? _.get(req, 'query.orgId') : ''
         if (_.isEmpty(orgId) || _.isEmpty(orgData)) {
@@ -293,7 +293,7 @@ export const isAllowed = () => {
         let REQ_URL = req.path
         if (CONSTANTS.PORTAL_API_WHITELIST_CHECK === 'true') {
             if (shouldAllow(req) || _.includes(REQ_URL, '/resource') || _.includes(REQ_URL, '/eclogin')) {
-                logInfo('Path : ' + REQ_URL + ' is in excluded list.')
+                logDebug('Path : ' + REQ_URL + ' is in excluded list.')
                 next()
             } else {
 

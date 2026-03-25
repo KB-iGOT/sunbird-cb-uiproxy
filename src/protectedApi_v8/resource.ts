@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { CONSTANTS } from '../utils/env'
-import { logInfo } from '../utils/logger'
+import { logInfo, logDebug } from '../utils/logger'
 const _                 = require('lodash')
 export const userAuthKeyCloakApi = Router()
 export const userAuthKeyCloakEcApi = Router()
@@ -9,7 +9,7 @@ userAuthKeyCloakApi.get('/', (req, res) => {
     let queryParam = ''
     let isLocal = 0
     let domain = ''
-    logInfo('Received query param: ' + JSON.stringify(req.query))
+    logDebug('Received query param: ' + JSON.stringify(req.query))
     if (req.session && req.session.authenticated ) {
         logInfo('User is authenticated.. Updating Cookie with Secure and SameSite flags')
         if (host !== undefined) {
@@ -67,7 +67,7 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
     let queryParam = ''
     let isLocal = 0
     let domain = ''
-    logInfo('Received query param: ' + JSON.stringify(req.query))
+    logDebug('Received query param: ' + JSON.stringify(req.query))
     if (req.session && req.session.authenticated ) {
         logInfo('User is authenticated.. Updating Cookie with Secure and SameSite flags')
         if (host !== undefined) {

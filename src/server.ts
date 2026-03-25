@@ -17,7 +17,7 @@ import { proxiesV8 } from './proxies_v8/proxies_v8'
 import { publicApiV8 } from './publicApi_v8/publicApiV8'
 import { CustomKeycloak } from './utils/custom-keycloak'
 import { CONSTANTS } from './utils/env'
-import { logError, logInfo, logSuccess } from './utils/logger'
+import { logError, logInfo, logSuccess, logDebug } from './utils/logger'
 const { frameworkAPI } = require('@project-sunbird/ext-framework-server/api')
 const frameworkConfig = require('./configs/framework.config')
 const cookieParser = require('cookie-parser')
@@ -114,9 +114,9 @@ export class Server {
     )
     // TODO: See what needs to be logged
     this.app.use((req, _, next) => {
-      logInfo('adding x-forward-proto header with https to request...')
+      logDebug('adding x-forward-proto header with https to request...')
       req.headers['x-forwarded-proto'] = 'https'
-      logInfo(`Server:ConfigureMiddleWare:: Worker ${process.pid} : ${req.protocol}://${req.hostname}/${req.url}`)
+      logDebug(`Server:ConfigureMiddleWare:: Worker ${process.pid} : ${req.protocol}://${req.hostname}/${req.url}`)
       next()
     })
 
@@ -137,10 +137,10 @@ export class Server {
       req.url = '/v1/form/read'
       next()
     })
-    logInfo('setExtFormsFramework MEthod - frameworkConfig :: ', JSON.stringify(frameworkConfig))
+    logDebug('setExtFormsFramework MEthod - frameworkConfig :: ', JSON.stringify(frameworkConfig))
     // tslint:disable-next-line: no-any
     frameworkAPI.bootstrap(frameworkConfig, this.app).then((data: any) => {
-      logInfo('Successfuly bootstrapped frameworkAPI', data)
+      logDebug('Successfuly bootstrapped frameworkAPI', data)
     })
     // tslint:disable-next-line: no-any
     .catch((error: any ) => logError('Error in frameworkAPI bootstrap', error))
@@ -176,11 +176,11 @@ export class Server {
     this.app.use('/reset', (_req, res) => {
       logInfo('CLEARING RES COOKIES')
       const host = _req.get('host')
-      logInfo('host is: ' + host)
-      logInfo('response cookies: ' + JSON.stringify(_req.session))
-      logInfo('Cookies:' + _req.get('cookies'))
-      logInfo('Cookie:' + _req.get('cookie'))
-      logInfo('Cookies::::' + JSON.stringify(_req.cookies))
+      logDebug('host is: ' + host)
+      logDebug('response cookies: ' + JSON.stringify(_req.session))
+      logDebug('Cookies:' + _req.get('cookies'))
+      logDebug('Cookie:' + _req.get('cookie'))
+      logDebug('Cookies::::' + JSON.stringify(_req.cookies))
       let domainUrl = ''
       if (host !== undefined) {
         if (host.includes('localhost')) {
@@ -196,7 +196,7 @@ export class Server {
       }
       res.clearCookie('connect.sid', {httpOnly: true, secure: true, })
       res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: false, path: '/', secure: true, })
-      logInfo('After delete Cookies::::' + JSON.stringify(_req.cookies))
+      logDebug('After delete Cookies::::' + JSON.stringify(_req.cookies))
       if (_req.session) {
         _req.session.destroy(() => {
           logInfo('Session Destroyed')

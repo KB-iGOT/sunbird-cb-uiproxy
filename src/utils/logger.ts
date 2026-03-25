@@ -10,7 +10,7 @@ const pinoOptions = {
       return { level: label }
     },
   },
-  level: CONSTANTS.IS_DEVELOPMENT ? 'debug' : 'info',
+  level: CONSTANTS.LOG_LEVEL || 'info',,
   timestamp: pino.stdTimeFunctions.isoTime,
 }
 
@@ -47,6 +47,10 @@ export function logInfoHeading(msg: string) {
 
 export function logInfo(...msgs: string[]) {
   logger.info(msgs.join(' '))
+}
+
+export function logDebug(...msgs: string[]) {
+  logger.debug(msgs.join(' '))
 }
 
 export function logWarnHeading(msg: string) {

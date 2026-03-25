@@ -3,7 +3,7 @@ import { Router } from 'express'
 
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logError, logInfo, logDebug } from '../utils/logger'
 import { ERROR } from '../utils/message'
 import { extractUserId, extractUserToken } from '../utils/requestExtract'
 
@@ -36,12 +36,12 @@ contentPrivateApi.patch('/update/:id', async (req, res) => {
             return
         }
         // tslint: disable - next - line: no - commented - code
-        logInfo('line no: 36 ===> ', id, JSON.stringify(fields), userId, userToken)
+        logDebug('line no: 36 ===> ', id, JSON.stringify(fields), userId, userToken)
         // tslint: disable - next - line: no - commented - code
         if (fields instanceof Array) {
             for (const entry of fields) {
                 // tslint: disable - next - line: no - commented - code
-                logInfo('line no: 43 ===> ', entry, JSON.stringify(editableFields))
+                logDebug('line no: 43 ===> ', entry, JSON.stringify(editableFields))
                 if (editableFields.indexOf(entry) === -1) {
                     validationErrorFlag = true
                 }
@@ -55,7 +55,7 @@ contentPrivateApi.patch('/update/:id', async (req, res) => {
         const userChannel = await getUserChannel(userToken, userId)
         const hierarchySource = await getHierarchyDetails(userToken, id)
         // tslint:disable-next-line: no-commented-code
-        logInfo('line no: 58 ===> ',  JSON.stringify(userChannel), JSON.stringify(hierarchySource))
+        logDebug('line no: 58 ===> ',  JSON.stringify(userChannel), JSON.stringify(hierarchySource))
         if (userChannel !== hierarchySource) {
             res.status(400).send({
                 msg: CHANNEL_VALIDATION_ERROR,
@@ -115,7 +115,7 @@ contentPrivateApi.patch('/migratereviewer/:id', async (req, res) => {
         }
         const userChannel = await getUserChannel(userToken, userId)
         const hierarchySource = await getHierarchyDetails(userToken, id)
-        logInfo('line no: 50 ===> ', userChannel, hierarchySource)
+        logDebug('line no: 50 ===> ', userChannel, hierarchySource)
         if (userChannel !== hierarchySource) {
             res.status(400).send({
                 msg: CHANNEL_VALIDATION_ERROR,
@@ -176,7 +176,7 @@ contentPrivateApi.patch('/migratepublisher/:id', async (req, res) => {
         }
         const userChannel = await getUserChannel(userToken, userId)
         const hierarchySource = await getHierarchyDetails(userToken, id)
-        logInfo('line no: 50 ===> ', userChannel, hierarchySource)
+        logDebug('line no: 50 ===> ', userChannel, hierarchySource)
         if (userChannel !== hierarchySource) {
             res.status(400).send({
                 msg: CHANNEL_VALIDATION_ERROR,
@@ -220,9 +220,9 @@ export async function getHierarchyDetails(token: string, id: string) {
                 'x-authenticated-user-token': token,
             },
         })
-        logInfo('line 201 ====>', response.data)
+        logDebug('line 201 ====>', response.data)
         const hierarchyResult = response.data.result.content
-        logInfo('line 202 ====>', JSON.stringify(hierarchyResult))
+        logDebug('line 202 ====>', JSON.stringify(hierarchyResult))
         if (typeof hierarchyResult !== 'undefined' && hierarchyResult != null) {
             return hierarchyResult.channel
         }
@@ -242,9 +242,9 @@ export async function getUserChannel(token: string, userId: string) {
                 'x-authenticated-user-token': token,
             },
         })
-        logInfo('line 222 ====>', response.data)
+        logDebug('line 222 ====>', response.data)
         const userProfileResult = response.data.result.response
-        logInfo('line 222 ====>', JSON.stringify(userProfileResult))
+        logDebug('line 222 ====>', JSON.stringify(userProfileResult))
         if (typeof userProfileResult !== 'undefined' && userProfileResult != null) {
             return userProfileResult.rootOrgId
         }
