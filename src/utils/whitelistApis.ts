@@ -4120,6 +4120,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
                 ROLE.SPV_PUBLISHER,
                 ROLE.MDO_LEADER,
+                ROLE.STATE_ADMIN,
             ],
         },
         '/proxies/v8/org/framework/read': {
