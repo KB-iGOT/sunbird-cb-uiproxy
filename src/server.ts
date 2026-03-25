@@ -144,7 +144,9 @@ export class Server {
   }
 
   private setExtFormsFramework() {
-    this.app.post('/static/form/v1/read', (req, _, next) => {
+    // Body parsing for form-service — both direct and rewrite paths
+    this.app.post('/v1/form/read', jsonParser)
+    this.app.post('/static/form/v1/read', jsonParser, (req, _, next) => {
       logDebug('Request hit /static/form/v1/read, forwarding to /v1/form/read')
       req.url = '/v1/form/read'
       next()
