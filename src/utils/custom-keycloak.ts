@@ -4,7 +4,7 @@ import keycloakConnect from 'keycloak-connect'
 import request from 'request'
 import { getKeycloakConfig } from '../configs/keycloak.config'
 import { CONSTANTS } from './env'
-import { logError, logInfo, logDebug } from './logger'
+import { logDebug, logError, logInfo } from './logger'
 import { PERMISSION_HELPER } from './permissionHelper'
 const async = require('async')
 
