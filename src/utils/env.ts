@@ -122,11 +122,13 @@ export const CONSTANTS = {
 
   // Upstream connection pool (shared keep-alive agent for all outbound calls)
   // Max active per upstream (e.g. Kong, Keycloak) per worker
-  UPSTREAM_MAX_CONNECTIONS: Number(env.UPSTREAM_MAX_CONNECTIONS) || 50,
+  UPSTREAM_MAX_CONNECTIONS: env.UPSTREAM_MAX_CONNECTIONS ? Number(env.UPSTREAM_MAX_CONNECTIONS) : Infinity,
   // Idle connections kept alive per upstream for reuse
-  UPSTREAM_MAX_IDLE_CONNECTIONS: Number(env.UPSTREAM_MAX_IDLE_CONNECTIONS) || 10,
-  // ms before closing an idle upstream connection
-  UPSTREAM_KEEPALIVE_TIMEOUT: Number(env.UPSTREAM_KEEPALIVE_TIMEOUT) || 60000,
+  UPSTREAM_MAX_IDLE_CONNECTIONS: Number(env.UPSTREAM_MAX_IDLE_CONNECTIONS) || 256,
+  // ms before closing an idle upstream connection.
+  // Close at 40s, since mostly kong(upstream) will close idle connection after 60s
+  // Else we'll get zombie socket issue
+  UPSTREAM_KEEPALIVE_TIMEOUT: Number(env.UPSTREAM_KEEPALIVE_TIMEOUT) || 40000,
   TIMESPENT_API_BASE: env.TIMESPENT_API_BASE || env.SB_EXT_API_BASE_2,
   TNC_API_BASE: env.TNC_API_BASE || env.SB_EXT_API_BASE_4,
   USER_ANALYTICS: `${HTTPS_HOST}/LA1`,
