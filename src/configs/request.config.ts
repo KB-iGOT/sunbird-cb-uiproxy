@@ -17,6 +17,19 @@ const sharedHttpsAgent = new https.Agent({
   timeout: CONSTANTS.UPSTREAM_KEEPALIVE_TIMEOUT,
 })
 
+// Destroy idle keep-alive sockets after timeout.
+// Node's Agent.timeout only emits the event — it doesn't close the socket.
+// tslint:disable-next-line: no-any
+function destroyOnTimeout(agent: any) {
+  // tslint:disable-next-line: no-any
+  agent.on('free', (socket: any) => {
+    socket.removeAllListeners('timeout')
+    socket.once('timeout', () => socket.destroy())
+  })
+}
+destroyOnTimeout(sharedHttpAgent)
+destroyOnTimeout(sharedHttpsAgent)
+
 export { sharedHttpAgent, sharedHttpsAgent }
 
 export const axiosRequestConfig: AxiosRequestConfig = {
