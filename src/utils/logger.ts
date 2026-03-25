@@ -1,6 +1,9 @@
 import pino from 'pino'
 import { CONSTANTS } from './env'
 
+export type LogLevel = 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace' | 'silent'
+const LOG_LEVELS: LogLevel[] = ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']
+
 // Configure Pino instance
 // In development, keep simple formatted logs if pino-pretty isn't available,
 // in production use blazing fast JSON logging
@@ -15,6 +18,23 @@ const pinoOptions = {
 }
 
 const logger = pino(pinoOptions)
+const DEFAULT_LOG_LEVEL = (CONSTANTS.LOG_LEVEL || 'info') as LogLevel
+
+export function isValidLogLevel(level: unknown): level is LogLevel {
+  return typeof level === 'string' && LOG_LEVELS.includes(level as LogLevel)
+}
+
+export function getLogLevel(): string {
+  return logger.level
+}
+
+export function setLogLevel(level: LogLevel): void {
+  logger.level = level
+}
+
+export function resetLogLevel(): void {
+  logger.level = DEFAULT_LOG_LEVEL
+}
 
 // tslint:disable-next-line: no-any
 export const log = (msg: any, ...args: any[]) => {
