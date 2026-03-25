@@ -4717,6 +4717,7 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
                 ROLE.MDO_ADMIN,
                 ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
             ],
         },
         '/proxies/v8/designation/v1/orgMapping/bulkUpload/progress/details/:orgId': {
