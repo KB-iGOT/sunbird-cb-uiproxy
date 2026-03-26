@@ -67,6 +67,7 @@ export const CONSTANTS = {
   LEARNING_HISTORY_API_BASE: env.LEARNING_HISTORY_API_BASE || env.SB_SEXT_API_BASE_3,
   LEARNING_HUB_API_BASE: env.LEARNING_HUB_API_BASE || env.SB_EXT_API_BASE_2,
   LIKE_API_BASE: env.LIKE_API_BASE || env.SB_EXT_API_BASE_2,
+  LOG_LEVEL: env.LOG_LEVEL || 'error',
   MULTI_TENANT_KEYCLOAK:
     env.MULTI_TENANT_KEYCLOAK ||
     'igot,https://portal.karmayogi.nic.in/auth,sunbird',
@@ -115,6 +116,17 @@ export const CONSTANTS = {
   TELEMETRY_API_BASE: env.TELEMETRY_API_BASE || 'http://localhost:8090',
   TELEMETRY_SB_BASE: env.TELEMETRY_SB_BASE || 'http://localhost:9090',
   TIMEOUT: env.TIMEOUT || 10000,
+
+  // Proxy timeout for timed proxy routes (e.g. content, scorm, ilp)
+  PROXY_TIMEOUT: Number(env.PROXY_TIMEOUT) || 10000,
+
+  // Upstream connection pool (shared keep-alive agent for all outbound calls)
+  // Max active per upstream (e.g. Kong, Keycloak) per worker
+  UPSTREAM_MAX_CONNECTIONS: Number(env.UPSTREAM_MAX_CONNECTIONS) || 50,
+  // Idle connections kept alive per upstream for reuse
+  UPSTREAM_MAX_IDLE_CONNECTIONS: Number(env.UPSTREAM_MAX_IDLE_CONNECTIONS) || 10,
+  // ms before closing an idle upstream connection
+  UPSTREAM_KEEPALIVE_TIMEOUT: Number(env.UPSTREAM_KEEPALIVE_TIMEOUT) || 60000,
   TIMESPENT_API_BASE: env.TIMESPENT_API_BASE || env.SB_EXT_API_BASE_2,
   TNC_API_BASE: env.TNC_API_BASE || env.SB_EXT_API_BASE_4,
   USER_ANALYTICS: `${HTTPS_HOST}/LA1`,
@@ -157,8 +169,6 @@ export const CONSTANTS = {
   NOTIFY_EMAIL_TEMPLATE_ID: 'contentEmailTemplate',
   CONTENT_SERVICE_API_BASE: env.CONTENT_SERVICE_API_BASE || 'http://content-service:9000',
   VM_LEARNING_SERVICE_URL: env.VM_LEARNING_SERVICE_URL,
-  // tslint:disable-next-line: max-line-length
-  CERT_AUTH_TOKEN: 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJRekw4VVA1dUtqUFdaZVpMd1ZtTFJvNHdqWTg2a2FrcSJ9.TPjV0xLacSbp3FbJ7XeqHoKFN35Rl4YHx3DZNN9pm0o',
   // tslint:disable-next-line: max-line-length
   KEYCLOAK_PUBLIC_KEY: env.KEYCLOAK_PUBLIC_KEY || 'publicKey',
   KARMAYOGI_PORTAL_HOST: env.KARMAYOGI_PORTAL_HOST || 'portal.karmayogi.nic.in',

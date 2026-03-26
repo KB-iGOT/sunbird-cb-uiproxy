@@ -2,7 +2,7 @@ import axios from 'axios'
 import express from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 import { ERROR } from '../utils/message'
 import { extractUserTokenFromRequest } from '../utils/requestExtract'
 
@@ -25,11 +25,11 @@ chatBotTranscoderAPIIntegration.use('/*', async (req: express.Request, res: expr
         }
 
         const baseUrl = removePrefix('/public/v8/chatbot/v3/mobile/transcoder', req.originalUrl)
-        logInfo(`The url is... ${baseUrl} : originalUrl: ${req.originalUrl}`)
+        logDebug(`The url is... ${baseUrl} : originalUrl: ${req.originalUrl}`)
         const subPath = baseUrl.replace(/^\/+/, '')
         const url = `${CONSTANTS.APP_FUEL_API_URL}/transcoder/${subPath}`
         const requestBody = req.body
-        logInfo(`Chatbot Transcoder API Request -> URL: ${url}`)
+        logDebug(`Chatbot Transcoder API Request -> URL: ${url}`)
 
         // Remove 'br' from request headers
         const requestHeaders = { ...req.headers }

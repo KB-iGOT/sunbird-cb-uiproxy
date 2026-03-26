@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 import { ERROR } from '../utils/message'
 import { extractUserIdFromRequest } from '../utils/requestExtract'
 import { extractUserToken } from '../utils/requestExtract'
@@ -353,7 +353,7 @@ networkConnectionApi.post('/connections/recommended/userDepartment', async (req,
         headers: { rootOrg },
       }
       )
-    logInfo('responseDetails from /detailsv1 : ', responseDetails.data)
+    logDebug('responseDetails from /detailsv1 : ', responseDetails.data)
     if (responseDetails && responseDetails.data && responseDetails.data.length) {
       userDepartment =  responseDetails.data[0].department_name
     }
