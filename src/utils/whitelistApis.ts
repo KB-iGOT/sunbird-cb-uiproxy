@@ -777,6 +777,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
             ],
         },
         '/proxies/v8/user/private/v1/assign/role/userrole': {
@@ -2558,6 +2559,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
+                ROLE.STATE_ADMIN,
             ],
         },
         '/proxies/v8/trending/content/search': {
@@ -4120,6 +4122,7 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
                 ROLE.SPV_PUBLISHER,
                 ROLE.MDO_LEADER,
+                ROLE.STATE_ADMIN,
             ],
         },
         '/proxies/v8/org/framework/read': {
@@ -4130,6 +4133,7 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
                 ROLE.SPV_ADMIN,
                 ROLE.SPV_PUBLISHER,
+                ROLE.STATE_ADMIN,
             ],
         },
         '/proxies/v8/user/v3/search': {
@@ -4139,6 +4143,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
             ],
         },
         '/proxies/v8/framework/v1/term/retire': {
@@ -4704,6 +4709,7 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
                 ROLE.MDO_ADMIN,
                 ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
             ],
         },
         '/proxies/v8/designation/v1/orgMapping/bulkUpload/:orgId/:frameworkId': {
@@ -4713,6 +4719,7 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
                 ROLE.MDO_ADMIN,
                 ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
             ],
         },
         '/proxies/v8/designation/v1/orgMapping/bulkUpload/progress/details/:orgId': {
@@ -4722,6 +4729,7 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
                 ROLE.MDO_ADMIN,
                 ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
             ],
         },
         '/proxies/v8/designation/v1/orgMapping/download/:fileName': {
