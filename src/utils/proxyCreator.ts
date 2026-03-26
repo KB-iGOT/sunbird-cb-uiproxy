@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { createProxyServer } from 'http-proxy'
 import { extractUserEmailFromRequest, extractUserId, extractUserToken } from '../utils/requestExtract'
 import { CONSTANTS } from './env'
-import { logInfo } from './logger'
+import { logDebug, logInfo } from './logger'
 
 const _ = require('lodash')
 
@@ -16,9 +16,9 @@ const PROXY_SLUG_FORMS = '/proxies/v8/ext-forms'
 
 // tslint:disable-next-line: no-any
 proxy.on('proxyReq', (proxyReq: any, req: any, _res: any, _options: any) => {
-  logInfo('proxyReqOn method. Adding more headers in request...')
+  logDebug('proxyReqOn method. Adding more headers in request...')
   const rootOrg = req.headers ? req.headers.rootOrg : req.headers.rootorg
-  logInfo(`rootOrg is updated: ` + JSON.stringify(rootOrg))
+  logDebug(`rootOrg is updated: ` + JSON.stringify(rootOrg))
   // tslint:disable-next-line: no-duplicate-string
   proxyReq.setHeader('X-Channel-Id', (_.get(req, 'session.rootOrgId')) ? _.get(req, 'session.rootOrgId') : CONSTANTS.X_Channel_Id)
   // tslint:disable-next-line: max-line-length
@@ -54,7 +54,7 @@ proxy.on('proxyReq', (proxyReq: any, req: any, _res: any, _options: any) => {
     if (req.body && req.session.hasOwnProperty('uid')) {
       req.body._uid = req.session.uid
     }
-    logInfo('REQ_URL_ORIGINAL discussion', proxyReq.path)
+    logDebug('REQ_URL_ORIGINAL discussion', proxyReq.path)
   }
   if (!req.originalUrl.includes('/storage/upload') && !req.originalUrl.includes('/storage/profilePhotoUpload/*') && req.body) {
     const bodyData = JSON.stringify(req.body)
@@ -94,7 +94,7 @@ proxy.on('proxyRes', (proxyRes: any, req: any, _res: any, ) => {
 
       if ((proxyRes.statusCode === 200 || proxyRes.statusCode === 201)) {
         data = JSON.parse(data.toString('utf-8'))
-        logInfo('_res==>', data)
+        logDebug('_res==>', data)
         req.session.uid = data.result.userId.uid
       }
       const nodebbToken = '722686c6-2a2e-4b22-addf-c427261fbdc6'
@@ -112,8 +112,8 @@ export function proxyCreatorRoute(route: Router, targetUrl: string, timeout = 10
     if (req.url.startsWith(downloadKeyword)) {
       req.url = downloadKeyword + req.url.split(downloadKeyword)[1].replace(/\//g, '%2F')
     }
-    logInfo('REQ_URL_ORIGINAL', req.originalUrl)
-    logInfo('REQ_URL', req.url)
+    logDebug('REQ_URL_ORIGINAL', req.originalUrl)
+    logDebug('REQ_URL', req.url)
     proxyCreator(timeout).web(req, res, {
       target: targetUrl,
     })
@@ -142,9 +142,9 @@ export function scormProxyCreatorRoute(route: Router, baseUrl: string): Router {
 
 export function proxyCreatorLearner(route: Router, targetUrl: string, _timeout = 10000): Router {
   route.all('/*', (req, res) => {
-    logInfo('REQ_URL_ORIGINAL proxyCreatorLearner', req.originalUrl)
+    logDebug('REQ_URL_ORIGINAL proxyCreatorLearner', req.originalUrl)
     const url = removePrefix(`${PROXY_SLUG}/learner`, req.originalUrl)
-    logInfo('Final URL: ', targetUrl + url)
+    logDebug('Final URL: ', targetUrl + url)
     proxy.web(req, res, {
       changeOrigin: true,
       ignorePath: true,
@@ -156,7 +156,7 @@ export function proxyCreatorLearner(route: Router, targetUrl: string, _timeout =
 // tslint:disable-next-line
 export function proxyCreatorSunbird(route: Router, targetUrl: string, _timeout = 10000): Router {
   route.all('/*', (req, res) => {
-    logInfo('REQ_URL_ORIGINAL proxyCreatorSunbird', req.originalUrl)
+    logDebug('REQ_URL_ORIGINAL proxyCreatorSunbird', req.originalUrl)
     let url = ''
     if (req.originalUrl.includes('/proxies/v8/wat')) {
       url = removePrefix(`${PROXY_SLUG_WAT}`, req.originalUrl)
@@ -175,7 +175,7 @@ export function proxyCreatorSunbird(route: Router, targetUrl: string, _timeout =
       if (req.originalUrl.includes('/discussion/v2/topics')) {
         req.body.email = extractUserEmailFromRequest(req)
       }
-      logInfo('REQ_URL_ORIGINAL proxyCreatorSunbird  ======= discussion', url)
+      logDebug('REQ_URL_ORIGINAL proxyCreatorSunbird  ======= discussion', url)
     }
 
     if (req.originalUrl.includes('/dashboard') && !req.originalUrl.includes('/dashboard/analytics/getChartV2/Karmayogi') && req.session) {
@@ -184,7 +184,7 @@ export function proxyCreatorSunbird(route: Router, targetUrl: string, _timeout =
       } else {
         url = `${url}?_uid=${_.get(req, 'session.rootOrgId')}`
       }
-      logInfo('REQ_URL_ORIGINAL proxyCreatorSunbird  ======= dashboard analytics', url)
+      logDebug('REQ_URL_ORIGINAL proxyCreatorSunbird  ======= dashboard analytics', url)
     }
 
     proxy.web(req, res, {
@@ -200,7 +200,7 @@ export function proxyCreatorKnowledge(route: Router, targetUrl: string, _timeout
   route.all('/*', (req, res) => {
 
     const url = removePrefix(`${PROXY_SLUG}`, req.originalUrl)
-    logInfo('REQ_URL_ORIGINAL proxyCreatorKnowledge', targetUrl + url)
+    logDebug('REQ_URL_ORIGINAL proxyCreatorKnowledge', targetUrl + url)
     proxy.web(req, res, {
       changeOrigin: true,
       ignorePath: true,
@@ -213,7 +213,7 @@ export function proxyCreatorKnowledge(route: Router, targetUrl: string, _timeout
 export function proxyCreatorUpload(route: Router, targetUrl: string, _timeout = 10000): Router {
   route.all('/*', (req, res) => {
     const url = removePrefix(`${PROXY_SLUG}/action`, req.originalUrl)
-    logInfo('REQ_URL_ORIGINAL proxyCreatorUpload', targetUrl)
+    logDebug('REQ_URL_ORIGINAL proxyCreatorUpload', targetUrl)
     proxy.web(req, res, {
       changeOrigin: true,
       ignorePath: true,
@@ -229,7 +229,7 @@ function removePrefix(prefix: string, s: string) {
 
 export function proxyCreatorSunbirdSearch(route: Router, targetUrl: string, _timeout = 10000): Router {
   route.all('/*', (req, res) => {
-    logInfo('REQ_URL_ORIGINAL proxyCreatorSunbirdSearch', req.originalUrl)
+    logDebug('REQ_URL_ORIGINAL proxyCreatorSunbirdSearch', req.originalUrl)
     proxy.web(req, res, {
       changeOrigin: true,
       ignorePath: true,
@@ -248,7 +248,7 @@ export function proxyCreatorToAppentUserId(route: Router, targetUrl: string, _ti
     if (subStr === 5 && (originalUrl.substr(lastIndex).substr(1))) {
       userId = originalUrl.substr(lastIndex).substr(1)
     }
-    logInfo('REQ_URL_ORIGINAL proxyCreatorToAppentUserId', req.originalUrl)
+    logDebug('REQ_URL_ORIGINAL proxyCreatorToAppentUserId', req.originalUrl)
     proxy.web(req, res, {
       changeOrigin: true,
       ignorePath: true,
@@ -262,7 +262,7 @@ export function proxyCreatorQML(route: Router, targetUrl: string, urlType: strin
   route.all('/*', (req, res) => {
     const originalUrl = req.originalUrl.replace(urlType, '/')
     const url = removePrefix(`${PROXY_SLUG}`, originalUrl)
-    logInfo('REQ_URL_ORIGINAL proxyCreatorQML', targetUrl + url)
+    logDebug('REQ_URL_ORIGINAL proxyCreatorQML', targetUrl + url)
     proxy.web(req, res, {
       changeOrigin: true,
       ignorePath: true,
@@ -275,7 +275,7 @@ export function proxyCreatorQML(route: Router, targetUrl: string, urlType: strin
 export function proxyContent(route: Router, targetUrl: string, _timeout = 10000): Router {
   route.all('/*', (req, res) => {
     const url = removePrefix(`${PROXY_SLUG}/private`, req.originalUrl)
-    logInfo('REQ_URL_ORIGINAL proxyCreatorUpload', targetUrl)
+    logDebug('REQ_URL_ORIGINAL proxyCreatorUpload', targetUrl)
     proxy.web(req, res, {
       changeOrigin: true,
       ignorePath: true,
@@ -288,7 +288,7 @@ export function proxyContent(route: Router, targetUrl: string, _timeout = 10000)
 export function proxyContentLearnerVM(route: Router, targetUrl: string, _timeout = 10000): Router {
   route.all('/*', (req, res) => {
     const url = removePrefix(`${PROXY_SLUG}/learnervm/private`, req.originalUrl)
-    logInfo('REQ_URL_ORIGINAL proxyContentLearnerVM', targetUrl)
+    logDebug('REQ_URL_ORIGINAL proxyContentLearnerVM', targetUrl)
     proxy.web(req, res, {
       changeOrigin: true,
       ignorePath: true,
@@ -306,7 +306,7 @@ export function proxyAssessmentRead(route: Router, targetUrl: string, _timeout =
     url = url.includes('?')
       ? `${targetUrl}${url}&${hierarchyQuery}`
       : `${targetUrl}${url}?${hierarchyQuery}`
-    logInfo('REQ_URL_UPDATED proxyAssessmentRead', url)
+    logDebug('REQ_URL_UPDATED proxyAssessmentRead', url)
     proxy.web(req, res, {
       changeOrigin: true,
       ignorePath: true,
@@ -324,7 +324,7 @@ export function proxyQuestionRead(route: Router, targetUrl: string, _timeout = 1
     // Construct the final target URL by appending query parameters
     targetUrl = targetUrl + (queryParams ? `?${queryParams}` : '')
     }
-    logInfo('REQ_URL_UPDATED proxyAssessmentRead', targetUrl)
+    logDebug('REQ_URL_UPDATED proxyAssessmentRead', targetUrl)
     proxy.web(req, res, {
       changeOrigin: true,
       ignorePath: true,
@@ -336,7 +336,7 @@ export function proxyQuestionRead(route: Router, targetUrl: string, _timeout = 1
 
 export function proxyCreatorForms(route: Router, _timeout = 10000): Router {
   route.all('/*', (req, res) => {
-    logInfo('REQ_URL_ORIGINAL proxyCreatorSunbird', req.originalUrl)
+    logDebug('REQ_URL_ORIGINAL proxyCreatorSunbird', req.originalUrl)
     let url = ''
     url = removePrefix(`${PROXY_SLUG_FORMS}`, req.originalUrl)
     proxy.web(req, res, {
@@ -355,7 +355,7 @@ export function proxyAssessmentReadV2(route: Router, targetUrl: string, _timeout
     } else {
       url = targetUrl + url + '?hierarchy=detail'
     }
-    logInfo('REQ_URL_UPDATED proxyAssessmentReadV5', url)
+    logDebug('REQ_URL_UPDATED proxyAssessmentReadV5', url)
     proxy.web(req, res, {
       changeOrigin: true,
       ignorePath: true,
