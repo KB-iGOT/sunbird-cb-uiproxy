@@ -2,7 +2,6 @@ const _                 = require('lodash')
 import request from 'request'
 import { CONSTANTS } from './env'
 import { logDebug, logError, logInfo } from './logger'
-i
 export const PERMISSION_HELPER = {
     // tslint:disable-next-line: no-any
     setRolesData(reqObj: any, callback: any, body: any) {
