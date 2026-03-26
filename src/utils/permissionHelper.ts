@@ -1,11 +1,8 @@
 const _                 = require('lodash')
-import axios from 'axios'
 import request from 'request'
-import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from './env'
 import { logDebug, logError, logInfo } from './logger'
-import { extractUserToken } from './requestExtract'
-
+i
 export const PERMISSION_HELPER = {
     // tslint:disable-next-line: no-any
     setRolesData(reqObj: any, callback: any, body: any) {
