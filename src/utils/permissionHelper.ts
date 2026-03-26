@@ -1,7 +1,11 @@
 const _                 = require('lodash')
+import axios from 'axios'
 import request from 'request'
+import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from './env'
 import { logDebug, logError, logInfo } from './logger'
+import { extractUserToken } from './requestExtract'
+
 export const PERMISSION_HELPER = {
     // tslint:disable-next-line: no-any
     setRolesData(reqObj: any, callback: any, body: any) {
@@ -27,7 +31,7 @@ export const PERMISSION_HELPER = {
             if (!_.includes(reqObj.session.userRoles, 'PUBLIC')) {
                 reqObj.session.userRoles.push('PUBLIC')
             }
-            // this.createNodeBBUser(reqObj, callback)
+            //this.createNodeBBUser(reqObj, callback)
             // tslint:disable-next-line: no-any
             reqObj.session.save((error: any) => {
                 if (error) {
@@ -96,34 +100,34 @@ export const PERMISSION_HELPER = {
         })
     },
     // tslint:disable-next-line: no-any
-    // async createNodeBBUser(reqObj: any, callback: any) {
-    //     const readUrl = `${CONSTANTS.KONG_API_BASE}/discussion/user/v1/create`
+    async createNodeBBUser(reqObj: any, callback: any) {
+        const readUrl = `${CONSTANTS.KONG_API_BASE}/discussion/user/v1/create`
 
-    //     // tslint:disable-next-line: no-commented-code
-    //     const nodebbPayload =  {
-    //         username: reqObj.session.userName,
-    //         // tslint:disable-next-line: object-literal-sort-keys
-    //         identifier: reqObj.session.userId,
-    //         fullname: reqObj.session.firstName + ' ' + reqObj.session.lastName,
-    //     }
-    //     try {
-    //         const nodeBBResp = await axios({
-    //             ...axiosRequestConfig,
-    //             data: { request: nodebbPayload },
-    //              headers: {
-    //                 Authorization: CONSTANTS.SB_API_KEY,
-    //                 // tslint:disable-next-line: all
-    //                 'x-authenticated-user-token': extractUserToken(reqObj),
-    //             },
-    //             method: 'POST',
-    //             url: readUrl,
-    //         })
-    //         if (nodeBBResp) {
-    //             this.setNodeBBUID(reqObj, callback, nodeBBResp)
-    //         }
-    //     } catch (err) {
-    //         logError('Making axios call to nodeBB ERROR -- ', err, '------', new Date().toString())
-    //         callback(null, null)
-    //       }
-    // },
+        // tslint:disable-next-line: no-commented-code
+        const nodebbPayload =  {
+            username: reqObj.session.userName,
+            // tslint:disable-next-line: object-literal-sort-keys
+            identifier: reqObj.session.userId,
+            fullname: reqObj.session.firstName + ' ' + reqObj.session.lastName,
+        }
+        try {
+            const nodeBBResp = await axios({
+                ...axiosRequestConfig,
+                data: { request: nodebbPayload },
+                 headers: {
+                    Authorization: CONSTANTS.SB_API_KEY,
+                    // tslint:disable-next-line: all
+                    'x-authenticated-user-token': extractUserToken(reqObj),
+                },
+                method: 'POST',
+                url: readUrl,
+            })
+            if (nodeBBResp) {
+                this.setNodeBBUID(reqObj, callback, nodeBBResp)
+            }
+        } catch (err) {
+            logError('Making axios call to nodeBB ERROR -- ', err, '------', new Date().toString())
+            callback(null, null)
+          }
+    },
 }
