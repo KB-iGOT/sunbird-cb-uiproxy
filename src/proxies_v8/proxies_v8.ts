@@ -34,6 +34,11 @@ import { frameworksApi } from './frameworks'
 import { jwtUserTokenHelper } from './jwtUserTokenHelper'
 import { lookerDashboard } from './lookerIntegration'
 
+const PROXIES_V8_PREFIX = '/proxies/v8'
+const CONTENT_TYPE_CSV = 'text/csv'
+const CONTENT_TYPE_JSON = 'application/json'
+const CONTENT_TYPE_HEADER = 'Content-Type'
+
 const API_END_POINTS = {
   batchParticipantsApi: `${CONSTANTS.KONG_API_BASE}/course/v1/batch/participants/list`,
   contentNotificationEmail: `${CONSTANTS.NOTIFICATION_SERVIC_API_BASE}/v1/notification/send/sync`,
@@ -480,7 +485,7 @@ proxiesV8.use('/dashboard/*',
 // tslint:disable-next-line:max-line-length
 proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workflow/admin/transition/bulkupdate', '/cloud-services/mlcore/v1/files/upload', '/calendar/v1/bulkUpload', '/storage/orgStoreUpload', '/workflow/admin/v2/bulkupdate/transition', '/user/v2/bulkupload', '/ciosIntegration/v1/loadContentFromExcel/*', '/storage/v1/uploadCiosIcon', '/storage/v1/uploadCiosContract', '/organisation/v1/competencyDesignationMappings/bulkUpload/*', '/template/api/v1/upload', '/designation/v1/orgMapping/bulkUpload/*', '/storage/v1/uploadCiosLogsFile', '/customselfregistration/upload/logo/gcpcontainer', '/ciosIntegration/v1/loadContentProgressFromExcel/*', '/feedDiscussion/uploadFile/*', '/community/v1/fileUpload/*', '/user/v2/event/bulkonboard/*', '/workflow/blendedprogram/bulkApprovalDataFromCsv/*', '/customFields/v1/masterList/*', '/organisation/v1/hierarchy/bulkUpload/*', '/user/v3/bulkupload', '/user/v1/org-migration/bulk-upload/*', '/storage/v1/bp/assignment/answer/*', '/peersurvey/upload', '/externaltraining/v1/bulkupload/*'], jsonParser, (req, res) => {
   if (req.files && req.files.data) {
-    const url = removePrefix('/proxies/v8', req.originalUrl)
+    const url = removePrefix(PROXIES_V8_PREFIX, req.originalUrl)
     const file: UploadedFile = req.files.data as UploadedFile
     const formData = new FormData()
     formData.append('file', Buffer.from(file.data), {
@@ -526,8 +531,8 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
         response.on('end', () => {
           const fullData = Buffer.concat(chunks)
           if (!err && (response.statusCode === 200 || response.statusCode === 201 || response.statusCode === 406)) {
-            if (response.headers['content-type'] === 'text/csv') {
-              res.setHeader('Content-Type', 'text/csv')
+            if (response.headers['content-type'] === CONTENT_TYPE_CSV) {
+              res.setHeader(CONTENT_TYPE_HEADER, CONTENT_TYPE_CSV)
               res.setHeader('Content-Disposition', 'attachment; filename="report.csv"')
               res.status(response.statusCode).send(fullData)
             } else {
@@ -537,7 +542,7 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
                 res.status(response.statusCode).json(parsed)
               } catch (e) {
                 logDebug('Invalid JSON received as per Json Parse')
-                res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
+                res.status(response.statusCode).type(CONTENT_TYPE_JSON).send(fullData.toString('utf8'))
               }
             }
           } else {
@@ -550,7 +555,7 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
       }
     )
   } else if (req.files && req.files.file) {
-    const url = removePrefix('/proxies/v8', req.originalUrl)
+    const url = removePrefix(PROXIES_V8_PREFIX, req.originalUrl)
     const file: UploadedFile = req.files.file as UploadedFile
     const formData = new FormData()
     formData.append('file', Buffer.from(file.data), {
@@ -596,8 +601,8 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
         response.on('end', () => {
           const fullData = Buffer.concat(chunks)
           if (!err && (response.statusCode === 200 || response.statusCode === 201 || response.statusCode === 406)) {
-            if (response.headers['content-type'] === 'text/csv') {
-              res.setHeader('Content-Type', 'text/csv')
+            if (response.headers['content-type'] === CONTENT_TYPE_CSV) {
+              res.setHeader(CONTENT_TYPE_HEADER, CONTENT_TYPE_CSV)
               res.setHeader('Content-Disposition', 'attachment; filename="report.csv"')
               res.status(response.statusCode).send(fullData)
             } else {
@@ -607,7 +612,7 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
                 res.status(response.statusCode).json(parsed)
               } catch (e) {
                 logDebug('Invalid JSON received as per Json Parse')
-                res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
+                res.status(response.statusCode).type(CONTENT_TYPE_JSON).send(fullData.toString('utf8'))
               }
             }
           } else {
@@ -731,7 +736,7 @@ proxiesV8.use('/assets/*',
 
 proxiesV8.use('/discussion/*', jsonParser, async (req, res) => {
   try {
-    const url = removePrefix('/proxies/v8', req.originalUrl)
+    const url = removePrefix(PROXIES_V8_PREFIX, req.originalUrl)
     const isCreate = req.originalUrl.includes('/discussion/user/v1/create')
 
     // Body mutation for non-create discussion routes
@@ -759,7 +764,7 @@ proxiesV8.use('/discussion/*', jsonParser, async (req, res) => {
       data: req.body,
       headers: {
         Authorization: CONSTANTS.SB_API_KEY,
-        'Content-Type': 'application/json',
+        [CONTENT_TYPE_HEADER]: CONTENT_TYPE_JSON,
         'x-authenticated-user-token': extractUserToken(req),
       },
       // tslint:disable-next-line: no-any
