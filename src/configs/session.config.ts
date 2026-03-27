@@ -42,7 +42,7 @@ export function getSessionConfig(
       },
       resave: false,
       saveUninitialized: false,
-      secret: '927yen45-i8j6-78uj-y8j6g9rf56hu',
+      secret: 'test',
       store: isPersistant
         ? new cassandraStore({
           client: null,
@@ -58,5 +58,5 @@ export function getSessionConfig(
 // tslint:disable-next-line: no-any
 function getConsistencyLevel(consistencyParam: any) {
   // tslint:disable-next-line: max-line-length
-  return (consistencyParam && _.get(expressCassandra, `consistencies.${consistencyParam}`) ? _.get(expressCassandra, `consistencies.${consistencyParam}`) :  expressCassandra.consistencies.one)
+  return (consistencyParam && _.get(expressCassandra, `consistencies.${consistencyParam}`) ? _.get(expressCassandra, `consistencies.${consistencyParam}`) : expressCassandra.consistencies.one)
 }

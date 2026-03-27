@@ -14,7 +14,7 @@ import {
     sendActionsEmail,
     UpdateKeycloakUserPassword,
 } from '../../utils/keycloak-user-creation'
-import { logError, logInfo } from '../../utils/logger'
+import { logDebug, logError } from '../../utils/logger'
 import { extractUserIdFromRequest } from '../../utils/requestExtract'
 import { wTokenApiMock } from '../user/details'
 import { updateRolesV2Mock } from '../user/roles'
@@ -162,8 +162,8 @@ userRegistrationApi.post('/create-user', async (req, res) => {
                     const wTokenResponse = await wTokenApiMock(req, kcaAuthToken.access_token)
                     // tslint:disable-next-line: max-line-length
                     if (wTokenResponse && wTokenResponse.user && wTokenResponse.user.length) {
-                        logInfo('New User keycloak auth successfull')
-                        logInfo(`User: ${req.body.email} -- wid: ${wTokenResponse.user[0].wid}`)
+                        logDebug('New User keycloak auth successfull')
+                        logDebug(`User: ${req.body.email} -- wid: ${wTokenResponse.user[0].wid}`)
                     }
                 }
             }).catch((error) => {
@@ -231,7 +231,7 @@ userRegistrationApi.post('/user/update-access-path', async (req, res) => {
         clientConnect.execute(query, params, (err, _result) => {
             if (!err) {
                 clientConnect.shutdown()
-                logInfo('Update Query to user_access_paths successful')
+                logDebug('Update Query to user_access_paths successful')
                 res.json('User access paths updated successfully !!')
             } else if (err) {
                 clientConnect.shutdown()
@@ -269,7 +269,7 @@ userRegistrationApi.post('/bulkUpload', async (req, res) => {
             if (sheet.data && sheet.data.length) {
                 // tslint:disable-next-line: no-any
                 const [fnameHeader, lnameHeader, emailHeader, ...rolesHeaders] = sheet.data[0] as any
-                logInfo('Columns: ', fnameHeader, lnameHeader, emailHeader, rolesHeaders)
+                logDebug('Columns: ', fnameHeader, lnameHeader, emailHeader, rolesHeaders)
                 for (const row of sheet.data.slice(1)) {
                     if (row.length) {
                         const yesRoles: string[] = []
@@ -389,13 +389,13 @@ export async function performNewUserSteps(userId: any, req: any, email: any, rol
             })
         // tslint:disable-next-line: no-identical-functions
         await getAuthToken(email).then(async (kcaAuthToken) => {
-            logInfo('access_token successfull: ', kcaAuthToken.access_token)
+            logDebug('access_token successfull: ', kcaAuthToken.access_token)
             if (kcaAuthToken && kcaAuthToken.access_token) {
                 const wTokenResponse = await wTokenApiMock(req, kcaAuthToken.access_token)
                 // tslint:disable-next-line: max-line-length
                 if (wTokenResponse && wTokenResponse.user) {
-                    logInfo('New User Wtoken auth successfull')
-                    logInfo(`User: ${email} -- wid: ${wTokenResponse.user.wid}`)
+                    logDebug('New User Wtoken auth successfull')
+                    logDebug(`User: ${email} -- wid: ${wTokenResponse.user.wid}`)
                     if (roles && roles.length) {
                         const updateRolesReq = {
                             operation: 'add',
@@ -404,7 +404,7 @@ export async function performNewUserSteps(userId: any, req: any, email: any, rol
                         }
                         const actionByWid = extractUserIdFromRequest(req)
                         const rootOrg = req.header('rootOrg')
-                        logInfo('Updating the roles for wid:', wTokenResponse.user.wid)
+                        logDebug('Updating the roles for wid:', wTokenResponse.user.wid)
                         await updateRolesV2Mock(actionByWid, updateRolesReq, rootOrg)
                             .catch((err) => {
                                 logError('performNewUserSteps:: ERROR ON updateRolesV2Mock', err)
@@ -442,7 +442,7 @@ export async function insertBulkUploadStatus(req: any) {
         return clientConnect.execute(query, async (err, _result) => {
             if (!err) {
                 clientConnect.shutdown()
-                logInfo('Insert Query to bulk_user_upload_detail successful')
+                logDebug('Insert Query to bulk_user_upload_detail successful')
             } else if (err) {
                 clientConnect.shutdown()
                 logError(`ERROR executing the query >> ${query}`)
@@ -478,7 +478,7 @@ userRegistrationApi.get('/bulkUploadData', async (req, res) => {
 })
 
 userRegistrationApi.get('/bulkUploadReport/:id', async (req, res) => {
-    logInfo('fetching bulk-upload-report with id: ', req.params.id)
+    logDebug('fetching bulk-upload-report with id: ', req.params.id)
     try {
         const clientConnect = new cassandraDriver.Client(cassandraClientOptions)
         const query = `SELECT report FROM ${CONSTANTS.CASSANDRA_KEYSPACE}.bulk_user_upload_detail

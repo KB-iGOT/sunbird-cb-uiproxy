@@ -1,6 +1,6 @@
 import { getUserByUsername } from '../protectedApi_v8/discussionHub/users'
 import { CONSTANTS } from './env'
-import { logError, logInfo } from './logger'
+import { logDebug, logError } from './logger'
 const usrNotFound = 'User not found'
 export function getWriteApiToken(): string {
     try {
@@ -35,7 +35,7 @@ export async function getUserSlug(req: any, wid: any) {
         return Promise.reject(new Error('User not found'))
     })
     if (userPresent && userPresent.userslug) {
-        logInfo('user found - uid: ', userPresent.userslug)
+        logDebug('user found - uid: ', userPresent.userslug)
         return Promise.resolve(userPresent.userslug)
     }
 }

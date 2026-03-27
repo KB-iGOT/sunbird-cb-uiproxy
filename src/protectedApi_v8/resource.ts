@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { CONSTANTS } from '../utils/env'
-import { logInfo } from '../utils/logger'
+import { logDebug } from '../utils/logger'
 const _                 = require('lodash')
 export const userAuthKeyCloakApi = Router()
 export const userAuthKeyCloakEcApi = Router()
@@ -9,9 +9,9 @@ userAuthKeyCloakApi.get('/', (req, res) => {
     let queryParam = ''
     let isLocal = 0
     let domain = ''
-    logInfo('Received query param: ' + JSON.stringify(req.query))
+    logDebug('Received query param: ' + JSON.stringify(req.query))
     if (req.session && req.session.authenticated ) {
-        logInfo('User is authenticated.. Updating Cookie with Secure and SameSite flags')
+        logDebug('User is authenticated.. Updating Cookie with Secure and SameSite flags')
         if (host !== undefined) {
             if (host.includes('localhost')) {
                 domain = 'localhost' // For localhost, set domain to localhost
@@ -48,7 +48,7 @@ userAuthKeyCloakApi.get('/', (req, res) => {
             isLocal = 1
         }
         if (req.query.redirect_uri) {
-            logInfo('Received redirectUrl value : ' + req.query.redirect_uri)
+            logDebug('Received redirectUrl value : ' + req.query.redirect_uri)
             res.redirect(req.query.redirect_uri)
             return
         }
@@ -67,9 +67,9 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
     let queryParam = ''
     let isLocal = 0
     let domain = ''
-    logInfo('Received query param: ' + JSON.stringify(req.query))
+    logDebug('Received query param: ' + JSON.stringify(req.query))
     if (req.session && req.session.authenticated ) {
-        logInfo('User is authenticated.. Updating Cookie with Secure and SameSite flags')
+        logDebug('User is authenticated.. Updating Cookie with Secure and SameSite flags')
         if (host !== undefined) {
             if (host.includes('localhost')) {
                 domain = 'localhost' // For localhost, set domain to localhost
@@ -106,7 +106,7 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
             isLocal = 1
         }
         if (req.query.redirect_uri) {
-            logInfo('Received redirectUrl value : ' + req.query.redirect_uri)
+            logDebug('Received redirectUrl value : ' + req.query.redirect_uri)
             res.redirect(req.query.redirect_uri)
             return
         }
@@ -117,7 +117,7 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
     } else {
         redirectUrl = `${CONSTANTS.IIM_PORTAL_HOST}${CONSTANTS.EC_REDIRECT_PATH}${queryParam}` //   'https://' + host + '/page/home'
     }
-    logInfo('Redirecting to: ' + redirectUrl)
+    logDebug('Redirecting to: ' + redirectUrl)
 
     res.redirect(redirectUrl)
 })
