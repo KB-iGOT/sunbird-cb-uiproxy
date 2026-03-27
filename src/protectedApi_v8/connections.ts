@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 import { ERROR } from '../utils/message'
 import { extractUserIdFromRequest } from '../utils/requestExtract'
 import { extractUserToken } from '../utils/requestExtract'
@@ -371,7 +371,7 @@ connectionsApi.post('/connections/recommended/userDepartment', async (req, res) 
         headers: { rootOrg },
       }
     )
-    logInfo('responseDetails from /search/profile : ', responseDetails.data)
+    logDebug('responseDetails from /search/profile : ', responseDetails.data)
     if (responseDetails && responseDetails.data && responseDetails.data.result
       && responseDetails.data.result.UserProfile
       && responseDetails.data.result.UserProfile.length) {

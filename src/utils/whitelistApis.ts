@@ -2731,6 +2731,8 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.CONTENT_CREATOR,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
             ],
         },
         '/proxies/v8/course/batch/cert/v1/template/add': {
@@ -6932,6 +6934,36 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [],
         },
+        '/proxies/v8/forms/mdo/peersurvey': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/forms/spv/peersurvey': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+            ],
+        },
+         '/proxies/v8/forms/spv/update/peersurvey/:surveyId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+            ],
+        },
+         '/proxies/v8/forms/mdo/update/peersurvey/:surveyId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
         '/proxies/v8/contentpartner/v1/activate': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -7055,7 +7087,221 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
             ],
         },
+        '/proxies/v8/forms/peersurvey/archive/:surveyId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/forms/peersurvey/publish/:surveyId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/forms/mdo/peersurvey/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/forms/spv/peersurvey/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/learner/v1/competency/read': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/externaltraining/v4/read/:do_id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
 
+        '/proxies/v8/externaltraining/v4/publish/:do_id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/externaltraining/v4/create': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/externaltraining/v4/update/:do_id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/learner/achievement/v2/list': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/externaltraining/batch/create': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/forms/peersurvey/end/:surveyId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/forms/peersurvey/submit': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/v1/notifications/peervalidation/list': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/v1/notifications/v2/read': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/externaltraining/v1/batch/getParticipants': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/externaltraining/v1/bulkupload/:eventId/:batchId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/externaltraining/v1/bulkupload/status': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/externaltraining/v1/bulkupload/download/:fileName': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/user/v1/badge/details': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/storage/v1/peervalidation/report/download': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/dashboard/badgedetails/summary': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CONTENT_PUBLISHER,
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/peersurvey/upload': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/externaltraining/v1/bulkupload/sample': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/event/batch/cert/template/add': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/peervalidation/v1/report/initiate/:formId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/peervalidation/v1/list/report': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.SPV_ADMIN,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7937,6 +8183,10 @@ export const API_LIST = {
             '/proxies/v8/learningpathway/v1/retire/:id',
             '/proxies/v8/achievement/dynamic/v1/generate',
             '/proxies/v8/learner/certreg/v2/achievement/validate',
+            '/proxies/v8/forms/mdo/peersurvey',
+            '/proxies/v8/forms/spv/peersurvey',
+            '/proxies/v8/forms/spv/update/peersurvey/:surveyId',
+            '/proxies/v8/forms/mdo/update/peersurvey/:surveyId',
             '/proxies/v8/contentpartner/v1/activate',
             '/proxies/v8/sso/validateSaml',
             '/proxies/v8/v1/notifications/mandatory/read',
@@ -7954,5 +8204,32 @@ export const API_LIST = {
             '/proxies/v8/knowledge/centre/publish/:type',
             '/proxies/v8/knowledge/centre/delete/:type/:id',
             '/proxies/v8/knowledge/centre/spv/search',
+            '/proxies/v8/forms/peersurvey/archive/:surveyId',
+            '/proxies/v8/forms/peersurvey/publish/:surveyId',
+            '/proxies/v8/forms/mdo/peersurvey/search',
+            '/proxies/v8/forms/spv/peersurvey/search',
+            '/proxies/v8/learner/v1/competency/read',
+            '/proxies/v8/externaltraining/v4/read/:do_id',
+            '/proxies/v8/externaltraining/v4/publish/:do_id',
+            '/proxies/v8/externaltraining/v4/create',
+            '/proxies/v8/externaltraining/v4/update/:do_id',
+            '/proxies/v8/learner/achievement/v2/list',
+            '/proxies/v8/externaltraining/batch/create',
+            '/proxies/v8/forms/peersurvey/end/:surveyId',
+            '/proxies/v8/forms/peersurvey/submit',
+            '/proxies/v8/v1/notifications/peervalidation/list',
+            '/proxies/v8/v1/notifications/v2/read',
+            '/proxies/v8/externaltraining/v1/batch/getParticipants',
+            '/proxies/v8/externaltraining/v1/bulkupload/:eventId/:batchId',
+            '/proxies/v8/externaltraining/v1/bulkupload/status',
+            '/proxies/v8/externaltraining/v1/bulkupload/download/:fileName',
+            '/proxies/v8/user/v1/badge/details',
+            '/proxies/v8/storage/v1/peervalidation/report/download',
+            '/proxies/v8/dashboard/badgedetails/summary',
+            '/proxies/v8/peersurvey/upload',
+            '/proxies/v8/externaltraining/v1/bulkupload/sample',
+            '/proxies/v8/event/batch/cert/template/add',
+            '/proxies/v8/peervalidation/v1/report/initiate/:formId',
+            '/proxies/v8/peervalidation/v1/list/report',
         ],
 }

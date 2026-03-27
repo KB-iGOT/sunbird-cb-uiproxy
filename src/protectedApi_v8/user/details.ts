@@ -1,10 +1,10 @@
 import axios from 'axios'
 import { Router } from 'express'
-import request from 'request'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
-import { logError, logInfo } from '../../utils/logger'
+import { logDebug, logError } from '../../utils/logger'
 import { ERROR } from '../../utils/message'
+import { request } from '../../utils/request-adapter'
 import { extractUserIdFromRequest } from '../../utils/requestExtract'
 import { getUserByEmail } from '../discussionHub/users'
 import { createDiscussionHubUser } from '../discussionHub/writeApi'
@@ -104,7 +104,7 @@ detailsApi.get('/', async (req, res) => {
 //           }
 //         })
 //         if (userPresent) {
-//           logInfo('User already present in NodeBB DiscussionHub. Skiping create')
+//           logDebug('User already present in NodeBB DiscussionHub. Skiping create')
 //         }
 //       }
 //       res.send(body)
@@ -129,7 +129,7 @@ export function wTokenApiMock(req: any, token: any): Promise<any> {
       let kcToken: any
       kcToken = token
       const url = API_END_POINTS.pidProfile
-      const options: request.CoreOptions = {
+      const options: any = { // tslint:disable-line: no-any
         headers: {
           org,
           rootOrg,
@@ -141,7 +141,7 @@ export function wTokenApiMock(req: any, token: any): Promise<any> {
         },
       }
 
-      request.post(url, options, async (error, _res, body) => {
+      request.post(url, options, async (error: any, _res: any, body: any) => { // tslint:disable-line: no-any
         if (error) {
           reject(error)
         }
@@ -167,7 +167,7 @@ export function wTokenApiMock(req: any, token: any): Promise<any> {
             }
           })
           if (userPresent) {
-            logInfo('User already present in NodeBB DiscussionHub. Skiping create')
+            logDebug('User already present in NodeBB DiscussionHub. Skiping create')
           }
         }
         resolve(body)
