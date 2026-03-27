@@ -1488,3 +1488,6 @@ proxiesV8.use('/externaltraining/*',
 proxiesV8.use('/peervalidation/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+proxiesV8.use('/badge/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
