@@ -7308,7 +7308,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.PUBLIC,
             ],
-        },      
+        },
     },
     URL_PATTERN:
         [
