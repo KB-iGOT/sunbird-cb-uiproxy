@@ -13,36 +13,40 @@ export const PERMISSION_HELPER = {
         // tslint:disable-next-line: no-any
         const userData: any = JSON.parse(body)
         logDebug(JSON.stringify(userData))
-        if (reqObj.session) {
-            reqObj.session.userId = userData.result.response.id ? userData.result.response.id : userData.result.response.userId
-            reqObj.session.userName = userData.result.response.userName
-            reqObj.session.firstName = userData.result.response.firstName
-            reqObj.session.lastName = userData.result.response.lastName
-            reqObj.session.userRoles = userData.result.response.roles
-            reqObj.session.orgs = userData.result.response.organisations
-            reqObj.session.rootOrgId = userData.result.response.rootOrgId
-            reqObj.session.channel = userData.result.response.channel
-            if (userData.result.response.hasOwnProperty('profileDetails') &&
-                userData.result.response.profileDetails.hasOwnProperty('userRoles')) {
-                reqObj.session.userPositions = userData.result.response.profileDetails.userRoles
-            } else {
-                reqObj.session.userPositions = []
-            }
-            if (!_.includes(reqObj.session.userRoles, 'PUBLIC')) {
-                reqObj.session.userRoles.push('PUBLIC')
-            }
-            this.createNodeBBUser(reqObj, callback)
-            // tslint:disable-next-line: no-any
-            reqObj.session.save((error: any) => {
-                if (error) {
-                    logError('permissionHelper:: ERROR: Failed to save session with roles -- ', error)
-                } else {
-                    logDebug('permissionHelper:: SUCCESS: Session saved with roles at ' + new Date().toString())
-                }
-            })
-        } else {
+        if (!reqObj.session) {
             callback('reqObj.session no session', null)
+            return
         }
+        reqObj.session.userId = userData.result.response.id ? userData.result.response.id : userData.result.response.userId
+        reqObj.session.userName = userData.result.response.userName
+        reqObj.session.firstName = userData.result.response.firstName
+        reqObj.session.lastName = userData.result.response.lastName
+        reqObj.session.userRoles = userData.result.response.roles
+        reqObj.session.orgs = userData.result.response.organisations
+        reqObj.session.rootOrgId = userData.result.response.rootOrgId
+        reqObj.session.channel = userData.result.response.channel
+        if (userData.result.response.hasOwnProperty('profileDetails') &&
+            userData.result.response.profileDetails.hasOwnProperty('userRoles')) {
+            reqObj.session.userPositions = userData.result.response.profileDetails.userRoles
+        } else {
+            reqObj.session.userPositions = []
+        }
+        if (!_.includes(reqObj.session.userRoles, 'PUBLIC')) {
+            reqObj.session.userRoles.push('PUBLIC')
+        }
+        if (CONSTANTS.PORTAL_CREATE_NODEBB_USER === 'true') {
+            this.createNodeBBUser(reqObj, callback)
+        } else {
+            callback(null, null)
+        }
+        // tslint:disable-next-line: no-any
+        reqObj.session.save((error: any) => {
+            if (error) {
+                logError('permissionHelper:: ERROR: Failed to save session with roles -- ', error)
+            } else {
+                logDebug('permissionHelper:: SUCCESS: Session saved with roles at ' + new Date().toString())
+            }
+        })
         logDebug('permission helper:: setRolesData function end', '------', new Date().toString())
     },
     // tslint:disable-next-line: no-any
@@ -109,7 +113,7 @@ export const PERMISSION_HELPER = {
             username: reqObj.session.userName,
             // tslint:disable-next-line: object-literal-sort-keys
             identifier: reqObj.session.userId,
-            fullname: reqObj.session.firstName + ' ' + reqObj.session.lastName,
+            fullname: [reqObj.session.firstName, reqObj.session.lastName].filter(Boolean).join(' '),
         }
         try {
             const nodeBBResp = await axios({
