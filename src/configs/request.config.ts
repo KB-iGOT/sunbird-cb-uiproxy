@@ -17,14 +17,19 @@ const sharedHttpsAgent = new https.Agent({
   timeout: CONSTANTS.UPSTREAM_KEEPALIVE_TIMEOUT,
 })
 
-// Destroy idle keep-alive sockets after timeout.
+// Destroy idle keep-alive sockets on timeout, close, or error.
 // Node's Agent.timeout only emits the event — it doesn't close the socket.
+// 'close' and 'error' handle the case where the upstream silently closes the
+// connection while the socket is idle in the pool, preventing stale socket reuse
+// that causes 504s on the next request.
 // tslint:disable-next-line: no-any
 function destroyOnTimeout(agent: any) {
   // tslint:disable-next-line: no-any
   agent.on('free', (socket: any) => {
     socket.removeAllListeners('timeout')
     socket.once('timeout', () => socket.destroy())
+    socket.once('close', () => socket.destroy())
+    socket.once('error', () => socket.destroy())
   })
 }
 destroyOnTimeout(sharedHttpAgent)
