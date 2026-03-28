@@ -5,7 +5,7 @@ import FormData from 'form-data'
 import lodash from 'lodash'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logDebug, logError, logInfo } from '../utils/logger'
 import {
   ilpProxyCreatorRoute,
   // proxyCreatorDiscussion,
@@ -426,10 +426,10 @@ proxiesV8.post('/org/v1/search', async (req, res) => {
   // tslint:disable-next-line: all
   const rootOrgId = lodash.get(req, 'session.rootOrgId')
   logInfo('org search API call : Users Roles are...')
-  logInfo(roleData)
+  logDebug(roleData)
   const urlPath = API_END_POINTS.kongSearchOrg
   if (roleData.includes('STATE_ADMIN')) {
-    logInfo('roleData contains state admin')
+    logDebug('roleData contains state admin')
     req.body.request.filters.ministryOrStateId = rootOrgId
     logInfo('updated urlPath -> ' + urlPath)
   }
@@ -871,7 +871,7 @@ proxiesV8.post('/notifyContentState', async (req, res) => {
   if (!req.body || !req.body.contentState) {
     res.status(400).send('ContentState is missing in request body. ' + contentStateError)
   }
-  logInfo('Received req url is -> ' + req.protocol + '://' + req.get('host') + req.originalUrl)
+  logDebug('Received req url is -> ' + req.protocol + '://' + req.get('host') + req.originalUrl)
   let contentBody = ''
   let emailSubject = ''
   switch (req.body.contentState) {
@@ -907,7 +907,7 @@ proxiesV8.post('/notifyContentState', async (req, res) => {
   if (contentBody.includes('#contentLink') && req.body.contentLink && req.body.contentName) {
     contentBody = contentBody.replace('#contentLink', req.body.contentLink)
   }
-  logInfo('Composed contentBody -> ' + contentBody)
+  logDebug('Composed contentBody -> ' + contentBody)
   const notifyMailRequest = {
     config: {
       sender: req.body.sender,
@@ -936,7 +936,7 @@ proxiesV8.post('/notifyContentState', async (req, res) => {
     method: 'POST',
     url: API_END_POINTS.contentNotificationEmail,
   })
-  logInfo('Response -> ' + JSON.stringify(stateEmailResponse.data))
+  logDebug('Response -> ' + JSON.stringify(stateEmailResponse.data))
   if (!stateEmailResponse.data.result.response) {
     res.status(400).send(stateEmailResponse.data)
   } else {

@@ -1,6 +1,9 @@
 import pino from 'pino'
 import { CONSTANTS } from './env'
 
+export type LogLevel = 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace' | 'silent'
+const LOG_LEVELS: LogLevel[] = ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']
+
 // Configure Pino instance
 // In development, keep simple formatted logs if pino-pretty isn't available,
 // in production use blazing fast JSON logging
@@ -10,11 +13,28 @@ const pinoOptions = {
       return { level: label }
     },
   },
-  level: CONSTANTS.IS_DEVELOPMENT ? 'debug' : 'info',
+  level: CONSTANTS.LOG_LEVEL || 'info',
   timestamp: pino.stdTimeFunctions.isoTime,
 }
 
 const logger = pino(pinoOptions)
+const DEFAULT_LOG_LEVEL = (CONSTANTS.LOG_LEVEL || 'info') as LogLevel
+
+export function isValidLogLevel(level: unknown): level is LogLevel {
+  return typeof level === 'string' && LOG_LEVELS.includes(level as LogLevel)
+}
+
+export function getLogLevel(): string {
+  return logger.level
+}
+
+export function setLogLevel(level: LogLevel): void {
+  logger.level = level
+}
+
+export function resetLogLevel(): void {
+  logger.level = DEFAULT_LOG_LEVEL
+}
 
 // tslint:disable-next-line: no-any
 export const log = (msg: any, ...args: any[]) => {
@@ -47,6 +67,10 @@ export function logInfoHeading(msg: string) {
 
 export function logInfo(...msgs: string[]) {
   logger.info(msgs.join(' '))
+}
+
+export function logDebug(...msgs: string[]) {
+  logger.debug(msgs.join(' '))
 }
 
 export function logWarnHeading(msg: string) {
