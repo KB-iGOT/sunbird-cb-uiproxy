@@ -57,7 +57,8 @@ userAuthKeyCloakApi.get('/', (req, res) => {
     if (isLocal) {
         redirectUrl = queryParam
     } else {
-        redirectUrl = `https://${host}${queryParam}` //   'https://' + host + '/page/home'
+        //redirectUrl = `https://${host}${queryParam}` //   
+        redirectUrl = 'https://' + host + '/page/home'
     }
     res.redirect(redirectUrl)
 })
