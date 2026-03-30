@@ -2,7 +2,7 @@ import axios from 'axios'
 import express from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logDebug, logError } from '../utils/logger'
+import { logDebug, logError, logInfo } from '../utils/logger'
 import { ERROR } from '../utils/message'
 import { extractUserTokenFromRequest } from '../utils/requestExtract'
 
@@ -24,8 +24,8 @@ chatBotTranscoderAPIIntegration.use('/*', async (req: express.Request, res: expr
             return
         }
 
-        const baseUrl = removePrefix('/public/v8/chatbot/v3/mobile/transcoder', req.originalUrl)
-        logDebug(`The url is... ${baseUrl} : originalUrl: ${req.originalUrl}`)
+        const baseUrl = removePrefix(req.baseUrl, req.originalUrl)
+        logInfo(`The url is... ${baseUrl} : originalUrl: ${req.originalUrl} : baseUrl: ${req.baseUrl}`)
         const subPath = baseUrl.replace(/^\/+/, '')
         const url = `${CONSTANTS.APP_FUEL_API_URL}/transcoder/${subPath}`
         const requestBody = req.body
