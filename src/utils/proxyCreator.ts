@@ -4,7 +4,7 @@ import { Readable } from 'stream'
 import { sharedHttpAgent, sharedHttpsAgent } from '../configs/request.config'
 import { extractUserEmailFromRequest, extractUserId, extractUserToken } from '../utils/requestExtract'
 import { CONSTANTS } from './env'
-import { logDebug, logInfo } from './logger'
+import { logDebug, logError, logInfo, logWarn } from './logger'
 
 const _ = require('lodash')
 
@@ -264,7 +264,8 @@ export function proxyCreatorRoute(route: Router, targetUrl: string, _timeout = 1
     }
     logDebug('REQ_URL_ORIGINAL', req.originalUrl)
     logDebug('REQ_URL', req.url)
-    proxyCreator(timeout).web(req, res, {
+    proxyTimed.web(req, res, {
+      buffer: buildProxyBuffer(req),
       target: targetUrl,
     })
   })
