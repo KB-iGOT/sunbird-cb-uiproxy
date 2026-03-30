@@ -14,7 +14,7 @@ import {
     sendActionsEmail,
     UpdateKeycloakUserPassword,
 } from '../../utils/keycloak-user-creation'
-import { logDebug, logError, logInfo } from '../../utils/logger'
+import { logDebug, logError } from '../../utils/logger'
 import { extractUserIdFromRequest } from '../../utils/requestExtract'
 import { wTokenApiMock } from '../user/details'
 import { updateRolesV2Mock } from '../user/roles'
@@ -162,7 +162,7 @@ userRegistrationApi.post('/create-user', async (req, res) => {
                     const wTokenResponse = await wTokenApiMock(req, kcaAuthToken.access_token)
                     // tslint:disable-next-line: max-line-length
                     if (wTokenResponse && wTokenResponse.user && wTokenResponse.user.length) {
-                        logInfo('New User keycloak auth successfull')
+                        logDebug('New User keycloak auth successfull')
                         logDebug(`User: ${req.body.email} -- wid: ${wTokenResponse.user[0].wid}`)
                     }
                 }
@@ -394,7 +394,7 @@ export async function performNewUserSteps(userId: any, req: any, email: any, rol
                 const wTokenResponse = await wTokenApiMock(req, kcaAuthToken.access_token)
                 // tslint:disable-next-line: max-line-length
                 if (wTokenResponse && wTokenResponse.user) {
-                    logInfo('New User Wtoken auth successfull')
+                    logDebug('New User Wtoken auth successfull')
                     logDebug(`User: ${email} -- wid: ${wTokenResponse.user.wid}`)
                     if (roles && roles.length) {
                         const updateRolesReq = {
