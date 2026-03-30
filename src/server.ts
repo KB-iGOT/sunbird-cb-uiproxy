@@ -17,7 +17,7 @@ import { proxiesV8 } from './proxies_v8/proxies_v8'
 import { publicApiV8 } from './publicApi_v8/publicApiV8'
 import { CustomKeycloak } from './utils/custom-keycloak'
 import { CONSTANTS } from './utils/env'
-import { logDebug, logError, logInfo, logSuccess } from './utils/logger'
+import { logDebug, logError, logSuccess } from './utils/logger'
 import {
   getLogLevelHandler,
   resetLogLevelHandler,
@@ -72,6 +72,19 @@ export class Server {
     this.authoringApi()
     this.resetCookies()
     this.app.use(haltOnTimedOut)
+    this.registerGlobalErrorHandler()
+  }
+
+  // Must be registered after all routes — Express identifies error handlers by arity (4 params)
+  // tslint:disable-next-line: no-any
+  private registerGlobalErrorHandler() {
+    // tslint:disable-next-line: no-any
+    this.app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+      logError('Unhandled server error:', String(err && err.message ? err.message : err))
+      if (!res.headersSent) {
+        res.status(500).json({ error: 'Internal Server Error' })
+      }
+    })
   }
 
   private configureLogLevelControl() {
@@ -153,7 +166,7 @@ export class Server {
 
   private setExtFormsFramework() {
     this.app.post('/static/form/v1/read', (req, _, next) => {
-      logInfo('Request hit /static/form/v1/read, forwarding to /v1/form/read')
+      logDebug('Request hit /static/form/v1/read, forwarding to /v1/form/read')
       req.url = '/v1/form/read'
       next()
     })
@@ -194,7 +207,7 @@ export class Server {
   }
   private resetCookies() {
     this.app.use('/reset', (_req, res) => {
-      logInfo('CLEARING RES COOKIES')
+      logDebug('CLEARING RES COOKIES')
       const host = _req.get('host')
       logDebug('host is: ' + host)
       logDebug('response cookies: ' + JSON.stringify(_req.session))
@@ -219,11 +232,11 @@ export class Server {
       logDebug('After delete Cookies::::' + JSON.stringify(_req.cookies))
       if (_req.session) {
         _req.session.destroy(() => {
-          logInfo('Session Destroyed')
+          logDebug('Session Destroyed')
           res.redirect('/apis/logout')
         })
       } else {
-        logInfo('No Session to destroy.')
+        logDebug('No Session to destroy.')
         res.redirect('/apis/logout')
       }
     })

@@ -1,9 +1,9 @@
 import express from 'express'
-import { createProxyServer } from 'http-proxy'
 import { CONSTANTS } from '../utils/env'
+import { createPooledProxy } from '../utils/proxyCreator'
 
 export const authBackend = express.Router()
-const proxyCreator = createProxyServer()
+const proxyCreator = createPooledProxy()
 
 authBackend.all('*', (req, res) => {
   req.url = req.url.replace('/authApi', '')

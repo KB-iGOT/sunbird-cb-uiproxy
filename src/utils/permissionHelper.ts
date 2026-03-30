@@ -1,15 +1,15 @@
 const _                 = require('lodash')
 import axios from 'axios'
-import request from 'request'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from './env'
-import { logDebug, logError, logInfo } from './logger'
+import { logDebug, logError } from './logger'
+import { request } from './request-adapter'
 import { extractUserToken } from './requestExtract'
 
 export const PERMISSION_HELPER = {
     // tslint:disable-next-line: no-any
     setRolesData(reqObj: any, callback: any, body: any) {
-        logInfo('permission helper:: setRolesData function ', '------', new Date().toString())
+        logDebug('permission helper:: setRolesData function ', '------', new Date().toString())
         // tslint:disable-next-line: no-any
         const userData: any = JSON.parse(body)
         logDebug(JSON.stringify(userData))
@@ -37,7 +37,7 @@ export const PERMISSION_HELPER = {
                 if (error) {
                     logError('permissionHelper:: ERROR: Failed to save session with roles -- ', error)
                 } else {
-                    logInfo('permissionHelper:: SUCCESS: Session saved with roles at ' + new Date().toString())
+                    logDebug('permissionHelper:: SUCCESS: Session saved with roles at ' + new Date().toString())
                 }
             })
         } else {
