@@ -437,8 +437,9 @@ proxiesV8.use('/notification/*',
 )
 
 proxiesV8.post('/org/v1/search', async (req, res) => {
+  try {
   // tslint:disable-next-line: all
-  const roleData = lodash.get(req, 'session.userRoles')  
+  const roleData = lodash.get(req, 'session.userRoles')
   // tslint:disable-next-line: all
   const rootOrgId = lodash.get(req, 'session.rootOrgId')
   logInfo('org search API call : Users Roles are...')
@@ -453,14 +454,14 @@ proxiesV8.post('/org/v1/search', async (req, res) => {
     ...axiosRequestConfig,
     data: req.body,
     headers: {
-        Authorization: CONSTANTS.SB_API_KEY,
-        // tslint:disable-next-line: all
-        'x-authenticated-user-token': extractUserToken(req),
-      },
-      method: 'POST',
-      url: urlPath,
-    })
-    res.status(200).send(searchResponse.data)
+      Authorization: CONSTANTS.SB_API_KEY,
+      // tslint:disable-next-line: all
+      'x-authenticated-user-token': extractUserToken(req),
+    },
+    method: 'POST',
+    url: urlPath,
+  })
+  res.status(200).send(searchResponse.data)
   } catch (err) {
     logError('Org search API failed:', String(err))
     res.status(500).json({ error: 'Failed to search organisations' })

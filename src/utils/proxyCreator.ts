@@ -4,7 +4,7 @@ import { Readable } from 'stream'
 import { sharedHttpAgent, sharedHttpsAgent } from '../configs/request.config'
 import { extractUserEmailFromRequest, extractUserId, extractUserToken } from '../utils/requestExtract'
 import { CONSTANTS } from './env'
-import { logDebug, logInfo } from './logger'
+import { logDebug, logError, logInfo, logWarn } from './logger'
 
 const _ = require('lodash')
 
@@ -99,8 +99,34 @@ const PROXY_SLUG_FORMS = '/proxies/v8/ext-forms'
  * ERR_HTTP_HEADERS_SENT when the agent queued the request.
  */
 // tslint:disable-next-line: no-any
+function proxyHeaders(req: any, _res: any, next: any) {
+  const session = req.session || {}
+  const rootOrgId = session.rootOrgId || ''
+  const channel = session.channel || ''
+
+  // tslint:disable-next-line: no-duplicate-string
+  req.headers['x-channel-id'] = rootOrgId || CONSTANTS.X_Channel_Id
+  req.headers.authorization = CONSTANTS.SB_API_KEY
+  req.headers['x-authenticated-user-token'] = extractUserToken(req)
+  req.headers['x-authenticated-userid'] = extractUserId(req)
+  req.headers['x-authenticated-user-orgid'] = rootOrgId
+  req.headers['x-authenticated-user-roles'] = String(session.userRoles || [])
+  req.headers['x-authenticated-user-orgname'] = channel
+  req.headers['x-authenticated-user-channel'] = channel
+
+  if (session.uid) {
+    req.headers['x-authenticated-user-nodebb-uid'] = String(session.uid)
+  }
+
+  next()
+}
+
+// tslint:disable-next-line: no-any
 proxy.on('proxyReq', (proxyReq: any, req: any, _res: any, _options: any) => {
   logDebug('proxyReqOn method. Adding more headers in request...')
+  const session = req.session || {}
+  const rootOrgId = session.rootOrgId || ''
+  const channel = session.channel || ''
   const rootOrg = req.headers ? req.headers.rootOrg : req.headers.rootorg
   logDebug(`rootOrg is updated: ` + JSON.stringify(rootOrg))
   // tslint:disable-next-line: no-duplicate-string
@@ -121,7 +147,7 @@ proxy.on('proxyReq', (proxyReq: any, req: any, _res: any, _options: any) => {
   /* tslint:disable-next-line */
   if (req.originalUrl.includes('/discussion') && !req.originalUrl.includes('/discussion/user/v1/create') && req.session) {
     if (req.session) {
-      req.sesson.cookie.secure = true
+      req.session.cookie.secure = true
     }
     if (req.body && req.session.hasOwnProperty('uid')) {
       req.body._uid = req.session.uid
@@ -135,7 +161,7 @@ proxy.on('proxyReq', (proxyReq: any, req: any, _res: any, _options: any) => {
   if (req.body && session.uid) {
     req.body._uid = session.uid
   }
-}
+})
 
 // Minimal proxyReq handler — only logging, wrapped in try/catch to prevent uncaughtException
 // tslint:disable-next-line: no-any
@@ -238,7 +264,8 @@ export function proxyCreatorRoute(route: Router, targetUrl: string, _timeout = 1
     }
     logDebug('REQ_URL_ORIGINAL', req.originalUrl)
     logDebug('REQ_URL', req.url)
-    proxyCreator(timeout).web(req, res, {
+    proxyTimed.web(req, res, {
+      buffer: buildProxyBuffer(req),
       target: targetUrl,
     })
   })

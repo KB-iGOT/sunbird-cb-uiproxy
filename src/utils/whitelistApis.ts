@@ -1874,7 +1874,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.CONTENT_CREATOR,
                 ROLE.SPV_PUBLISHER,
-                ROLE.CONTENT_PUBLISHER
+                ROLE.CONTENT_PUBLISHER,
             ],
         },
         '/proxies/v8/learner/course/v1/batch/list': {
@@ -7363,7 +7363,7 @@ export const API_LIST = {
                 ROLE.STATE_ADMIN,
                 ROLE.CBP_ADMIN,
             ],
-        }     
+        },
     },
     URL_PATTERN:
         [

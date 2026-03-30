@@ -2,7 +2,7 @@ const _                 = require('lodash')
 import axios from 'axios'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from './env'
-import { logDebug, logError, logInfo } from './logger'
+import { logDebug, logError } from './logger'
 import { extractUserToken } from './requestExtract'
 
 export const PERMISSION_HELPER = {
@@ -79,24 +79,26 @@ export const PERMISSION_HELPER = {
             url: readUrl,
         }
         // tslint:disable-next-line: no-any
-        request.get(options, (err: any, _httpResponse: any, body: any) => {
-            if (body) {
-                // tslint:disable-next-line: no-any
-                const userData: any = JSON.parse(body)
-                if (userData.responseCode.toUpperCase() === 'OK') {
-                    logDebug('Success user/v2/read::', '------', new Date().toString())
-                    this.setRolesData(reqObj, callback, body)
-                } else {
-                    const errMsg = 'Failed to read the user with Id: ' + userId + 'Error: ' + userData.responseCode
-                    logError(errMsg)
-                    callback(errMsg, null)
-                }
+        axios.get(readUrl, { ...axiosRequestConfig, headers: options.headers })
+          // tslint:disable-next-line: no-any
+          .then((response: any) => {
+            const body = JSON.stringify(response.data)
+            // tslint:disable-next-line: no-any
+            const userData: any = response.data
+            if (userData.responseCode.toUpperCase() === 'OK') {
+                logDebug('Success user/v2/read::', '------', new Date().toString())
+                this.setRolesData(reqObj, callback, body)
+            } else {
+                const errMsg = 'Failed to read the user with Id: ' + userId + 'Error: ' + userData.responseCode
+                logError(errMsg)
+                callback(errMsg, null)
             }
-            if (err) {
-                logError('Making axios call to nodeBB ERROR -- ', err, '------', new Date().toString())
-                callback(err, null)
-            }
-        })
+          })
+          // tslint:disable-next-line: no-any
+          .catch((err: any) => {
+            logError('Making axios call to nodeBB ERROR -- ', String(err), '------', new Date().toString())
+            callback(err, null)
+          })
     },
     // tslint:disable-next-line: no-any
     async createNodeBBUser(reqObj: any, callback: any) {
