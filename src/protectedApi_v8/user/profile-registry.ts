@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig, axiosRequestConfigLong } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
-import { logError, logInfo } from '../../utils/logger'
+import { logDebug, logError } from '../../utils/logger'
 import { extractAuthorizationFromRequest,
   extractUserIdFromRequest,
   IAuthorizedRequest } from '../../utils/requestExtract'
@@ -36,7 +36,7 @@ export const profileRegistryApi = Router()
 profileRegistryApi.post('/createUserRegistry', async (req, res) => {
   try {
     const userId = extractUserIdFromRequest(req)
-    logInfo('Create user registry for', userId)
+    logDebug('Create user registry for', userId)
     const getUserIdExistresponse = await axios.get(API_END_POINTS.getUserRegistryById(userId), {
       ...axiosRequestConfig,
     })
@@ -65,7 +65,7 @@ profileRegistryApi.post('/createUserRegistry', async (req, res) => {
 profileRegistryApi.post('/updateUserRegistry', async (req, res) => {
   try {
     const userId = extractUserIdFromRequest(req)
-    logInfo('Update user registry for', userId)
+    logDebug('Update user registry for', userId)
     const response = await axios.post(API_END_POINTS.updateUserRegistry(userId), { ...req.body, userId }, {
       ...axiosRequestConfigLong,
     })
@@ -79,7 +79,7 @@ profileRegistryApi.post('/updateUserRegistry', async (req, res) => {
 profileRegistryApi.post('/updateUserWorkflowRegistry', async (req, res) => {
   try {
     const userId = extractUserIdFromRequest(req)
-    logInfo('Update user workflow registry for', userId)
+    logDebug('Update user workflow registry for', userId)
     const response = await axios.post(API_END_POINTS.updateUserWorkflowRegistry(userId), { ...req.body, userId }, {
       ...axiosRequestConfigLong,
     })
@@ -94,7 +94,7 @@ profileRegistryApi.post('/updateUserWorkflowRegistry', async (req, res) => {
 profileRegistryApi.get('/getUserRegistry/:osid', async (req, res) => {
   try {
     const osid = req.params.osid
-    logInfo('Get user registry for', osid)
+    logDebug('Get user registry for', osid)
     const response = await axios.post(API_END_POINTS.getUserRegistry, { osid }, {
       ...axiosRequestConfig,
     })
@@ -110,7 +110,7 @@ profileRegistryApi.get('/getUserRegistry/:osid', async (req, res) => {
 profileRegistryApi.get('/getUserRegistryById', async (req, res) => {
   try {
     const userId = extractUserIdFromRequest(req)
-    logInfo('Get user registry by id', userId)
+    logDebug('Get user registry by id', userId)
 
     const response = await axios.get(API_END_POINTS.getUserRegistryById(userId), {
       ...axiosRequestConfig,
@@ -125,7 +125,7 @@ profileRegistryApi.get('/getUserRegistryById', async (req, res) => {
 profileRegistryApi.post('/searchUserRegistry', async (req, res) => {
   try {
     const userId = extractUserIdFromRequest(req)
-    logInfo('Search user registry', userId)
+    logDebug('Search user registry', userId)
 
     const response = await axios.post(API_END_POINTS.searchUserRegistry, { ...req.body }, {
       ...axiosRequestConfig,
@@ -143,7 +143,7 @@ profileRegistryApi.get('/getUserRegistryByUser/:id', async (req, res) => {
     if (!userId) {
       userId = extractUserIdFromRequest(req)
     }
-    logInfo('Get user registry for', userId)
+    logDebug('Get user registry for', userId)
 
     const response = await axios.get(API_END_POINTS.getUserRegistryById(userId), {
       ...axiosRequestConfig,
@@ -234,7 +234,7 @@ profileRegistryApi.get('/getProfilePageMeta', async (_req, res) => {
 profileRegistryApi.post('/createUserRegistryV2/:userId', async (req, res) => {
   try {
     const userId = req.params.userId
-    logInfo('Create user registry for', userId)
+    logDebug('Create user registry for', userId)
     const getUserIdExistresponse = await axios.get(API_END_POINTS.getUserRegistryById(userId), {
       ...axiosRequestConfig,
     })
@@ -273,7 +273,7 @@ export async function getProfileStatus(userId: string) {
           const keyData = profileData[key]
           for (const iterator of profileStatusCheckConfig[key]) {
             if ((!profileData[key] || !keyData[iterator])) {
-              logInfo(iterator + '  ' + keyData[iterator])
+              logDebug(iterator + '  ' + keyData[iterator])
               profileMatch = false
               break
             }

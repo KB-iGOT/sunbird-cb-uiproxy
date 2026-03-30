@@ -4,7 +4,7 @@ import { getRootOrg } from '../../authoring/utils/header'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { getUserUIDBySession, getWriteApiAdminUID} from '../../utils/discussionHub-helper'
 import { CONSTANTS } from '../../utils/env'
-import { logError, logInfo } from '../../utils/logger'
+import { logDebug, logError } from '../../utils/logger'
 import { extractUserIdFromRequest, extractUserToken } from '../../utils/requestExtract'
 
 const API_ENDPOINTS = {
@@ -24,7 +24,7 @@ export const writeApi = Router()
 
 // tslint:disable-next-line: no-any
 export async function createDiscussionHubUser(req: any , user: any): Promise<any> {
-    logInfo('Starting to create new user into NodeBB DiscussionHub...')
+    logDebug('Starting to create new user into NodeBB DiscussionHub...')
     // tslint:disable-next-line: no-try-promise
     try {
         const request1 = {
@@ -58,7 +58,7 @@ writeApi.post('/topics', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const url = API_ENDPOINTS.createTopic
         const userUid = await getUserUIDBySession(req)
         const response = await axios.post(
@@ -87,7 +87,7 @@ writeApi.post('/topics/:topicId', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const topicId = req.params.topicId
         const url = API_ENDPOINTS.replyToTopic(topicId)
         const userUid = await getUserUIDBySession(req)
@@ -117,7 +117,7 @@ writeApi.post('/users', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const response = await createDiscussionHubUser(req, req.body)
         res.send(response.data)
     } catch (err) {
@@ -131,7 +131,7 @@ writeApi.post('/posts/:postId/bookmark', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const postId = req.params.postId
         const url = API_ENDPOINTS.bookmarkPost(postId)
         const userUid = await getUserUIDBySession(req)
@@ -160,7 +160,7 @@ writeApi.delete('/posts/:postId/bookmark', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const postId = req.params.postId
         const userUid = await getUserUIDBySession(req)
         const url = API_ENDPOINTS.bookmarkPost(postId) + `?_uid=${userUid}`
@@ -186,7 +186,7 @@ writeApi.post('/posts/:postId/vote', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const postId = req.params.postId
         const url = API_ENDPOINTS.votePost(postId)
         const userUid = await getUserUIDBySession(req)
@@ -216,7 +216,7 @@ writeApi.delete('/posts/:postId/vote', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const postId = req.params.postId
         const userUid = await getUserUIDBySession(req)
         const url = API_ENDPOINTS.votePost(postId) + `?_uid=${userUid}`
@@ -242,7 +242,7 @@ writeApi.put('/topics/:topicId/follow', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const topicId = req.params.topicId
         const url = API_ENDPOINTS.followTopic(topicId)
         const userUid = await getUserUIDBySession(req)
@@ -272,7 +272,7 @@ writeApi.put('/topics/:topicId/tags', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const topicId = req.params.topicId
         const url = API_ENDPOINTS.createOrUpdateTags(topicId)
         const response = await axios.put(

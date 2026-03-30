@@ -1,11 +1,11 @@
 import axios from 'axios'
 import express from 'express'
-import { createProxyServer } from 'http-proxy'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
+import { createPooledProxy } from '../utils/proxyCreator'
 
 const GENERAL_ERROR_MSG = 'Failed due to unknown reason'
-const proxyCreator = createProxyServer()
+const proxyCreator = createPooledProxy()
 const contentStoreApi = '/contentv3/download/'
 export const authContent = express.Router()
 

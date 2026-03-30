@@ -5,9 +5,50 @@ const dateFormat        = require('dateformat')
 
 import { NextFunction, Request, Response } from 'express'
 import { CONSTANTS } from './env'
-import { logDebug, logError, logInfo } from './logger'
+import { logDebug, logError } from './logger'
 import { ROLE } from './roles'
 import { API_LIST } from './whitelistApis'
+
+// Pre-compile all 925 URL patterns at startup (once) instead of per-request.
+// Saves 2 × 925 = 1850 regex compilations per request.
+const compiledPatterns: Array<{ pattern: string, regex: RegExp }> = []
+
+function initCompiledPatterns() {
+    if (compiledPatterns.length > 0) {
+        return
+    }
+    if (API_LIST.URL_PATTERN && API_LIST.URL_PATTERN.length > 0) {
+        // tslint:disable-next-line: no-any
+        API_LIST.URL_PATTERN.forEach((url: any) => {
+            try {
+                compiledPatterns.push({ pattern: url, regex: pathToRegexp(url) })
+            } catch (err) {
+                logError('Failed to compile URL pattern:', url)
+            }
+        })
+        logDebug(`Compiled ${compiledPatterns.length} URL patterns for whitelist matching`)
+    }
+}
+
+// Compile eagerly — API_LIST is available since it's imported above
+initCompiledPatterns()
+
+/**
+ * Match a request path against pre-compiled URL patterns.
+ * Returns the matched pattern string, or null if no match.
+ */
+function matchUrlPattern(reqPath: string): string | null {
+    // Lazy fallback in case eager init ran before API_LIST was ready
+    if (compiledPatterns.length === 0) {
+        initCompiledPatterns()
+    }
+    for (const entry of compiledPatterns) {
+        if (entry.regex.test(reqPath)) {
+            return entry.pattern
+        }
+    }
+    return null
+}
 
 /**
  * @param  { String } REQ_URL - Request URL
@@ -297,16 +338,11 @@ export const isAllowed = () => {
                 next()
             } else {
 
-                // Pattern match for URL
-                // tslint:disable-next-line: no-any
-                _.forEach(API_LIST.URL_PATTERN, (url: any) => {
-                    const regExp = pathToRegexp(url)
-                    if (regExp.test(REQ_URL)) {
-                        REQ_URL = url
-                        return false
-                    }
-                    return true
-                })
+                // Pattern match for URL (uses pre-compiled regexes)
+                const matchedPattern = matchUrlPattern(REQ_URL)
+                if (matchedPattern) {
+                    REQ_URL = matchedPattern
+                }
                 // Is API whitelisted ?
                 if (_.get(API_LIST.URL, REQ_URL)) {
                     const URL_RULE_OBJ = _.get(API_LIST.URL, REQ_URL)
@@ -331,7 +367,7 @@ export const isAllowed = () => {
                     }
                 } else {
                     // If API is not whitelisted
-                    logInfo('Portal_API_WHITELIST: URL not whitelisted')
+                    logDebug('Portal_API_WHITELIST: URL not whitelisted')
                     respond403(req, res)
                 }
             }
@@ -349,20 +385,16 @@ const redirectToLogin = (req: Request) => {
 
 const validateAPI = (req: Request, res: Response, next: NextFunction) => {
     let REQ_URL_ORIGINAL = req.path
-    // tslint:disable-next-line: no-any
-    _.forEach(API_LIST.URL_PATTERN, (url: any) => {
-        const regExp = pathToRegexp(url)
-        if (regExp.test(REQ_URL_ORIGINAL)) {
-            REQ_URL_ORIGINAL = url
-            return false
-        }
-        return true
-    })
+    // Pattern match for URL (uses pre-compiled regexes)
+    const matched = matchUrlPattern(REQ_URL_ORIGINAL)
+    if (matched) {
+        REQ_URL_ORIGINAL = matched
+    }
     if (_.get(API_LIST.URL, REQ_URL_ORIGINAL)) {
         next()
     } else {
         // If API is not whitelisted
-        logInfo('Portal_API_WHITELIST_LOGGER: URL not whitelisted')
+        logDebug('Portal_API_WHITELIST_LOGGER: URL not whitelisted')
         respond403(req, res)
     }
 }
@@ -377,14 +409,14 @@ export function apiWhiteListLogger() {
         }
         const REQ_URL = req.path
         if (!_.includes(REQ_URL, '/resource') && !_.includes(REQ_URL, '/eclogin') && (req.session)) {
-             logInfo('UIPROXY:: apiWhiteListLogger : checking if the login is to resource  and session is there')
+             logDebug('UIPROXY:: apiWhiteListLogger : checking if the login is to resource  and session is there')
              if (!('userRoles' in req.session) || (('userRoles' in req.session) && (req.session.userRoles.length === 0))) {
                 logError('Portal_API_WHITELIST_LOGGER: User needs to authenticated themselves', '------', new Date().toString())
-                logInfo('UIPROXY:: apiWhiteListLogger :  respond419 method will be called')
+                logDebug('UIPROXY:: apiWhiteListLogger :  respond419 method will be called')
                 respond419(req, res)
             } else {
                 // Pattern match for URL
-                logInfo('In WhilteList Call========' + REQ_URL, '------', new Date().toString())
+                logDebug('In WhilteList Call========' + REQ_URL, '------', new Date().toString())
                 validateAPI(req, res, next)
             }
         } else {

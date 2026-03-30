@@ -74,7 +74,7 @@ contentPrivateApi.patch('/update/:id', async (req, res) => {
                 }
             )
             // tslint:disable-next-line: no-commented-code
-            // logInfo('line no: 70 ===> ', JSON.stringify(response.status), response.data)
+            // logDebug('line no: 70 ===> ', JSON.stringify(response.status), response.data)
             if (response.status && response.data) {
                 res.status(response.status).send(response.data)
             }
@@ -134,7 +134,7 @@ contentPrivateApi.patch('/migratereviewer/:id', async (req, res) => {
                 }
             )
             // tslint:disable-next-line: no-commented-code
-            // logInfo('line no: 70 ===> ', JSON.stringify(response.status), response.data)
+            // logDebug('line no: 70 ===> ', JSON.stringify(response.status), response.data)
             if (response.status && response.data) {
                 res.status(response.status).send(response.data)
             }
@@ -195,7 +195,7 @@ contentPrivateApi.patch('/migratepublisher/:id', async (req, res) => {
                 }
             )
             // tslint:disable-next-line: no-commented-code
-            // logInfo('line no: 70 ===> ', JSON.stringify(response.status), response.data)
+            // logDebug('line no: 70 ===> ', JSON.stringify(response.status), response.data)
             if (response.status && response.data) {
                 res.status(response.status).send(response.data)
             }

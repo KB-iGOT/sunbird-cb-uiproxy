@@ -1,6 +1,6 @@
 const { google } = require('googleapis')
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 import { getKeyCloakClient } from './keycloakHelper'
 
 const redirectPath = '/apis/public/v8/google/callback'
@@ -31,13 +31,13 @@ export async function getGoogleProfile(req: any) {
         }
         const { tokens } = await client.getToken(req.query.code)
         client.setCredentials(tokens)
-        logInfo('userInformation being fetched from oauth2 api')
+        logDebug('userInformation being fetched from oauth2 api')
         const oauth2 = await google.oauth2({
             auth: client,
             version: 'v2',
         })
         const googleProfileFetched = await oauth2.userinfo.get() || {}
-        logInfo('userInformation fetched -> ' + JSON.stringify(googleProfileFetched.data))
+        logDebug('userInformation fetched -> ' + JSON.stringify(googleProfileFetched.data))
         return {
             emailId: googleProfileFetched.data.email,
             firstName: googleProfileFetched.data.given_name,
@@ -63,7 +63,7 @@ export async function createSession(emailId: string, req: any, res: any) {
     let grant: { access_token: { token: any }; refresh_token: { token: any } }
     const scope = 'offline_access'
     const keycloakClient = getKeyCloakClient()
-    logInfo('login in progress')
+    logDebug('login in progress')
     // tslint:disable-next-line: no-any
     try {
         grant = await keycloakClient.grantManager.obtainDirectly(emailId, undefined, undefined, scope)

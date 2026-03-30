@@ -2,7 +2,7 @@ import axios from 'axios'
 import express from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 
 export const chatBotIntegrationAPI = express.Router()
 
@@ -10,11 +10,11 @@ chatBotIntegrationAPI.use('/*', async (req: express.Request, res: express.Respon
     try {
 
         const baseUrl = removePrefix('/proxies/v8/chatbot/v3', req.originalUrl)
-        logInfo(`The url is... ${baseUrl} : originalUrl: ${req.originalUrl}`)
+        logDebug(`The url is... ${baseUrl} : originalUrl: ${req.originalUrl}`)
         const subPath = baseUrl.replace(/^\/+/, '')
         const url = `${CONSTANTS.APP_FUEL_API_URL}/${subPath}`
         const requestBody = req.body
-        logInfo(`Chatbot API Request -> URL: ${url}`)
+        logDebug(`Chatbot API Request -> URL: ${url}`)
         const axiosConfig = {
             headers: {
                 'Content-Type': 'application/json',

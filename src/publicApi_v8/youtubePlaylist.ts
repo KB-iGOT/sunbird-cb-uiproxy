@@ -2,7 +2,7 @@ import axios from 'axios'
 import express from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 
 export const youtubePlaylist = express.Router()
 
@@ -16,7 +16,7 @@ youtubePlaylist.get('/landingpage', async (req, res) => {
         playListUrl += '&playlistId=' + CONSTANTS[playListId]
         playListUrl += '&part=snippet,id,contentDetails'
         playListUrl += '&maxResults=' + (Number(req.query.maxResults) || Number(CONSTANTS.YOUTUBE_PLAYLIST_MAX_RESULT))
-        logInfo('Youtube playlist constructed url : ' + playListUrl)
+        logDebug('Youtube playlist constructed url : ' + playListUrl)
         const keyValue = playListId
         try {
             const playlistResponse = await axios({
