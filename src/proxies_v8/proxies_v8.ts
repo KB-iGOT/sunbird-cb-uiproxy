@@ -5,7 +5,7 @@ import FormData from 'form-data'
 import lodash from 'lodash'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logDebug, logError, logInfo } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 import {
   ilpProxyCreatorRoute,
   // proxyCreatorDiscussion,
@@ -437,22 +437,23 @@ proxiesV8.use('/notification/*',
 )
 
 proxiesV8.post('/org/v1/search', async (req, res) => {
-  // tslint:disable-next-line: all
-  const roleData = lodash.get(req, 'session.userRoles')  
-  // tslint:disable-next-line: all
-  const rootOrgId = lodash.get(req, 'session.rootOrgId')
-  logInfo('org search API call : Users Roles are...')
-  logDebug(roleData)
-  const urlPath = API_END_POINTS.kongSearchOrg
-  if (roleData.includes('STATE_ADMIN')) {
-    logDebug('roleData contains state admin')
-    req.body.request.filters.ministryOrStateId = rootOrgId
-    logInfo('updated urlPath -> ' + urlPath)
-  }
-  const searchResponse = await axios({
-    ...axiosRequestConfig,
-    data: req.body,
-    headers: {
+  try {
+    // tslint:disable-next-line: all
+    const roleData = lodash.get(req, 'session.userRoles')
+    // tslint:disable-next-line: all
+    const rootOrgId = lodash.get(req, 'session.rootOrgId')
+    logDebug('org search API call : Users Roles are...')
+    logDebug(roleData)
+    const urlPath = API_END_POINTS.kongSearchOrg
+    if (roleData.includes('STATE_ADMIN')) {
+      logDebug('roleData contains state admin')
+      req.body.request.filters.ministryOrStateId = rootOrgId
+      logDebug('updated urlPath -> ' + urlPath)
+    }
+    const searchResponse = await axios({
+      ...axiosRequestConfig,
+      data: req.body,
+      headers: {
         Authorization: CONSTANTS.SB_API_KEY,
         // tslint:disable-next-line: all
         'x-authenticated-user-token': extractUserToken(req),

@@ -4,7 +4,7 @@ import { Readable } from 'stream'
 import { sharedHttpAgent, sharedHttpsAgent } from '../configs/request.config'
 import { extractUserEmailFromRequest, extractUserId, extractUserToken } from '../utils/requestExtract'
 import { CONSTANTS } from './env'
-import { logDebug, logInfo } from './logger'
+import { logDebug, logError, logInfo, logWarn } from './logger'
 
 const _ = require('lodash')
 
@@ -99,10 +99,11 @@ const PROXY_SLUG_FORMS = '/proxies/v8/ext-forms'
  * ERR_HTTP_HEADERS_SENT when the agent queued the request.
  */
 // tslint:disable-next-line: no-any
-proxy.on('proxyReq', (proxyReq: any, req: any, _res: any, _options: any) => {
-  logDebug('proxyReqOn method. Adding more headers in request...')
-  const rootOrg = req.headers ? req.headers.rootOrg : req.headers.rootorg
-  logDebug(`rootOrg is updated: ` + JSON.stringify(rootOrg))
+export function proxyHeaders(req: any, _res: any, next: any) {
+  const session = req.session || {}
+  const rootOrgId = session.rootOrgId || ''
+  const channel = session.channel || ''
+
   // tslint:disable-next-line: no-duplicate-string
   req.headers['x-channel-id'] = rootOrgId || CONSTANTS.X_Channel_Id
   req.headers.authorization = CONSTANTS.SB_API_KEY
@@ -117,16 +118,17 @@ proxy.on('proxyReq', (proxyReq: any, req: any, _res: any, _options: any) => {
     req.headers['x-authenticated-user-nodebb-uid'] = session.uid
   }
 
-  // condition has been added to set the session in nodebb req header
-  /* tslint:disable-next-line */
-  if (req.originalUrl.includes('/discussion') && !req.originalUrl.includes('/discussion/user/v1/create') && req.session) {
-    if (req.session) {
-      req.sesson.cookie.secure = true
-    }
-    if (req.body && req.session.hasOwnProperty('uid')) {
-      req.body._uid = req.session.uid
-    }
-    logDebug('REQ_URL_ORIGINAL discussion', proxyReq.path)
+  // Discussion route: set secure cookie + inject _uid into body
+  setDiscussionFields(req, session)
+
+  next()
+}
+
+// tslint:disable-next-line: no-any
+function setDiscussionFields(req: any, session: any) {
+  const url = req.originalUrl || ''
+  if (!url.includes(DISCUSSION_PATH) || url.includes(DISCUSSION_CREATE_PATH)) {
+    return
   }
   if (session.cookie) {
     session.cookie.secure = true
@@ -238,7 +240,8 @@ export function proxyCreatorRoute(route: Router, targetUrl: string, _timeout = 1
     }
     logDebug('REQ_URL_ORIGINAL', req.originalUrl)
     logDebug('REQ_URL', req.url)
-    proxyCreator(timeout).web(req, res, {
+    proxyTimed.web(req, res, {
+      buffer: buildProxyBuffer(req),
       target: targetUrl,
     })
   })
@@ -267,8 +270,8 @@ export function scormProxyCreatorRoute(route: Router, baseUrl: string): Router {
 }
 
 export function proxyCreatorLearner(route: Router, targetUrl: string, _timeout = 10000): Router {
-  route.all('/*', (req, res) => {
-    logDebug('REQ_URL_ORIGINAL proxyCreatorLearner', req.originalUrl)
+  route.all('/*', proxyHeaders, (req, res) => {
+    logInfo('REQ_URL_ORIGINAL proxyCreatorLearner', req.originalUrl)
     const url = removePrefix(`${PROXY_SLUG}/learner`, req.originalUrl)
     logDebug('Final URL: ', targetUrl + url)
     proxy.web(req, res, {
@@ -282,8 +285,8 @@ export function proxyCreatorLearner(route: Router, targetUrl: string, _timeout =
 }
 // tslint:disable-next-line
 export function proxyCreatorSunbird(route: Router, targetUrl: string, _timeout = 10000): Router {
-  route.all('/*', (req, res) => {
-    logDebug('REQ_URL_ORIGINAL proxyCreatorSunbird', req.originalUrl)
+  route.all('/*', proxyHeaders, (req, res) => {
+    logInfo('REQ_URL_ORIGINAL proxyCreatorSunbird', req.originalUrl)
     let url = ''
     if (req.originalUrl.includes('/proxies/v8/wat')) {
       url = removePrefix(`${PROXY_SLUG_WAT}`, req.originalUrl)
@@ -358,8 +361,8 @@ function removePrefix(prefix: string, s: string) {
 }
 
 export function proxyCreatorSunbirdSearch(route: Router, targetUrl: string, _timeout = 10000): Router {
-  route.all('/*', (req, res) => {
-    logDebug('REQ_URL_ORIGINAL proxyCreatorSunbirdSearch', req.originalUrl)
+  route.all('/*', proxyHeaders, (req, res) => {
+    logInfo('REQ_URL_ORIGINAL proxyCreatorSunbirdSearch', req.originalUrl)
     proxy.web(req, res, {
       buffer: buildProxyBuffer(req),
       changeOrigin: true,
@@ -472,8 +475,8 @@ export function proxyQuestionRead(route: Router, targetUrl: string, _timeout = 1
 }
 
 export function proxyCreatorForms(route: Router, _timeout = 10000): Router {
-  route.all('/*', (req, res) => {
-    logDebug('REQ_URL_ORIGINAL proxyCreatorSunbird', req.originalUrl)
+  route.all('/*', proxyHeaders, (req, res) => {
+    logInfo('REQ_URL_ORIGINAL proxyCreatorSunbird', req.originalUrl)
     let url = ''
     url = removePrefix(`${PROXY_SLUG_FORMS}`, req.originalUrl)
     proxy.web(req, res, {

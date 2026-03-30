@@ -2,7 +2,8 @@ const _                 = require('lodash')
 import axios from 'axios'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from './env'
-import { logDebug, logError, logInfo } from './logger'
+import { logDebug, logError } from './logger'
+import { request } from './request-adapter'
 import { extractUserToken } from './requestExtract'
 
 export const PERMISSION_HELPER = {
@@ -59,7 +60,8 @@ export const PERMISSION_HELPER = {
               logError('reqObj.session.save error -- ', error, '------', new Date().toString())
               callback(null, null)
             } else {
-               logDebug(`setNodeBBUID::Success of save -- reqObj.session ${new Date()}--- `)
+               // tslint:disable-next-line: no-console
+               console.log(`setNodeBBUID::Success of save -- reqObj.session ${new Date()}--- `)
                callback(null, nodeBBData)
             }
         })
@@ -125,7 +127,8 @@ export const PERMISSION_HELPER = {
                 this.setNodeBBUID(reqObj, callback, nodeBBResp)
             }
         } catch (err) {
-            logError('Making axios call to nodeBB ERROR -- ', err, '------', new Date().toString())
+            // tslint:disable-next-line: no-console
+            console.log('Making axios call to nodeBB ERROR -- ', err, '------', new Date().toString())
             callback(null, null)
           }
     },

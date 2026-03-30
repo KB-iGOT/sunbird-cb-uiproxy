@@ -17,13 +17,7 @@ import { proxiesV8 } from './proxies_v8/proxies_v8'
 import { publicApiV8 } from './publicApi_v8/publicApiV8'
 import { CustomKeycloak } from './utils/custom-keycloak'
 import { CONSTANTS } from './utils/env'
-import { logDebug, logError, logInfo, logSuccess } from './utils/logger'
-import {
-  getLogLevelHandler,
-  resetLogLevelHandler,
-  setLogLevelHandler,
-  startLogLevelSync,
-} from './utils/logLevelControl'
+import { logDebug, logError, logSuccess } from './utils/logger'
 const { frameworkAPI } = require('@project-sunbird/ext-framework-server/api')
 const frameworkConfig = require('./configs/framework.config')
 const cookieParser = require('cookie-parser')
@@ -62,7 +56,6 @@ export class Server {
       this.app.all('*', isAllowed())
     }
     this.setKeyCloak(sessionConfig)
-    this.configureLogLevelControl()
     this.authoringProxies()
     this.setExtFormsFramework()
     this.servePublicApi()
@@ -85,19 +78,6 @@ export class Server {
         res.status(500).json({ error: 'Internal Server Error' })
       }
     })
-  }
-
-  private configureLogLevelControl() {
-    startLogLevelSync()
-    if (this.keycloak) {
-      this.app.get('/protected/v8/internal/log-level', this.keycloak.protect, getLogLevelHandler)
-      this.app.post('/protected/v8/internal/log-level', this.keycloak.protect, (req, res) => {
-        void setLogLevelHandler(req, res)
-      })
-      this.app.post('/protected/v8/internal/log-level/reset', this.keycloak.protect, (req, res) => {
-        void resetLogLevelHandler(req, res)
-      })
-    }
   }
 
   private setCookie() {
