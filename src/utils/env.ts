@@ -68,6 +68,10 @@ export const CONSTANTS = {
   LEARNING_HUB_API_BASE: env.LEARNING_HUB_API_BASE || env.SB_EXT_API_BASE_2,
   LIKE_API_BASE: env.LIKE_API_BASE || env.SB_EXT_API_BASE_2,
   LOG_LEVEL: env.LOG_LEVEL || 'error',
+  LOG_LEVEL_ADMIN_TOKEN: env.LOG_LEVEL_ADMIN_TOKEN || '',
+  LOG_LEVEL_POLL_INTERVAL_MS: Number(env.LOG_LEVEL_POLL_INTERVAL_MS) || 10000,
+  LOG_LEVEL_REDIS_KEY: env.LOG_LEVEL_REDIS_KEY || 'ui_proxy_log_level',
+  LOG_LEVEL_SYNC_ENABLED: env.LOG_LEVEL_SYNC_ENABLED || 'false',
   MULTI_TENANT_KEYCLOAK:
     env.MULTI_TENANT_KEYCLOAK ||
     'igot,https://portal.karmayogi.nic.in/auth,sunbird',
