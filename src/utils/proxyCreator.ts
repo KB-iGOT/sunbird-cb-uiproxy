@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { createProxyServer } from 'http-proxy'
+import { sharedHttpAgent, sharedHttpsAgent } from '../configs/request.config'
 import { extractUserEmailFromRequest, extractUserId, extractUserToken } from '../utils/requestExtract'
 import { CONSTANTS } from './env'
 import { logDebug, logInfo } from './logger'
@@ -105,6 +106,23 @@ proxy.on('proxyRes', (proxyRes: any, req: any, _res: any, ) => {
   })
 
 })
+
+/** Pick the correct keep-alive agent based on target protocol */
+function pickAgent(target: string) {
+  return target.startsWith('https') ? sharedHttpsAgent : sharedHttpAgent
+}
+// tslint:disable-next-line: no-any
+export function createPooledProxy(opts: Record<string, any> = {}) {
+  const instance = createProxyServer(opts)
+  const originalWeb = instance.web.bind(instance)
+  // tslint:disable-next-line: no-any
+  instance.web = (req: any, res: any, options: any = {}, ...args: any[]) => {
+    const target = options.target || ''
+    options.agent = pickAgent(typeof target === 'string' ? target : '')
+    return originalWeb(req, res, options, ...args)
+  }
+  return instance
+}
 
 export function proxyCreatorRoute(route: Router, targetUrl: string, timeout = 10000): Router {
   route.all('/*', (req, res) => {
