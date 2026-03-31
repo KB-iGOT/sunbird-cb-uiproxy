@@ -19,6 +19,18 @@ function clearAuthSession(reqObj: any, resObj: any) {
     }
 }
 
+// tslint:disable-next-line: no-any
+function clearAuthSession(reqObj: any, resObj: any) {
+  if (reqObj && reqObj.session) {
+    reqObj.session.destroy(() => {
+      logDebug('keycloakHelper:: destroyed session during accessDenied')
+    })
+  }
+  if (resObj) {
+    resObj.clearCookie('connect.sid', { path: '/' })
+  }
+}
+
 export function getKeyCloakClient() {
     // Avoid circular object serialization (keycloak/session carry circular refs)
     // tslint:disable-next-line: no-any
@@ -36,13 +48,17 @@ export function getKeyCloakClient() {
     logInfo('keycloakHelper::getKeyCloakClient... keycloakObj: ' + safeStringify(keycloakObj))
     keycloakObj.authenticated = authenticated
     keycloakObj.deauthenticated = deauthenticated
-     // tslint:disable-next-line: no-any
-    keycloakObj.accessDenied = (reqObj: any, resObj: any) => {
-        logError('keycloakHelper::accessDenied invoked, clearing auth session and cookie')
-        clearAuthSession(reqObj, resObj)
-        resObj.status(403)
-        resObj.end('Access denied')
+  keycloakObj.accessDenied = (reqObj: any, resObj: any) => {
+    logError('keycloakHelper::accessDenied invoked, clearing auth session and cookie')
+    clearAuthSession(reqObj, resObj)
+    if (reqObj && reqObj.query && reqObj.query.kc_retry === '1') {
+      logError('keycloakHelper:: repeated accessDenied detected, stopping redirect loop')
+      resObj.status(403)
+      resObj.end('Access denied')
+      return
     }
+    resObj.redirect('/protected/v8/resource/?kc_retry=1')
+  }
     return keycloakObj
 }
 

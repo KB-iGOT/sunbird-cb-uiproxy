@@ -248,6 +248,8 @@ const respond403 = (req: Request, res: Response) => {
 
 const respond419 = (req: Request, res: Response) => {
     const REQ_URL = req.path
+    // Clear stale session cookie so browser can establish a fresh auth session after restart.
+    res.clearCookie('connect.sid', { path: '/' })
     if (_.includes(REQ_URL, '/reset')) {
         res.redirect('/apis/logout')
     } else {
@@ -375,10 +377,24 @@ export function apiWhiteListLogger() {
             next()
             return
         }
+        // Allow Keycloak OAuth callback to pass through so keycloak-connect can
+        // exchange the authorization code for a grant. The session has no userRoles
+        // yet at this point (user is mid-login), so blocking here causes a 400 from
+        // Keycloak on the subsequent getGrantFromCode call.
+        if (req.query.auth_callback === '1') {
+            logDebug('UIPROXY:: apiWhiteListLogger : Keycloak OAuth callback detected, allowing through')
+            next()
+            return
+        }
         const REQ_URL = req.path
         if (!_.includes(REQ_URL, '/resource') && !_.includes(REQ_URL, '/eclogin') && (req.session)) {
              logInfo('UIPROXY:: apiWhiteListLogger : checking if the login is to resource  and session is there')
              if (!('userRoles' in req.session) || (('userRoles' in req.session) && (req.session.userRoles.length === 0))) {
+                if (_.get(req, 'cookies["connect.sid"]') && req.session) {
+                    req.session.destroy(() => {
+                        logDebug('UIPROXY:: apiWhiteListLogger : stale session detected, forcing re-authentication')
+                    })
+                }
                 logError('Portal_API_WHITELIST_LOGGER: User needs to authenticated themselves', '------', new Date().toString())
                 logInfo('UIPROXY:: apiWhiteListLogger :  respond419 method will be called')
                 respond419(req, res)
