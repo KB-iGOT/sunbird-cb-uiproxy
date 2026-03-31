@@ -4,19 +4,19 @@ import request from 'request'
 import { getOAuthKeycloakConfig } from '../configs/keycloak.config'
 import { getSessionConfig } from '../configs/session.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logError, logInfo, logDebug } from '../utils/logger'
 import { PERMISSION_HELPER } from '../utils/permissionHelper'
 
 // tslint:disable-next-line: no-any
 function clearAuthSession(reqObj: any, resObj: any) {
-    if (reqObj && reqObj.session) {
-        reqObj.session.destroy(() => {
-            logInfo('keycloakHelper:: destroyed session during accessDenied')
-        })
-    }
-    if (resObj) {
-        resObj.clearCookie('connect.sid', { path: '/' })
-    }
+  if (reqObj && reqObj.session) {
+    reqObj.session.destroy(() => {
+      logDebug('keycloakHelper:: destroyed session during accessDenied')
+    })
+  }
+  if (resObj) {
+    resObj.clearCookie('connect.sid', { path: '/' })
+  }
 }
 
 export function getKeyCloakClient() {
@@ -31,18 +31,23 @@ export function getKeyCloakClient() {
     }
     logInfo('keycloakHelper::getKeyCloakClient...')
     const sessionConfig = getSessionConfig()
-    logInfo('keycloakHelper::getKeyCloakClient... sessionConfig: ' + safeStringify(sessionConfig)) 
+    logInfo('keycloakHelper::getKeyCloakClient... sessionConfig: ' + safeStringify(sessionConfig))
     const keycloakObj = new keycloak({ store: sessionConfig.store }, getOAuthKeycloakConfig())
     logInfo('keycloakHelper::getKeyCloakClient... keycloakObj: ' + safeStringify(keycloakObj))
     keycloakObj.authenticated = authenticated
     keycloakObj.deauthenticated = deauthenticated
-     // tslint:disable-next-line: no-any
+    // tslint:disable-next-line: no-any
     keycloakObj.accessDenied = (reqObj: any, resObj: any) => {
-        logError('keycloakHelper::accessDenied invoked, clearing auth session and cookie')
-        clearAuthSession(reqObj, resObj)
-        resObj.status(403)
-        resObj.end('Access denied')
+    logError('keycloakHelper::accessDenied invoked, clearing auth session and cookie')
+    clearAuthSession(reqObj, resObj)
+    if (reqObj && reqObj.query && reqObj.query.kc_retry === '1') {
+      logError('keycloakHelper:: repeated accessDenied detected, stopping redirect loop')
+      resObj.status(403)
+      resObj.end('Access denied')
+      return
     }
+    resObj.redirect('/protected/v8/resource/?kc_retry=1')
+  }
     return keycloakObj
 }
 

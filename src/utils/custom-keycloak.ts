@@ -189,6 +189,16 @@ export class CustomKeycloak {
     return keycloak.protect()(req, res, next)
   }
 
+  private clearAuthSession(req: express.Request, res: express.Response) {
+    if (req.session) {
+      req.session.destroy(() => {
+        logDebug('CustomKeycloak: destroyed session during accessDenied')
+      })
+    }
+    // Clear default express-session cookie to avoid stale/duplicate sid on next login.
+    res.clearCookie('connect.sid', { path: '/' })
+  }
+
   private generateKeyCloak(
     sessionConfig: expressSession.SessionOptions,
     url?: string,
@@ -200,6 +210,20 @@ export class CustomKeycloak {
     )
     keycloak.authenticated = this.authenticated
     keycloak.deauthenticated = this.deauthenticatedNew
+    // tslint:disable-next-line: no-any
+    const keycloakAny = keycloak as any
+    keycloakAny.accessDenied = (req: express.Request, res: express.Response) => {
+      logError('CustomKeycloak: accessDenied invoked, clearing auth session and cookie')
+      this.clearAuthSession(req, res)
+      if (req.query && req.query.kc_retry === '1') {
+        logError('CustomKeycloak: repeated accessDenied detected, stopping redirect loop')
+        res.status(403)
+        res.end('Access denied')
+        return
+      }
+      const retryPath = '/protected/v8/resource/?kc_retry=1'
+      res.redirect(retryPath)
+    }
     return keycloak
   }
 }
