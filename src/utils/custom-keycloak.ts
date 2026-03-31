@@ -6,7 +6,6 @@ import { getKeycloakConfig } from '../configs/keycloak.config'
 import { CONSTANTS } from './env'
 import { logDebug, logError } from './logger'
 import { PERMISSION_HELPER } from './permissionHelper'
-import { log } from 'console'
 const async = require('async')
 
 const composable = require('composable-middleware')
