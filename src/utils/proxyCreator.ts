@@ -4,7 +4,7 @@ import { Readable } from 'stream'
 import { sharedHttpAgent, sharedHttpsAgent } from '../configs/request.config'
 import { extractUserEmailFromRequest, extractUserId, extractUserToken } from '../utils/requestExtract'
 import { CONSTANTS } from './env'
-import { logDebug, logError, logInfo, logWarn } from './logger'
+import { logDebug, logError, logInfo } from './logger'
 
 const _ = require('lodash')
 
@@ -24,14 +24,27 @@ const DISCUSSION_CREATE_PATH = '/discussion/user/v1/create'
  * pipes options.buffer instead of the consumed req, delivering the body regardless
  * of socket timing.
  *
- * Returns undefined for GETs, empty bodies, and upload paths (binary streams).
+ * Returns undefined for GETs, non-object bodies, and upload paths (binary streams).
+ * Empty-object POST/PUT/PATCH returns an explicit '{}' stream to avoid Content-Length mismatch.
  */
   // tslint:disable-next-line: no-any
 export function buildProxyBuffer(req: any): Readable | undefined {
   // No body to re-serialise
-  if (!req.body || typeof req.body !== 'object' || Object.keys(req.body).length === 0) {
+  if (!req.body || typeof req.body !== 'object') {
+    return undefined
+  }
+
+  // Empty object on a mutating method: body-parser consumed '{}' from the stream.
+  // Without an explicit buffer, http-proxy pipes the already-consumed req (empty) while
+  // Content-Length: 2 remains in the headers — Kong waits for 2 bytes that never arrive → 504.
+  if (Object.keys(req.body).length === 0) {
     if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
-      logWarn(`buildProxyBuffer: ${req.method} ${req.originalUrl || req.url} has empty/missing req.body`)
+      req.headers['content-length'] = '2'
+      delete req.headers['transfer-encoding']
+      const emptyStream = new Readable({ read() { /* noop */ } })
+      emptyStream.push('{}')
+      emptyStream.push(null)
+      return emptyStream
     }
     return undefined
   }
