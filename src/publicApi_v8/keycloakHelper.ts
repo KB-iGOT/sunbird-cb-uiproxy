@@ -7,6 +7,18 @@ import { CONSTANTS } from '../utils/env'
 import { logError, logInfo } from '../utils/logger'
 import { PERMISSION_HELPER } from '../utils/permissionHelper'
 
+// tslint:disable-next-line: no-any
+function clearAuthSession(reqObj: any, resObj: any) {
+    if (reqObj && reqObj.session) {
+        reqObj.session.destroy(() => {
+            logInfo('keycloakHelper:: destroyed session during accessDenied')
+        })
+    }
+    if (resObj) {
+        resObj.clearCookie('connect.sid', { path: '/' })
+    }
+}
+
 export function getKeyCloakClient() {
     // Avoid circular object serialization (keycloak/session carry circular refs)
     // tslint:disable-next-line: no-any
@@ -24,6 +36,13 @@ export function getKeyCloakClient() {
     logInfo('keycloakHelper::getKeyCloakClient... keycloakObj: ' + safeStringify(keycloakObj))
     keycloakObj.authenticated = authenticated
     keycloakObj.deauthenticated = deauthenticated
+     // tslint:disable-next-line: no-any
+    keycloakObj.accessDenied = (reqObj: any, resObj: any) => {
+        logError('keycloakHelper::accessDenied invoked, clearing auth session and cookie')
+        clearAuthSession(reqObj, resObj)
+        resObj.status(403)
+        resObj.end('Access denied')
+    }
     return keycloakObj
 }
 
