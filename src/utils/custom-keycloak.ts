@@ -224,7 +224,6 @@ export class CustomKeycloak {
         res.end('Access denied')
         return
       }
-
       // One retry only: set a short-lived guard cookie and redirect once.
       res.cookie(this.accessDeniedGuardCookie, '1', { httpOnly: true, maxAge: 10000, path: '/' })
       const retryPath = '/protected/v8/resource'
