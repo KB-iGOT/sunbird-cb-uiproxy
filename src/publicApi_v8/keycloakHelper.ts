@@ -4,20 +4,8 @@ import request from 'request'
 import { getOAuthKeycloakConfig } from '../configs/keycloak.config'
 import { getSessionConfig } from '../configs/session.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logError, logInfo, logDebug } from '../utils/logger'
 import { PERMISSION_HELPER } from '../utils/permissionHelper'
-
-// tslint:disable-next-line: no-any
-function clearAuthSession(reqObj: any, resObj: any) {
-    if (reqObj && reqObj.session) {
-        reqObj.session.destroy(() => {
-            logInfo('keycloakHelper:: destroyed session during accessDenied')
-        })
-    }
-    if (resObj) {
-        resObj.clearCookie('connect.sid', { path: '/' })
-    }
-}
 
 // tslint:disable-next-line: no-any
 function clearAuthSession(reqObj: any, resObj: any) {
