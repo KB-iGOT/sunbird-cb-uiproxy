@@ -172,9 +172,6 @@ export class CustomKeycloak {
 
   protect = (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const keycloak = this.getKeyCloakObject(req)
-    logDebug('Protect middleware called for url: ' + req.url)
-    logDebug('Keycloak object: ' + JSON.stringify(keycloak))
-    logDebug('Session object: ' + JSON.stringify(req.session))
     return keycloak.protect()(req, res, next)
   }
 
