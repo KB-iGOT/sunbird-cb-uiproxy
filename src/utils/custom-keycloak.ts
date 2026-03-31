@@ -12,6 +12,7 @@ const composable = require('composable-middleware')
 
 export class CustomKeycloak {
   private multiTenantKeycloak = new Map<string, keycloakConnect>()
+  private readonly accessDeniedGuardCookie = 'kc_access_denied_guard'
 
   constructor(sessionConfig: expressSession.SessionOptions) {
     if (CONSTANTS.MULTI_TENANT_KEYCLOAK) {
@@ -215,12 +216,16 @@ export class CustomKeycloak {
     keycloakAny.accessDenied = (req: express.Request, res: express.Response) => {
       logError('CustomKeycloak: accessDenied invoked, clearing auth session and cookie')
       this.clearAuthSession(req, res)
-      if (req.query && req.query.kc_retry === '1') {
+      const hasGuardCookie = Boolean(req.cookies && req.cookies[this.accessDeniedGuardCookie])
+      if (hasGuardCookie) {
         logError('CustomKeycloak: repeated accessDenied detected, stopping redirect loop')
+        res.clearCookie(this.accessDeniedGuardCookie, { path: '/' })
         res.status(403)
         res.end('Access denied')
         return
       }
+      // One retry only: set a short-lived guard cookie and redirect once.
+      res.cookie(this.accessDeniedGuardCookie, '1', { httpOnly: true, maxAge: 10000, path: '/' })
       const retryPath = '/protected/v8/resource'
       res.redirect(retryPath)
     }
