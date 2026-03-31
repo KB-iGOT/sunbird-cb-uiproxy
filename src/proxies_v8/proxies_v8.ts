@@ -5,7 +5,7 @@ import FormData from 'form-data'
 import lodash from 'lodash'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logDebug, logError, logInfo } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 import {
   ilpProxyCreatorRoute,
   // proxyCreatorDiscussion,
@@ -36,6 +36,7 @@ import { lookerDashboard } from './lookerIntegration'
 const API_END_POINTS = {
   batchParticipantsApi: `${CONSTANTS.KONG_API_BASE}/course/v1/batch/participants/list`,
   contentNotificationEmail: `${CONSTANTS.NOTIFICATION_SERVIC_API_BASE}/v1/notification/send/sync`,
+  externalContentbatchParticipantsApi: `${CONSTANTS.KONG_API_BASE}/externaltraining/v1/batch/participants/list`,
   kongExtOrgSearch: `${CONSTANTS.KONG_API_BASE}/org/v1/cb/ext/search`,
   kongSearchOrg: `${CONSTANTS.KONG_API_BASE}/org/v1/search`,
   // tslint:disable-next-line: all
@@ -81,18 +82,26 @@ proxiesV8.post('/upload/*', (req, res) => {
         port: 9000,
       },
       (err, response) => {
-
+        if (err || !response) {
+          logError('FormData submit error in /upload/*', String(err))
+          if (!res.headersSent) {
+            res.status(502).json({ error: 'Upload failed', message: String(err) })
+          }
+          return
+        }
+        response.on('error', (streamErr) => {
+          logError('Response stream error in /upload/*', String(streamErr))
+          if (!res.headersSent) {
+            res.status(502).json({ error: 'Upload stream failed' })
+          }
+        })
         response.on('data', (data) => {
-          if (!err && (response.statusCode === 200 || response.statusCode === 201)) {
+          if (response.statusCode === 200 || response.statusCode === 201) {
             res.send(JSON.parse(data.toString('utf8')))
           } else {
             res.send(data.toString('utf8'))
           }
         })
-        if (err) {
-          res.send(err)
-        }
-
       }
     )
   } else {
@@ -125,18 +134,26 @@ proxiesV8.post('/private/upload/*', (_req, _res) => {
         port: 9000,
       },
       (_err, _response) => {
-
+        if (_err || !_response) {
+          logError('FormData submit error in /private/upload/*', String(_err))
+          if (!_res.headersSent) {
+            _res.status(502).json({ error: 'Upload failed', message: String(_err) })
+          }
+          return
+        }
+        _response.on('error', (streamErr) => {
+          logError('Response stream error in /private/upload/*', String(streamErr))
+          if (!_res.headersSent) {
+            _res.status(502).json({ error: 'Upload stream failed' })
+          }
+        })
         _response.on('data', (_data) => {
-          if (!_err && (_response.statusCode === 200 || _response.statusCode === 201)) {
+          if (_response.statusCode === 200 || _response.statusCode === 201) {
             _res.send(JSON.parse(_data.toString('utf8')))
           } else {
             _res.send(_data.toString('utf8'))
           }
         })
-        if (_err) {
-          _res.send(_err)
-        }
-
       }
     )
   } else {
@@ -420,30 +437,35 @@ proxiesV8.use('/notification/*',
 )
 
 proxiesV8.post('/org/v1/search', async (req, res) => {
-  // tslint:disable-next-line: all
-  const roleData = lodash.get(req, 'session.userRoles')  
-  // tslint:disable-next-line: all
-  const rootOrgId = lodash.get(req, 'session.rootOrgId')
-  logInfo('org search API call : Users Roles are...')
-  logDebug(roleData)
-  const urlPath = API_END_POINTS.kongSearchOrg
-  if (roleData.includes('STATE_ADMIN')) {
-    logDebug('roleData contains state admin')
-    req.body.request.filters.ministryOrStateId = rootOrgId
-    logInfo('updated urlPath -> ' + urlPath)
-  }
-  const searchResponse = await axios({
-    ...axiosRequestConfig,
-    data: req.body,
-    headers: {
+  try {
+    // tslint:disable-next-line: all
+    const roleData = lodash.get(req, 'session.userRoles')
+    // tslint:disable-next-line: all
+    const rootOrgId = lodash.get(req, 'session.rootOrgId')
+    logDebug('org search API call : Users Roles are...')
+    logDebug(roleData)
+    const urlPath = API_END_POINTS.kongSearchOrg
+    if (roleData.includes('STATE_ADMIN')) {
+      logDebug('roleData contains state admin')
+      req.body.request.filters.ministryOrStateId = rootOrgId
+      logDebug('updated urlPath -> ' + urlPath)
+    }
+    const searchResponse = await axios({
+      ...axiosRequestConfig,
+      data: req.body,
+      headers: {
         Authorization: CONSTANTS.SB_API_KEY,
         // tslint:disable-next-line: all
         'x-authenticated-user-token': extractUserToken(req),
-    },
-    method: 'POST',
-    url: urlPath,
-  })
-  res.status(200).send(searchResponse.data)
+      },
+      method: 'POST',
+      url: urlPath,
+    })
+    res.status(200).send(searchResponse.data)
+  } catch (err) {
+    logError('Org search API failed:', String(err))
+    res.status(500).json({ error: 'Failed to search organisations' })
+  }
 })
 
 proxiesV8.use('/org/*',
@@ -455,7 +477,7 @@ proxiesV8.use('/dashboard/*',
 )
 
 // tslint:disable-next-line:max-line-length
-proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workflow/admin/transition/bulkupdate', '/cloud-services/mlcore/v1/files/upload', '/calendar/v1/bulkUpload', '/storage/orgStoreUpload', '/workflow/admin/v2/bulkupdate/transition', '/user/v2/bulkupload', '/ciosIntegration/v1/loadContentFromExcel/*', '/storage/v1/uploadCiosIcon', '/storage/v1/uploadCiosContract', '/organisation/v1/competencyDesignationMappings/bulkUpload/*', '/template/api/v1/upload', '/designation/v1/orgMapping/bulkUpload/*', '/storage/v1/uploadCiosLogsFile', '/customselfregistration/upload/logo/gcpcontainer', '/ciosIntegration/v1/loadContentProgressFromExcel/*', '/feedDiscussion/uploadFile/*', '/community/v1/fileUpload/*', '/user/v2/event/bulkonboard/*', '/workflow/blendedprogram/bulkApprovalDataFromCsv/*', '/customFields/v1/masterList/*', '/organisation/v1/hierarchy/bulkUpload/*', '/user/v3/bulkupload', '/user/v1/org-migration/bulk-upload/*', '/storage/v1/bp/assignment/answer/*'], (req, res) => {
+proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workflow/admin/transition/bulkupdate', '/cloud-services/mlcore/v1/files/upload', '/calendar/v1/bulkUpload', '/storage/orgStoreUpload', '/workflow/admin/v2/bulkupdate/transition', '/user/v2/bulkupload', '/ciosIntegration/v1/loadContentFromExcel/*', '/storage/v1/uploadCiosIcon', '/storage/v1/uploadCiosContract', '/organisation/v1/competencyDesignationMappings/bulkUpload/*', '/template/api/v1/upload', '/designation/v1/orgMapping/bulkUpload/*', '/storage/v1/uploadCiosLogsFile', '/customselfregistration/upload/logo/gcpcontainer', '/ciosIntegration/v1/loadContentProgressFromExcel/*', '/feedDiscussion/uploadFile/*', '/community/v1/fileUpload/*', '/user/v2/event/bulkonboard/*', '/workflow/blendedprogram/bulkApprovalDataFromCsv/*', '/customFields/v1/masterList/*', '/organisation/v1/hierarchy/bulkUpload/*', '/user/v3/bulkupload', '/user/v1/org-migration/bulk-upload/*', '/storage/v1/bp/assignment/answer/*', '/peersurvey/upload', '/externaltraining/v1/bulkupload/*'], (req, res) => {
   if (req.files && req.files.data) {
     const url = removePrefix('/proxies/v8', req.originalUrl)
     const file: UploadedFile = req.files.data as UploadedFile
@@ -513,7 +535,7 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
                   parsed = JSON.parse(fullData.toString('utf8'))
                   res.status(response.statusCode).json(parsed)
               } catch (e) {
-                  logInfo('Invalid JSON received as per Json Parse')
+                  logDebug('Invalid JSON received as per Json Parse')
                   res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
               }
             }
@@ -583,7 +605,7 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
                   parsed = JSON.parse(fullData.toString('utf8'))
                   res.status(response.statusCode).json(parsed)
               } catch (e) {
-                   logInfo('Invalid JSON received as per Json Parse')
+                   logDebug('Invalid JSON received as per Json Parse')
                    res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
               }
             }
@@ -663,33 +685,38 @@ proxiesV8.use('/wat/dashboard/*',
 )
 
 proxiesV8.get('/data/v1/system/settings/get/orgTypeList', async (req, res) => {
-  const roleData = lodash.get(req, 'session.userRoles')
-  logInfo('orgTypeList API call : Users Roles are...')
-  logInfo(roleData)
-  const response = await axios({
-    ...axiosRequestConfig,
-    headers: {
-      Authorization: CONSTANTS.SB_API_KEY,
-      // tslint:disable-next-line: all
-      'x-authenticated-user-token': extractUserToken(req),
-    },
-    method: 'GET',
-    url: API_END_POINTS.orgTypeListEndPoint,
-  })
-  if (roleData.includes('STATE_ADMIN')) {
-    const hiddenList = ['CBC', 'CBP', 'STATE']
-    const orgTypeListObj = JSON.parse(response.data.result.response.value)
-    const orgTypeList = orgTypeListObj.orgTypeList
-    // tslint:disable-next-line: no-any
-    orgTypeList.forEach((element: any) => {
-      if (hiddenList.includes(element.name)) {
-        element.isHidden = true
-      }
+  try {
+    const roleData = lodash.get(req, 'session.userRoles')
+    logDebug('orgTypeList API call : Users Roles are...')
+    logDebug(roleData)
+    const response = await axios({
+      ...axiosRequestConfig,
+      headers: {
+        Authorization: CONSTANTS.SB_API_KEY,
+        // tslint:disable-next-line: all
+        'x-authenticated-user-token': extractUserToken(req),
+      },
+      method: 'GET',
+      url: API_END_POINTS.orgTypeListEndPoint,
     })
-    orgTypeListObj.orgTypeList = orgTypeList
-    response.data.result.response.value = JSON.stringify(orgTypeListObj)
+    if (roleData.includes('STATE_ADMIN')) {
+      const hiddenList = ['CBC', 'CBP', 'STATE']
+      const orgTypeListObj = JSON.parse(response.data.result.response.value)
+      const orgTypeList = orgTypeListObj.orgTypeList
+      // tslint:disable-next-line: no-any
+      orgTypeList.forEach((element: any) => {
+        if (hiddenList.includes(element.name)) {
+          element.isHidden = true
+        }
+      })
+      orgTypeListObj.orgTypeList = orgTypeList
+      response.data.result.response.value = JSON.stringify(orgTypeListObj)
+    }
+    res.status(200).send(response.data)
+  } catch (err) {
+    logError('OrgTypeList settings API failed:', String(err))
+    res.status(500).json({ error: 'Failed to fetch org type list' })
   }
-  res.status(200).send(response.data)
 })
 
 proxiesV8.use('/data/*',
@@ -1388,5 +1415,79 @@ proxiesV8.use('/achievement/dynamic/*',
 )
 
 proxiesV8.use('/knowledge/centre/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
+proxiesV8.use('/peersurvey/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
+proxiesV8.post('/externaltraining/v1/batch/getParticipants', async (req, res) => {
+  try {
+    const { batchId, deptName, limit, currentOffSet } = req.body.request.filters
+    const reqBody = {
+      request: {
+        batch: {
+          active: true,
+          batchId,
+          currentOffSet,
+          limit,
+
+        },
+      },
+    }
+    const userlist: ICohortsUser[] = []
+    const response = await axios.post(API_END_POINTS.externalContentbatchParticipantsApi, reqBody, {
+      ...axiosRequestConfig,
+      headers: {
+        Authorization: CONSTANTS.SB_API_KEY,
+        /* tslint:disable-next-line */
+        'x-authenticated-user-token': extractUserToken(req),
+      },
+    })
+    const totalCount = response.data.result.batch.count != null ? response.data.result.batch.count : 0
+    if ((typeof response.data.result.batch.participants !== 'undefined' && response.data.result.batch.participants.length > 0)) {
+      const searchresponse = await axios({
+        ...axiosRequestConfig,
+        data: { request: { filters: { userId: response.data.result.batch.participants } } },
+        headers: {
+          Authorization: CONSTANTS.SB_API_KEY,
+          // tslint:disable-next-line: all
+          'x-authenticated-user-token': extractUserToken(req),
+        },
+        method: 'POST',
+        // tslint:disable-next-line: all
+        url: API_END_POINTS.kongSearchUser,
+      })
+      if (searchresponse.data.result.response.count > 0) {
+        for (const profileObj of searchresponse.data.result.response.content) {
+          const user: ICohortsUser = getUsers(profileObj)
+          if (!deptName || (profileObj.channel && profileObj.channel === deptName)) {
+            user.department = profileObj.rootOrgName
+            userlist.push(user)
+          }
+        }
+      }
+    }
+    res.status(response.status).send({userlist, totalCount})
+  } catch (err) {
+    logError(err)
+
+    res.status((err && err.response && err.response.status) || 500).send(
+      (err && err.response && err.response.data) || {
+        error: unknownError,
+      }
+    )
+  }
+})
+
+proxiesV8.use('/externaltraining/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
+proxiesV8.use('/peervalidation/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+proxiesV8.use('/badge/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
