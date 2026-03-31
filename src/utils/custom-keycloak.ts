@@ -13,16 +13,6 @@ const composable = require('composable-middleware')
 export class CustomKeycloak {
   private multiTenantKeycloak = new Map<string, keycloakConnect>()
 
-  private clearAuthSession(req: express.Request, res: express.Response) {
-    if (req.session) {
-      req.session.destroy(() => {
-        logDebug('CustomKeycloak: destroyed session during accessDenied')
-      })
-    }
-    // Clear default express-session cookie to avoid stale/duplicate sid on next login.
-    res.clearCookie('connect.sid', { path: '/' })
-  }
-
   constructor(sessionConfig: expressSession.SessionOptions) {
     if (CONSTANTS.MULTI_TENANT_KEYCLOAK) {
       CONSTANTS.MULTI_TENANT_KEYCLOAK.split(';').forEach((v: string) => {
@@ -199,6 +189,16 @@ export class CustomKeycloak {
     return keycloak.protect()(req, res, next)
   }
 
+  private clearAuthSession(req: express.Request, res: express.Response) {
+    if (req.session) {
+      req.session.destroy(() => {
+        logDebug('CustomKeycloak: destroyed session during accessDenied')
+      })
+    }
+    // Clear default express-session cookie to avoid stale/duplicate sid on next login.
+    res.clearCookie('connect.sid', { path: '/' })
+  }
+
   private generateKeyCloak(
     sessionConfig: expressSession.SessionOptions,
     url?: string,
@@ -211,7 +211,8 @@ export class CustomKeycloak {
     keycloak.authenticated = this.authenticated
     keycloak.deauthenticated = this.deauthenticatedNew
     // tslint:disable-next-line: no-any
-    ;(keycloak as any).accessDenied = (req: express.Request, res: express.Response) => {
+    const keycloakAny = keycloak as any
+    keycloakAny.accessDenied = (req: express.Request, res: express.Response) => {
       logError('CustomKeycloak: accessDenied invoked, clearing auth session and cookie')
       this.clearAuthSession(req, res)
       if (req.query && req.query.kc_retry === '1') {

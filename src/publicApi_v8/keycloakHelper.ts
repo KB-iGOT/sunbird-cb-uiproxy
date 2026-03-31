@@ -43,12 +43,13 @@ export function getKeyCloakClient() {
     }
     logInfo('keycloakHelper::getKeyCloakClient...')
     const sessionConfig = getSessionConfig()
-    logInfo('keycloakHelper::getKeyCloakClient... sessionConfig: ' + safeStringify(sessionConfig)) 
+    logInfo('keycloakHelper::getKeyCloakClient... sessionConfig: ' + safeStringify(sessionConfig))
     const keycloakObj = new keycloak({ store: sessionConfig.store }, getOAuthKeycloakConfig())
     logInfo('keycloakHelper::getKeyCloakClient... keycloakObj: ' + safeStringify(keycloakObj))
     keycloakObj.authenticated = authenticated
     keycloakObj.deauthenticated = deauthenticated
-  keycloakObj.accessDenied = (reqObj: any, resObj: any) => {
+    // tslint:disable-next-line: no-any
+    keycloakObj.accessDenied = (reqObj: any, resObj: any) => {
     logError('keycloakHelper::accessDenied invoked, clearing auth session and cookie')
     clearAuthSession(reqObj, resObj)
     if (reqObj && reqObj.query && reqObj.query.kc_retry === '1') {
