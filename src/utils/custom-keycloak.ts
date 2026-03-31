@@ -6,6 +6,7 @@ import { getKeycloakConfig } from '../configs/keycloak.config'
 import { CONSTANTS } from './env'
 import { logDebug, logError } from './logger'
 import { PERMISSION_HELPER } from './permissionHelper'
+import { log } from 'console'
 const async = require('async')
 
 const composable = require('composable-middleware')
@@ -172,6 +173,9 @@ export class CustomKeycloak {
 
   protect = (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const keycloak = this.getKeyCloakObject(req)
+    logDebug('Protect middleware called for url: ' + req.url)
+    logDebug('Keycloak object: ' + JSON.stringify(keycloak))
+    logDebug('Session object: ' + JSON.stringify(req.session))
     return keycloak.protect()(req, res, next)
   }
 
