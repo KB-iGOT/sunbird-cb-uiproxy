@@ -221,7 +221,7 @@ export class CustomKeycloak {
         logError('CustomKeycloak: repeated accessDenied detected, stopping redirect loop')
         res.clearCookie(this.accessDeniedGuardCookie, { path: '/' })
         // Break loop by forcing a clean logout/reset flow that returns user to login.
-        res.redirect('/reset')
+        res.redirect('/apis/reset')
         return
       }
       // One retry only: set a short-lived guard cookie and redirect once.
