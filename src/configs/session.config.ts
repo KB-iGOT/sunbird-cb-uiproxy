@@ -36,46 +36,10 @@ if (
   )
 }
 
-// tslint:disable-next-line: no-any
-export function interceptStore(store: any) {
-  const originalSet = store.set.bind(store)
-  // tslint:disable-next-line: no-any
-  store.set = (sid: string, session: any, callback: any) => {
-    // Prevent saving completely empty sessions or recursive callback loops
-    // which generate 403s and bloat Cassandra with zombie rows.
-    if (session) {
-      const keys = Object.keys(session).filter((k) => k !== 'cookie')
-      if (
-        keys.length === 0 ||
-        (keys.length === 1 &&
-          keys.includes('auth_redirect_uri') &&
-          session.auth_redirect_uri &&
-          session.auth_redirect_uri.includes('auth_callback='))
-      ) {
-        if (callback) {
-          return callback()
-        }
-        return
-      }
-    }
-    return originalSet(sid, session, callback)
-  }
-}
-
 export function getSessionConfig(
   isPersistant = true
 ): expressSession.SessionOptions {
   if (!sessionConfig) {
-    const store = isPersistant
-      ? new cassandraStore({
-        client: null,
-        clientOptions: cassandraClientOptions,
-        table: 'sessions',
-      })
-      : new expressSession.MemoryStore()
-
-    interceptStore(store)
-
     sessionConfig = {
       cookie: {
         maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
@@ -83,7 +47,13 @@ export function getSessionConfig(
       resave: false,
       saveUninitialized: false,
       secret: 'test',
-      store,
+      store: isPersistant
+        ? new cassandraStore({
+          client: null,
+          clientOptions: cassandraClientOptions,
+          table: 'sessions',
+        })
+        : new expressSession.MemoryStore(),
     }
   }
   return sessionConfig
