@@ -176,6 +176,7 @@ export class CustomKeycloak {
     logDebug('Protect middleware called for url: ' + req.url)
 
     // Avoid circular object serialization (keycloak/session carry circular refs)
+    // tslint:disable-next-line: no-any
     const safeStringify = (obj: any) => {
       try {
         return JSON.stringify(obj)
