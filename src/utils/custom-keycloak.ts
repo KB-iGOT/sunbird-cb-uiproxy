@@ -221,7 +221,7 @@ export class CustomKeycloak {
         res.end('Access denied')
         return
       }
-      const retryPath = '/protected/v8/resource/?kc_retry=1'
+      const retryPath = '/protected/v8/resource'
       res.redirect(retryPath)
     }
     return keycloak
