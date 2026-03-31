@@ -58,6 +58,9 @@ export class CustomKeycloak {
   // tslint:disable-next-line: no-any
   authenticated = (reqObj: any, next: any) => {
     logDebug('Step 3: authenticated function', '------', new Date().toString())
+    if (reqObj && reqObj.res) {
+      reqObj.res.clearCookie(this.accessDeniedGuardCookie, { path: '/' })
+    }
     reqObj.session.authenticated = true
     try {
       const userId = reqObj.kauth.grant.access_token.content.sub.split(':')
@@ -220,8 +223,8 @@ export class CustomKeycloak {
       if (hasGuardCookie) {
         logError('CustomKeycloak: repeated accessDenied detected, stopping redirect loop')
         res.clearCookie(this.accessDeniedGuardCookie, { path: '/' })
-        // Break loop by forcing a clean logout/reset flow that returns user to login.
-        res.redirect('/apis/reset')
+        // Break loop by forcing a clean logout flow and normalized URL before next login.
+        res.redirect('/apis/logout')
         return
       }
       // One retry only: set a short-lived guard cookie and redirect once.
