@@ -371,6 +371,7 @@ const validateAPI = (req: Request, res: Response, next: NextFunction) => {
 /**
  * This function is used for checking whether
  */
+// tslint:disable-next-line
 export function apiWhiteListLogger() {
     return (req: Request, res: Response, next: NextFunction) => {
         if (req.path === '/' || checkIsStaticRoute(req.path)) {
