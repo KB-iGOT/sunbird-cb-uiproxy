@@ -8,8 +8,20 @@ import { logError, logInfo } from '../utils/logger'
 import { PERMISSION_HELPER } from '../utils/permissionHelper'
 
 export function getKeyCloakClient() {
+    // Avoid circular object serialization (keycloak/session carry circular refs)
+    // tslint:disable-next-line: no-any
+    const safeStringify = (obj: any) => {
+      try {
+        return JSON.stringify(obj)
+      } catch (err) {
+        return '[object with circular reference]'
+      }
+    }
+    logInfo('keycloakHelper::getKeyCloakClient...')
     const sessionConfig = getSessionConfig()
+    logInfo('keycloakHelper::getKeyCloakClient... sessionConfig: ' + safeStringify(sessionConfig)) 
     const keycloakObj = new keycloak({ store: sessionConfig.store }, getOAuthKeycloakConfig())
+    logInfo('keycloakHelper::getKeyCloakClient... keycloakObj: ' + safeStringify(keycloakObj))
     keycloakObj.authenticated = authenticated
     keycloakObj.deauthenticated = deauthenticated
     return keycloakObj
