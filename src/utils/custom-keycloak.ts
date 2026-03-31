@@ -174,8 +174,18 @@ export class CustomKeycloak {
   protect = (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const keycloak = this.getKeyCloakObject(req)
     logDebug('Protect middleware called for url: ' + req.url)
-    logDebug('Keycloak object: ' + JSON.stringify(keycloak))
-    logDebug('Session object: ' + JSON.stringify(req.session))
+
+    // Avoid circular object serialization (keycloak/session carry circular refs)
+    const safeStringify = (obj: any) => {
+      try {
+        return JSON.stringify(obj)
+      } catch (err) {
+        return '[object with circular reference]'
+      }
+    }
+
+    logDebug('Keycloak object (safe dump): ' + safeStringify(keycloak))
+    logDebug('Session object (safe dump): ' + safeStringify(req.session))
     return keycloak.protect()(req, res, next)
   }
 
