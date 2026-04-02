@@ -6941,6 +6941,24 @@ export const API_LIST = {
                ROLE.SPV_PUBLISHER,
             ],
         },
+        '/proxies/v8/content/v2/read/:do_id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER,
+                ROLE.CONTENT_CREATOR,
+                ROLE.CONTENT_REVIEWER,
+                ROLE.CONTENT_PUBLISHER,
+                ROLE.PROGRAM_COORDINATOR,
+                ROLE.PROGRAM_INSTRUCTOR,
+                ROLE.STATE_ADMIN,
+                ROLE.CBP_ADMIN,
+            ],
+        },        
         '/proxies/v8/course/v1/hierarchy/:do_id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -7842,6 +7860,7 @@ export const API_LIST = {
             '/proxies/v8/learner/certreg/v2/achievement/validate',
             '/proxies/v8/contentpartner/v1/activate',
             '/proxies/v8/sso/validateSaml',
+            '/proxies/v8/content/v2/read/:do_id',
             '/proxies/v8/course/v1/hierarchy/:do_id',
         ],
 }
