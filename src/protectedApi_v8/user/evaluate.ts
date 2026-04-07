@@ -4,7 +4,7 @@ import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
 import { ERROR } from '../../utils/message'
 import { extractUserIdFromRequest, extractUserToken } from '../../utils/requestExtract'
-import { logInfo , logError} from 'src/utils/logger'
+import { logInfo , logError} from '../../utils/logger'
 
 const GENERAL_ERR_MSG = 'Failed due to unknown reason'
 const API_END_POINTS = {
