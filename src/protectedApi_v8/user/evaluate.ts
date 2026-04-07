@@ -4,6 +4,7 @@ import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
 import { ERROR } from '../../utils/message'
 import { extractUserIdFromRequest, extractUserToken } from '../../utils/requestExtract'
+import { logInfo , logError} from 'src/utils/logger'
 
 const GENERAL_ERR_MSG = 'Failed due to unknown reason'
 const API_END_POINTS = {
@@ -25,7 +26,9 @@ const X_AUTHENTICATED_USER_TOKEN = 'x-authenticated-user-token'
 evaluateApi.post('/assessment/submit/v2', async (req, res) => {
   try {
     const org = req.header('org')
+    logInfo('evaluate:: org data from header is :' + org)
     const rootOrg = req.header('rootOrg')
+    logInfo('evaluate:: rootOrg data from header is :' + rootOrg)
     if (!org || !rootOrg) {
       res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
       return
@@ -50,6 +53,7 @@ evaluateApi.post('/assessment/submit/v2', async (req, res) => {
     })
     res.status(response.status).send(response.data)
   } catch (err) {
+    logError('evaluate:: error happened in the evaluate method :' +err)
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERR_MSG,
