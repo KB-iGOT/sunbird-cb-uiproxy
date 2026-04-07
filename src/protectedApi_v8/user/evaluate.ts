@@ -2,9 +2,9 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
+import { logError , logInfo} from '../../utils/logger'
 import { ERROR } from '../../utils/message'
 import { extractUserIdFromRequest, extractUserToken } from '../../utils/requestExtract'
-import { logInfo , logError} from '../../utils/logger'
 
 const GENERAL_ERR_MSG = 'Failed due to unknown reason'
 const API_END_POINTS = {
@@ -38,6 +38,9 @@ evaluateApi.post('/assessment/submit/v2', async (req, res) => {
     const requestBody = {
       ...req.body,
     }
+    logInfo('evaluate:: userId extracted from request is :' + userId)
+    logInfo('evaluate:: url for the request is :' + url)
+    logInfo('evaluate:: requestBody data is :' + JSON.stringify(requestBody))
     const response = await axios({
       ...axiosRequestConfig,
       data: requestBody,
@@ -53,7 +56,7 @@ evaluateApi.post('/assessment/submit/v2', async (req, res) => {
     })
     res.status(response.status).send(response.data)
   } catch (err) {
-    logError('evaluate:: error happened in the evaluate method :' +err)
+    logError('evaluate:: error happened in the evaluate method :' + err)
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERR_MSG,
