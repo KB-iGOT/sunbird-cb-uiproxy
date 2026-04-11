@@ -18,10 +18,19 @@ import { youtubePlaylist } from './youtubePlaylist'
 const puppeteer = require('puppeteer')
 export const publicApiV8 = express.Router()
 
-const NLW_CERT_TEMPLATE = fs.readFileSync(
-  path.join(__dirname, '../static-data/nlw-2026-certificate.svg'),
-  'utf-8'
-)
+const NLW_CERT_TEMPLATE_PATH = path.join(__dirname, '../static-data/nlw-2026-certificate.svg')
+let nlwCertTemplateCache: string | null = null
+
+function getNlwCertTemplate(): string | null {
+  if (nlwCertTemplateCache !== null) {
+    return nlwCertTemplateCache
+  }
+  if (fs.existsSync(NLW_CERT_TEMPLATE_PATH)) {
+    nlwCertTemplateCache = fs.readFileSync(NLW_CERT_TEMPLATE_PATH, 'utf-8')
+    return nlwCertTemplateCache
+  }
+  return null
+}
 
 const MAX_CONCURRENT_PDF_RENDERS = Number(process.env.MAX_CONCURRENT_PDF_RENDERS) || 5
 const PAGE_TIMEOUT = Number(process.env.PAGE_TIMEOUT) || 30000
@@ -158,9 +167,18 @@ publicApiV8.post('/nlw/2026/cert/download/mobile', async (req, res) => {
     const fullName = (reqObj.session && reqObj.session.firstName) || ''
     const userName = fullName.trim()
     logDebug('[SadhanaSaptha] User is eligible to download certificate. userName:', userName)
-    // Apply name substitution to the pre-loaded SVG template
-    const decodedSvg = NLW_CERT_TEMPLATE
-      .replace(/\$\{Recepient Name\}/g, userName)
+
+    const template = getNlwCertTemplate()
+    let decodedSvg: string
+    if (template) {
+      decodedSvg = template.replace(/\$\{Recepient Name\}/g, userName)
+    } else {
+      // Fallback: decode from printUri in request body
+      const svgContent = req.body.printUri
+      decodedSvg = decodeURIComponent(svgContent.replace(/data:image\/svg\+xml,/, ''))
+        .replace(/<!--\s*[a-zA-Z0-9\-]*\s*-->/g, '')
+        .replace(/\$\{Recepient Name\}/g, userName)
+    }
 
     if (req.body.outputFormat === 'svg') {
       res.type('html')
