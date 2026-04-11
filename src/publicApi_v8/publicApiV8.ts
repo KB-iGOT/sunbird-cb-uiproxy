@@ -171,7 +171,6 @@ publicApiV8.post('/nlw/2026/cert/download/mobile', async (req, res) => {
     let page = null
     try {
       browser = await puppeteer.launch({
-        headless: true,
         args: [
           '--disable-dev-shm-usage',
           '--disable-extensions',
@@ -180,6 +179,7 @@ publicApiV8.post('/nlw/2026/cert/download/mobile', async (req, res) => {
           '--no-first-run',
           '--no-sandbox',
         ],
+        headless: true,
       })
       page = await browser.newPage()
       await page.setContent(decodedSvg, { waitUntil: 'networkidle2', timeout: PAGE_TIMEOUT })
