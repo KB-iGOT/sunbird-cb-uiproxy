@@ -6,6 +6,8 @@ import { logDebug, logError } from './logger'
 import { request } from './request-adapter'
 import { extractUserToken } from './requestExtract'
 
+const X_AUTH_USER_TOKEN = 'x-authenticated-user-token'
+
 export const PERMISSION_HELPER = {
     // tslint:disable-next-line: no-any
     setRolesData(reqObj: any, callback: any, body: any) {
@@ -74,7 +76,7 @@ export const PERMISSION_HELPER = {
             headers: {
                 Authorization: CONSTANTS.SB_API_KEY,
                 'X-Channel-Id': CONSTANTS.X_Channel_Id,
-                'x-authenticated-user-token': reqObj.kauth.grant.access_token.token,
+                [X_AUTH_USER_TOKEN]: reqObj.kauth.grant.access_token.token,
                 'x-authenticated-userid': userId,
             },
             url: readUrl,
@@ -100,6 +102,43 @@ export const PERMISSION_HELPER = {
         })
     },
     // tslint:disable-next-line: no-any
+    isUserAbleToDownloadSadhanaSapthaCert(reqObj: any, callback: any) {
+        const userId = reqObj.session.userId
+        logDebug('[SadhanaSaptha] isUserAbleToDownloadSadhanaSapthaCert called from' +
+            ' /sadhana/saptha/cert/download/mobile for userId:', userId, '------', new Date().toString())
+        const readUrl = `${CONSTANTS.KONG_API_BASE}user/v2/read/` + userId
+        logDebug('[SadhanaSaptha] Calling user/v2/read at:', readUrl, '------', new Date().toString())
+        const options = {
+            headers: {
+                Authorization: CONSTANTS.SB_API_KEY,
+                'X-Channel-Id': CONSTANTS.X_Channel_Id,
+                [X_AUTH_USER_TOKEN]: reqObj.kauth.grant.access_token.token,
+                'x-authenticated-userid': userId,
+            },
+            url: readUrl,
+        }
+        // tslint:disable-next-line: no-any
+        request.get(options, (err: any, _httpResponse: any, body: any) => {
+            if (body) {
+                // tslint:disable-next-line: no-any
+                const userData: any = JSON.parse(body)
+                logDebug('[SadhanaSaptha] user/v2/read responseCode:', userData.responseCode, '------', new Date().toString())
+                if (userData.responseCode.toUpperCase() === 'OK') {
+                    logDebug('[SadhanaSaptha] User eligible to download certificate. userId:', userId, '------', new Date().toString())
+                    callback(null, userData)
+                } else {
+                    const errMsg = 'Failed to read the user with Id: ' + userId + ' Error: ' + userData.responseCode
+                    logError('[SadhanaSaptha]', errMsg)
+                    callback(errMsg, null)
+                }
+            }
+            if (err) {
+                logError('[SadhanaSaptha] isUserAbleToDownloadSadhanaSapthaCert ERROR -- ', err, '------', new Date().toString())
+                callback(err, null)
+            }
+        })
+    },
+    // tslint:disable-next-line: no-any
     async createNodeBBUser(reqObj: any, callback: any) {
         const readUrl = `${CONSTANTS.KONG_API_BASE}/discussion/user/v1/create`
 
@@ -116,8 +155,7 @@ export const PERMISSION_HELPER = {
                 data: { request: nodebbPayload },
                  headers: {
                     Authorization: CONSTANTS.SB_API_KEY,
-                    // tslint:disable-next-line: all
-                    'x-authenticated-user-token': extractUserToken(reqObj),
+                    [X_AUTH_USER_TOKEN]: extractUserToken(reqObj),
                 },
                 method: 'POST',
                 url: readUrl,

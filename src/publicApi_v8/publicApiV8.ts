@@ -2,7 +2,8 @@ import axios from 'axios'
 import express, { Request } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logError } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
+import { PERMISSION_HELPER } from '../utils/permissionHelper'
 import { proxyCreatorRoute } from '../utils/proxyCreator'
 import { redis } from '../utils/redis'
 import { chatBotTranscoderAPIIntegration } from './chatBotTranscoderAPIIntegration'
@@ -76,6 +77,53 @@ publicApiV8.post('/course/batch/cert/download/mobile', async (req, res) => {
       }
     )
   }
+})
+
+publicApiV8.post('/nlw/2026/cert/download/mobile', async (req, res) => {
+  logDebug('[SadhanaSaptha] POST /sadhana/saptha/cert/download/mobile received at', new Date().toString())
+  // tslint:disable-next-line: no-any
+  const reqObj = req as any
+  if (!reqObj.session || !reqObj.session.userId || !reqObj.kauth || !reqObj.kauth.grant) {
+    logDebug('[SadhanaSaptha] Unauthorized - session or kauth missing. session:',
+       JSON.stringify(reqObj.session), 'kauth:', JSON.stringify(reqObj.kauth))
+    res.status(401).json({ error: 'Unauthorized', msg: 'User session not found' })
+    return
+  }
+  logDebug('[SadhanaSaptha] Session valid for userId:', reqObj.session.userId, '- calling isUserAbleToDownloadSadhanaSapthaCert')
+  // tslint:disable-next-line: no-any
+  PERMISSION_HELPER.isUserAbleToDownloadSadhanaSapthaCert(reqObj, async (err: any, _userData: any) => {
+    if (err) {
+      res.status(403).json({ error: 'Forbidden', msg: 'User is not eligible to download Sadhana Saptha certificate' })
+      return
+    }
+    try {
+      const svgContent = req.body.printUri
+      if (req.body.outputFormat === 'svg') {
+        const _decodedSvg = decodeURIComponent(svgContent.replace(/data:image\/svg\+xml,/, '')).replace(/<!--\s*[a-zA-Z0-9\-]*\s*-->/g, '')
+        res.type('html')
+        res.status(200).send(_decodedSvg)
+      } else if (req.body.outputFormat === 'pdf') {
+        const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] })
+        try {
+          const page = await browser.newPage()
+          await page.goto(svgContent, { waitUntil: 'networkidle2' })
+          const buffer = await page.pdf({ path: 'sadhanasaptha-certificate.pdf', printBackground: true, width: '1204px', height: '662px' })
+          res.set({ 'Content-Type': 'application/pdf', 'Content-Length': buffer.length })
+          res.send(buffer)
+        } finally {
+          await browser.close()
+        }
+      } else {
+        res.status(400).json({
+          error: 'Unsupported output format',
+          msg: 'Output format should be svg or pdf',
+        })
+      }
+    } catch (e) {
+      logError(e)
+      res.status(500).json({ error: 'Failed due to unknown reason' })
+    }
+  })
 })
 
 publicApiV8.use('/assets',
