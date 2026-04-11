@@ -42,6 +42,11 @@ export class Gulpfile {
     return gulp.src('src/**/*.json').pipe(gulp.dest(dist))
   }
 
+  @Task('copy-static')
+  copyStatic() {
+    return gulp.src('src/static-data/**/*').pipe(gulp.dest(`${dist}/static-data`))
+  }
+
   @Task('copy-assets')
   copyAssets() {
     return gulp.src('src/assets/**/*').pipe(gulp.dest(`${dist}/assets`))
@@ -54,6 +59,7 @@ export class Gulpfile {
       'compile-project',
       'copy-package',
       'copy-json',
+      'copy-static',
       'copy-assets',
     ]
   }
