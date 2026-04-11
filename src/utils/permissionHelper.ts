@@ -87,7 +87,7 @@ export const PERMISSION_HELPER = {
                 // tslint:disable-next-line: no-any
                 const userData: any = JSON.parse(body)
                 if (userData.responseCode.toUpperCase() === 'OK') {
-                    logDebug('Success user/v2/read::','} '------', new Date().toString())
+                    logDebug('Success user/v2/read::', '------', new Date().toString())
                     this.setRolesData(reqObj, callback, body)
                 } else {
                     const errMsg = 'Failed to read the user with Id: ' + userId + 'Error: ' + userData.responseCode
@@ -122,7 +122,7 @@ export const PERMISSION_HELPER = {
             if (body) {
                 // tslint:disable-next-line: no-any
                 const userData: any = JSON.parse(body)
-                logDebug('[SadhanaSaptha] user/v2/read responseCode:','} userData.responseCode, '------', new Date().toString())
+                logDebug('[SadhanaSaptha] user/v2/read responseCode:', userData.responseCode, '------', new Date().toString())
                 if (userData.responseCode.toUpperCase() === 'OK') {
                     logDebug('[SadhanaSaptha] User eligible to download certificate. userId:', userId, '------', new Date().toString())
                     callback(null, userData)
