@@ -11,9 +11,11 @@ WORKDIR /usr/src/app
 # Dependencies for headless chrome - puppeteer
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
-  libnotify-dev libnss3 libxss1 libasound2 \
-  fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf \
-  libdrm2 libgbm1 libgconf-2-4 && \
+  libnotify-dev libnss3 libxss1 \
+  libatk1.0-0 libatk-bridge2.0-0 libcups2 libdbus-1-3 \
+  libdrm2 libgbm1 libgtk-3-0 libxcomposite1 libxdamage1 \
+  libxfixes3 libxrandr2 libpango-1.0-0 libcairo2 \
+  fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /usr/src/app/user_upload \
