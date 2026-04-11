@@ -11,7 +11,7 @@ WORKDIR /usr/src/app
 # Dependencies for headless chrome - puppeteer
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
-  libnotify-dev libnss3 libxss1 \
+  libnotify-dev libnss3 libxss1 libasound2t64 \
   libatk1.0-0 libatk-bridge2.0-0 libcups2 libdbus-1-3 \
   libdrm2 libgbm1 libgtk-3-0 libxcomposite1 libxdamage1 \
   libxfixes3 libxrandr2 libpango-1.0-0 libcairo2 \

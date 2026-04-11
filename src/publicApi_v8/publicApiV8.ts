@@ -16,6 +16,41 @@ import { youtubePlaylist } from './youtubePlaylist'
 const puppeteer = require('puppeteer')
 export const publicApiV8 = express.Router()
 
+const MAX_CONCURRENT_PDF_RENDERS = Number(process.env.MAX_CONCURRENT_PDF_RENDERS) || 5
+const PAGE_TIMEOUT = Number(process.env.PAGE_TIMEOUT) || 30000
+const QUEUE_TIMEOUT = Number(process.env.QUEUE_TIMEOUT) || 60000
+
+let activePdfRenders = 0
+// tslint:disable-next-line: no-any
+const pdfWaitQueue: Array<{ resolve: () => void; timer: ReturnType<typeof setTimeout> }> = []
+
+function acquirePdfSlot(): Promise<void> {
+  if (activePdfRenders < MAX_CONCURRENT_PDF_RENDERS) {
+    activePdfRenders++
+    return Promise.resolve()
+  }
+  return new Promise<void>((resolve, reject) => {
+    // tslint:disable-next-line: no-any
+    const entry: { resolve: () => void; timer: any } = { resolve, timer: null }
+    entry.timer = setTimeout(() => {
+      const idx = pdfWaitQueue.indexOf(entry)
+      if (idx !== -1) { pdfWaitQueue.splice(idx, 1) }
+      reject(new Error('PDF render queue timeout - service is overloaded'))
+    }, QUEUE_TIMEOUT)
+    pdfWaitQueue.push(entry)
+  })
+}
+
+function releasePdfSlot(): void {
+  if (pdfWaitQueue.length > 0) {
+    const next = pdfWaitQueue.shift()!
+    clearTimeout(next.timer)
+    next.resolve()
+  } else {
+    activePdfRenders = Math.max(0, activePdfRenders - 1)
+  }
+}
+
 const API_END_POINTS = {
   designationSearch: `${CONSTANTS.KONG_API_BASE}/designation/search`,
   kongCompositeSearch: `${CONSTANTS.KONG_API_BASE}/composite/v4/search`,
@@ -80,50 +115,89 @@ publicApiV8.post('/course/batch/cert/download/mobile', async (req, res) => {
 })
 
 publicApiV8.post('/nlw/2026/cert/download/mobile', async (req, res) => {
-  logDebug('[SadhanaSaptha] POST /sadhana/saptha/cert/download/mobile received at', new Date().toString())
+  logDebug('[SadhanaSaptha] POST /nlw/2026/cert/download/mobile received at', new Date().toString())
   // tslint:disable-next-line: no-any
   const reqObj = req as any
-  if (!reqObj.session || !reqObj.session.userId || !reqObj.kauth || !reqObj.kauth.grant) {
+
+  if (!CONSTANTS.IS_DEVELOPMENT && (!reqObj.session || !reqObj.session.userId || !reqObj.kauth || !reqObj.kauth.grant)) {
     logDebug('[SadhanaSaptha] Unauthorized - session or kauth missing. session:',
-       JSON.stringify(reqObj.session), 'kauth:', JSON.stringify(reqObj.kauth))
+      JSON.stringify(reqObj.session), 'kauth:', JSON.stringify(reqObj.kauth))
     res.status(401).json({ error: 'Unauthorized', msg: 'User session not found' })
     return
   }
-  logDebug('[SadhanaSaptha] Session valid for userId:', reqObj.session.userId, '- calling isUserAbleToDownloadSadhanaSapthaCert')
+
+  logDebug('[SadhanaSaptha] Session valid for userId:', reqObj.session && reqObj.session.userId)
+
+  // Wrap callback-based permission check in a Promise for clean async/await flow
   // tslint:disable-next-line: no-any
-  PERMISSION_HELPER.isUserAbleToDownloadSadhanaSapthaCert(reqObj, async (err: any, _userData: any) => {
-    if (err) {
-      res.status(403).json({ error: 'Forbidden', msg: 'User is not eligible to download Sadhana Saptha certificate' })
-      return
+  const checkPermission = (): Promise<void> => new Promise((resolve, reject) => {
+    if (CONSTANTS.IS_DEVELOPMENT) {
+      logDebug('[SadhanaSaptha] Skipping permission check in development mode')
+      return resolve()
     }
-    try {
-      const svgContent = req.body.printUri
-      if (req.body.outputFormat === 'svg') {
-        const _decodedSvg = decodeURIComponent(svgContent.replace(/data:image\/svg\+xml,/, '')).replace(/<!--\s*[a-zA-Z0-9\-]*\s*-->/g, '')
-        res.type('html')
-        res.status(200).send(_decodedSvg)
-      } else if (req.body.outputFormat === 'pdf') {
-        const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] })
-        try {
-          const page = await browser.newPage()
-          await page.goto(svgContent, { waitUntil: 'networkidle2' })
-          const buffer = await page.pdf({ path: 'sadhanasaptha-certificate.pdf', printBackground: true, width: '1204px', height: '662px' })
-          res.set({ 'Content-Type': 'application/pdf', 'Content-Length': buffer.length })
-          res.send(buffer)
-        } finally {
-          await browser.close()
-        }
-      } else {
-        res.status(400).json({
-          error: 'Unsupported output format',
-          msg: 'Output format should be svg or pdf',
-        })
-      }
-    } catch (e) {
-      logError(e)
-      res.status(500).json({ error: 'Failed due to unknown reason' })
-    }
+    // tslint:disable-next-line: no-any
+    PERMISSION_HELPER.isUserAbleToDownloadSadhanaSapthaCert(reqObj, (err: any) => {
+      if (err) { reject(err) } else { resolve() }
+    })
   })
+
+  try {
+    await checkPermission()
+
+    const svgContent = req.body.printUri
+    const fullName = (reqObj.session && reqObj.session.firstName) || 'Rajeev Sathish'
+    const userName = fullName.trim()
+
+    // Decode SVG and apply name substitution once — applies to all output formats
+    const decodedSvg = decodeURIComponent(svgContent.replace(/data:image\/svg\+xml,/, ''))
+      .replace(/<!--\s*[a-zA-Z0-9\-]*\s*-->/g, '')
+      .replace(/\$\{Recepient Name\}/g, userName)
+
+    if (req.body.outputFormat === 'svg') {
+      res.type('html')
+      return res.status(200).send(decodedSvg)
+    }
+
+    if (req.body.outputFormat !== 'pdf') {
+      return res.status(400).json({ error: 'Unsupported output format', msg: 'Output format should be svg or pdf' })
+    }
+
+    await acquirePdfSlot()
+    let browser = null
+    let page = null
+    try {
+      browser = await puppeteer.launch({
+        headless: true,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+          '--no-first-run',
+          '--disable-extensions',
+        ],
+      })
+      page = await browser.newPage()
+      await page.setContent(decodedSvg, { waitUntil: 'networkidle2', timeout: PAGE_TIMEOUT })
+      const buffer = await page.pdf({ printBackground: true, width: '1204px', height: '662px' })
+      res.set({ 'Content-Type': 'application/pdf', 'Content-Length': buffer.length })
+      res.send(buffer)
+      return
+    } finally {
+      if (page) { try { await page.close() } catch (_e) {} }
+      if (browser) { try { await browser.close() } catch (_e) {} }
+      releasePdfSlot()
+    }
+  } catch (err) {
+    logError(err)
+    if (err.message && err.message.includes('queue timeout')) {
+      return res.status(503).json({ error: 'Service is overloaded, please retry later' })
+    }
+    if (err.message && err.message.includes('eligible')) {
+      return res.status(403).json({ error: 'Forbidden', msg: 'User is not eligible to download certificate' })
+    }
+    return res.status(500).json({ error: 'Failed due to unknown reason' })
+  }
 })
 
 publicApiV8.use('/assets',
