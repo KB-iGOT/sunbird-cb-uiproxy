@@ -2,7 +2,7 @@ import axios from 'axios'
 import express, { Request } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logDebug } from '../utils/logger'
+import { logDebug, logError } from '../utils/logger'
 import { PERMISSION_HELPER } from '../utils/permissionHelper'
 import { proxyCreatorRoute } from '../utils/proxyCreator'
 import { redis } from '../utils/redis'
@@ -83,11 +83,11 @@ publicApiV8.post('/nlw/2026/cert/download/mobile', async (req, res) => {
   logDebug('[SadhanaSaptha] POST /sadhana/saptha/cert/download/mobile received at', new Date().toString())
   // tslint:disable-next-line: no-any
   const reqObj = req as any
-  // if (!reqObj.session || !reqObj.session.userId || !reqObj.kauth || !reqObj.kauth.grant) {
-  //   logDebug('[SadhanaSaptha] Unauthorized - session or kauth missing. session:', JSON.stringify(reqObj.session), 'kauth:', JSON.stringify(reqObj.kauth))
-  //   res.status(401).json({ error: 'Unauthorized', msg: 'User session not found' })
-  //   return
-  // }
+  if (!reqObj.session || !reqObj.session.userId || !reqObj.kauth || !reqObj.kauth.grant) {
+    logDebug('[SadhanaSaptha] Unauthorized - session or kauth missing. session:', JSON.stringify(reqObj.session), 'kauth:', JSON.stringify(reqObj.kauth))
+    res.status(401).json({ error: 'Unauthorized', msg: 'User session not found' })
+    return
+  }
   logDebug('[SadhanaSaptha] Session valid for userId:', reqObj.session.userId, '- calling isUserAbleToDownloadSadhanaSapthaCert')
   PERMISSION_HELPER.isUserAbleToDownloadSadhanaSapthaCert(reqObj, async (err: any, _userData: any) => {
     if (err) {
