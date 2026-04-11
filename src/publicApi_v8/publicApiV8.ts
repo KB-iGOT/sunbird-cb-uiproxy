@@ -84,11 +84,13 @@ publicApiV8.post('/nlw/2026/cert/download/mobile', async (req, res) => {
   // tslint:disable-next-line: no-any
   const reqObj = req as any
   if (!reqObj.session || !reqObj.session.userId || !reqObj.kauth || !reqObj.kauth.grant) {
-    logDebug('[SadhanaSaptha] Unauthorized - session or kauth missing. session:', JSON.stringify(reqObj.session), 'kauth:', JSON.stringify(reqObj.kauth))
+    logDebug('[SadhanaSaptha] Unauthorized - session or kauth missing. session:',
+       JSON.stringify(reqObj.session), 'kauth:', JSON.stringify(reqObj.kauth))
     res.status(401).json({ error: 'Unauthorized', msg: 'User session not found' })
     return
   }
   logDebug('[SadhanaSaptha] Session valid for userId:', reqObj.session.userId, '- calling isUserAbleToDownloadSadhanaSapthaCert')
+  // tslint:disable-next-line: no-any
   PERMISSION_HELPER.isUserAbleToDownloadSadhanaSapthaCert(reqObj, async (err: any, _userData: any) => {
     if (err) {
       res.status(403).json({ error: 'Forbidden', msg: 'User is not eligible to download Sadhana Saptha certificate' })
