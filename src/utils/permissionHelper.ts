@@ -106,7 +106,7 @@ export const PERMISSION_HELPER = {
         const userId = reqObj.session.userId
         logDebug('[SadhanaSaptha] isUserAbleToDownloadSadhanaSapthaCert called from' +
             ' /sadhana/saptha/cert/download/mobile for userId:', userId, '------', new Date().toString())
-        const readUrl = `${CONSTANTS.KONG_API_BASE}user/v2/read/` + userId
+        const readUrl = `${CONSTANTS.KONG_API_BASE}/user/v2/read/` + userId
         logDebug('[SadhanaSaptha] Calling user/v2/read at:', readUrl, '------', new Date().toString())
         const options = {
             headers: {
