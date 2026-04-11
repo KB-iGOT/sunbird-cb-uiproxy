@@ -1,5 +1,7 @@
 import axios from 'axios'
 import express, { Request } from 'express'
+import * as fs from 'fs'
+import * as path from 'path'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { logDebug, logError } from '../utils/logger'
@@ -15,6 +17,11 @@ import { youtubePlaylist } from './youtubePlaylist'
 
 const puppeteer = require('puppeteer')
 export const publicApiV8 = express.Router()
+
+const NLW_CERT_TEMPLATE = fs.readFileSync(
+  path.join(__dirname, '../static-data/nlw-2026-certificate.svg'),
+  'utf-8'
+)
 
 const MAX_CONCURRENT_PDF_RENDERS = Number(process.env.MAX_CONCURRENT_PDF_RENDERS) || 5
 const PAGE_TIMEOUT = Number(process.env.PAGE_TIMEOUT) || 30000
@@ -148,13 +155,11 @@ publicApiV8.post('/nlw/2026/cert/download/mobile', async (req, res) => {
   try {
     await checkPermission()
 
-    const svgContent = req.body.printUri
     const fullName = (reqObj.session && reqObj.session.firstName) || ''
     const userName = fullName.trim()
-
-    // Decode SVG and apply name substitution once — applies to all output formats
-    const decodedSvg = decodeURIComponent(svgContent.replace(/data:image\/svg\+xml,/, ''))
-      .replace(/<!--\s*[a-zA-Z0-9\-]*\s*-->/g, '')
+    logDebug('[SadhanaSaptha] User is eligible to download certificate. userName:', userName)
+    // Apply name substitution to the pre-loaded SVG template
+    const decodedSvg = NLW_CERT_TEMPLATE
       .replace(/\$\{Recepient Name\}/g, userName)
 
     if (req.body.outputFormat === 'svg') {
