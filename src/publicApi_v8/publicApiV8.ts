@@ -137,7 +137,11 @@ publicApiV8.post('/nlw/2026/cert/download/mobile', async (req, res) => {
     }
     // tslint:disable-next-line: no-any
     PERMISSION_HELPER.isUserAbleToDownloadSadhanaSapthaCert(reqObj, (err: any) => {
-      if (err) { reject(err) } else { resolve() }
+      if (err) {
+        reject(err)
+      } else {
+        resolve()
+      }
     })
   })
 
@@ -145,7 +149,7 @@ publicApiV8.post('/nlw/2026/cert/download/mobile', async (req, res) => {
     await checkPermission()
 
     const svgContent = req.body.printUri
-    const fullName = (reqObj.session && reqObj.session.firstName) || 'Rajeev Sathish'
+    const fullName = (reqObj.session && reqObj.session.firstName) || ''
     const userName = fullName.trim()
 
     // Decode SVG and apply name substitution once — applies to all output formats
@@ -169,12 +173,12 @@ publicApiV8.post('/nlw/2026/cert/download/mobile', async (req, res) => {
       browser = await puppeteer.launch({
         headless: true,
         args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
-          '--disable-gpu',
-          '--no-first-run',
           '--disable-extensions',
+          '--disable-gpu',
+          '--disable-setuid-sandbox',
+          '--no-first-run',
+          '--no-sandbox',
         ],
       })
       page = await browser.newPage()
@@ -184,8 +188,20 @@ publicApiV8.post('/nlw/2026/cert/download/mobile', async (req, res) => {
       res.send(buffer)
       return
     } finally {
-      if (page) { try { await page.close() } catch (_e) {} }
-      if (browser) { try { await browser.close() } catch (_e) {} }
+      if (page) {
+        try {
+          await page.close()
+        } catch (_e) {
+          // ignore close errors
+        }
+      }
+      if (browser) {
+        try {
+          await browser.close()
+        } catch (_e) {
+          // ignore close errors
+        }
+      }
       releasePdfSlot()
     }
   } catch (err) {
