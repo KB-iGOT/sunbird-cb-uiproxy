@@ -103,7 +103,11 @@ export const PERMISSION_HELPER = {
     },
     // tslint:disable-next-line: no-any
     isUserAbleToDownloadSadhanaSapthaCert(reqObj: any, callback: any) {
-        const userId = reqObj.session.userId
+        const userId = (reqObj.session && reqObj.session.userId)
+            || reqObj.headers['userid']
+            || reqObj.headers['wid']
+        const userToken = (reqObj.kauth && reqObj.kauth.grant && reqObj.kauth.grant.access_token.token)
+            || reqObj.headers[X_AUTH_USER_TOKEN]
         logDebug('[SadhanaSaptha] isUserAbleToDownloadSadhanaSapthaCert called from' +
             ' /sadhana/saptha/cert/download/mobile for userId:', userId, '------', new Date().toString())
         const readUrl = `${CONSTANTS.KONG_API_BASE}/user/v2/read/` + userId
@@ -112,7 +116,7 @@ export const PERMISSION_HELPER = {
             headers: {
                 Authorization: CONSTANTS.SB_API_KEY,
                 'X-Channel-Id': CONSTANTS.X_Channel_Id,
-                [X_AUTH_USER_TOKEN]: reqObj.kauth.grant.access_token.token,
+                [X_AUTH_USER_TOKEN]: userToken,
                 'x-authenticated-userid': userId,
             },
             url: readUrl,
@@ -121,7 +125,14 @@ export const PERMISSION_HELPER = {
         request.get(options, (err: any, _httpResponse: any, body: any) => {
             if (body) {
                 // tslint:disable-next-line: no-any
-                const userData: any = JSON.parse(body)
+                let userData: any
+                try {
+                    userData = JSON.parse(body)
+                } catch (parseErr) {
+                    logError('[SadhanaSaptha] Failed to parse user/v2/read response:', parseErr)
+                    callback(parseErr, null)
+                    return
+                }
                 logDebug('[SadhanaSaptha] user/v2/read responseCode:', userData.responseCode, '------', new Date().toString())
                 if (userData.responseCode.toUpperCase() === 'OK') {
                     const isNlwCertified = _.get(userData, 'result.response.profileDetails.additionalProperties.isNlw2026Certified', false)
