@@ -55,6 +55,22 @@ export class Server {
     const sessionConfig = getSessionConfig()
     this.app.use(expressSession(sessionConfig))
     this.app.use(express.urlencoded({ extended: false, limit: '50mb' }))
+    // Strip /apis prefix added by nginx in production (not present locally)
+    this.app.use((req, _res, next) => {
+      if (req.url.startsWith('/apis/')) {
+        req.url = req.url.slice('/apis'.length)
+      }
+      next()
+    })
+    // Strip incorrect content-length from mobile clients before body-parser reads the stream.
+    // Mobile clients (Dart/Flutter) sometimes send a content-length matching the minified JSON
+    // while actually sending a formatted (longer) body, causing raw-body to truncate the read.
+    this.app.use((req, _res, next) => {
+      if (req.method === 'POST' && req.headers['content-length']) {
+        delete req.headers['content-length']
+      }
+      next()
+    })
     this.app.use(express.json({ limit: '50mb' }))
     this.setCookie()
     this.app.all('*', apiWhiteListLogger())
@@ -116,7 +132,7 @@ export class Server {
     this.app.use(cookieParser())
     this.app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
       const rootOrg = req.headers ? req.headers.rootOrg || req.headers.rootorg : ''
-      if (rootOrg && req.hostname.toLowerCase().includes('localhost')) {
+      if (rootOrg && req.hostname && req.hostname.toLowerCase().includes('localhost')) {
         res.cookie('rootorg', rootOrg)
       }
       next()
