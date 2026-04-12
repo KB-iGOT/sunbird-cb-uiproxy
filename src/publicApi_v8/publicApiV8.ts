@@ -136,7 +136,7 @@ publicApiV8.post('/nlw/2026/cert/download/mobile', async (req, res) => {
   const reqObj = req as any
 
   const hasSession = reqObj.session && reqObj.session.userId && reqObj.kauth && reqObj.kauth.grant
-  const hasMobileHeaders = reqObj.headers['userid'] && reqObj.headers['x-authenticated-user-token']
+  const hasMobileHeaders = reqObj.headers.userid && reqObj.headers['x-authenticated-user-token']
   if (!CONSTANTS.IS_DEVELOPMENT && !hasSession && !hasMobileHeaders) {
     logDebug('[SadhanaSaptha] Unauthorized - session or kauth missing. session:',
       JSON.stringify(reqObj.session), 'kauth:', JSON.stringify(reqObj.kauth))
@@ -144,7 +144,7 @@ publicApiV8.post('/nlw/2026/cert/download/mobile', async (req, res) => {
     return
   }
 
-  const sessionUserId = (reqObj.session && reqObj.session.userId) || reqObj.headers['userid']
+  const sessionUserId = (reqObj.session && reqObj.session.userId) || reqObj.headers.userid
   logDebug('[SadhanaSaptha] Auth valid for userId:', sessionUserId)
 
   // Wrap callback-based permission check in a Promise for clean async/await flow
