@@ -124,8 +124,16 @@ export const PERMISSION_HELPER = {
                 const userData: any = JSON.parse(body)
                 logDebug('[SadhanaSaptha] user/v2/read responseCode:', userData.responseCode, '------', new Date().toString())
                 if (userData.responseCode.toUpperCase() === 'OK') {
-                    logDebug('[SadhanaSaptha] User eligible to download certificate. userId:', userId, '------', new Date().toString())
-                    callback(null, userData)
+                    const isNlwCertified = _.get(userData, 'result.response.profileDetails.additionalProperties.isNlw2026Certified', false)
+                    logDebug('[SadhanaSaptha] isNlw2026Certified:', isNlwCertified, 'for userId:', userId, '------', new Date().toString())
+                    if (isNlwCertified) {
+                        logDebug('[SadhanaSaptha] User eligible to download certificate. userId:', userId, '------', new Date().toString())
+                        callback(null, userData)
+                    } else {
+                        const errMsg = 'User is not eligible to download NLW 2026 certificate. userId: ' + userId
+                        logError('[SadhanaSaptha]', errMsg)
+                        callback(new Error(errMsg), null)
+                    }
                 } else {
                     const errMsg = 'Failed to read the user with Id: ' + userId + ' Error: ' + userData.responseCode
                     logError('[SadhanaSaptha]', errMsg)

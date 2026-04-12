@@ -171,13 +171,13 @@ publicApiV8.post('/nlw/2026/cert/download/mobile', async (req, res) => {
     const template = getNlwCertTemplate()
     let decodedSvg: string
     if (template) {
-      decodedSvg = template.replace(/\$\{Recepient Name\}/g, userName)
+      decodedSvg = template.replace(/\$\{Recipient Name\}/g, userName)
     } else {
       // Fallback: decode from printUri in request body
       const svgContent = req.body.printUri
       decodedSvg = decodeURIComponent(svgContent.replace(/data:image\/svg\+xml,/, ''))
         .replace(/<!--\s*[a-zA-Z0-9\-]*\s*-->/g, '')
-        .replace(/\$\{Recepient Name\}/g, userName)
+        .replace(/\$\{Recipient Name\}/g, userName)
     }
 
     if (req.body.outputFormat === 'svg') {
