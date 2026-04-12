@@ -135,36 +135,41 @@ publicApiV8.post('/nlw/2026/cert/download/mobile', async (req, res) => {
   // tslint:disable-next-line: no-any
   const reqObj = req as any
 
-  if (!CONSTANTS.IS_DEVELOPMENT && (!reqObj.session || !reqObj.session.userId || !reqObj.kauth || !reqObj.kauth.grant)) {
+  const hasSession = reqObj.session && reqObj.session.userId && reqObj.kauth && reqObj.kauth.grant
+  const hasMobileHeaders = reqObj.headers.userid && reqObj.headers['x-authenticated-user-token']
+  if (!CONSTANTS.IS_DEVELOPMENT && !hasSession && !hasMobileHeaders) {
     logDebug('[SadhanaSaptha] Unauthorized - session or kauth missing. session:',
       JSON.stringify(reqObj.session), 'kauth:', JSON.stringify(reqObj.kauth))
     res.status(401).json({ error: 'Unauthorized', msg: 'User session not found' })
     return
   }
 
-  logDebug('[SadhanaSaptha] Session valid for userId:', reqObj.session && reqObj.session.userId)
+  const sessionUserId = (reqObj.session && reqObj.session.userId) || reqObj.headers.userid
+  logDebug('[SadhanaSaptha] Auth valid for userId:', sessionUserId)
 
   // Wrap callback-based permission check in a Promise for clean async/await flow
   // tslint:disable-next-line: no-any
-  const checkPermission = (): Promise<void> => new Promise((resolve, reject) => {
+  const checkPermission = (): Promise<any> => new Promise((resolve, reject) => {
     if (CONSTANTS.IS_DEVELOPMENT) {
       logDebug('[SadhanaSaptha] Skipping permission check in development mode')
-      return resolve()
+      return resolve(null)
     }
     // tslint:disable-next-line: no-any
-    PERMISSION_HELPER.isUserAbleToDownloadSadhanaSapthaCert(reqObj, (err: any) => {
+    PERMISSION_HELPER.isUserAbleToDownloadSadhanaSapthaCert(reqObj, (err: any, userData: any) => {
       if (err) {
         reject(err)
       } else {
-        resolve()
+        resolve(userData)
       }
     })
   })
 
   try {
-    await checkPermission()
+    const userData = await checkPermission()
 
-    const fullName = (reqObj.session && reqObj.session.firstName) || ''
+    const sessionFirstName = reqObj.session && reqObj.session.firstName
+    const apiFirstName = userData && userData.result && userData.result.response && userData.result.response.firstName
+    const fullName = sessionFirstName || apiFirstName || ''
     const userName = fullName.trim()
     logDebug('[SadhanaSaptha] User is eligible to download certificate. userName:', userName)
 

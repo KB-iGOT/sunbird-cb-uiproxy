@@ -102,8 +102,41 @@ export const PERMISSION_HELPER = {
         })
     },
     // tslint:disable-next-line: no-any
+    _handleNlwCertUserRead(body: any, userId: string, callback: any) {
+        // tslint:disable-next-line: no-any
+        let userData: any
+        try {
+            userData = JSON.parse(body)
+        } catch (parseErr) {
+            logError('[SadhanaSaptha] Failed to parse user/v2/read response:', parseErr)
+            callback(parseErr, null)
+            return
+        }
+        logDebug('[SadhanaSaptha] user/v2/read responseCode:', userData.responseCode, '------', new Date().toString())
+        if (userData.responseCode.toUpperCase() !== 'OK') {
+            const errMsg = 'Failed to read the user with Id: ' + userId + ' Error: ' + userData.responseCode
+            logError('[SadhanaSaptha]', errMsg)
+            callback(errMsg, null)
+            return
+        }
+        const isNlwCertified = _.get(userData, 'result.response.profileDetails.additionalProperties.isNlw2026Certified', false)
+        logDebug('[SadhanaSaptha] isNlw2026Certified:', isNlwCertified, 'for userId:', userId, '------', new Date().toString())
+        if (!isNlwCertified) {
+            const errMsg = 'User is not eligible to download NLW 2026 certificate. userId: ' + userId
+            logError('[SadhanaSaptha]', errMsg)
+            callback(new Error(errMsg), null)
+            return
+        }
+        logDebug('[SadhanaSaptha] User eligible to download certificate. userId:', userId, '------', new Date().toString())
+        callback(null, userData)
+    },
+    // tslint:disable-next-line: no-any
     isUserAbleToDownloadSadhanaSapthaCert(reqObj: any, callback: any) {
-        const userId = reqObj.session.userId
+        const userId = (reqObj.session && reqObj.session.userId)
+            || reqObj.headers.userid
+            || reqObj.headers.wid
+        const userToken = (reqObj.kauth && reqObj.kauth.grant && reqObj.kauth.grant.access_token.token)
+            || reqObj.headers[X_AUTH_USER_TOKEN]
         logDebug('[SadhanaSaptha] isUserAbleToDownloadSadhanaSapthaCert called from' +
             ' /sadhana/saptha/cert/download/mobile for userId:', userId, '------', new Date().toString())
         const readUrl = `${CONSTANTS.KONG_API_BASE}/user/v2/read/` + userId
@@ -112,38 +145,19 @@ export const PERMISSION_HELPER = {
             headers: {
                 Authorization: CONSTANTS.SB_API_KEY,
                 'X-Channel-Id': CONSTANTS.X_Channel_Id,
-                [X_AUTH_USER_TOKEN]: reqObj.kauth.grant.access_token.token,
+                [X_AUTH_USER_TOKEN]: userToken,
                 'x-authenticated-userid': userId,
             },
             url: readUrl,
         }
         // tslint:disable-next-line: no-any
         request.get(options, (err: any, _httpResponse: any, body: any) => {
-            if (body) {
-                // tslint:disable-next-line: no-any
-                const userData: any = JSON.parse(body)
-                logDebug('[SadhanaSaptha] user/v2/read responseCode:', userData.responseCode, '------', new Date().toString())
-                if (userData.responseCode.toUpperCase() === 'OK') {
-                    const isNlwCertified = _.get(userData, 'result.response.profileDetails.additionalProperties.isNlw2026Certified', false)
-                    logDebug('[SadhanaSaptha] isNlw2026Certified:', isNlwCertified, 'for userId:', userId, '------', new Date().toString())
-                    if (isNlwCertified) {
-                        logDebug('[SadhanaSaptha] User eligible to download certificate. userId:', userId, '------', new Date().toString())
-                        callback(null, userData)
-                    } else {
-                        const errMsg = 'User is not eligible to download NLW 2026 certificate. userId: ' + userId
-                        logError('[SadhanaSaptha]', errMsg)
-                        callback(new Error(errMsg), null)
-                    }
-                } else {
-                    const errMsg = 'Failed to read the user with Id: ' + userId + ' Error: ' + userData.responseCode
-                    logError('[SadhanaSaptha]', errMsg)
-                    callback(errMsg, null)
-                }
-            }
             if (err) {
                 logError('[SadhanaSaptha] isUserAbleToDownloadSadhanaSapthaCert ERROR -- ', err, '------', new Date().toString())
                 callback(err, null)
+                return
             }
+            this._handleNlwCertUserRead(body, userId, callback)
         })
     },
     // tslint:disable-next-line: no-any
