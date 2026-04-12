@@ -78,6 +78,18 @@ export class Server {
   // Must be registered after all routes — Express identifies error handlers by arity (4 params)
   // tslint:disable-next-line: no-any
   private registerGlobalErrorHandler() {
+    // Handle malformed JSON request bodies (e.g. wrong content-length from mobile clients)
+    // tslint:disable-next-line: no-any
+    this.app.use((err: any, _req: express.Request, res: express.Response, next: express.NextFunction) => {
+      if (err && err.status === 400 && err.type === 'entity.parse.failed') {
+        logError('Bad request - malformed JSON body:', String(err.message))
+        if (!res.headersSent) {
+          res.status(400).json({ error: 'Malformed JSON in request body' })
+        }
+        return
+      }
+      next(err)
+    })
     // tslint:disable-next-line: no-any
     this.app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
       logError('Unhandled server error:', String(err && err.message ? err.message : err))
@@ -104,7 +116,7 @@ export class Server {
     this.app.use(cookieParser())
     this.app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
       const rootOrg = req.headers ? req.headers.rootOrg || req.headers.rootorg : ''
-      if (rootOrg && req.hostname.toLowerCase().includes('localhost')) {
+      if (rootOrg && req.hostname && req.hostname.toLowerCase().includes('localhost')) {
         res.cookie('rootorg', rootOrg)
       }
       next()

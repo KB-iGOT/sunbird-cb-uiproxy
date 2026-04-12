@@ -185,12 +185,16 @@ publicApiV8.post('/nlw/2026/cert/download/mobile', async (req, res) => {
         .replace(/\$\{Recipient Name\}/g, userName)
     }
 
-    if (req.body.outputFormat === 'svg') {
+    // Default to 'pdf' when body is missing or empty (e.g. mobile sends wrong content-length)
+    const outputFormat = (req.body && req.body.outputFormat) || 'pdf'
+    logDebug('[SadhanaSaptha] outputFormat:', outputFormat)
+
+    if (outputFormat === 'svg') {
       res.type('html')
       return res.status(200).send(decodedSvg)
     }
 
-    if (req.body.outputFormat !== 'pdf') {
+    if (outputFormat !== 'pdf') {
       return res.status(400).json({ error: 'Unsupported output format', msg: 'Output format should be svg or pdf' })
     }
 
