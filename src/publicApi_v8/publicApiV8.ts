@@ -169,7 +169,7 @@ publicApiV8.post('/nlw/2026/cert/download/mobile', async (req, res) => {
 
     const sessionFirstName = reqObj.session && reqObj.session.firstName
     const apiFirstName = userData && userData.result && userData.result.response && userData.result.response.firstName
-    const fullName = sessionFirstName || apiFirstName || ''
+    const fullName = apiFirstName || sessionFirstName || ''
     const userName = fullName.trim()
     logDebug('[SadhanaSaptha] User is eligible to download certificate. userName:', userName)
 
