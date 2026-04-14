@@ -44,7 +44,7 @@ userAuthKeyCloakApi.get('/', (req, res) => {
         //     secure: true,
         // })
     }
-    if (!_.isEmpty(req.query)) {
+    if (!_.isEmpty(req.query) && req.query !== 'protected/v8/resources') {
         queryParam = req.query.q as string
         if (queryParam && queryParam.includes('localhost')) {
             isLocal = 1
@@ -59,7 +59,8 @@ userAuthKeyCloakApi.get('/', (req, res) => {
     if (isLocal) {
         redirectUrl = queryParam
     } else {
-        redirectUrl = `https://${host}${queryParam}` //   'https://' + host + '/page/home'
+        // redirectUrl = `https://${host}${queryParam}` //   'https://' + host + '/page/home'
+          redirectUrl = 'https://' + host + '/page/home'
     }
     res.redirect(redirectUrl)
 })
