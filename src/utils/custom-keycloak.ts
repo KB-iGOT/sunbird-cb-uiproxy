@@ -69,12 +69,13 @@ export class CustomKeycloak {
     try {
       // Log token information safely without circular references
       // tslint:disable: whitespace
-      const tokenInfo = {
-        contentSub: reqObj.content?.sub,
+     const tokenInfo = {
         hasContent: !!reqObj.content,
         hasKauth: !!reqObj.kauth,
-        kauthSub: reqObj.kauth?.grant?.access_token?.content?.sub,
+        contentSub: reqObj.content?.sub,
+        kauthSub: reqObj.kauth?.grant?.access_token?.content?.sub
       }
+
       // tslint:enable: whitespace
       logInfo('KC24 test ::', '------', JSON.stringify(tokenInfo))
 
