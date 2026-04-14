@@ -44,7 +44,7 @@ userAuthKeyCloakApi.get('/', (req, res) => {
         //     secure: true,
         // })
     }
-     if (!_.isEmpty(req.query) && req.query !== 'protected/v8/resources') {
+    if (!_.isEmpty(req.query) && req.query !== 'protected/v8/resources') {
         queryParam = req.query.q as string
         if (queryParam && queryParam.includes('localhost')) {
             isLocal = 1
