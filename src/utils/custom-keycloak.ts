@@ -70,19 +70,19 @@ export class CustomKeycloak {
       // Log token information safely without circular references
       // tslint:disable: whitespace
      const tokenInfo = {
+        contentSub: reqObj.content?.sub,
         hasContent: !!reqObj.content,
         hasKauth: !!reqObj.kauth,
-        contentSub: reqObj.content?.sub,
-        kauthSub: reqObj.kauth?.grant?.access_token?.content?.sub
+        kauthSub: reqObj.kauth?.grant?.access_token?.content?.sub,
       }
 
       // tslint:enable: whitespace
-      logInfo('KC24 test ::', '------', JSON.stringify(tokenInfo))
+     logInfo('KC24 test ::', '------', JSON.stringify(tokenInfo))
 
-      let userId: string
+     let userId: string
 
       // Handle Keycloak 24 format (direct token structure)
-      if (reqObj.content && reqObj.content.sub) {
+     if (reqObj.content && reqObj.content.sub) {
         const userIdParts = reqObj.content.sub.split(':')
         userId = userIdParts[userIdParts.length - 1]
         reqObj.session.userId = userId
@@ -112,7 +112,7 @@ export class CustomKeycloak {
         throw new Error('Unable to extract user ID from token - unsupported token format')
       }
 
-      logInfo('userId ::', userId, '------', new Date().toString())
+     logInfo('userId ::', userId, '------', new Date().toString())
     } catch (err: any) {
       // tslint:disable: whitespace
       const errorMsg = reqObj.content?.sub ||
@@ -267,6 +267,17 @@ export class CustomKeycloak {
       { store: sessionConfig.store },
       getKeycloakConfig(url, realm)
     )
+    // Override logoutUrl to use OIDC RP-Initiated Logout spec (Keycloak 18+).
+    // Keycloak 18+ requires post_logout_redirect_uri + client_id instead of redirect_uri.
+    // tslint:disable-next-line: no-any
+    ;(keycloak as any).logoutUrl = function(redirectUrl: string): string {
+      // tslint:disable-next-line: no-any
+      const cfg = (keycloak as any).config
+      return cfg.realmUrl +
+        '/protocol/openid-connect/logout' +
+        '?client_id=' + encodeURIComponent(cfg.clientId) +
+        '&post_logout_redirect_uri=' + encodeURIComponent(redirectUrl)
+    }
     // tslint:disable-next-line: no-any
     keycloak.authenticated = this.authenticated as any
     keycloak.deauthenticated = this.deauthenticatedNew
