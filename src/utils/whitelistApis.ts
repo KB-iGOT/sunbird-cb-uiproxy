@@ -7031,7 +7031,7 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/learner/achievement/read/:achievementId': {
+        '/proxies/v8/learner/achievement/read/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
