@@ -270,7 +270,7 @@ export class CustomKeycloak {
     // Override logoutUrl to use OIDC RP-Initiated Logout spec (Keycloak 18+).
     // Keycloak 18+ requires post_logout_redirect_uri + client_id instead of redirect_uri.
     // tslint:disable-next-line: no-any
-    ;(keycloak as any).logoutUrl = function(redirectUrl: string): string {
+    ;(keycloak as any).logoutUrl = (redirectUrl: string): string => {
       // tslint:disable-next-line: no-any
       const cfg = (keycloak as any).config
       return cfg.realmUrl +
