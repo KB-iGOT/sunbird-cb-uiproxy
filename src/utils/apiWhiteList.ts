@@ -333,6 +333,7 @@ export const isAllowed = () => {
     return function(req: Request, res: Response, next: NextFunction) {
         let REQ_URL = req.path
         if (CONSTANTS.PORTAL_API_WHITELIST_CHECK === 'true') {
+            // tslint:disable-next-line: max-line-length
             if (shouldAllow(req) || _.includes(REQ_URL, '/resource') || _.includes(REQ_URL, '/eclogin') || _.includes(REQ_URL, '/aiAssessmentlogin')) {
                 logDebug('Path : ' + REQ_URL + ' is in excluded list.')
                 next()
