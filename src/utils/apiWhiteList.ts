@@ -409,6 +409,7 @@ export function apiWhiteListLogger() {
             return
         }
         const REQ_URL = req.path
+        // tslint:disable-next-line: max-line-length
         if (!_.includes(REQ_URL, '/resource') && !_.includes(REQ_URL, '/eclogin') && !_.includes(REQ_URL, '/aiassessmentlogin') && (req.session)) {
              logDebug('UIPROXY:: apiWhiteListLogger : checking if the login is to resource  and session is there')
              if (!('userRoles' in req.session) || (('userRoles' in req.session) && (req.session.userRoles.length === 0))) {
