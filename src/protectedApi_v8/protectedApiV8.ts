@@ -36,12 +36,13 @@ import { translateApi } from './translate'
 import { user } from './user/user'
 import { workAllocationApi } from './workallocation'
 import { workflowHandlerApi } from './workflow-handler'
+import { logDebug } from '../utils/logger'
 
 export const protectedApiV8 = express.Router()
 
 protectedApiV8.get('/', (_req, res) => {
-  console.log('req--', _req)
-  console.log('res--', res)
+ logDebug('Protected v8 log req--- : ' + _req)
+ logDebug('Protected v8 log res--- : ' + res)
   res.json({
     config: CONSTANTS.HTTPS_HOST,
     type: 'PROTECTED API HOST 👌',
