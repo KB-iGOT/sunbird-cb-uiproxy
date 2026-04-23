@@ -40,6 +40,8 @@ import { workflowHandlerApi } from './workflow-handler'
 export const protectedApiV8 = express.Router()
 
 protectedApiV8.get('/', (_req, res) => {
+  console.log('req--', _req)
+  console.log('res--', res)
   res.json({
     config: CONSTANTS.HTTPS_HOST,
     type: 'PROTECTED API HOST 👌',
