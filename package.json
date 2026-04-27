@@ -12,7 +12,8 @@
     "serve": "node ./index.js",
     "start:nodemon": "nodemon --config nodemon/nodemon.json",
     "start:igot": "nodemon --config nodemon/nodemon-igot-stage.json",
-    "start": "ts-node --transpile-only src/index.ts"
+    "start": "ts-node --transpile-only src/index.ts",
+    "prepare": "husky"
   },
   "keywords": [],
   "engines": {
