@@ -1,6 +1,45 @@
-import chalk from 'chalk'
+import pino from 'pino'
+import { CONSTANTS } from './env'
 
-export const log = console.log // tslint:disable-line:no-console
+export type LogLevel = 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace' | 'silent'
+const LOG_LEVELS: LogLevel[] = ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']
+
+// Configure Pino instance
+// In development, keep simple formatted logs if pino-pretty isn't available,
+// in production use blazing fast JSON logging
+const pinoOptions = {
+  formatters: {
+    level: (label: string) => {
+      return { level: label }
+    },
+  },
+  level: CONSTANTS.LOG_LEVEL || 'info',
+  timestamp: pino.stdTimeFunctions.isoTime,
+}
+
+const logger = pino(pinoOptions)
+const DEFAULT_LOG_LEVEL = (CONSTANTS.LOG_LEVEL || 'info') as LogLevel
+
+export function isValidLogLevel(level: unknown): level is LogLevel {
+  return typeof level === 'string' && LOG_LEVELS.includes(level as LogLevel)
+}
+
+export function getLogLevel(): string {
+  return logger.level
+}
+
+export function setLogLevel(level: LogLevel): void {
+  logger.level = level
+}
+
+export function resetLogLevel(): void {
+  logger.level = DEFAULT_LOG_LEVEL
+}
+
+// tslint:disable-next-line: no-any
+export const log = (msg: any, ...args: any[]) => {
+  logger.info(msg, ...args)
+}
 
 type TObjectValueType = string | number | boolean | undefined | null
 export function logObject(
@@ -12,38 +51,48 @@ export function logObject(
     .sort((a, b) => a[0].localeCompare(b[0]))
   const padStart = Math.max(...kv.map(([k]) => k.length))
   const padEnd = Math.max(...kv.map(([, v]) => v.length))
-  const msg = kv
+  const msgArr = kv
     .map(([k, v]) => k.padStart(padStart) + ' : ' + v.padEnd(padEnd))
-    .join('\n')
-  logInfoHeading(msgPrefix)
-  logInfo('_'.repeat(padStart + padEnd + 3))
-  logInfo(msg)
+
+  logger.info(msgPrefix)
+  logger.info('_'.repeat(padStart + padEnd + 3))
+  msgArr.forEach((msg) => {
+    logger.info(msg)
+  })
 }
 
 export function logInfoHeading(msg: string) {
-  log(chalk.bgBlue(msg))
+  logger.info(`--- ${msg} ---`)
 }
+
 export function logInfo(...msgs: string[]) {
-  log(chalk.blue(...msgs))
+  logger.info(msgs.join(' '))
+}
+
+export function logDebug(...msgs: string[]) {
+  logger.debug(msgs.join(' '))
 }
 
 export function logWarnHeading(msg: string) {
-  log(chalk.bgYellow(msg))
+  logger.warn(`--- ${msg} ---`)
 }
+
 export function logWarn(...msgs: string[]) {
-  log(chalk.yellow(...msgs))
+  logger.warn(msgs.join(' '))
 }
 
 export function logErrorHeading(msg: string) {
-  log(chalk.bgRed(msg))
+  logger.error(`--- ${msg} ---`)
 }
+
 export function logError(...msgs: string[]) {
-  log(chalk.red(...msgs))
+  logger.error(msgs.join(' '))
 }
 
 export function logSuccessHeading(msg: string) {
-  log(chalk.bgGreen(msg))
+  logger.info(`[SUCCESS] --- ${msg} ---`)
 }
+
 export function logSuccess(...msgs: string[]) {
-  log(chalk.green(...msgs))
+  logger.info(`[SUCCESS] ${msgs.join(' ')}`)
 }

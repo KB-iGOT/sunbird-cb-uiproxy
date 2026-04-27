@@ -4,7 +4,7 @@ import { getRootOrg } from '../../authoring/utils/header'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { getUserUIDBySession } from '../../utils/discussionHub-helper'
 import { CONSTANTS } from '../../utils/env'
-import { logError, logInfo } from '../../utils/logger'
+import { logDebug, logError } from '../../utils/logger'
 import { extractUserIdFromRequest, extractUserToken } from '../../utils/requestExtract'
 
 const API_ENDPOINTS = {
@@ -28,7 +28,7 @@ topicsApi.get('/recent', async (req, res) => {
         if (CONSTANTS.DISCUSSION_CATEGORY_LIST) {
             url = url + `&` + CONSTANTS.DISCUSSION_CATEGORY_LIST
         }
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}, Url: ${url}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}, Url: ${url}`)
         const response = await axios.get(
             url,
             {
@@ -53,7 +53,7 @@ topicsApi.get('/top', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const url = API_ENDPOINTS.getTopTopics
         const response = await axios.get(
             url,
@@ -80,7 +80,7 @@ topicsApi.get('/popular', async (req, res) => {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
         const pageNo = req.query.page || 1
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const url = API_ENDPOINTS.getPopularTopics
         const response = await axios.get(
             `${url}?page=${pageNo}`,
@@ -106,7 +106,7 @@ topicsApi.get('/unread', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const userUid = await getUserUIDBySession(req)
         const url = API_ENDPOINTS.getUnreadTopics + `?_uid=${userUid}`
         const response = await axios.get(
@@ -133,7 +133,7 @@ topicsApi.get('/unread/total', async (req, res) => {
     try {
         const rootOrg = getRootOrg(req)
         const userId = extractUserIdFromRequest(req)
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const userUid = await getUserUIDBySession(req)
         const url = API_ENDPOINTS.getUnreadTopicsTotal + `?_uid=${userUid}`
         const response = await axios.get(
@@ -162,7 +162,7 @@ topicsApi.get('/:tid', async (req, res) => {
         const userId = extractUserIdFromRequest(req)
         const pageNo = req.query.page || 1
         const sort = req.query.sort || ''
-        logInfo(`UserId: ${userId}, rootOrg: ${rootOrg}`)
+        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const tid = req.params.tid
         const userUid = await getUserUIDBySession(req)
         const url = API_ENDPOINTS.getTopicDetails(Number(tid)) + `?page=${pageNo}&_uid=${userUid}&sort=${sort}`

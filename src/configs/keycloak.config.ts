@@ -10,6 +10,7 @@ export function getKeycloakConfig(url?: string, realm?: string) {
     'auth-server-url': url ? `${url}` : CONSTANTS.PORTAL_AUTH_SERVER_URL,
     'confidential-port': 0,
     'bearer-only': false,
+    'realm-public-key': CONSTANTS.KEYCLOAK_PUBLIC_KEY,
   }
 }
 

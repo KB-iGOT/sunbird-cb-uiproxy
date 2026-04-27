@@ -1,6 +1,5 @@
 import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
-import request from 'request'
 import { axiosRequestConfig } from '../configs/request.config'
 import { ECollectionTypes, IContent, IContentMinimal } from '../models/content.model'
 import { IPaginatedApiResponse } from '../models/paginatedApi.model'
@@ -8,6 +7,7 @@ import { getMinimalContent, processContent } from '../utils/contentHelpers'
 import { CONSTANTS } from '../utils/env'
 import { logError } from '../utils/logger'
 import { ERROR } from '../utils/message'
+import { request } from '../utils/request-adapter'
 import { extractUserIdFromRequest } from '../utils/requestExtract'
 import { getPlaylist } from './user/playlist'
 
@@ -516,11 +516,11 @@ contentApi.post('/setCookie', async (req, res) => {
     const bodyWithConfigRequestOptions = { ...body, ...axiosRequestConfig, headers: { rootOrg } }
     request
       .post(`${url}?type=${type}`, bodyWithConfigRequestOptions)
-      .on('response', (_response) => {
+      .on('response', (_response: any) => { // tslint:disable-line: no-any
         // tslint:disable-next-line: no-console
         // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>\n SET COOKIE RESPONSE HEADERS >>\n', response.headers)
       })
-      .on('error', (err) => {
+      .on('error', (err: any) => { // tslint:disable-line: no-any
         // tslint:disable-next-line: no-console
         console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>\n ALERT! SET COOKIE ERROR >>\n', err)
       })

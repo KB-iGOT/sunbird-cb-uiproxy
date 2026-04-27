@@ -1,8 +1,10 @@
 
 import cassandraDriver from 'cassandra-driver'
 import request from 'request'
+import { RequiredActionAlias } from 'keycloak-admin/lib/defs/requiredActionProviderRepresentation'
 import { CONSTANTS } from './env'
-import { logError, logInfo } from './logger'
+import { logDebug, logError } from './logger'
+
 
 const CASSANDRA_KEYSPACE = CONSTANTS.CASSANDRA_KEYSPACE
 const defaultNewUserPassword = CONSTANTS.KC_NEW_USER_DEFAULT_PWD
@@ -63,7 +65,7 @@ export function checkUUIDMaster(uniqueKey: any): Promise<any> {
                     const key = result.rows[0]
                     resolve(key)
                 } else {
-                    logInfo('Error on DB request : ')
+                    logDebug('Error on DB request : ')
                     reject(false)
                 }
                 clientConnect.shutdown()
@@ -155,7 +157,7 @@ export async function createKeycloakUser(req: any) {
 
 // tslint:disable-next-line: no-any
 export async function getAuthToken(email: any): Promise<any> {
-    logInfo('Starting to get new user token from keycloak...')
+    logDebug('Starting to get new user token from keycloak...')
     // tslint:disable-next-line: no-try-promise
     try {
         const request1 = {
@@ -172,7 +174,7 @@ export async function getAuthToken(email: any): Promise<any> {
                 url: `${CONSTANTS.PORTAL_AUTH_SERVER_URL}/realms/${CONSTANTS.KEYCLOAK_REALM}/protocol/openid-connect/token`,
                 // tslint:disable-next-line: object-literal-sort-keys
                 form: request1,
-            }, (err, _httpResponse, body) => {
+            }, (err: any, _httpResponse: any, body: any) => { // tslint:disable-line: no-any
                 if (err) {
                     logError('err in getAuthToken api ', err)
                     reject(err)
@@ -237,10 +239,10 @@ export async function sendActionsEmail(userId: string) {
     client.setConfig({
         realmName: CONSTANTS.KEYCLOAK_REALM,
     })
-    logInfo(`Sending email to ${userId}`)
-    logInfo(`redirect Uri: `, CONSTANTS.HTTPS_HOST)
-    return client.users.executeActionsEmail({
-        actions: ['VERIFY_EMAIL'],
+    logDebug(`Sending email to ${userId}`)
+    logDebug(`redirect Uri: `, CONSTANTS.HTTPS_HOST)
+    return kcAdminClient.users.executeActionsEmail({
+        actions: [RequiredActionAlias.VERIFY_EMAIL],
         clientId: 'portal',
         id: userId,
         lifespan: 2592000,

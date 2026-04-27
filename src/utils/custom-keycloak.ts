@@ -1,12 +1,11 @@
 import * as express from 'express'
 import expressSession from 'express-session'
 import keycloakConnect from 'keycloak-connect'
-import request from 'request'
 import { getKeycloakConfig } from '../configs/keycloak.config'
 import { CONSTANTS } from './env'
-import { logError, logInfo } from './logger'
+import { logDebug, logError } from './logger'
 import { PERMISSION_HELPER } from './permissionHelper'
-
+import { request } from './request-adapter'
 const async = require('async')
 
 const composable = require('composable-middleware')
@@ -57,13 +56,7 @@ export class CustomKeycloak {
 
   // tslint:disable-next-line: no-any
   authenticated = (reqObj: any, next: any) => {
-    logInfo('Step 3: authenticated function', '------', new Date().toString())
-
-    // Ensure session object exists
-    if (!reqObj.session) {
-      reqObj.session = {}
-    }
-
+    logDebug('Step 3: authenticated function', '------', new Date().toString())
     reqObj.session.authenticated = true
 
     try {
@@ -77,7 +70,7 @@ export class CustomKeycloak {
       }
 
       // tslint:enable: whitespace
-     logInfo('KC24 test ::', '------', JSON.stringify(tokenInfo))
+     logDebug('KC24 test ::', '------', JSON.stringify(tokenInfo))
 
      let userId: string
 
@@ -86,7 +79,7 @@ export class CustomKeycloak {
         const userIdParts = reqObj.content.sub.split(':')
         userId = userIdParts[userIdParts.length - 1]
         reqObj.session.userId = userId
-        logInfo(
+        logDebug(
           'KC24 format - userId extracted from reqObj.content.sub:',
           userId,
           '------',
@@ -102,7 +95,7 @@ export class CustomKeycloak {
         const userIdParts = reqObj.kauth.grant.access_token.content.sub.split(':')
         userId = userIdParts[userIdParts.length - 1]
         reqObj.session.userId = userId
-        logInfo(
+        logDebug(
           'KC7 format - userId extracted from reqObj.kauth.grant.access_token.content.sub:',
           userId,
           '------',
@@ -112,7 +105,7 @@ export class CustomKeycloak {
         throw new Error('Unable to extract user ID from token - unsupported token format')
       }
 
-     logInfo('userId ::', userId, '------', new Date().toString())
+     logDebug('userId ::', userId, '------', new Date().toString())
     } catch (err: any) {
       // tslint:disable: whitespace
       const errorMsg = reqObj.content?.sub ||
@@ -130,7 +123,7 @@ export class CustomKeycloak {
         try {
           const userIdParts = reqObj.content.sub.split(':')
           reqObj.session.userId = userIdParts[userIdParts.length - 1]
-          logInfo('Fallback userId set from content.sub:', reqObj.session.userId, '------', new Date().toString())
+          logDebug('Fallback userId set from content.sub:', reqObj.session.userId, '------', new Date().toString())
         } catch (fallbackErr) {
           logError('Failed to set fallback userId', '------', new Date().toString())
         }
@@ -148,7 +141,7 @@ export class CustomKeycloak {
         logError('error loggin in user', '------', new Date().toString())
         next(err, null)
       } else {
-        logInfo(`${process.pid}: User authenticated`, '------', new Date().toString())
+        logDebug(`${process.pid}: User authenticated`, '------', new Date().toString())
         next(null, 'loggedin')
       }
     })
@@ -163,7 +156,7 @@ export class CustomKeycloak {
       delete reqObj.session.keycloakClientSecret
       reqObj.session.destroy()
     }
-    logInfo(`${process.pid}: User Deauthenticated New`)
+    logDebug(`${process.pid}: User Deauthenticated New`)
   }
 
   // tslint:disable-next-line: no-any
@@ -172,7 +165,7 @@ export class CustomKeycloak {
 
     // Check if session exists before attempting to access its properties
     if (!reqObj.session) {
-      logInfo(`${process.pid}: User Deauthenticated - No session found`)
+      logDebug(`${process.pid}: User Deauthenticated - No session found`)
       return
     }
 
@@ -193,7 +186,7 @@ export class CustomKeycloak {
             formData.client_id = reqObj.session.keycloakClientId
             formData.client_secret = reqObj.session.keycloakClientSecret
           }
-          logInfo('formData used in logout: ' + JSON.stringify(formData))
+          logDebug('formData used in logout: ' + JSON.stringify(formData))
           try {
             request.post({
               form: formData,
@@ -205,7 +198,7 @@ export class CustomKeycloak {
           }
 
           if (reqObj.session.parichayToken) {
-            logInfo('Parichay login found... trying to logout from Parichay...')
+            logDebug('Parichay login found... trying to logout from Parichay...')
             try {
               request.get({
                 headers: {
@@ -218,12 +211,12 @@ export class CustomKeycloak {
                   logError(JSON.stringify(err))
                 }
                 if (res) {
-                  logInfo('Received response from Parichay logout... ')
-                  logInfo(JSON.stringify(res.body))
+                  logDebug('Received response from Parichay logout... ')
+                  logDebug(JSON.stringify(res.body))
                 }
                 if (body) {
-                  logInfo('Received body from Parichay logout...')
-                  logInfo(JSON.stringify(body))
+                  logDebug('Received body from Parichay logout...')
+                  logDebug(JSON.stringify(body))
                 }
               })
             } catch (err) {
@@ -250,7 +243,7 @@ export class CustomKeycloak {
       reqObj.session.destroy()
     }
 
-    logInfo(`${process.pid}: User Deauthenticated`)
+    logDebug(`${process.pid}: User Deauthenticated`)
   }
 
   protect = (req: express.Request, res: express.Response, next: express.NextFunction) => {

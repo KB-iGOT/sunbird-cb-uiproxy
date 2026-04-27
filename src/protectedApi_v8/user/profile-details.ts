@@ -4,7 +4,7 @@ import * as fs from 'fs'
 import { axiosRequestConfig, axiosRequestConfigLong, axiosRequestConfigVeryLong } from '../../configs/request.config'
 import { IPersonalDetails, ISBUser, ISunbirdbUserResponse } from '../../models/user.model'
 import { CONSTANTS } from '../../utils/env'
-import { logError, logInfo } from '../../utils/logger'
+import { logDebug, logError } from '../../utils/logger'
 import { ERROR } from '../../utils/message'
 import { extractUserIdFromRequest, extractUserToken } from '../../utils/requestExtract'
 
@@ -62,7 +62,7 @@ export const profileDeatailsApi = Router()
 profileDeatailsApi.post('/createUserRegistry', async (req, res) => {
     try {
         const userId = extractUserIdFromRequest(req)
-        logInfo('Create user registry for', userId)
+        logDebug('Create user registry for', userId)
         const response = await axios.post(API_END_POINTS.createUserRegistry, { ...req.body, userId }, {
             ...axiosRequestConfigLong,
         })
@@ -77,7 +77,7 @@ profileDeatailsApi.post('/createUserRegistry', async (req, res) => {
 profileDeatailsApi.get('/getUserRegistry', async (req, res) => {
     try {
         const userId = extractUserIdFromRequest(req)
-        logInfo('Get user registry for', userId)
+        logDebug('Get user registry for', userId)
         const response = await axios.post(API_END_POINTS.getUserRegistry, { userId }, {
             ...axiosRequestConfig,
         })
@@ -95,7 +95,7 @@ profileDeatailsApi.get('/getUserRegistryById/:id', async (req, res) => {
         if (!userId) {
             userId = extractUserIdFromRequest(req)
         }
-        logInfo('Get user registry for', userId)
+        logDebug('Get user registry for', userId)
 
         const response = await axios.post(API_END_POINTS.getUserRegistry, { userId }, {
             ...axiosRequestConfig,
@@ -189,7 +189,7 @@ profileDeatailsApi.get('/migrateRegistry', async (req, res) => {
                 const widList = obj.widList
                 const userId = extractUserIdFromRequest(req)
 
-                logInfo('migrating the registry')
+                logDebug('migrating the registry')
                 const response = await axios.post(
                     API_END_POINTS.migrateRegistry,
                     { ...req.body, userId, widList },
@@ -229,7 +229,7 @@ profileDeatailsApi.post('/createUser', async (req, res) => {
             res.status(400).send(channelParamMissing)
             return
         }
-        logInfo('Incoming Request Body for createUser:', JSON.stringify(req.body, null, 2))
+        logDebug('Incoming Request Body for createUser:', JSON.stringify(req.body, null, 2))
         let statusString = ''
         let errMsg = ''
         const sbemail_ = req.body.personalDetails.email
@@ -448,7 +448,7 @@ profileDeatailsApi.post('/createUser', async (req, res) => {
                     userId: sbUserId,
                 }
 
-                // logInfo('Sending Password reset request -> ' + JSON.stringify(passwordResetRequest))
+                // logDebug('Sending Password reset request -> ' + JSON.stringify(passwordResetRequest))
                 const passwordResetResponse = await axios({
                     ...axiosRequestConfig,
                     data: { request: passwordResetRequest },
@@ -458,7 +458,7 @@ profileDeatailsApi.post('/createUser', async (req, res) => {
                     method: 'POST',
                     url: API_END_POINTS.kongUserResetPassword,
                 })
-                // logInfo('Received response from password reset -> ' + JSON.stringify(passwordResetResponse.data))
+                // logDebug('Received response from password reset -> ' + JSON.stringify(passwordResetResponse.data))
                 statusString = passwordResetResponse.data.params.status
                 if (statusString.toUpperCase() === 'SUCCESS') {
                     const welcomeMailRequest = {
@@ -859,7 +859,7 @@ function getUserRegistry(personalDetailsRegistry: IPersonalDetails, deptName: st
 // tslint:disable-next-line: all
 function isMdoLeaderExist(array: any, mdoRole: string) {
     if (array === null || array === undefined || !Array.isArray(array)) {
-        logInfo('MDO_LEADER role is not exist.')
+        logDebug('MDO_LEADER role is not exist.')
         return false
     }
 

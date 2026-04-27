@@ -1,16 +1,18 @@
-FROM node:20-slim
-
-WORKDIR /usr/src/app
-
-COPY . .
+FROM node:20
 
 RUN apt-get update && \
     apt-get install -y zip libjpeg-turbo-progs nasm && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /usr/src/app && chown -R node:node /usr/src/app
+
+WORKDIR /usr/src/app
+
+COPY --chown=node:node . .
+
+USER node
 
 RUN npm install --force && npm run build
 
 RUN zip -r dist.zip dist
-
-CMD ["true"]
-

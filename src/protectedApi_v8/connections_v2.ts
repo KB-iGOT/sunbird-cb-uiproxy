@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logDebug, logError} from '../utils/logger'
 import { ERROR } from '../utils/message'
 import { extractUserId, extractUserIdFromRequest } from '../utils/requestExtract'
 import { extractUserToken } from '../utils/requestExtract'
@@ -396,7 +396,7 @@ connectionsV2Api.post('/v2/connections/recommended/userDepartment', async (req, 
             },
         }
     )
-    logInfo('responseDetails from /search/ : ', JSON.stringify(responseDetails.data))
+    logDebug('responseDetails from /search/ : ', JSON.stringify(responseDetails.data))
 
     // tslint:disable-next-line: no-any
     const orgData: any = []

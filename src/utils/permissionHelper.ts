@@ -1,18 +1,18 @@
 const _                 = require('lodash')
 import axios from 'axios'
-import request from 'request'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from './env'
-import { logError, logInfo } from './logger'
+import { logDebug, logError } from './logger'
+import { request } from './request-adapter'
 import { extractUserToken } from './requestExtract'
 
 export const PERMISSION_HELPER = {
     // tslint:disable-next-line: no-any
     setRolesData(reqObj: any, callback: any, body: any) {
-        logInfo('permission helper:: setRolesData function ', '------', new Date().toString())
+        logDebug('permission helper:: setRolesData function ', '------', new Date().toString())
         // tslint:disable-next-line: no-any
         const userData: any = JSON.parse(body)
-        logInfo(JSON.stringify(userData))
+        logDebug(JSON.stringify(userData))
         if (reqObj.session) {
             reqObj.session.userId = userData.result.response.id ? userData.result.response.id : userData.result.response.userId
             reqObj.session.userName = userData.result.response.userName
@@ -37,22 +37,22 @@ export const PERMISSION_HELPER = {
                 if (error) {
                     logError('permissionHelper:: ERROR: Failed to save session with roles -- ', error)
                 } else {
-                    logInfo('permissionHelper:: SUCCESS: Session saved with roles at ' + new Date().toString())
+                    logDebug('permissionHelper:: SUCCESS: Session saved with roles at ' + new Date().toString())
                 }
             })
         } else {
             callback('reqObj.session no session', null)
         }
-        logInfo('permission helper:: setRolesData function end', '------', new Date().toString())
+        logDebug('permission helper:: setRolesData function end', '------', new Date().toString())
     },
     // tslint:disable-next-line: no-any
     setNodeBBUID(reqObj: any, callback: any, body: any) {
-        logInfo('setNodeBBUID :: ', new Date().toString())
+        logDebug('setNodeBBUID :: ', new Date().toString())
         // tslint:disable-next-line: no-any
         const nodeBBData: any = body
         if (reqObj.session) {
             reqObj.session.uid = nodeBBData.data.result.userId.uid
-            logInfo('After appending uid to session', reqObj.session.uid)
+            logDebug('After appending uid to session', reqObj.session.uid)
         }
         // tslint:disable-next-line: no-any
         reqObj.session.save((error: any) => {
@@ -60,8 +60,7 @@ export const PERMISSION_HELPER = {
               logError('reqObj.session.save error -- ', error, '------', new Date().toString())
               callback(null, null)
             } else {
-               // tslint:disable-next-line: no-console
-               console.log(`setNodeBBUID::Success of save -- reqObj.session ${new Date()}--- `)
+               logDebug(`setNodeBBUID::Success of save -- reqObj.session ${new Date()}--- `)
                callback(null, nodeBBData)
             }
         })
@@ -69,8 +68,8 @@ export const PERMISSION_HELPER = {
     // tslint:disable-next-line: no-any
     getCurrentUserRoles(reqObj: any, callback: any) {
         const userId = reqObj.session.userId
-        logInfo('Step 3: getCurrentUserRoles for user ' + userId, '------', new Date().toString())
-        logInfo('KC24 test ::', '------', JSON.stringify(reqObj.kauth.grant.access_token))
+        logDebug('Step 3: getCurrentUserRoles for user ' + userId, '------', new Date().toString())
+        logDebug('KC24 test ::', '------', JSON.stringify(reqObj.kauth.grant.access_token))
         const readUrl = `${CONSTANTS.KONG_API_BASE}/user/v2/read/` + userId
         const options = {
             headers: {
@@ -89,7 +88,7 @@ export const PERMISSION_HELPER = {
                 // tslint:disable-next-line: no-any
                 const userData: any = JSON.parse(body)
                 if (userData.responseCode.toUpperCase() === 'OK') {
-                    logInfo('Success user/v2/read::', '------', new Date().toString())
+                    logDebug('Success user/v2/read::', '------', new Date().toString())
                     this.setRolesData(reqObj, callback, body)
                 } else {
                     const errMsg = 'Failed to read the user with Id: ' + userId + 'Error: ' + userData.responseCode
@@ -130,8 +129,7 @@ export const PERMISSION_HELPER = {
                 this.setNodeBBUID(reqObj, callback, nodeBBResp)
             }
         } catch (err) {
-            // tslint:disable-next-line: no-console
-            console.log('Making axios call to nodeBB ERROR -- ', err, '------', new Date().toString())
+            logError('Making axios call to nodeBB ERROR -- ', err, '------', new Date().toString())
             callback(null, null)
           }
     },
