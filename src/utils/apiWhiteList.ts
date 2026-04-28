@@ -409,7 +409,7 @@ export function apiWhiteListLogger() {
             return
         }
         const REQ_URL = req.path
-        logError('req.path--', req)
+        logError('req.path--', REQ_URL)
         // tslint:disable-next-line: max-line-length
         if (!_.includes(REQ_URL, '/resource') && !_.includes(REQ_URL, '/eclogin') && !_.includes(REQ_URL, '/aiassessmentlogin') && (req.session)) {
              logDebug('UIPROXY:: apiWhiteListLogger : checking if the login is to resource  and session is there')
