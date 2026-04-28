@@ -377,7 +377,8 @@ export const isAllowed = () => {
         }
     }
 }
-const redirectToLogin = (req: Request) => { 
+const redirectToLogin = (req: Request) => {
+ 
     const redirectUrl = 'protected/v8/resource/'
     return `https://${req.get('host')}/${redirectUrl}` // 'http://localhost:3003/protected/v8/user/resource/'
     // tslint:disable-next-line: no-commented-code
@@ -409,15 +410,12 @@ export function apiWhiteListLogger() {
             return
         }
         const REQ_URL = req.path
-        logError('req.path--', REQ_URL)
         // tslint:disable-next-line: max-line-length
         if (!_.includes(REQ_URL, '/resource') && !_.includes(REQ_URL, '/eclogin') && !_.includes(REQ_URL, '/aiassessmentlogin') && (req.session)) {
              logDebug('UIPROXY:: apiWhiteListLogger : checking if the login is to resource  and session is there')
              if (!('userRoles' in req.session) || (('userRoles' in req.session) && (req.session.userRoles.length === 0))) {
                 logError('Portal_API_WHITELIST_LOGGER: User needs to authenticated themselves', '------', new Date().toString())
                 logDebug('UIPROXY:: apiWhiteListLogger :  respond419 method will be called')
-                const REQ_URL_NEW= req.path
-                logError('req.path--', REQ_URL_NEW)
                 respond419(req, res)
             } else {
                 // Pattern match for URL
