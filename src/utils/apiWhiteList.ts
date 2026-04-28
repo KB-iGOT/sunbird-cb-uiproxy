@@ -377,9 +377,7 @@ export const isAllowed = () => {
         }
     }
 }
-const redirectToLogin = (req: Request) => {
-    const REQ_URL = req.path
-    logError('req.path--', REQ_URL)
+const redirectToLogin = (req: Request) => { 
     const redirectUrl = 'protected/v8/resource/'
     return `https://${req.get('host')}/${redirectUrl}` // 'http://localhost:3003/protected/v8/user/resource/'
     // tslint:disable-next-line: no-commented-code
@@ -419,6 +417,8 @@ export function apiWhiteListLogger() {
              if (!('userRoles' in req.session) || (('userRoles' in req.session) && (req.session.userRoles.length === 0))) {
                 logError('Portal_API_WHITELIST_LOGGER: User needs to authenticated themselves', '------', new Date().toString())
                 logDebug('UIPROXY:: apiWhiteListLogger :  respond419 method will be called')
+                const REQ_URL = req.path
+                logError('req.path--', REQ_URL)
                 respond419(req, res)
             } else {
                 // Pattern match for URL
