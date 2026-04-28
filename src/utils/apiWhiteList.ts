@@ -378,6 +378,7 @@ export const isAllowed = () => {
     }
 }
 const redirectToLogin = (req: Request) => {
+    logError('req.path--', req.path)
     const redirectUrl = 'protected/v8/resource/'
     return `https://${req.get('host')}/${redirectUrl}` // 'http://localhost:3003/protected/v8/user/resource/'
     // tslint:disable-next-line: no-commented-code
@@ -409,6 +410,8 @@ export function apiWhiteListLogger() {
             return
         }
         const REQ_URL = req.path
+        logError('req.path--', req)
+        logError('req.path--', REQ_URL)
         // tslint:disable-next-line: max-line-length
         if (!_.includes(REQ_URL, '/resource') && !_.includes(REQ_URL, '/eclogin') && !_.includes(REQ_URL, '/aiassessmentlogin') && (req.session)) {
              logDebug('UIPROXY:: apiWhiteListLogger : checking if the login is to resource  and session is there')
