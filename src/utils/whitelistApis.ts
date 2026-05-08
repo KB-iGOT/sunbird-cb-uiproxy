@@ -7360,6 +7360,15 @@ export const API_LIST = {
                 ROLE.CBP_ADMIN,
             ],
         },
+        '/proxies/v8/operationalreports/v3/download/:rootOrgId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -8292,5 +8301,6 @@ export const API_LIST = {
             '/proxies/v8/badge/dynamic/v1/generate',
             '/proxies/v8/content/v2/read/:do_id',
             '/proxies/v8/course/v1/hierarchy/:do_id',
+            '/proxies/v8/operationalreports/v3/download/:rootOrgId',
         ],
 }
