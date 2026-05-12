@@ -7369,6 +7369,20 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
             ],
         },
+        '/proxies/v8/contenthealth/v1/report/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/contenthealth/v1/summary': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -8302,5 +8316,7 @@ export const API_LIST = {
             '/proxies/v8/content/v2/read/:do_id',
             '/proxies/v8/course/v1/hierarchy/:do_id',
             '/proxies/v8/operationalreports/v3/download/:rootOrgId',
+            '/proxies/v8/contenthealth/v1/report/:id',
+            '/proxies/v8/contenthealth/v1/summary',
         ],
 }
