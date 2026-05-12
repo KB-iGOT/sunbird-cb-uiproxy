@@ -1,5 +1,6 @@
 // Valid Roles
 export const ROLE = {
+    AI_ASSESSMENT_CREATOR: 'AI_ASSESSMENT_CREATOR',
     CBC_ADMIN: 'CBC_ADMIN',
     CBC_MEMBER: 'CBC_MEMBER',
     CBP_ADMIN: 'CBP_ADMIN',

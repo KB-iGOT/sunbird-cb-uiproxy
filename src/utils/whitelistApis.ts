@@ -7031,7 +7031,7 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/learner/achievement/read/:achievementId': {
+        '/proxies/v8/learner/achievement/read/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7358,6 +7358,15 @@ export const API_LIST = {
                 ROLE.PROGRAM_INSTRUCTOR,
                 ROLE.STATE_ADMIN,
                 ROLE.CBP_ADMIN,
+            ],
+        },
+        '/proxies/v8/operationalreports/v3/download/:rootOrgId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
             ],
         },
     },
@@ -8292,5 +8301,6 @@ export const API_LIST = {
             '/proxies/v8/badge/dynamic/v1/generate',
             '/proxies/v8/content/v2/read/:do_id',
             '/proxies/v8/course/v1/hierarchy/:do_id',
+            '/proxies/v8/operationalreports/v3/download/:rootOrgId',
         ],
 }
