@@ -249,6 +249,9 @@ export const CONSTANTS = {
   NTPC_REVOKE_URL: env.NTPC_REVOKE_URL || 'ntpcRevokeUrl',
   IGOT_REDIS_HOST: env.IGOT_REDIS_HOST || 'localhost',
   IGOT_REDIS_PORT: env.IGOT_REDIS_PORT || 6379,
+  AI_ASSESSMENT_PORTAL_HOST: env.AI_ASSESSMENT_PORTAL_HOST || 'https://portal.dev.karmayogibharat.net/ai-assessment',
+  AI_ASSESSMENT_REDIRECT_PATH: env.AI_ASSESSMENT_REDIRECT_PATH || '/',
+  AIC_ASSESSMENT_PORTAL_HOST: env.AIC_ASSESSMENT_PORTAL_HOST || 'portal.dev.karmayogibharat.net/ai-assessment'
 }
 
 export const RESTRICTED_PYTHON_STMT: string[] = process.env.RESTRICTED_CHARACTERS
