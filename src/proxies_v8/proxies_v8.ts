@@ -75,17 +75,25 @@ function handleFormDataResponse(
     }
     return
   }
+  const chunks: Buffer[] = []
   response.on('error', (streamErr: Error) => {
     logError(`Response stream error in ${routeLabel}`, String(streamErr))
     if (!res.headersSent) {
       res.status(502).json({ error: 'Stream failed' })
     }
   })
-  response.on('data', (data: Buffer) => {
-    if (response.statusCode === 200 || response.statusCode === 201) {
-      res.send(JSON.parse(data.toString('utf8')))
+  response.on('data', (chunk: Buffer) => chunks.push(chunk))
+  response.on('end', () => {
+    const fullData = Buffer.concat(chunks)
+    const statusCode = response.statusCode || 500
+    if (statusCode === 200 || statusCode === 201) {
+      try {
+        res.status(statusCode).json(JSON.parse(fullData.toString('utf8')))
+      } catch (_e) {
+        res.status(statusCode).send(fullData.toString('utf8'))
+      }
     } else {
-      res.send(data.toString('utf8'))
+      res.status(statusCode).send(fullData.toString('utf8'))
     }
   })
 }
@@ -383,7 +391,7 @@ proxiesV8.post('/ai/assessments/v1/generate', (req, res) => {
   const rootOrgId = _.get(req, SESSION_ROOT_ORG_ID) || ''
   const channel = _.get(req, SESSION_CHANNEL) || ''
 
-  formData.submit(
+  const submitReq = formData.submit(
     {
       headers: {
         Authorization: CONSTANTS.SB_API_KEY,
@@ -402,6 +410,8 @@ proxiesV8.post('/ai/assessments/v1/generate', (req, res) => {
     // tslint:disable-next-line: no-any
     (err: any, response: any) => handleFormDataResponse('/ai/assessments/v1/generate', res, err, response)
   )
+  // Increase socket timeout for long-running AI generation (5 minutes)
+  submitReq.setTimeout(300000)
 })
 
 // Remaining AI assessment routes (non-form-data) use generic proxy
