@@ -7397,6 +7397,70 @@ export const API_LIST = {
                 ROLE.AI_ASSESSMENT_CREATOR,
             ],
         },
+        '/proxies/v8/ai/cbp/v1/mdo/approval-requests/list': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/ai/cbp/v1/mdo/approval-requests/read/:id': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/ai/cbp/v1/mdo/approval-requests/publish': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/ai/cbp/v1/mdo/approval-requests/reject': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/ai/cbp/v1/mdo/approval-requests/items/reject': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/ai/cbp/v1/designation/approval-requests/list': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/ai/cbp/v1/designation/approval-requests/approve': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/ai/cbp/v1/designation/approval-requests/reject': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -8334,5 +8398,13 @@ export const API_LIST = {
             '/proxies/v8/ai/assessments/v1/download/:id',
             '/proxies/v8/ai/assessments/v1/status/:id',
             '/proxies/v8/ai/assessments/v1/history',
+            '/proxies/v8/ai/cbp/v1/mdo/approval-requests/list',
+            '/proxies/v8/ai/cbp/v1/mdo/approval-requests/read/:id',
+            '/proxies/v8/ai/cbp/v1/mdo/approval-requests/publish',
+            '/proxies/v8/ai/cbp/v1/mdo/approval-requests/reject',
+            '/proxies/v8/ai/cbp/v1/mdo/approval-requests/items/reject',
+            '/proxies/v8/ai/cbp/v1/designation/approval-requests/list',
+            '/proxies/v8/ai/cbp/v1/designation/approval-requests/approve',
+            '/proxies/v8/ai/cbp/v1/designation/approval-requests/reject',
         ],
 }
