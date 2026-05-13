@@ -7373,28 +7373,28 @@ export const API_LIST = {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
-                ROLE.AI_ASSESSMENT_CREATOR
+                ROLE.AI_ASSESSMENT_CREATOR,
             ],
         },
         '/proxies/v8/ai/assessments/v1/download/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
-                ROLE.AI_ASSESSMENT_CREATOR
+                ROLE.AI_ASSESSMENT_CREATOR,
             ],
         },
         '/proxies/v8/ai/assessments/v1/status/:id': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
-                ROLE.AI_ASSESSMENT_CREATOR
+                ROLE.AI_ASSESSMENT_CREATOR,
             ],
         },
         '/proxies/v8/ai/assessments/v1/history': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
-                ROLE.AI_ASSESSMENT_CREATOR
+                ROLE.AI_ASSESSMENT_CREATOR,
             ],
         },
     },
@@ -8333,6 +8333,6 @@ export const API_LIST = {
             '/proxies/v8/ai/assessments/v1/generate',
             '/proxies/v8/ai/assessments/v1/download/:id',
             '/proxies/v8/ai/assessments/v1/status/:id',
-            '/proxies/v8/ai/assessments/v1/history'
+            '/proxies/v8/ai/assessments/v1/history',
         ],
 }
