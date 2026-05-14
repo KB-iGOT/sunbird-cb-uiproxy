@@ -7441,24 +7441,21 @@ export const API_LIST = {
            checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
-                ROLE.MDO_LEADER,
-                ROLE.MDO_ADMIN,
+                ROLE.SPV_ADMIN,
             ],
         },
         '/proxies/v8/ai/cbp/v1/designation/approval-requests/approve': {
            checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
-                ROLE.MDO_LEADER,
-                ROLE.MDO_ADMIN,
+                ROLE.SPV_ADMIN,
             ],
         },
         '/proxies/v8/ai/cbp/v1/designation/approval-requests/reject': {
            checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
-                ROLE.MDO_LEADER,
-                ROLE.MDO_ADMIN,
+                ROLE.SPV_ADMIN,
             ],
         },
     },
