@@ -249,9 +249,10 @@ export const CONSTANTS = {
   NTPC_REVOKE_URL: env.NTPC_REVOKE_URL || 'ntpcRevokeUrl',
   IGOT_REDIS_HOST: env.IGOT_REDIS_HOST || 'localhost',
   IGOT_REDIS_PORT: env.IGOT_REDIS_PORT || 6379,
+  PORTAL_SESSION_STORE_TYPE: env.PORTAL_SESSION_STORE_TYPE || 'cassandra',
   AI_ASSESSMENT_PORTAL_HOST: env.AI_ASSESSMENT_PORTAL_HOST || 'https://portal.uat.karmayogibharat.net/ai-assessment',
   AI_ASSESSMENT_REDIRECT_PATH: env.AI_ASSESSMENT_REDIRECT_PATH || '/',
-  AIC_ASSESSMENT_PORTAL_HOST: env.AIC_ASSESSMENT_PORTAL_HOST || 'portal.uat.karmayogibharat.net/ai-assessment'
+  AIC_ASSESSMENT_PORTAL_HOST: env.AIC_ASSESSMENT_PORTAL_HOST || 'portal.uat.karmayogibharat.net/ai-assessment',
 }
 
 export const RESTRICTED_PYTHON_STMT: string[] = process.env.RESTRICTED_CHARACTERS
