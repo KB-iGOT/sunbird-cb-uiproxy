@@ -117,20 +117,16 @@ publicApiV8.use('/org/v1/read', proxyCreatorRoute(express.Router(), CONSTANTS.KO
 
 publicApiV8.get('/public/forms/v2/getFormById', async (req, res) => {
   try {
-    const router = proxyCreatorRoute(
-      express.Router(),
-      API_END_POINTS.publicGetFormById
-    )
-
-    return router(req, res, () => {
-      res.status(500).send({
-        responseCode: 'ERROR',
-        result: {
-          message: 'Failed to process request',
+    const response = await axios.get(
+      `${API_END_POINTS.publicGetFormById}`,
+      {
+        headers: {
+          ...req.headers,
         },
-      })
-    })
-
+        params: req.query,
+      }
+    )
+    res.status(response.status).send(response.data)
   } catch (error) {
     logError(`Failed to fetch form by id. Error: ${error}`)
     res.status(500).send({
