@@ -115,8 +115,33 @@ publicApiV8.use('/public/assessment/v7/result', proxyCreatorRoute(express.Router
 
 publicApiV8.use('/org/v1/read', proxyCreatorRoute(express.Router(), CONSTANTS.KONG_API_BASE + '/org/v1/read'))
 
-publicApiV8.use('/public/forms/v2/getFormById', proxyCreatorRoute(express.Router(), API_END_POINTS.publicGetFormById))
-publicApiV8.use('/fileForms/v2/getFormById', proxyCreatorRoute(express.Router(), API_END_POINTS.publicGetFormById))
+publicApiV8.get('/public/forms/v2/getFormById', async (req, res) => {
+  try {
+    const router = proxyCreatorRoute(
+      express.Router(),
+      API_END_POINTS.publicGetFormById
+    )
+
+    return router(req, res, () => {
+      res.status(500).send({
+        responseCode: 'ERROR',
+        result: {
+          message: 'Failed to process request',
+        },
+      })
+    })
+
+  } catch (error) {
+    logError(`Failed to fetch form by id. Error: ${error}`)
+    res.status(500).send({
+      responseCode: 'ERROR',
+      result: {
+        message: CONSTANTS.INTERNAL_SERVER_ERR_MSG,
+      },
+    })
+  }
+})
+
 publicApiV8.use('/forms/v2/getApplicationsById', proxyCreatorRoute(express.Router(), API_END_POINTS.publicGetApplicationsById))
 
 publicApiV8.use('/chatbot/v3/mobile/transcoder', chatBotTranscoderAPIIntegration)
