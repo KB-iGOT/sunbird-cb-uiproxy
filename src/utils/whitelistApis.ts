@@ -7482,6 +7482,8 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.SPV_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
             ],
         },
         '/proxies/v8/ai/cbp/v1/designation/approval-requests/approve': {
