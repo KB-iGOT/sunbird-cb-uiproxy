@@ -7437,6 +7437,46 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
             ],
         },
+        '/proxies/v8/ai/cbp/v1/course/suggestions': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/ai/cbp/v1/designation/search': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/ai/cbp/v1/mdo/approval-requests/items/update': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/ai/cbp/v1/mdo/approval-requests/course/add': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/ai/cbp/v1/mdo/approval-requests/course/remove': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
         '/proxies/v8/ai/cbp/v1/designation/approval-requests/list': {
            checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -8400,6 +8440,11 @@ export const API_LIST = {
             '/proxies/v8/ai/cbp/v1/mdo/approval-requests/publish',
             '/proxies/v8/ai/cbp/v1/mdo/approval-requests/reject',
             '/proxies/v8/ai/cbp/v1/mdo/approval-requests/items/reject',
+            '/proxies/v8/ai/cbp/v1/course/suggestions',
+            '/proxies/v8/ai/cbp/v1/designation/search',
+            '/proxies/v8/ai/cbp/v1/mdo/approval-requests/items/update',
+            '/proxies/v8/ai/cbp/v1/mdo/approval-requests/course/add',
+            '/proxies/v8/ai/cbp/v1/mdo/approval-requests/course/remove',
             '/proxies/v8/ai/cbp/v1/designation/approval-requests/list',
             '/proxies/v8/ai/cbp/v1/designation/approval-requests/approve',
             '/proxies/v8/ai/cbp/v1/designation/approval-requests/reject',
