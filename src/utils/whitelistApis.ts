@@ -7517,6 +7517,16 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
             ],
         },
+        '/proxies/v8/workflow/aiAssessment/getUserWF' : {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CONTENT_CREATOR,
+                ROLE.CONTENT_REVIEWER,
+                ROLE.CONTENT_PUBLISHER,
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -8469,5 +8479,6 @@ export const API_LIST = {
             '/proxies/v8/ai/cbp/v1/designation/approval-requests/reject',
             '/proxies/v8/workflow/aiAssessment/transition',
             '/proxies/v8/workflow/aiAssessment/search',
+            '/proxies/v8/workflow/aiAssessment/getUserWF',
         ],
 }
