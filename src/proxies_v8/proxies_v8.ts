@@ -1579,3 +1579,7 @@ proxiesV8.use('/peervalidation/*',
 proxiesV8.use('/badge/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/contenthealth/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)

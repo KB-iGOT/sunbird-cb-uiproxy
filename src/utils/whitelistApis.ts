@@ -7524,6 +7524,19 @@ export const API_LIST = {
                 ROLE.CONTENT_CREATOR,
                 ROLE.CONTENT_REVIEWER,
                 ROLE.CONTENT_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/contenthealth/v1/report/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/contenthealth/v1/summary': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
                 ROLE.SPV_PUBLISHER,
             ],
         },
@@ -8480,5 +8493,7 @@ export const API_LIST = {
             '/proxies/v8/workflow/aiAssessment/transition',
             '/proxies/v8/workflow/aiAssessment/search',
             '/proxies/v8/workflow/aiAssessment/getUserWF',
+            '/proxies/v8/contenthealth/v1/report/:id',
+            '/proxies/v8/contenthealth/v1/summary',
         ],
 }
