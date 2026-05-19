@@ -7540,6 +7540,14 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
             ],
         },
+        '/proxies/v8/ai/cbp/v1/mdo/approval-requests/publish/retry': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -8495,5 +8503,6 @@ export const API_LIST = {
             '/proxies/v8/workflow/aiAssessment/getUserWF',
             '/proxies/v8/contenthealth/v1/report/:id',
             '/proxies/v8/contenthealth/v1/summary',
+            '/proxies/v8/ai/cbp/v1/mdo/approval-requests/publish/retry'
         ],
 }
