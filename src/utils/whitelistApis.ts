@@ -7508,6 +7508,9 @@ export const API_LIST = {
                 ROLE.CONTENT_REVIEWER,
                 ROLE.CONTENT_PUBLISHER,
                 ROLE.SPV_PUBLISHER,
+                ROLE.PROGRAM_COORDINATOR,
+                ROLE.PROGRAM_INSTRUCTOR,
+                ROLE.CBP_ADMIN,
             ],
         },
         '/proxies/v8/workflow/aiAssessment/search': {
@@ -7524,6 +7527,10 @@ export const API_LIST = {
                 ROLE.CONTENT_CREATOR,
                 ROLE.CONTENT_REVIEWER,
                 ROLE.CONTENT_PUBLISHER,
+                ROLE.PROGRAM_COORDINATOR,
+                ROLE.PROGRAM_INSTRUCTOR,
+                ROLE.SPV_PUBLISHER,
+                ROLE.CBP_ADMIN,
             ],
         },
         '/proxies/v8/contenthealth/v1/report/:id': {
