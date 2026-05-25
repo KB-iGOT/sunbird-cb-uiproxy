@@ -7437,11 +7437,53 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
             ],
         },
+        '/proxies/v8/ai/cbp/v1/course/suggestions': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/ai/cbp/v1/designation/search': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/ai/cbp/v1/mdo/approval-requests/items/update': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/ai/cbp/v1/mdo/approval-requests/course/add': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/ai/cbp/v1/mdo/approval-requests/course/remove': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
         '/proxies/v8/ai/cbp/v1/designation/approval-requests/list': {
            checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.SPV_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
             ],
         },
         '/proxies/v8/ai/cbp/v1/designation/approval-requests/approve': {
@@ -7456,6 +7498,54 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/workflow/aiAssessment/transition': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CONTENT_CREATOR,
+                ROLE.CONTENT_REVIEWER,
+                ROLE.CONTENT_PUBLISHER,
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/workflow/aiAssessment/search': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/workflow/aiAssessment/getUserWF' : {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CONTENT_CREATOR,
+                ROLE.CONTENT_REVIEWER,
+                ROLE.CONTENT_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/contenthealth/v1/report/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/contenthealth/v1/summary': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.SPV_PUBLISHER,
+            ],
+        },
+        '/proxies/v8/ai/cbp/v1/mdo/approval-requests/publish/retry': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
             ],
         },
     },
@@ -8400,8 +8490,19 @@ export const API_LIST = {
             '/proxies/v8/ai/cbp/v1/mdo/approval-requests/publish',
             '/proxies/v8/ai/cbp/v1/mdo/approval-requests/reject',
             '/proxies/v8/ai/cbp/v1/mdo/approval-requests/items/reject',
+            '/proxies/v8/ai/cbp/v1/course/suggestions',
+            '/proxies/v8/ai/cbp/v1/designation/search',
+            '/proxies/v8/ai/cbp/v1/mdo/approval-requests/items/update',
+            '/proxies/v8/ai/cbp/v1/mdo/approval-requests/course/add',
+            '/proxies/v8/ai/cbp/v1/mdo/approval-requests/course/remove',
             '/proxies/v8/ai/cbp/v1/designation/approval-requests/list',
             '/proxies/v8/ai/cbp/v1/designation/approval-requests/approve',
             '/proxies/v8/ai/cbp/v1/designation/approval-requests/reject',
+            '/proxies/v8/workflow/aiAssessment/transition',
+            '/proxies/v8/workflow/aiAssessment/search',
+            '/proxies/v8/workflow/aiAssessment/getUserWF',
+            '/proxies/v8/contenthealth/v1/report/:id',
+            '/proxies/v8/contenthealth/v1/summary',
+            '/proxies/v8/ai/cbp/v1/mdo/approval-requests/publish/retry'
         ],
 }
