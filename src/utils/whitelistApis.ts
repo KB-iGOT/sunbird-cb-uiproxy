@@ -8503,6 +8503,6 @@ export const API_LIST = {
             '/proxies/v8/workflow/aiAssessment/getUserWF',
             '/proxies/v8/contenthealth/v1/report/:id',
             '/proxies/v8/contenthealth/v1/summary',
-            '/proxies/v8/ai/cbp/v1/mdo/approval-requests/publish/retry'
+            '/proxies/v8/ai/cbp/v1/mdo/approval-requests/publish/retry',
         ],
 }
