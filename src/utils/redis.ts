@@ -2,7 +2,9 @@ import Redis from 'ioredis'
 import { CONSTANTS } from './env'
 import { logDebug } from './logger'
 
-export const redis = new Redis(Number(CONSTANTS.IGOT_REDIS_PORT), CONSTANTS.IGOT_REDIS_HOST)
+export const redis = new Redis(Number(CONSTANTS.IGOT_REDIS_PORT), CONSTANTS.IGOT_REDIS_HOST, {
+    db: 8,
+})
 
 redis.on('connect', () => {
     logDebug('Connected to Redis')
