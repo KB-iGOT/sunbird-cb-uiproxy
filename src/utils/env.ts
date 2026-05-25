@@ -249,6 +249,8 @@ export const CONSTANTS = {
   NTPC_REVOKE_URL: env.NTPC_REVOKE_URL || 'ntpcRevokeUrl',
   IGOT_REDIS_HOST: env.IGOT_REDIS_HOST || 'localhost',
   IGOT_REDIS_PORT: env.IGOT_REDIS_PORT || 6379,
+  IGOT_REDIS_DB_INDEX: Number(env.IGOT_REDIS_DB_INDEX) || 8,
+  PORTAL_SESSION_STORE_TYPE: env.PORTAL_SESSION_STORE_TYPE || 'cassandra',
   AI_ASSESSMENT_PORTAL_HOST: env.AI_ASSESSMENT_PORTAL_HOST || 'https://portal.uat.karmayogibharat.net/ai-assessment',
   AI_ASSESSMENT_REDIRECT_PATH: env.AI_ASSESSMENT_REDIRECT_PATH || '/',
   AIC_ASSESSMENT_PORTAL_HOST: env.AIC_ASSESSMENT_PORTAL_HOST || 'portal.uat.karmayogibharat.net/ai-assessment',

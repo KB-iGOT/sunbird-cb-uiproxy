@@ -32,9 +32,31 @@ if (
   )
 }
 
-export function getSessionConfig(
-  isPersistant = true
-): expressSession.SessionOptions {
+function createStore(): expressSession.Store {
+  const storeType = CONSTANTS.PORTAL_SESSION_STORE_TYPE
+
+  switch (storeType) {
+    case 'in-memory':
+      return new expressSession.MemoryStore() as unknown as expressSession.Store
+
+    case 'redis': {
+      const connectRedis = require('connect-redis')
+      const redisStore = connectRedis(expressSession)
+      const { redis } = require('../utils/redis')
+      return new redisStore({ client: redis })
+    }
+
+    case 'cassandra':
+    default:
+      return new cassandraStore({
+        client: null,
+        clientOptions: cassandraClientOptions,
+        table: 'sessions',
+      })
+  }
+}
+
+export function getSessionConfig(): expressSession.SessionOptions {
   if (!sessionConfig) {
     sessionConfig = {
       cookie: {
@@ -43,13 +65,7 @@ export function getSessionConfig(
       resave: false,
       saveUninitialized: false,
       secret: 'test',
-      store: isPersistant
-        ? new cassandraStore({
-          client: null,
-          clientOptions: cassandraClientOptions,
-          table: 'sessions',
-        })
-        : new expressSession.MemoryStore(),
+      store: createStore(),
     }
   }
   return sessionConfig
