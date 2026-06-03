@@ -377,14 +377,24 @@ proxiesV8.post('/ai/assessments/v1/generate', (req, res) => {
     }
   }
 
-  // Append file if present
+  // Append file(s) if present
   if (req.files) {
     for (const key of Object.keys(req.files)) {
-      const file: UploadedFile = req.files[key] as UploadedFile
-      formData.append(key, Buffer.from(file.data), {
-        contentType: file.mimetype,
-        filename: file.name,
-      })
+      const fileOrFiles = req.files[key]
+      if (Array.isArray(fileOrFiles)) {
+        for (const file of fileOrFiles as UploadedFile[]) {
+          formData.append(key, Buffer.from(file.data), {
+            contentType: file.mimetype,
+            filename: file.name,
+          })
+        }
+      } else {
+        const file = fileOrFiles as UploadedFile
+        formData.append(key, Buffer.from(file.data), {
+          contentType: file.mimetype,
+          filename: file.name,
+        })
+      }
     }
   }
 
