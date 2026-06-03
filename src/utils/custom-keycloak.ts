@@ -336,22 +336,6 @@ export class CustomKeycloak {
         '?client_id=' + encodeURIComponent(cfg.clientId) +
         '&post_logout_redirect_uri=' + encodeURIComponent(redirectUrl)
     }
-    // Override loginUrl to add prompt=login, forcing Keycloak to always show the login page.
-    // This prevents the "already authenticated as different user" error when switching accounts.
-    // tslint:disable-next-line: no-any align
-    ;(keycloak as any).loginUrl = (uuid: string, baseUrl: string): string => {
-      // tslint:disable-next-line: no-any
-      const cfg = (keycloak as any).config
-      const redirectUri = baseUrl + (cfg.redirectUri || '/callback')
-      return cfg.realmUrl +
-        '/protocol/openid-connect/auth' +
-        '?client_id=' + encodeURIComponent(cfg.clientId) +
-        '&state=' + encodeURIComponent(uuid) +
-        '&redirect_uri=' + encodeURIComponent(redirectUri) +
-        '&scope=openid' +
-        '&response_type=code' +
-        '&prompt=login'
-    }
     // tslint:disable-next-line: no-any
     keycloak.authenticated = this.authenticated as any
     keycloak.deauthenticated = this.deauthenticatedNew
