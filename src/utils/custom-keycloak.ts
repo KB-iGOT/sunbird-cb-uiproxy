@@ -42,11 +42,13 @@ export class CustomKeycloak {
         }
       }
 
-      keycloak.deauthenticated(req)
-      if (requestWithKauth.kauth && requestWithKauth.kauth.grant) {
-        requestWithKauth.kauth.grant.unstore?.(req, res)
-        delete requestWithKauth.kauth.grant
+      const requestWithSession = req as express.Request & {
+        session?: {
+          [key: string]: unknown
+        }
       }
+      const hadKauthGrant = !!(requestWithKauth.kauth && requestWithKauth.kauth.grant)
+      const hadKeycloakSessionToken = !!requestWithSession.session?.['keycloak-token']
 
       const host = req.hostname
       const headerHost = req.headers.host ? req.headers.host.split(':') : []
@@ -59,6 +61,17 @@ export class CustomKeycloak {
           req.query.post_logout_redirect_uri.trim()) ||
         (typeof req.query.redirect_url === 'string' && req.query.redirect_url.trim()) ||
         defaultRedirectUrl
+
+      keycloak.deauthenticated(req)
+      if (requestWithKauth.kauth && requestWithKauth.kauth.grant) {
+        requestWithKauth.kauth.grant.unstore?.(req, res)
+        delete requestWithKauth.kauth.grant
+      }
+
+      if (!hadKauthGrant && !hadKeycloakSessionToken) {
+        logInfo('No active Keycloak grant/token found. Skipping Keycloak end-session redirect.')
+        return res.redirect(requestedRedirectUrl)
+      }
 
       // tslint:disable-next-line: no-any
       const cfg = (keycloak as any).config
