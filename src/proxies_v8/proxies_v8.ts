@@ -382,14 +382,14 @@ proxiesV8.post('/ai/assessments/v1/generate', (req, res) => {
     for (const key of Object.keys(req.files)) {
       const fileOrFiles = req.files[key]
       if (Array.isArray(fileOrFiles)) {
-        for (const file of fileOrFiles as UploadedFile[]) {
+        for (const file of fileOrFiles) {
           formData.append(key, Buffer.from(file.data), {
             contentType: file.mimetype,
             filename: file.name,
           })
         }
       } else {
-        const file = fileOrFiles as UploadedFile
+        const file = fileOrFiles
         formData.append(key, Buffer.from(file.data), {
           contentType: file.mimetype,
           filename: file.name,
