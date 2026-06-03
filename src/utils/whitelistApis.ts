@@ -7508,6 +7508,9 @@ export const API_LIST = {
                 ROLE.CONTENT_REVIEWER,
                 ROLE.CONTENT_PUBLISHER,
                 ROLE.SPV_PUBLISHER,
+                ROLE.PROGRAM_COORDINATOR,
+                ROLE.PROGRAM_INSTRUCTOR,
+                ROLE.CBP_ADMIN,
             ],
         },
         '/proxies/v8/workflow/aiAssessment/search': {
@@ -7524,6 +7527,10 @@ export const API_LIST = {
                 ROLE.CONTENT_CREATOR,
                 ROLE.CONTENT_REVIEWER,
                 ROLE.CONTENT_PUBLISHER,
+                ROLE.PROGRAM_COORDINATOR,
+                ROLE.PROGRAM_INSTRUCTOR,
+                ROLE.SPV_PUBLISHER,
+                ROLE.CBP_ADMIN,
             ],
         },
         '/proxies/v8/contenthealth/v1/report/:id': {
@@ -8503,6 +8510,6 @@ export const API_LIST = {
             '/proxies/v8/workflow/aiAssessment/getUserWF',
             '/proxies/v8/contenthealth/v1/report/:id',
             '/proxies/v8/contenthealth/v1/summary',
-            '/proxies/v8/ai/cbp/v1/mdo/approval-requests/publish/retry'
+            '/proxies/v8/ai/cbp/v1/mdo/approval-requests/publish/retry',
         ],
 }
