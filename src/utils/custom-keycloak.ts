@@ -29,6 +29,51 @@ export class CustomKeycloak {
 
   middleware = (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const keycloak = this.getKeyCloakObject(req)
+
+    const requestPath = ((req.path || req.url || '').split('?')[0] || '').toLowerCase()
+    const isLogoutRequest = requestPath === '/logout' || requestPath === '/apis/logout'
+
+    if (isLogoutRequest) {
+      const requestWithKauth = req as express.Request & {
+        kauth?: {
+          grant?: {
+            unstore?: (request: express.Request, response: express.Response) => void
+          }
+        }
+      }
+
+      keycloak.deauthenticated(req)
+      if (requestWithKauth.kauth && requestWithKauth.kauth.grant) {
+        requestWithKauth.kauth.grant.unstore?.(req, res)
+        delete requestWithKauth.kauth.grant
+      }
+
+      const host = req.hostname
+      const headerHost = req.headers.host ? req.headers.host.split(':') : []
+      const port = headerHost[1] || ''
+      const defaultRedirectUrl =
+        'https://' + host + (port === '' ? '' : ':' + port) + '/public/home'
+
+      const requestedRedirectUrl =
+        (typeof req.query.post_logout_redirect_uri === 'string' &&
+          req.query.post_logout_redirect_uri.trim()) ||
+        (typeof req.query.redirect_url === 'string' && req.query.redirect_url.trim()) ||
+        defaultRedirectUrl
+
+      // tslint:disable-next-line: no-any
+      const cfg = (keycloak as any).config
+      const keycloakLogoutUrl =
+        cfg.realmUrl +
+        '/protocol/openid-connect/logout' +
+        '?client_id=' +
+        encodeURIComponent(cfg.clientId) +
+        '&post_logout_redirect_uri=' +
+        encodeURIComponent(requestedRedirectUrl)
+
+      logInfo('Custom logout redirectUrl: ' + requestedRedirectUrl)
+      return res.redirect(keycloakLogoutUrl)
+    }
+
     const middleware = composable(
       keycloak.middleware({
         admin: '/callback',
