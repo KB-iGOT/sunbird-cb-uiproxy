@@ -7555,7 +7555,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
             ],
         },
-        '/proxies/v8/learner/course/v4/user/ngo/enrollment/summary/:id': {
+        '/proxies/v8/learner/course/v4/user/ngo/enrollment/summary': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -8216,7 +8216,7 @@ export const API_LIST = {
             '/proxies/v8/feedDiscussion/uploadFile/:communityId/:discussionId',
             '/proxies/v8/looker/dashboard',
             '/protected/v8/workflowhandler/v2/transition',
-            '/proxies/v8/learner/course/v4/user/enrollment/summary/:id',
+            '/proxies/v8/learner/course/v4/user/enrollment/summary',
             '/proxies/v8/learner/course/v4/user/enrollment/list/:id',
             '/proxies/v8/learner/course/v4/user/enrollment/details/:id',
             '/proxies/v8/courseRecommend/v1/courses',
