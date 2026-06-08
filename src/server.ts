@@ -107,12 +107,9 @@ export class Server {
       if (rootOrg && req.hostname.toLowerCase().includes('localhost')) {
         res.cookie('rootorg', rootOrg)
       }
-      // Add your non-HttpOnly cookie here:
-    res.cookie('yourCookieName', 'value', {
-      httpOnly: false,   // accessible to JavaScript
-      secure: true,      // HTTPS only
-      sameSite: 'strict',
-    })
+      Object.keys(req.cookies).forEach(cookieName => {
+        res.cookie(cookieName, req.cookies[cookieName], { httpOnly: false })
+      })
       next()
     })
     this.app.use((_req: express.Request, _res: express.Response, next: express.NextFunction) => {
