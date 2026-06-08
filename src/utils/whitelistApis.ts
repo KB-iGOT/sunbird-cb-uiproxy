@@ -7555,6 +7555,13 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
             ],
         },
+        '/proxies/v8/learner/course/v4/user/ngo/enrollment/summary/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.NGO_VOLUNTEER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -8511,5 +8518,6 @@ export const API_LIST = {
             '/proxies/v8/contenthealth/v1/report/:id',
             '/proxies/v8/contenthealth/v1/summary',
             '/proxies/v8/ai/cbp/v1/mdo/approval-requests/publish/retry',
+            '/proxies/v8/learner/course/v4/user/ngo/enrollment/summary/:id',
         ],
 }
