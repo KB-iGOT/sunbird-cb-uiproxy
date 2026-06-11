@@ -1,7 +1,7 @@
 FROM node:20 AS build
 
 COPY --chown=node:node . .
-RUN npm install
+RUN npm install --legacy-peer-deps
 RUN npm run build
 
 FROM node:20
