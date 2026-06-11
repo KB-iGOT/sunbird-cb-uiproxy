@@ -118,8 +118,13 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
     let redirectUrl = ''
     if (isLocal) {
         redirectUrl = queryParam
+    } else if (queryParam && queryParam.includes('aiassessmentlogin')) {
+        // tslint:disable-next-line: max-line-length
+        redirectUrl = `${CONSTANTS.AI_ASSESSMENT_PORTAL_HOST}${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}${queryParam}`
+
     } else {
-        redirectUrl = `${CONSTANTS.IIM_PORTAL_HOST}${CONSTANTS.EC_REDIRECT_PATH}${queryParam}` //   'https://' + host + '/page/home'
+        // tslint:disable-next-line: max-line-length
+        redirectUrl = `${CONSTANTS.AI_ASSESSMENT_PORTAL_HOST}${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}${queryParam}` //   'https://' + host + '/page/home'
     }
     logDebug('Redirecting to: ' + redirectUrl)
 

@@ -48,8 +48,56 @@ export const proxiesV8 = express.Router()
 const _ = require('lodash')
 
 const FILE_NOT_FOUND_ERR = 'File not found in the request'
+// tslint:disable-next-line: no-duplicate-string
+const PROXIES_V8_PREFIX = '/proxies/v8'
+// tslint:disable-next-line: no-duplicate-string
+const HEADER_USER_CHANNEL = 'x-authenticated-user-channel'
+// tslint:disable-next-line: no-duplicate-string
+const HEADER_USER_ORGID = 'x-authenticated-user-orgid'
+// tslint:disable-next-line: no-duplicate-string
+const HEADER_USER_ORGNAME = 'x-authenticated-user-orgname'
+// tslint:disable-next-line: no-duplicate-string
+const SESSION_ROOT_ORG_ID = 'session.rootOrgId'
+// tslint:disable-next-line: no-duplicate-string
+const SESSION_CHANNEL = 'session.channel'
 
 const unknownError = 'Failed due to unknown reason'
+
+/* tslint:disable:no-any */
+function handleFormDataResponse(
+  routeLabel: string, res: any, err: any,
+  response: any
+) {
+/* tslint:enable:no-any */
+  if (err || !response) {
+    logError(`FormData submit error in ${routeLabel}`, String(err))
+    if (!res.headersSent) {
+      res.status(502).json({ error: 'Request failed', message: String(err) })
+    }
+    return
+  }
+  const chunks: Buffer[] = []
+  response.on('error', (streamErr: Error) => {
+    logError(`Response stream error in ${routeLabel}`, String(streamErr))
+    if (!res.headersSent) {
+      res.status(502).json({ error: 'Stream failed' })
+    }
+  })
+  response.on('data', (chunk: Buffer) => chunks.push(chunk))
+  response.on('end', () => {
+    const fullData = Buffer.concat(chunks)
+    const statusCode = response.statusCode || 500
+    if (statusCode === 200 || statusCode === 201) {
+      try {
+        res.status(statusCode).json(JSON.parse(fullData.toString('utf8')))
+      } catch (_e) {
+        res.status(statusCode).send(fullData.toString('utf8'))
+      }
+    } else {
+      res.status(statusCode).send(fullData.toString('utf8'))
+    }
+  })
+}
 
 proxiesV8.get('/', (_req, res) => {
   res.json({
@@ -82,28 +130,8 @@ proxiesV8.post('/upload/*', (req, res) => {
         path: url,
         port: 9000,
       },
-      (err, response) => {
-        if (err || !response) {
-          logError('FormData submit error in /upload/*', String(err))
-          if (!res.headersSent) {
-            res.status(502).json({ error: 'Upload failed', message: String(err) })
-          }
-          return
-        }
-        response.on('error', (streamErr) => {
-          logError('Response stream error in /upload/*', String(streamErr))
-          if (!res.headersSent) {
-            res.status(502).json({ error: 'Upload stream failed' })
-          }
-        })
-        response.on('data', (data) => {
-          if (response.statusCode === 200 || response.statusCode === 201) {
-            res.send(JSON.parse(data.toString('utf8')))
-          } else {
-            res.send(data.toString('utf8'))
-          }
-        })
-      }
+      // tslint:disable-next-line: no-any
+      (err: any, response: any) => handleFormDataResponse('/upload/*', res, err, response)
     )
   } else {
     res.send(FILE_NOT_FOUND_ERR)
@@ -334,6 +362,76 @@ proxiesV8.use('/walloffame/top/learners/*',
 )
 
 proxiesV8.use('/walloffame/state/top/learners/*',
+  // tslint:disable-next-line: max-line-length
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
+// Dedicated handler for AI assessment generation (multipart/form-data)
+proxiesV8.post('/ai/assessments/v1/generate', (req, res) => {
+  const url = removePrefix(PROXIES_V8_PREFIX, req.originalUrl)
+  const formData = new FormData()
+
+  // Append all text fields from the parsed body
+  if (req.body) {
+    for (const key of Object.keys(req.body)) {
+      formData.append(key, req.body[key])
+    }
+  }
+
+  // Append file(s) if present
+  if (req.files) {
+    for (const key of Object.keys(req.files)) {
+      const fileOrFiles = req.files[key]
+      if (Array.isArray(fileOrFiles)) {
+        for (const file of fileOrFiles) {
+          formData.append(key, Buffer.from(file.data), {
+            contentType: file.mimetype,
+            filename: file.name,
+          })
+        }
+      } else {
+        const file = fileOrFiles
+        formData.append(key, Buffer.from(file.data), {
+          contentType: file.mimetype,
+          filename: file.name,
+        })
+      }
+    }
+  }
+
+  const rootOrgId = _.get(req, SESSION_ROOT_ORG_ID) || ''
+  const channel = _.get(req, SESSION_CHANNEL) || ''
+
+  const submitReq = formData.submit(
+    {
+      headers: {
+        Authorization: CONSTANTS.SB_API_KEY,
+        [HEADER_USER_CHANNEL]: encodeURIComponent(channel),
+        [HEADER_USER_ORGID]: rootOrgId,
+        [HEADER_USER_ORGNAME]: encodeURIComponent(channel),
+        // tslint:disable-next-line: no-duplicate-string
+        'x-authenticated-user-token': extractUserToken(req),
+        // tslint:disable-next-line: no-duplicate-string
+        'x-authenticated-userid': extractUserIdFromRequest(req),
+      },
+      host: 'kong',
+      path: url,
+      port: 8000,
+    },
+    // tslint:disable-next-line: no-any
+    (err: any, response: any) => handleFormDataResponse('/ai/assessments/v1/generate', res, err, response)
+  )
+  // Increase socket timeout for long-running AI generation (5 minutes)
+  submitReq.setTimeout(300000)
+})
+
+// Remaining AI assessment routes (non-form-data) use generic proxy
+proxiesV8.use('/ai/assessments/*',
+  // tslint:disable-next-line: max-line-length
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
+proxiesV8.use('/ai/cbp/*',
   // tslint:disable-next-line: max-line-length
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
@@ -1530,5 +1628,9 @@ proxiesV8.use('/peervalidation/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 proxiesV8.use('/badge/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
+proxiesV8.use('/contenthealth/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
