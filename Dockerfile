@@ -22,7 +22,7 @@ RUN mkdir -p /usr/src/app/user_upload \
 
 USER node
 COPY --chown=node:node package*.json ./
-RUN npm install --only=production && npm cache clean --force
+RUN npm install --omit=dev --legacy-peer-deps && npm cache clean --force
 
 COPY --chown=node:node --from=build dist/ .
 
