@@ -1,7 +1,6 @@
 import { Router } from 'express'
 import { CONSTANTS } from '../utils/env'
 import { logDebug } from '../utils/logger'
-const _                 = require('lodash')
 export const userAuthKeyCloakApi = Router()
 export const userAuthKeyCloakEcApi = Router()
 userAuthKeyCloakApi.get('/', (req, res) => {
@@ -10,7 +9,7 @@ userAuthKeyCloakApi.get('/', (req, res) => {
     let isLocal = 0
     let domain = ''
     logDebug('Received query param: ' + JSON.stringify(req.query))
-    if (req.session && req.session.authenticated ) {
+    if (req.session && req.session.authenticated) {
         logDebug('User is authenticated.. Updating Cookie with Secure and SameSite flags')
         if (host !== undefined) {
             if (host.includes('localhost')) {
@@ -26,14 +25,16 @@ userAuthKeyCloakApi.get('/', (req, res) => {
         }
         const COOKIE_NAME = 'connect.sid'
         const COOKIE_OPTIONS = {
-                httpOnly: true,
-                secure: true,
-            }
+            httpOnly: true,
+            secure: true,
+        }
         res.clearCookie(COOKIE_NAME, {
-                        COOKIE_OPTIONS,
-          })
-        res.cookie(COOKIE_NAME, req.cookies[COOKIE_NAME], { domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
-          sameSite: 'None', ...COOKIE_OPTIONS })
+            COOKIE_OPTIONS,
+        })
+        res.cookie(COOKIE_NAME, req.cookies[COOKIE_NAME], {
+            domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
+            sameSite: 'none', ...COOKIE_OPTIONS,
+        })
 
         // res.cookie('express.sid', req.cookies['express.sid'], {
         //     httpOnly: true,
@@ -42,14 +43,14 @@ userAuthKeyCloakApi.get('/', (req, res) => {
         //     secure: true,
         // })
     }
-    if (!_.isEmpty(req.query)) {
-        queryParam = req.query.q
+    if (!_.isEmpty(req.query) && req.query !== 'protected/v8/resources') {
+        queryParam = req.query.q as string
         if (queryParam && queryParam.includes('localhost')) {
             isLocal = 1
         }
         if (req.query.redirect_uri) {
             logDebug('Received redirectUrl value : ' + req.query.redirect_uri)
-            res.redirect(req.query.redirect_uri)
+            res.redirect(req.query.redirect_uri as string)
             return
         }
     }
@@ -57,7 +58,8 @@ userAuthKeyCloakApi.get('/', (req, res) => {
     if (isLocal) {
         redirectUrl = queryParam
     } else {
-        redirectUrl = `https://${host}${queryParam}` //   'https://' + host + '/page/home'
+        // redirectUrl = `https://${host}${queryParam}` //   'https://' + host + '/page/home'
+          redirectUrl = 'https://' + host + '/page/home'
     }
     res.redirect(redirectUrl)
 })
@@ -68,7 +70,7 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
     let isLocal = 0
     let domain = ''
     logDebug('Received query param: ' + JSON.stringify(req.query))
-    if (req.session && req.session.authenticated ) {
+    if (req.session && req.session.authenticated) {
         logDebug('User is authenticated.. Updating Cookie with Secure and SameSite flags')
         if (host !== undefined) {
             if (host.includes('localhost')) {
@@ -84,14 +86,16 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
         }
         const COOKIE_NAME = 'connect.sid'
         const COOKIE_OPTIONS = {
-                httpOnly: true,
-                secure: true,
-            }
+            httpOnly: true,
+            secure: true,
+        }
         res.clearCookie(COOKIE_NAME, {
-                        COOKIE_OPTIONS,
-          })
-        res.cookie(COOKIE_NAME, req.cookies[COOKIE_NAME], { domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
-          sameSite: 'None', ...COOKIE_OPTIONS })
+            COOKIE_OPTIONS,
+        })
+        res.cookie(COOKIE_NAME, req.cookies[COOKIE_NAME], {
+            domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
+            sameSite: 'none', ...COOKIE_OPTIONS,
+        })
 
         // res.cookie('express.sid', req.cookies['express.sid'], {
         //     httpOnly: true,
@@ -101,13 +105,13 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
         // })
     }
     if (!_.isEmpty(req.query)) {
-        queryParam = req.query.q
+        queryParam = req.query.q as string
         if (queryParam && queryParam.includes('localhost')) {
             isLocal = 1
         }
         if (req.query.redirect_uri) {
             logDebug('Received redirectUrl value : ' + req.query.redirect_uri)
-            res.redirect(req.query.redirect_uri)
+            res.redirect(req.query.redirect_uri as string)
             return
         }
     }

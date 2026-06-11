@@ -69,6 +69,7 @@ export const PERMISSION_HELPER = {
     getCurrentUserRoles(reqObj: any, callback: any) {
         const userId = reqObj.session.userId
         logDebug('Step 3: getCurrentUserRoles for user ' + userId, '------', new Date().toString())
+        logDebug('KC24 test ::', '------', JSON.stringify(reqObj.kauth.grant.access_token))
         const readUrl = `${CONSTANTS.KONG_API_BASE}/user/v2/read/` + userId
         const options = {
             headers: {
@@ -80,8 +81,10 @@ export const PERMISSION_HELPER = {
             url: readUrl,
         }
         // tslint:disable-next-line: no-any
+        logInfo('KC24 test stage1::', '------', JSON.stringify(options))
         request.get(options, (err: any, _httpResponse: any, body: any) => {
             if (body) {
+                logInfo('KC24 test stage2::', '------', JSON.stringify(body))
                 // tslint:disable-next-line: no-any
                 const userData: any = JSON.parse(body)
                 if (userData.responseCode.toUpperCase() === 'OK') {

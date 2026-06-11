@@ -1,6 +1,6 @@
 import compression from 'compression'
 import connectTimeout from 'connect-timeout'
-import cors from 'cors'
+import cors from 'cors'
 import express, { NextFunction } from 'express'
 import fileUpload from 'express-fileupload'
 import expressSession from 'express-session'
@@ -11,6 +11,7 @@ import { authIapBackend } from './authoring/authIapBackend'
 import { authNotification } from './authoring/authNotification'
 import { authSearch } from './authoring/authSearch'
 import { authApi } from './authoring/content'
+import { authzApi } from './authz'
 import { getSessionConfig } from './configs/session.config'
 import { protectedApiV8 } from './protectedApi_v8/protectedApiV8'
 import { proxiesV8 } from './proxies_v8/proxies_v8'
@@ -48,7 +49,7 @@ export class Server {
   private keycloak?: CustomKeycloak
   private constructor() {
     if (CONSTANTS.CORS_ENVIRONMENT === 'dev') {
-      this.app.use(cors({origin: 'https://local.igot-dev.in:3000', credentials: true}))
+      this.app.use(cors({ origin: 'https://local.igot-dev.in:3000', credentials: true }))
     } else {
       this.app.use(cors())
     }
@@ -66,6 +67,7 @@ export class Server {
     this.authoringProxies()
     this.setExtFormsFramework()
     this.servePublicApi()
+    this.app.use('/authz', authzApi)
     this.configureMiddleware()
     this.serverProtectedApi()
     this.serverProxies()
@@ -150,10 +152,13 @@ export class Server {
     )
     // TODO: See what needs to be logged
     this.app.use((req, _, next) => {
-      logDebug('adding x-forward-proto header with https to request...')
-      req.headers['x-forwarded-proto'] = 'https'
-      logDebug(`Server:ConfigureMiddleWare:: Worker ${process.pid} : ${req.protocol}://${req.hostname}/${req.url}`)
-      next()
+       logDebug('req object with protocol:'  +
+        req.protocol + ' and hostname: ' + req.hostname
+        + ' and url: ' + req.url  + ' and headers: ' + JSON.stringify(req.headers))
+       logDebug('adding x-forward-proto header with https to request...')
+       req.headers['x-forwarded-proto'] = 'https'
+       logDebug(`Server:ConfigureMiddleWare:: Worker ${process.pid} : ${req.protocol}://${req.hostname}/${req.url}`)
+       next()
     })
 
     // Using single configured morgan logger
@@ -178,8 +183,8 @@ export class Server {
     frameworkAPI.bootstrap(frameworkConfig, this.app).then((data: any) => {
       logDebug('Successfuly bootstrapped frameworkAPI', data)
     })
-    // tslint:disable-next-line: no-any
-    .catch((error: any ) => logError('Error in frameworkAPI bootstrap', error))
+      // tslint:disable-next-line: no-any
+      .catch((error: any) => logError('Error in frameworkAPI bootstrap', error))
   }
   private servePublicApi() {
     this.app.use('/public/v8', publicApiV8)
@@ -230,7 +235,7 @@ export class Server {
           }
         }
       }
-      res.clearCookie('connect.sid', {httpOnly: true, secure: true, })
+      res.clearCookie('connect.sid', { httpOnly: true, secure: true, })
       res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: false, path: '/', secure: true, })
       logDebug('After delete Cookies::::' + JSON.stringify(_req.cookies))
       if (_req.session) {
