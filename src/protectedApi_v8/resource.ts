@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import * as _ from 'lodash'
 import { CONSTANTS } from '../utils/env'
 import { logDebug, logInfo } from '../utils/logger'
 export const userAuthKeyCloakApi = Router()
