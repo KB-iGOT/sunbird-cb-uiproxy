@@ -10,7 +10,6 @@
         "CONTENT_API_BASE": "http://IP-ADDR:5903",
         "PID_API_BASE": "http://IP-ADDR:9200",
         "ES_BASE": "http://IP-ADDR:9200",
-        "ES_PASSWORD": "",
         "ES_USERNAME": "",
         "FALLBACK_APIS_TO_LEX": false,
         "HTTPS_HOST": "https://igot-dev.in",
