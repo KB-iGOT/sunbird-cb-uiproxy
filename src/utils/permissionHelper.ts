@@ -81,10 +81,10 @@ export const PERMISSION_HELPER = {
             url: readUrl,
         }
         // tslint:disable-next-line: no-any
-        logInfo('KC24 test stage1::', '------', JSON.stringify(options))
+        logDebug('KC24 test stage1::', '------', JSON.stringify(options))
         request.get(options, (err: any, _httpResponse: any, body: any) => {
             if (body) {
-                logInfo('KC24 test stage2::', '------', JSON.stringify(body))
+                logDebug('KC24 test stage2::', '------', JSON.stringify(body))
                 // tslint:disable-next-line: no-any
                 const userData: any = JSON.parse(body)
                 if (userData.responseCode.toUpperCase() === 'OK') {
