@@ -3,7 +3,7 @@ import expressSession from 'express-session'
 import keycloakConnect from 'keycloak-connect'
 import { getKeycloakConfig } from '../configs/keycloak.config'
 import { CONSTANTS } from './env'
-import { logDebug, logError } from './logger'
+import { logDebug, logError, logInfo } from './logger'
 import { PERMISSION_HELPER } from './permissionHelper'
 import { request } from './request-adapter'
 const async = require('async')
@@ -28,6 +28,51 @@ export class CustomKeycloak {
 
   middleware = (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const keycloak = this.getKeyCloakObject(req)
+
+    // Intercept /logout before keycloak's middleware chain so we can read the
+    // session and inject id_token_hint — required by KC18+ to auto-redirect
+    // without showing the Keycloak logout confirmation page.
+    if (req.url === '/logout') {
+      // tslint:disable-next-line: no-any
+      const cfg = (keycloak as any).config
+
+      // Derive post-logout destination: strip first subdomain
+      // e.g. portal.dev.karmayogibharat.net -> https://dev.karmayogibharat.net
+      let postLogoutRedirect = req.protocol + '://' + req.hostname
+      try {
+        const hostParts = req.hostname.split('.')
+        if (hostParts.length > 2) {
+          postLogoutRedirect = 'https://' + hostParts.slice(1).join('.')
+        }
+      } catch (_e) { /* keep default */ }
+
+      // Read id_token from session for id_token_hint
+      let idToken = ''
+      if (req.session && (req.session as any)['keycloak-token']) {
+        try {
+          const tokenObj = JSON.parse((req.session as any)['keycloak-token'])
+          idToken = tokenObj.id_token || ''
+        } catch (_e) { /* ignore parse errors */ }
+      }
+      logInfo('custom-keycloak middleware: /logout intercepted', {
+        postLogoutRedirect, hasIdToken: !!idToken,
+      })
+
+      // Destroy the local session
+      keycloak.deauthenticated(req)
+
+      let kcLogoutUrl = cfg.realmUrl +
+        '/protocol/openid-connect/logout' +
+        '?client_id=' + encodeURIComponent(cfg.clientId) +
+        '&post_logout_redirect_uri=' + encodeURIComponent(postLogoutRedirect)
+      if (idToken) {
+        kcLogoutUrl += '&id_token_hint=' + encodeURIComponent(idToken)
+      }
+      logInfo('custom-keycloak middleware: redirecting to KC logout', { kcLogoutUrl })
+      res.redirect(kcLogoutUrl)
+      return
+    }
+
     const middleware = composable(
       keycloak.middleware({
         admin: '/callback',
