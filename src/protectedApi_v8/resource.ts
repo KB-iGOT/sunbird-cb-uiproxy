@@ -9,10 +9,11 @@ userAuthKeyCloakApi.get('/', (req, res) => {
     let queryParam = ''
     let isLocal = 0
     let domain = ''
-    logInfo('resource.ts userAuthKeyCloakApi: handler entered', { host, query: req.query })
+    logInfo('resource.ts userAuthKeyCloakApi: handler entered host=' + host
+        + ' query=' + JSON.stringify(req.query))
     logDebug('Received query param: ' + JSON.stringify(req.query))
     if (req.session && req.session.authenticated) {
-        logInfo('resource.ts userAuthKeyCloakApi: session is authenticated, updating connect.sid cookie')
+        logInfo('resource.ts userAuthKeyCloakApi: session authenticated, updating connect.sid cookie')
         logDebug('User is authenticated.. Updating Cookie with Secure and SameSite flags')
         if (host !== undefined) {
             if (host.includes('localhost')) {
@@ -26,7 +27,7 @@ userAuthKeyCloakApi.get('/', (req, res) => {
                 }
             }
         }
-        logInfo('resource.ts userAuthKeyCloakApi: resolved cookie domain', { domain })
+        logInfo('resource.ts userAuthKeyCloakApi: resolved cookie domain=' + domain)
         const COOKIE_NAME = 'connect.sid'
         const COOKIE_OPTIONS = {
             httpOnly: true,
@@ -47,38 +48,37 @@ userAuthKeyCloakApi.get('/', (req, res) => {
         //     secure: true,
         // })
     } else {
-        logInfo('resource.ts userAuthKeyCloakApi: session NOT authenticated', {
-            hasSession: !!req.session,
-            authenticated: req.session && req.session.authenticated,
-        })
+        logInfo('resource.ts userAuthKeyCloakApi: session NOT authenticated'
+            + ' hasSession=' + String(!!req.session)
+            + ' authenticated=' + String(req.session && req.session.authenticated))
     }
     if (!_.isEmpty(req.query) && req.query !== 'protected/v8/resources') {
         queryParam = req.query.q as string
-        logInfo('resource.ts userAuthKeyCloakApi: query params present',
-            { q: queryParam, redirect_uri: req.query.redirect_uri })
+        logInfo('resource.ts userAuthKeyCloakApi: query params present'
+            + ' q=' + queryParam
+            + ' redirect_uri=' + String(req.query.redirect_uri))
         if (queryParam && queryParam.includes('localhost')) {
             isLocal = 1
             logInfo('resource.ts userAuthKeyCloakApi: detected localhost in q param, isLocal=1')
         }
         if (req.query.redirect_uri) {
-            logInfo('resource.ts userAuthKeyCloakApi: redirect_uri param present, redirecting to',
-                { redirect_uri: req.query.redirect_uri })
+            logInfo('resource.ts userAuthKeyCloakApi: redirect_uri present, redirecting to '
+                + String(req.query.redirect_uri))
             logDebug('Received redirectUrl value : ' + req.query.redirect_uri)
             res.redirect(req.query.redirect_uri as string)
             return
         }
     } else {
-        logInfo('resource.ts userAuthKeyCloakApi: no query params '
-            + '(or query matched excluded pattern), will use default redirect')
+        logInfo('resource.ts userAuthKeyCloakApi: no query params, will use default redirect')
     }
     let redirectUrl = ''
     if (isLocal) {
         redirectUrl = queryParam
-        logInfo('resource.ts userAuthKeyCloakApi: isLocal=1, redirecting to queryParam', { redirectUrl })
+        logInfo('resource.ts userAuthKeyCloakApi: isLocal=1, redirecting to ' + redirectUrl)
     } else {
         // redirectUrl = `https://${host}${queryParam}` //   'https://' + host + '/page/home'
         redirectUrl = 'https://' + host + '/page/home'
-        logInfo('resource.ts userAuthKeyCloakApi: redirecting to /page/home', { redirectUrl })
+        logInfo('resource.ts userAuthKeyCloakApi: redirecting to /page/home url=' + redirectUrl)
     }
     res.redirect(redirectUrl)
 })
@@ -88,10 +88,11 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
     let queryParam = ''
     let isLocal = 0
     let domain = ''
-    logInfo('resource.ts userAuthKeyCloakEcApi: handler entered', { host, query: req.query })
+    logInfo('resource.ts userAuthKeyCloakEcApi: handler entered host=' + host
+        + ' query=' + JSON.stringify(req.query))
     logDebug('Received query param: ' + JSON.stringify(req.query))
     if (req.session && req.session.authenticated) {
-        logInfo('resource.ts userAuthKeyCloakEcApi: session is authenticated, updating connect.sid cookie')
+        logInfo('resource.ts userAuthKeyCloakEcApi: session authenticated, updating connect.sid cookie')
         logDebug('User is authenticated.. Updating Cookie with Secure and SameSite flags')
         if (host !== undefined) {
             if (host.includes('localhost')) {
@@ -105,7 +106,7 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
                 }
             }
         }
-        logInfo('resource.ts userAuthKeyCloakEcApi: resolved cookie domain', { domain })
+        logInfo('resource.ts userAuthKeyCloakEcApi: resolved cookie domain=' + domain)
         const COOKIE_NAME = 'connect.sid'
         const COOKIE_OPTIONS = {
             httpOnly: true,
@@ -126,22 +127,22 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
         //     secure: true,
         // })
     } else {
-        logInfo('resource.ts userAuthKeyCloakEcApi: session NOT authenticated', {
-            hasSession: !!req.session,
-            authenticated: req.session && req.session.authenticated,
-        })
+        logInfo('resource.ts userAuthKeyCloakEcApi: session NOT authenticated'
+            + ' hasSession=' + String(!!req.session)
+            + ' authenticated=' + String(req.session && req.session.authenticated))
     }
     if (!_.isEmpty(req.query)) {
         queryParam = req.query.q as string
-        logInfo('resource.ts userAuthKeyCloakEcApi: query params present',
-            { q: queryParam, redirect_uri: req.query.redirect_uri })
+        logInfo('resource.ts userAuthKeyCloakEcApi: query params present'
+            + ' q=' + queryParam
+            + ' redirect_uri=' + String(req.query.redirect_uri))
         if (queryParam && queryParam.includes('localhost')) {
             isLocal = 1
             logInfo('resource.ts userAuthKeyCloakEcApi: detected localhost in q param, isLocal=1')
         }
         if (req.query.redirect_uri) {
-            logInfo('resource.ts userAuthKeyCloakEcApi: redirect_uri param present, redirecting to',
-                { redirect_uri: req.query.redirect_uri })
+            logInfo('resource.ts userAuthKeyCloakEcApi: redirect_uri present, redirecting to '
+                + String(req.query.redirect_uri))
             logDebug('Received redirectUrl value : ' + req.query.redirect_uri)
             res.redirect(req.query.redirect_uri as string)
             return
@@ -152,16 +153,16 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
     let redirectUrl = ''
     if (isLocal) {
         redirectUrl = queryParam
-        logInfo('resource.ts userAuthKeyCloakEcApi: isLocal=1, redirecting to queryParam', { redirectUrl })
+        logInfo('resource.ts userAuthKeyCloakEcApi: isLocal=1, redirecting to ' + redirectUrl)
     } else if (queryParam && queryParam.includes('aiassessmentlogin')) {
         // tslint:disable-next-line: max-line-length
         redirectUrl = `${CONSTANTS.AI_ASSESSMENT_PORTAL_HOST}${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}${queryParam}`
-        logInfo('resource.ts userAuthKeyCloakEcApi: aiassessmentlogin path', { redirectUrl })
+        logInfo('resource.ts userAuthKeyCloakEcApi: aiassessmentlogin path redirectUrl=' + redirectUrl)
     } else {
         // tslint:disable-next-line: max-line-length
         redirectUrl = `${CONSTANTS.AI_ASSESSMENT_PORTAL_HOST}`
             + `${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}${queryParam}` // 'https://' + host + '/page/home'
-        logInfo('resource.ts userAuthKeyCloakEcApi: default AI assessment redirect', { redirectUrl })
+        logInfo('resource.ts userAuthKeyCloakEcApi: default AI assessment redirect url=' + redirectUrl)
     }
     logDebug('Redirecting to: ' + redirectUrl)
 
