@@ -46,13 +46,19 @@ export class CustomKeycloak {
         }
       } catch (_e) { /* keep default */ }
 
-      // Read id_token from session for id_token_hint
+      // Read id_token for id_token_hint.
+      // Prefer the dedicated session.idToken (saved at login time) because
+      // Keycloak 24+ omits id_token from token-refresh responses, so the
+      // 'keycloak-token' session key may no longer contain it.
       let idToken = ''
-      if (req.session && (req.session as any)['keycloak-token']) {
-        try {
-          const tokenObj = JSON.parse((req.session as any)['keycloak-token'])
-          idToken = tokenObj.id_token || ''
-        } catch (_e) { /* ignore parse errors */ }
+      if (req.session) {
+        idToken = (req.session as any).idToken || ''
+        if (!idToken && (req.session as any)['keycloak-token']) {
+          try {
+            const tokenObj = JSON.parse((req.session as any)['keycloak-token'])
+            idToken = tokenObj.id_token || ''
+          } catch (_e) { /* ignore parse errors */ }
+        }
       }
       logInfo('custom-keycloak middleware: /logout intercepted'
         + ' postLogoutRedirect=' + postLogoutRedirect
@@ -103,6 +109,16 @@ export class CustomKeycloak {
   authenticated = (reqObj: any, next: any) => {
     logDebug('Step 3: authenticated function', '------', new Date().toString())
     reqObj.session.authenticated = true
+
+    // Persist id_token at login so it remains available at logout time.
+    // Keycloak 24+ no longer returns id_token in token-refresh responses,
+    // so we cannot rely on session['keycloak-token'] containing it later.
+    try {
+      const idTokenRaw: string = reqObj.kauth?.grant?.id_token?.token || ''
+      if (idTokenRaw) {
+        reqObj.session.idToken = idTokenRaw
+      }
+    } catch (_e) { /* ignore */ }
 
     try {
       // Log token information safely without circular references
