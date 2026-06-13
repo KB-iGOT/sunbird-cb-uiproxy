@@ -46,44 +46,17 @@ export class CustomKeycloak {
         }
       } catch (_e) { /* keep default */ }
 
-      // Read id_token for id_token_hint.
-      // Prefer the dedicated session.idToken (saved at login time) because
-      // Keycloak 24+ omits id_token from token-refresh responses, so the
-      // 'keycloak-token' session key may no longer contain it.
-      let idToken = ''
-      if (req.session) {
-        idToken = (req.session as any).idToken || ''
-        if (!idToken && (req.session as any)['keycloak-token']) {
-          try {
-            const tokenObj = JSON.parse((req.session as any)['keycloak-token'])
-            idToken = tokenObj.id_token || ''
-          } catch (_e) { /* ignore parse errors */ }
-        }
-      }
-      logInfo('custom-keycloak middleware: /logout intercepted'
-        + ' postLogoutRedirect=' + postLogoutRedirect
-        + ' hasIdToken=' + String(!!idToken))
+      logInfo('custom-keycloak middleware: /logout intercepted, postLogoutRedirect=' + postLogoutRedirect)
 
-      // Destroy the local session
-      keycloak.deauthenticated(req)
+      // Terminate the Keycloak SSO session server-side via backchannel revocation
+      // (POST to KC logout endpoint with refresh_token). This avoids the browser
+      // confirmation page entirely and does not require id_token_hint.
+      // deauthenticatedNew only clears the local session; this.deauthenticated
+      // also revokes the refresh_token at KC, killing the SSO session.
+      this.deauthenticated(req)
 
-      if (idToken) {
-        // id_token_hint present — Keycloak will auto-redirect without showing
-        // the "Do you want to log out?" confirmation page.
-        const kcLogoutUrl = cfg.realmUrl +
-          '/protocol/openid-connect/logout' +
-          '?client_id=' + encodeURIComponent(cfg.clientId) +
-          '&post_logout_redirect_uri=' + encodeURIComponent(postLogoutRedirect) +
-          '&id_token_hint=' + encodeURIComponent(idToken)
-        logInfo('custom-keycloak middleware: redirecting to KC logout url=' + kcLogoutUrl)
-        res.redirect(kcLogoutUrl)
-      } else {
-        // No id_token_hint available (KC24 may not persist it after token refresh).
-        // Local session is already destroyed above; redirect directly to avoid
-        // the Keycloak confirmation page.
-        logInfo('custom-keycloak middleware: no id_token_hint, redirecting directly to ' + postLogoutRedirect)
-        res.redirect(postLogoutRedirect)
-      }
+      logInfo('custom-keycloak middleware: KC backchannel logout called, redirecting to ' + postLogoutRedirect)
+      res.redirect(postLogoutRedirect)
       return
     }
 
