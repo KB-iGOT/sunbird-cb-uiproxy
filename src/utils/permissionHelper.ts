@@ -31,13 +31,19 @@ export const PERMISSION_HELPER = {
             if (!_.includes(reqObj.session.userRoles, 'PUBLIC')) {
                 reqObj.session.userRoles.push('PUBLIC')
             }
-            this.createNodeBBUser(reqObj, callback)
+            // Save session to Cassandra BEFORE calling callback.
+            // The callback triggers post-auth.js response.redirect(), which causes the browser
+            // to immediately follow the redirect. If session.save() hasn't committed to Cassandra
+            // by then, the follow-up request reads a session without keycloak-token, causing
+            // grant-attacher to fail silently and protect.js to redirect back to KC login (race condition).
             // tslint:disable-next-line: no-any
             reqObj.session.save((error: any) => {
                 if (error) {
                     logError('permissionHelper:: ERROR: Failed to save session with roles -- ', error)
+                    callback(error, null)
                 } else {
                     logDebug('permissionHelper:: SUCCESS: Session saved with roles at ' + new Date().toString())
+                    this.createNodeBBUser(reqObj, callback)
                 }
             })
         } else {
