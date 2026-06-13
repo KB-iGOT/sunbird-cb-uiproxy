@@ -266,10 +266,20 @@ export class CustomKeycloak {
     ;(keycloak as any).logoutUrl = (redirectUrl: string): string => {
       // tslint:disable-next-line: no-any
       const cfg = (keycloak as any).config
+      // Derive the root domain by stripping the first subdomain from the host.
+      // e.g. https://portal.dev.karmayogibharat.net/... -> https://dev.karmayogibharat.net
+      let postLogoutRedirect = redirectUrl
+      try {
+        const parsed = new URL(redirectUrl)
+        const hostParts = parsed.hostname.split('.')
+        if (hostParts.length > 2) {
+          postLogoutRedirect = parsed.protocol + '//' + hostParts.slice(1).join('.')
+        }
+      } catch (_e) { /* keep original redirectUrl if parsing fails */ }
       return cfg.realmUrl +
         '/protocol/openid-connect/logout' +
         '?client_id=' + encodeURIComponent(cfg.clientId) +
-        '&post_logout_redirect_uri=' + encodeURIComponent(redirectUrl)
+        '&post_logout_redirect_uri=' + encodeURIComponent(postLogoutRedirect)
     }
     // tslint:disable-next-line: no-any
     keycloak.authenticated = this.authenticated as any
