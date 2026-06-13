@@ -54,9 +54,9 @@ export class CustomKeycloak {
           idToken = tokenObj.id_token || ''
         } catch (_e) { /* ignore parse errors */ }
       }
-      logInfo('custom-keycloak middleware: /logout intercepted', {
-        postLogoutRedirect, hasIdToken: !!idToken,
-      })
+      logInfo('custom-keycloak middleware: /logout intercepted'
+        + ' postLogoutRedirect=' + postLogoutRedirect
+        + ' hasIdToken=' + String(!!idToken))
 
       // Destroy the local session
       keycloak.deauthenticated(req)
@@ -68,7 +68,7 @@ export class CustomKeycloak {
       if (idToken) {
         kcLogoutUrl += '&id_token_hint=' + encodeURIComponent(idToken)
       }
-      logInfo('custom-keycloak middleware: redirecting to KC logout', { kcLogoutUrl })
+      logInfo('custom-keycloak middleware: redirecting to KC logout url=' + kcLogoutUrl)
       res.redirect(kcLogoutUrl)
       return
     }
