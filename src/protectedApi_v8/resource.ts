@@ -33,9 +33,7 @@ userAuthKeyCloakApi.get('/', (req, res) => {
             httpOnly: true,
             secure: true,
         }
-        res.clearCookie(COOKIE_NAME, {
-            COOKIE_OPTIONS,
-        })
+        res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS)
         res.cookie(COOKIE_NAME, req.cookies[COOKIE_NAME], {
             domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
             sameSite: 'none', ...COOKIE_OPTIONS,
@@ -112,9 +110,7 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
             httpOnly: true,
             secure: true,
         }
-        res.clearCookie(COOKIE_NAME, {
-            COOKIE_OPTIONS,
-        })
+        res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS)
         res.cookie(COOKIE_NAME, req.cookies[COOKIE_NAME], {
             domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
             sameSite: 'none', ...COOKIE_OPTIONS,
