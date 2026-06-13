@@ -67,15 +67,23 @@ export class CustomKeycloak {
       // Destroy the local session
       keycloak.deauthenticated(req)
 
-      let kcLogoutUrl = cfg.realmUrl +
-        '/protocol/openid-connect/logout' +
-        '?client_id=' + encodeURIComponent(cfg.clientId) +
-        '&post_logout_redirect_uri=' + encodeURIComponent(postLogoutRedirect)
       if (idToken) {
-        kcLogoutUrl += '&id_token_hint=' + encodeURIComponent(idToken)
+        // id_token_hint present — Keycloak will auto-redirect without showing
+        // the "Do you want to log out?" confirmation page.
+        const kcLogoutUrl = cfg.realmUrl +
+          '/protocol/openid-connect/logout' +
+          '?client_id=' + encodeURIComponent(cfg.clientId) +
+          '&post_logout_redirect_uri=' + encodeURIComponent(postLogoutRedirect) +
+          '&id_token_hint=' + encodeURIComponent(idToken)
+        logInfo('custom-keycloak middleware: redirecting to KC logout url=' + kcLogoutUrl)
+        res.redirect(kcLogoutUrl)
+      } else {
+        // No id_token_hint available (KC24 may not persist it after token refresh).
+        // Local session is already destroyed above; redirect directly to avoid
+        // the Keycloak confirmation page.
+        logInfo('custom-keycloak middleware: no id_token_hint, redirecting directly to ' + postLogoutRedirect)
+        res.redirect(postLogoutRedirect)
       }
-      logInfo('custom-keycloak middleware: redirecting to KC logout url=' + kcLogoutUrl)
-      res.redirect(kcLogoutUrl)
       return
     }
 
