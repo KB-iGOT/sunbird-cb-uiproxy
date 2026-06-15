@@ -239,7 +239,10 @@ export class CustomKeycloak {
             formData.client_secret = reqObj.session.keycloakClientSecret
           }
 
-          logInfo(`custom-keycloak deauthenticated: Calling Keycloak backchannel logout URL: ${urlValue} with client_id: ${formData.client_id}`)
+          logInfo(
+            `custom-keycloak deauthenticated: Calling Keycloak backchannel logout URL: ${urlValue} ` +
+            `with client_id: ${formData.client_id}`
+          )
           logDebug('formData used in logout: ' + JSON.stringify(formData))
 
           try {
@@ -249,7 +252,10 @@ export class CustomKeycloak {
                 url: urlValue,
               }, (err: any, res: any, body: any) => {
                 if (err) {
-                  logError('custom-keycloak deauthenticated: Keycloak backchannel logout request failed with error: ' + JSON.stringify(err))
+                  logError(
+                    'custom-keycloak deauthenticated: Keycloak backchannel logout request failed with error: ' +
+                    JSON.stringify(err)
+                  )
                   reject(err)
                 } else {
                   const statusCode = res ? res.statusCode : 'unknown'
