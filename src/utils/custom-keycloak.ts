@@ -56,6 +56,7 @@ export class CustomKeycloak {
         'KEYCLOAK_SESSION',
         'KEYCLOAK_SESSION_LEGACY',
         'KC_RESTART',
+        'rootorg',
       ]
       const cookiePaths = [
         '/auth/',
