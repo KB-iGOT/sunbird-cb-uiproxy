@@ -61,8 +61,6 @@ export class CustomKeycloak {
       const cookiePaths = [
         '/auth/',
         `/auth/realms/${CONSTANTS.KEYCLOAK_REALM}/`,
-        `/auth/realms/${CONSTANTS.KEYCLOAK_REALM}`,
-        '/',
       ]
       let domainUrl = ''
       const host = req.get('host')
@@ -79,28 +77,35 @@ export class CustomKeycloak {
         }
       }
 
-      const clearOptionsList = [
-        { httpOnly: true, secure: true },
-        { httpOnly: false, secure: true },
-        { httpOnly: true, secure: true, sameSite: 'none' as const },
-        { httpOnly: false, secure: true, sameSite: 'none' as const },
-        { httpOnly: true, secure: true, sameSite: 'lax' as const },
-        { httpOnly: false, secure: true, sameSite: 'lax' as const },
+      // Clear Keycloak cookies (path /auth/realms/sunbird/)
+      const kcCookies = [
+        'KEYCLOAK_IDENTITY',
+        'KEYCLOAK_IDENTITY_LEGACY',
+        'KEYCLOAK_SESSION',
+        'KEYCLOAK_SESSION_LEGACY',
       ]
+      const kcPath = `/auth/realms/${CONSTANTS.KEYCLOAK_REALM}/`
 
-      cookieNames.forEach((cookieName) => {
-        cookiePaths.forEach((cookiePath) => {
-          clearOptionsList.forEach((opts) => {
-            res.clearCookie(cookieName, { ...opts, path: cookiePath })
-            if (domainUrl) {
-              res.clearCookie(cookieName, { ...opts, domain: domainUrl, path: cookiePath })
-            }
-          })
-        })
+      kcCookies.forEach((cookieName) => {
+        // Clear as host-only (no domain)
+        res.clearCookie(cookieName, { httpOnly: true, path: kcPath, secure: true })
+        // Clear with domain scope
+        if (domainUrl) {
+          res.clearCookie(cookieName, { domain: domainUrl, httpOnly: true, path: kcPath, secure: true })
+        }
       })
 
-      // Also clear local session cookies
-      res.clearCookie('connect.sid', { httpOnly: true, secure: true })
+      // KC_RESTART is only set as a host-only cookie
+      res.clearCookie('KC_RESTART', { httpOnly: true, path: kcPath, secure: true })
+
+      // Clear rootorg cookie
+      res.clearCookie('rootorg', { path: '/' })
+      if (domainUrl) {
+        res.clearCookie('rootorg', { domain: domainUrl, path: '/' })
+      }
+
+      // Clear local session cookie (connect.sid)
+      res.clearCookie('connect.sid', { httpOnly: true, secure: true, path: '/' })
       if (domainUrl) {
         res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: false, path: '/', secure: true })
       }
