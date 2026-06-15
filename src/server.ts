@@ -215,38 +215,8 @@ export class Server {
   }
   private resetCookies() {
     this.app.use('/reset', (_req, res) => {
-      logDebug('CLEARING RES COOKIES')
-      const host = _req.get('host')
-      logDebug('host is: ' + host)
-      logDebug('response cookies: ' + JSON.stringify(_req.session))
-      logDebug('Cookies:' + _req.get('cookies'))
-      logDebug('Cookie:' + _req.get('cookie'))
-      logDebug('Cookies::::' + JSON.stringify(_req.cookies))
-      let domainUrl = ''
-      if (host !== undefined) {
-        if (host.includes('localhost')) {
-          domainUrl = 'localhost' // For localhost, set domainUrl to localhost
-        } else {
-          const hostParts = host.split('.')
-          if (hostParts.length > 2) {
-            domainUrl = '.' + hostParts.slice(1).join('.')
-          } else {
-            domainUrl = host
-          }
-        }
-      }
-      res.clearCookie('connect.sid', { httpOnly: true, secure: true, })
-      res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: false, path: '/', secure: true, })
-      logDebug('After delete Cookies::::' + JSON.stringify(_req.cookies))
-      if (_req.session) {
-        _req.session.destroy(() => {
-          logDebug('Session Destroyed')
-          res.redirect('/apis/logout')
-        })
-      } else {
-        logDebug('No Session to destroy.')
-        res.redirect('/apis/logout')
-      }
+      logDebug('Reset clicked. Redirecting to /apis/logout for deauthentication')
+      res.redirect('/apis/logout')
     })
   }
 

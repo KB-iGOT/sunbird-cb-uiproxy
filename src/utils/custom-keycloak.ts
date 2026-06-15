@@ -50,13 +50,34 @@ export class CustomKeycloak {
       // confirmation page entirely and does not require id_token_hint.
       // deauthenticatedNew only clears the local session; this.deauthenticated
       // also revokes the refresh_token at KC, killing the SSO session.
+      const clearCookies = () => {
+        const host = req.get('host')
+        let domainUrl = ''
+        if (host !== undefined) {
+          if (host.includes('localhost')) {
+            domainUrl = 'localhost'
+          } else {
+            const hostParts = host.split('.')
+            if (hostParts.length > 2) {
+              domainUrl = '.' + hostParts.slice(1).join('.')
+            } else {
+              domainUrl = host
+            }
+          }
+        }
+        res.clearCookie('connect.sid', { httpOnly: true, secure: true, })
+        res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: false, path: '/', secure: true, })
+      }
+
       this.deauthenticated(req)
         .then(() => {
           logInfo('custom-keycloak middleware: KC backchannel logout completed, redirecting to ' + postLogoutRedirect)
+          clearCookies()
           res.redirect(postLogoutRedirect)
         })
         .catch((err) => {
           logError('custom-keycloak middleware: deauthenticated failed: ' + err)
+          clearCookies()
           res.redirect(postLogoutRedirect)
         })
       return
