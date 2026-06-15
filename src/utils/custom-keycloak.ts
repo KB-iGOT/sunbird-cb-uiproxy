@@ -33,9 +33,6 @@ export class CustomKeycloak {
     // session and inject id_token_hint — required by KC18+ to auto-redirect
     // without showing the Keycloak logout confirmation page.
     if (req.url === '/logout') {
-      // tslint:disable-next-line: no-any
-      const cfg = (keycloak as any).config
-
       // Derive post-logout destination: strip first subdomain
       // e.g. portal.dev.karmayogibharat.net -> https://dev.karmayogibharat.net
       let postLogoutRedirect = req.protocol + '://' + req.hostname + '/'
@@ -54,9 +51,14 @@ export class CustomKeycloak {
       // deauthenticatedNew only clears the local session; this.deauthenticated
       // also revokes the refresh_token at KC, killing the SSO session.
       this.deauthenticated(req)
-
-      logInfo('custom-keycloak middleware: KC backchannel logout called, redirecting to ' + postLogoutRedirect)
-      res.redirect(postLogoutRedirect)
+        .then(() => {
+          logInfo('custom-keycloak middleware: KC backchannel logout completed, redirecting to ' + postLogoutRedirect)
+          res.redirect(postLogoutRedirect)
+        })
+        .catch((err) => {
+          logError('custom-keycloak middleware: deauthenticated failed: ' + err)
+          res.redirect(postLogoutRedirect)
+        })
       return
     }
 
@@ -202,7 +204,7 @@ export class CustomKeycloak {
   }
 
   // tslint:disable-next-line: no-any
-  deauthenticated = (reqObj: any) => {
+  deauthenticated = async (reqObj: any) => {
     const keyCloakPropertyName = 'keycloak-token'
 
     // Check if session exists before attempting to access its properties
@@ -230,7 +232,7 @@ export class CustomKeycloak {
           }
           logDebug('formData used in logout: ' + JSON.stringify(formData))
           try {
-            request.post({
+            await request.post({
               form: formData,
               url: urlValue,
             })
@@ -242,24 +244,27 @@ export class CustomKeycloak {
           if (reqObj.session.parichayToken) {
             logDebug('Parichay login found... trying to logout from Parichay...')
             try {
-              request.get({
-                headers: {
-                  Authorization: reqObj.session.parichayToken.access_token,
-                },
-                url: CONSTANTS.PARICHAY_REVOKE_URL,
-              }, (err, res, body) => {
-                if (err) {
-                  logError('Received error when calling Parichay logout... ')
-                  logError(JSON.stringify(err))
-                }
-                if (res) {
-                  logDebug('Received response from Parichay logout... ')
-                  logDebug(JSON.stringify(res.body))
-                }
-                if (body) {
-                  logDebug('Received body from Parichay logout...')
-                  logDebug(JSON.stringify(body))
-                }
+              await new Promise<void>((resolve) => {
+                request.get({
+                  headers: {
+                    Authorization: reqObj.session.parichayToken.access_token,
+                  },
+                  url: CONSTANTS.PARICHAY_REVOKE_URL,
+                }, (err: any, res: any, body: any) => {
+                  if (err) {
+                    logError('Received error when calling Parichay logout... ')
+                    logError(JSON.stringify(err))
+                  }
+                  if (res) {
+                    logDebug('Received response from Parichay logout... ')
+                    logDebug(JSON.stringify(res.body))
+                  }
+                  if (body) {
+                    logDebug('Received body from Parichay logout...')
+                    logDebug(JSON.stringify(body))
+                  }
+                  resolve()
+                })
               })
             } catch (err) {
               // tslint:disable-next-line: no-console
@@ -282,7 +287,20 @@ export class CustomKeycloak {
       delete reqObj.session.userId
       delete reqObj.session.keycloakClientId
       delete reqObj.session.keycloakClientSecret
-      reqObj.session.destroy()
+      if (typeof reqObj.session.destroy === 'function') {
+        try {
+          await new Promise<void>((resolve) => {
+            reqObj.session.destroy((err: any) => {
+              if (err) {
+                logError('Error destroying session: ' + err)
+              }
+              resolve()
+            })
+          })
+        } catch (err) {
+          logError('Exception during session destroy: ' + err)
+        }
+      }
     }
 
     logDebug(`${process.pid}: User Deauthenticated`)
