@@ -7583,6 +7583,20 @@ export const API_LIST = {
                 ROLE.VOLUNTEER,
             ],
         },
+        '/proxies/v8/volunteer/ratings/v1/read': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.VOLUNTEER,
+            ],
+        },
+        '/proxies/v8/volunteer/user/v2/insights': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.VOLUNTEER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -8545,5 +8559,7 @@ export const API_LIST = {
             '/proxies/v8/read/content-progres/ngo/:do_id',
             '/proxies/v8/content-progres/ngo/:do_id',
             '/proxies/v8/comment/v1/ngo/addFirst',
+            '/proxies/v8/volunteer/ratings/v1/read',
+            '/proxies/v8/volunteer/user/v2/insights',
         ],
 }
