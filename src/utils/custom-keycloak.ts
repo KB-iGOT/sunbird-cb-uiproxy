@@ -29,13 +29,7 @@ export class CustomKeycloak {
   middleware = (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const keycloak = this.getKeyCloakObject(req)
 
-    // Intercept /logout before keycloak's middleware chain so we can read the
-    // session and inject id_token_hint — required by KC18+ to auto-redirect
-    // without showing the Keycloak logout confirmation page.
-    if (req.url === '/logout') {
-      // tslint:disable-next-line: no-any
-      const cfg = (keycloak as any).config
-
+    if (req.path === '/logout') {
       // Derive post-logout destination: strip first subdomain
       // e.g. portal.dev.karmayogibharat.net -> https://dev.karmayogibharat.net
       let postLogoutRedirect = req.protocol + '://' + req.hostname + '/'
@@ -49,13 +43,58 @@ export class CustomKeycloak {
       logInfo('custom-keycloak middleware: /logout intercepted, postLogoutRedirect=' + postLogoutRedirect)
 
       // Terminate the Keycloak SSO session server-side via backchannel revocation
-      // (POST to KC logout endpoint with refresh_token). This avoids the browser
-      // confirmation page entirely and does not require id_token_hint.
+      // (POST to KC logout endpoint with refresh_token).
       // deauthenticatedNew only clears the local session; this.deauthenticated
       // also revokes the refresh_token at KC, killing the SSO session.
       this.deauthenticated(req)
 
-      logInfo('custom-keycloak middleware: KC backchannel logout called, redirecting to ' + postLogoutRedirect)
+      // Clear Keycloak cookies in the user's browser directly to terminate the SSO session
+      // on the client side without showing Keycloak's logout confirmation page.
+      const cookieNames = [
+        'KEYCLOAK_IDENTITY',
+        'KEYCLOAK_IDENTITY_LEGACY',
+        'KEYCLOAK_SESSION',
+        'KEYCLOAK_SESSION_LEGACY',
+        'KC_RESTART',
+        'rootorg',
+      ]
+      const cookiePaths = [
+        '/auth/',
+        `/auth/realms/${CONSTANTS.KEYCLOAK_REALM}/`,
+        `/auth/realms/${CONSTANTS.KEYCLOAK_REALM}`,
+        '/',
+      ]
+      let domainUrl = ''
+      const host = req.get('host')
+      if (host !== undefined) {
+        if (host.includes('localhost')) {
+          domainUrl = 'localhost'
+        } else {
+          const hostParts = host.split('.')
+          if (hostParts.length > 2) {
+            domainUrl = '.' + hostParts.slice(1).join('.')
+          } else {
+            domainUrl = host
+          }
+        }
+      }
+
+      cookieNames.forEach((cookieName) => {
+        cookiePaths.forEach((cookiePath) => {
+          res.clearCookie(cookieName, { path: cookiePath, secure: true })
+          if (domainUrl) {
+            res.clearCookie(cookieName, { domain: domainUrl, path: cookiePath, secure: true })
+          }
+        })
+      })
+
+      // Also clear local session cookies
+      res.clearCookie('connect.sid', { httpOnly: true, secure: true })
+      if (domainUrl) {
+        res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: false, path: '/', secure: true })
+      }
+
+      logInfo('custom-keycloak middleware: KC cookies cleared, redirecting to ' + postLogoutRedirect)
       res.redirect(postLogoutRedirect)
       return
     }
