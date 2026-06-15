@@ -1604,3 +1604,7 @@ proxiesV8.use('/badge/*',
 proxiesV8.use('/contenthealth/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/volunteer/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
