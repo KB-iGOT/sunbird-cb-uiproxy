@@ -79,12 +79,23 @@ export class CustomKeycloak {
         }
       }
 
+      const clearOptionsList = [
+        { httpOnly: true, secure: true },
+        { httpOnly: false, secure: true },
+        { httpOnly: true, secure: true, sameSite: 'none' as const },
+        { httpOnly: false, secure: true, sameSite: 'none' as const },
+        { httpOnly: true, secure: true, sameSite: 'lax' as const },
+        { httpOnly: false, secure: true, sameSite: 'lax' as const },
+      ]
+
       cookieNames.forEach((cookieName) => {
         cookiePaths.forEach((cookiePath) => {
-          res.clearCookie(cookieName, { path: cookiePath, secure: true })
-          if (domainUrl) {
-            res.clearCookie(cookieName, { domain: domainUrl, path: cookiePath, secure: true })
-          }
+          clearOptionsList.forEach((opts) => {
+            res.clearCookie(cookieName, { ...opts, path: cookiePath })
+            if (domainUrl) {
+              res.clearCookie(cookieName, { ...opts, domain: domainUrl, path: cookiePath })
+            }
+          })
         })
       })
 
