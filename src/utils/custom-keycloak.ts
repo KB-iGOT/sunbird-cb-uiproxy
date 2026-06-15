@@ -46,7 +46,11 @@ export class CustomKeycloak {
       // (POST to KC logout endpoint with refresh_token).
       // deauthenticatedNew only clears the local session; this.deauthenticated
       // also revokes the refresh_token at KC, killing the SSO session.
-      this.deauthenticated(req)
+      try {
+        this.deauthenticated(req)
+      } catch (err) {
+        logError('custom-keycloak middleware: deauthenticated threw error: ' + err)
+      }
 
       // Clear Keycloak cookies in the user's browser directly to terminate the SSO session
       // on the client side without showing Keycloak's logout confirmation page.
@@ -87,25 +91,34 @@ export class CustomKeycloak {
       const kcPath = `/auth/realms/${CONSTANTS.KEYCLOAK_REALM}/`
 
       kcCookies.forEach((cookieName) => {
-        // Clear as host-only (no domain)
+        // Clear as host-only (no domain parameter)
         res.clearCookie(cookieName, { httpOnly: true, path: kcPath, secure: true })
-        // Clear with domain scope
+        // Clear with explicit host domain scope
+        res.clearCookie(cookieName, { domain: req.hostname, httpOnly: true, path: kcPath, secure: true })
+        res.clearCookie(cookieName, { domain: '.' + req.hostname, httpOnly: true, path: kcPath, secure: true })
+        // Clear with parent domain scope
         if (domainUrl) {
           res.clearCookie(cookieName, { domain: domainUrl, httpOnly: true, path: kcPath, secure: true })
         }
       })
 
-      // KC_RESTART is only set as a host-only cookie
+      // KC_RESTART is set as a host-only cookie
       res.clearCookie('KC_RESTART', { httpOnly: true, path: kcPath, secure: true })
+      res.clearCookie('KC_RESTART', { domain: req.hostname, httpOnly: true, path: kcPath, secure: true })
+      res.clearCookie('KC_RESTART', { domain: '.' + req.hostname, httpOnly: true, path: kcPath, secure: true })
 
       // Clear rootorg cookie
       res.clearCookie('rootorg', { path: '/' })
+      res.clearCookie('rootorg', { domain: req.hostname, path: '/' })
+      res.clearCookie('rootorg', { domain: '.' + req.hostname, path: '/' })
       if (domainUrl) {
         res.clearCookie('rootorg', { domain: domainUrl, path: '/' })
       }
 
       // Clear local session cookie (connect.sid)
       res.clearCookie('connect.sid', { httpOnly: true, secure: true, path: '/' })
+      res.clearCookie('connect.sid', { domain: req.hostname, httpOnly: true, secure: true, path: '/' })
+      res.clearCookie('connect.sid', { domain: '.' + req.hostname, httpOnly: true, secure: true, path: '/' })
       if (domainUrl) {
         res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: false, path: '/', secure: true })
       }
@@ -333,11 +346,17 @@ export class CustomKeycloak {
 
     // Clean up session properties if session exists
     if (reqObj.session) {
-      delete reqObj.session.userRoles
-      delete reqObj.session.userId
-      delete reqObj.session.keycloakClientId
-      delete reqObj.session.keycloakClientSecret
-      reqObj.session.destroy()
+      try {
+        delete reqObj.session.userRoles
+        delete reqObj.session.userId
+        delete reqObj.session.keycloakClientId
+        delete reqObj.session.keycloakClientSecret
+        if (typeof reqObj.session.destroy === 'function') {
+          reqObj.session.destroy()
+        }
+      } catch (err) {
+        logError('Error destroying session in deauthenticated: ' + err)
+      }
     }
 
     logDebug(`${process.pid}: User Deauthenticated`)
