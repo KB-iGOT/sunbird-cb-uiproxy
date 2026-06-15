@@ -7562,6 +7562,27 @@ export const API_LIST = {
             ROLE.VOLUNTEER,
           ],
         },
+        '/proxies/v8/read/content-progres/ngo/:do_id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.VOLUNTEER,
+            ],
+        },
+        '/proxies/v8/content-progres/ngo/:do_id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.VOLUNTEER,
+            ],
+        },
+        '/proxies/v8/comment/v1/ngo/addFirst': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.VOLUNTEER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -8521,5 +8542,8 @@ export const API_LIST = {
             '/proxies/v8/org/ngo/v1/read',
             '/proxies/v8/api/user/volunteer/v1/read',
             '/proxies/v8/api/user/volunteer/v1/create',
+            '/proxies/v8/read/content-progres/ngo/:do_id',
+            '/proxies/v8/content-progres/ngo/:do_id',
+            '/proxies/v8/comment/v1/ngo/addFirst',
         ],
 }
