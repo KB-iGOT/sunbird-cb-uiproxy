@@ -29,7 +29,13 @@ export class CustomKeycloak {
   middleware = (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const keycloak = this.getKeyCloakObject(req)
 
-    if (req.path === '/logout') {
+    // Intercept /logout before keycloak's middleware chain so we can read the
+    // session and inject id_token_hint — required by KC18+ to auto-redirect
+    // without showing the Keycloak logout confirmation page.
+    if (req.url === '/logout') {
+      // tslint:disable-next-line: no-any
+      const cfg = (keycloak as any).config
+
       // Derive post-logout destination: strip first subdomain
       // e.g. portal.dev.karmayogibharat.net -> https://dev.karmayogibharat.net
       let postLogoutRedirect = req.protocol + '://' + req.hostname + '/'
@@ -43,93 +49,13 @@ export class CustomKeycloak {
       logInfo('custom-keycloak middleware: /logout intercepted, postLogoutRedirect=' + postLogoutRedirect)
 
       // Terminate the Keycloak SSO session server-side via backchannel revocation
-      // (POST to KC logout endpoint with refresh_token).
+      // (POST to KC logout endpoint with refresh_token). This avoids the browser
+      // confirmation page entirely and does not require id_token_hint.
       // deauthenticatedNew only clears the local session; this.deauthenticated
       // also revokes the refresh_token at KC, killing the SSO session.
-      try {
-        this.deauthenticated(req)
-      } catch (err) {
-        logError('custom-keycloak middleware: deauthenticated threw error: ' + err)
-      }
+      this.deauthenticated(req)
 
-      // Clear Keycloak cookies in the user's browser directly to terminate the SSO session
-      // on the client side without showing Keycloak's logout confirmation page.
-      const cookieNames = [
-        'KEYCLOAK_IDENTITY',
-        'KEYCLOAK_IDENTITY_LEGACY',
-        'KEYCLOAK_SESSION',
-        'KEYCLOAK_SESSION_LEGACY',
-        'KC_RESTART',
-        'rootorg',
-      ]
-      const cookiePaths = [
-        '/auth/',
-        `/auth/realms/${CONSTANTS.KEYCLOAK_REALM}/`,
-      ]
-      let domainUrl = ''
-      const host = req.get('host')
-      if (host !== undefined) {
-        if (host.includes('localhost')) {
-          domainUrl = 'localhost'
-        } else {
-          const hostParts = host.split('.')
-          if (hostParts.length > 2) {
-            domainUrl = '.' + hostParts.slice(1).join('.')
-          } else {
-            domainUrl = host
-          }
-        }
-      }
-
-      // Clear Keycloak cookies across all relevant paths and domains
-      const kcCookies = [
-        'KEYCLOAK_IDENTITY',
-        'KEYCLOAK_IDENTITY_LEGACY',
-        'KEYCLOAK_SESSION',
-        'KEYCLOAK_SESSION_LEGACY',
-        'KC_RESTART',
-      ]
-      const kcPaths = [
-        '/auth/',
-        `/auth/realms/${CONSTANTS.KEYCLOAK_REALM}`,
-        `/auth/realms/${CONSTANTS.KEYCLOAK_REALM}/`,
-      ]
-      const kcDomains = [
-        undefined,
-        req.hostname,
-        '.' + req.hostname,
-      ]
-
-      kcCookies.forEach((cookieName) => {
-        kcPaths.forEach((kcPath) => {
-          kcDomains.forEach((domain) => {
-            const options: any = { httpOnly: true, path: kcPath, secure: true }
-            if (domain) {
-              options.domain = domain
-            }
-            res.clearCookie(cookieName, options)
-          })
-        })
-      })
-
-      // Clear local and tenant cookies on '/' path
-      const localCookies = ['connect.sid', 'rootorg']
-      localCookies.forEach((cookieName) => {
-        const domains = [undefined, req.hostname, '.' + req.hostname, domainUrl]
-        domains.forEach((domain) => {
-          const options: any = { path: '/' }
-          if (cookieName === 'connect.sid') {
-            options.httpOnly = true
-            options.secure = true
-          }
-          if (domain) {
-            options.domain = domain
-          }
-          res.clearCookie(cookieName, options)
-        })
-      })
-
-      logInfo('custom-keycloak middleware: KC cookies cleared, redirecting to ' + postLogoutRedirect)
+      logInfo('custom-keycloak middleware: KC backchannel logout called, redirecting to ' + postLogoutRedirect)
       res.redirect(postLogoutRedirect)
       return
     }
@@ -178,7 +104,7 @@ export class CustomKeycloak {
     try {
       // Log token information safely without circular references
       // tslint:disable: whitespace
-     const tokenInfo = {
+      const tokenInfo = {
         contentSub: reqObj.content?.sub,
         hasContent: !!reqObj.content,
         hasKauth: !!reqObj.kauth,
@@ -186,12 +112,12 @@ export class CustomKeycloak {
       }
 
       // tslint:enable: whitespace
-     logDebug('KC24 test ::', '------', JSON.stringify(tokenInfo))
+      logDebug('KC24 test ::', '------', JSON.stringify(tokenInfo))
 
-     let userId: string
+      let userId: string
 
       // Handle Keycloak 24 format (direct token structure)
-     if (reqObj.content && reqObj.content.sub) {
+      if (reqObj.content && reqObj.content.sub) {
         const userIdParts = reqObj.content.sub.split(':')
         userId = userIdParts[userIdParts.length - 1]
         reqObj.session.userId = userId
@@ -221,7 +147,7 @@ export class CustomKeycloak {
         throw new Error('Unable to extract user ID from token - unsupported token format')
       }
 
-     logDebug('userId ::', userId, '------', new Date().toString())
+      logDebug('userId ::', userId, '------', new Date().toString())
     } catch (err: any) {
       // tslint:disable: whitespace
       const errorMsg = reqObj.content?.sub ||
@@ -352,17 +278,11 @@ export class CustomKeycloak {
 
     // Clean up session properties if session exists
     if (reqObj.session) {
-      try {
-        delete reqObj.session.userRoles
-        delete reqObj.session.userId
-        delete reqObj.session.keycloakClientId
-        delete reqObj.session.keycloakClientSecret
-        if (typeof reqObj.session.destroy === 'function') {
-          reqObj.session.destroy()
-        }
-      } catch (err) {
-        logError('Error destroying session in deauthenticated: ' + err)
-      }
+      delete reqObj.session.userRoles
+      delete reqObj.session.userId
+      delete reqObj.session.keycloakClientId
+      delete reqObj.session.keycloakClientSecret
+      reqObj.session.destroy()
     }
 
     logDebug(`${process.pid}: User Deauthenticated`)
@@ -382,27 +302,27 @@ export class CustomKeycloak {
       { store: sessionConfig.store },
       getKeycloakConfig(url, realm)
     )
-    // Override logoutUrl to use OIDC RP-Initiated Logout spec (Keycloak 18+).
-    // Keycloak 18+ requires post_logout_redirect_uri + client_id instead of redirect_uri.
-    // tslint:disable-next-line: no-any align
-    ;(keycloak as any).logoutUrl = (redirectUrl: string): string => {
-      // tslint:disable-next-line: no-any
-      const cfg = (keycloak as any).config
-      // Derive the root domain by stripping the first subdomain from the host.
-      // e.g. https://portal.dev.karmayogibharat.net/... -> https://dev.karmayogibharat.net
-      let postLogoutRedirect = redirectUrl
-      try {
-        const parsed = new URL(redirectUrl)
-        const hostParts = parsed.hostname.split('.')
-        if (hostParts.length > 2) {
-          postLogoutRedirect = parsed.protocol + '//' + hostParts.slice(1).join('.') + '/'
-        }
-      } catch (_e) { /* keep original redirectUrl if parsing fails */ }
-      return cfg.realmUrl +
-        '/protocol/openid-connect/logout' +
-        '?client_id=' + encodeURIComponent(cfg.clientId) +
-        '&post_logout_redirect_uri=' + encodeURIComponent(postLogoutRedirect)
-    }
+      // Override logoutUrl to use OIDC RP-Initiated Logout spec (Keycloak 18+).
+      // Keycloak 18+ requires post_logout_redirect_uri + client_id instead of redirect_uri.
+      // tslint:disable-next-line: no-any align
+      ; (keycloak as any).logoutUrl = (redirectUrl: string): string => {
+        // tslint:disable-next-line: no-any
+        const cfg = (keycloak as any).config
+        // Derive the root domain by stripping the first subdomain from the host.
+        // e.g. https://portal.dev.karmayogibharat.net/... -> https://dev.karmayogibharat.net
+        let postLogoutRedirect = redirectUrl
+        try {
+          const parsed = new URL(redirectUrl)
+          const hostParts = parsed.hostname.split('.')
+          if (hostParts.length > 2) {
+            postLogoutRedirect = parsed.protocol + '//' + hostParts.slice(1).join('.') + '/'
+          }
+        } catch (_e) { /* keep original redirectUrl if parsing fails */ }
+        return cfg.realmUrl +
+          '/protocol/openid-connect/logout' +
+          '?client_id=' + encodeURIComponent(cfg.clientId) +
+          '&post_logout_redirect_uri=' + encodeURIComponent(postLogoutRedirect)
+      }
     // tslint:disable-next-line: no-any
     keycloak.authenticated = this.authenticated as any
     keycloak.deauthenticated = this.deauthenticatedNew
