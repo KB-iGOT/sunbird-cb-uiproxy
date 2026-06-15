@@ -152,13 +152,13 @@ export class Server {
     )
     // TODO: See what needs to be logged
     this.app.use((req, _, next) => {
-       logDebug('req object with protocol:'  +
+      logDebug('req object with protocol:' +
         req.protocol + ' and hostname: ' + req.hostname
-        + ' and url: ' + req.url  + ' and headers: ' + JSON.stringify(req.headers))
-       logDebug('adding x-forward-proto header with https to request...')
-       req.headers['x-forwarded-proto'] = 'https'
-       logDebug(`Server:ConfigureMiddleWare:: Worker ${process.pid} : ${req.protocol}://${req.hostname}/${req.url}`)
-       next()
+        + ' and url: ' + req.url + ' and headers: ' + JSON.stringify(req.headers))
+      logDebug('adding x-forward-proto header with https to request...')
+      req.headers['x-forwarded-proto'] = 'https'
+      logDebug(`Server:ConfigureMiddleWare:: Worker ${process.pid} : ${req.protocol}://${req.hostname}/${req.url}`)
+      next()
     })
 
     // Using single configured morgan logger
