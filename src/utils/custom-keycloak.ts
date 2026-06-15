@@ -81,47 +81,53 @@ export class CustomKeycloak {
         }
       }
 
-      // Clear Keycloak cookies (path /auth/realms/sunbird/)
+      // Clear Keycloak cookies across all relevant paths and domains
       const kcCookies = [
         'KEYCLOAK_IDENTITY',
         'KEYCLOAK_IDENTITY_LEGACY',
         'KEYCLOAK_SESSION',
         'KEYCLOAK_SESSION_LEGACY',
+        'KC_RESTART',
       ]
-      const kcPath = `/auth/realms/${CONSTANTS.KEYCLOAK_REALM}/`
+      const kcPaths = [
+        '/auth/',
+        `/auth/realms/${CONSTANTS.KEYCLOAK_REALM}`,
+        `/auth/realms/${CONSTANTS.KEYCLOAK_REALM}/`,
+      ]
+      const kcDomains = [
+        undefined,
+        req.hostname,
+        '.' + req.hostname,
+      ]
 
       kcCookies.forEach((cookieName) => {
-        // Clear as host-only (no domain parameter)
-        res.clearCookie(cookieName, { httpOnly: true, path: kcPath, secure: true })
-        // Clear with explicit host domain scope
-        res.clearCookie(cookieName, { domain: req.hostname, httpOnly: true, path: kcPath, secure: true })
-        res.clearCookie(cookieName, { domain: '.' + req.hostname, httpOnly: true, path: kcPath, secure: true })
-        // Clear with parent domain scope
-        if (domainUrl) {
-          res.clearCookie(cookieName, { domain: domainUrl, httpOnly: true, path: kcPath, secure: true })
-        }
+        kcPaths.forEach((kcPath) => {
+          kcDomains.forEach((domain) => {
+            const options: any = { httpOnly: true, path: kcPath, secure: true }
+            if (domain) {
+              options.domain = domain
+            }
+            res.clearCookie(cookieName, options)
+          })
+        })
       })
 
-      // KC_RESTART is set as a host-only cookie
-      res.clearCookie('KC_RESTART', { httpOnly: true, path: kcPath, secure: true })
-      res.clearCookie('KC_RESTART', { domain: req.hostname, httpOnly: true, path: kcPath, secure: true })
-      res.clearCookie('KC_RESTART', { domain: '.' + req.hostname, httpOnly: true, path: kcPath, secure: true })
-
-      // Clear rootorg cookie
-      res.clearCookie('rootorg', { path: '/' })
-      res.clearCookie('rootorg', { domain: req.hostname, path: '/' })
-      res.clearCookie('rootorg', { domain: '.' + req.hostname, path: '/' })
-      if (domainUrl) {
-        res.clearCookie('rootorg', { domain: domainUrl, path: '/' })
-      }
-
-      // Clear local session cookie (connect.sid)
-      res.clearCookie('connect.sid', { httpOnly: true, secure: true, path: '/' })
-      res.clearCookie('connect.sid', { domain: req.hostname, httpOnly: true, secure: true, path: '/' })
-      res.clearCookie('connect.sid', { domain: '.' + req.hostname, httpOnly: true, secure: true, path: '/' })
-      if (domainUrl) {
-        res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: false, path: '/', secure: true })
-      }
+      // Clear local and tenant cookies on '/' path
+      const localCookies = ['connect.sid', 'rootorg']
+      localCookies.forEach((cookieName) => {
+        const domains = [undefined, req.hostname, '.' + req.hostname, domainUrl]
+        domains.forEach((domain) => {
+          const options: any = { path: '/' }
+          if (cookieName === 'connect.sid') {
+            options.httpOnly = true
+            options.secure = true
+          }
+          if (domain) {
+            options.domain = domain
+          }
+          res.clearCookie(cookieName, options)
+        })
+      })
 
       logInfo('custom-keycloak middleware: KC cookies cleared, redirecting to ' + postLogoutRedirect)
       res.redirect(postLogoutRedirect)
