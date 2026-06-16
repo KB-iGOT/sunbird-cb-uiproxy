@@ -7580,6 +7580,29 @@ export const API_LIST = {
                 ROLE.STATE_ADMIN,
             ],
         },
+        '/proxies/v8/learner/course/v4/user/ngo/enrollment/summary': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.VOLUNTEER,
+            ],
+        },
+        '/proxies/v8/learner/course/v4/user/ngo/enrollment/details': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.VOLUNTEER,
+            ],
+        },
+        '/proxies/v8/bp/v2/bpreport/list': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.PROGRAM_COORDINATOR,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7642,7 +7665,7 @@ export const API_LIST = {
             '/proxies/v8/action/content/v3/publish/:do_id',
             '/proxies/v8/action/content/v3/reject/:do_id',
             '/proxies/v8/user/v1/search',
-            `/proxies/v8/user/v1/admin/search`,
+            '/proxies/v8/user/v1/admin/search',
             '/proxies/v8/org/v1/read',
             '/proxies/v8/org/v1/profile/read',
             '/proxies/v8/org/v1/profile/patch',
@@ -8539,5 +8562,8 @@ export const API_LIST = {
             '/proxies/v8/bp/v2/bpreport/status',
             '/proxies/v8/content/v5/dictionary',
             '/proxies/v8/user/v1/role/assign',
+            '/proxies/v8/learner/course/v4/user/ngo/enrollment/summary',
+            '/proxies/v8/learner/course/v4/user/ngo/enrollment/details',
+            '/proxies/v8/bp/v2/bpreport/list'
         ],
 }
