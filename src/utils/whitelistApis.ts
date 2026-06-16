@@ -7636,6 +7636,15 @@ export const API_LIST = {
                 ROLE.VOLUNTEER,
             ],
         },
+        '/proxies/v8/bp/v2/bpreport/list': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.PROGRAM_COORDINATOR,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -8603,5 +8612,6 @@ export const API_LIST = {
             '/proxies/v8/user/v1/role/assign',
             '/proxies/v8/learner/course/v4/user/ngo/enrollment/summary',
             '/proxies/v8/learner/course/v4/user/ngo/enrollment/details',
+            '/proxies/v8/bp/v2/bpreport/list'
         ],
 }
