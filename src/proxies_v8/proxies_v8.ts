@@ -193,6 +193,10 @@ proxiesV8.use('/content/v2/discard',
   proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
+proxiesV8.use('/content/v5/dictionary',
+  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
 proxiesV8.use('/content/v2/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
