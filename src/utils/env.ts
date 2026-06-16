@@ -74,7 +74,7 @@ export const CONSTANTS = {
   LOG_LEVEL_SYNC_ENABLED: env.LOG_LEVEL_SYNC_ENABLED || 'false',
   MULTI_TENANT_KEYCLOAK:
     env.MULTI_TENANT_KEYCLOAK ||
-    'igot,https://portal.karmayogi.nic.in/auth,sunbird',
+    'igot,https://portal.karmayogi.nic.in,sunbird',
   NAVIGATOR_JSON_HOST:
     env.NAVIGATOR_JSON_HOST || 'http://localhost:3007/web-hosted/navigator/json',
   NODE_API_BASE: env.NODE_API_BASE || 'http://localhost:5001',
@@ -184,7 +184,7 @@ export const CONSTANTS = {
   PARICHAY_CLIENT_SECRET: env.PARICHAY_CLIENT_SECRET || 'parichayClientSecret',
   KEYCLOAK_GOOGLE_CLIENT_ID: env.KEYCLOAK_GOOGLE_CLIENT_ID || 'keycloakGoogleClientId',
   KEYCLOAK_GOOGLE_CLIENT_SECRET: env.KEYCLOAK_GOOGLE_CLIENT_SECRET || 'keycloakGoogleClientSecret',
-  PORTAL_AUTH_SERVER_URL: env.PORTAL_AUTH_SERVER_URL || 'https://portal.karmayogi.nic.in/auth',
+  PORTAL_AUTH_SERVER_URL: env.PORTAL_AUTH_SERVER_URL || 'http://localhost:8080',
   PARICHAY_CODE_CHALLENGE: env.PARICHAY_CODE_CHALLENGE || 'parichayCodeChallenge',
   PARICHAY_CODE_VERIFIER: env.PARICHAY_CODE_VERIFIER || 'parichayCodeVerfifier',
   PARICHAY_AUTH_URL: env.PARICHAY_AUTH_URL || 'parichayAuthUrl',

@@ -3,7 +3,7 @@ import expressSession from 'express-session'
 import keycloakConnect from 'keycloak-connect'
 import { getKeycloakConfig } from '../configs/keycloak.config'
 import { CONSTANTS } from './env'
-import { logDebug, logError } from './logger'
+import { logDebug, logError, logInfo } from './logger'
 import { PERMISSION_HELPER } from './permissionHelper'
 import { request } from './request-adapter'
 const async = require('async')
@@ -11,7 +11,7 @@ const async = require('async')
 const composable = require('composable-middleware')
 
 export class CustomKeycloak {
-  private multiTenantKeycloak = new Map<string, keycloakConnect>()
+  private multiTenantKeycloak = new Map<string, InstanceType<typeof keycloakConnect>>()
 
   constructor(sessionConfig: expressSession.SessionOptions) {
     if (CONSTANTS.MULTI_TENANT_KEYCLOAK) {
@@ -28,6 +28,61 @@ export class CustomKeycloak {
 
   middleware = (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const keycloak = this.getKeyCloakObject(req)
+
+    // Intercept /logout before keycloak's middleware chain so we can read the
+    // session and inject id_token_hint — required by KC18+ to auto-redirect
+    // without showing the Keycloak logout confirmation page.
+    if (req.url === '/logout') {
+      // Derive post-logout destination: strip first subdomain
+      // e.g. portal.dev.karmayogibharat.net -> https://dev.karmayogibharat.net
+      let postLogoutRedirect = req.protocol + '://' + req.hostname + '/'
+      try {
+        const hostParts = req.hostname.split('.')
+        if (hostParts.length > 2) {
+          postLogoutRedirect = 'https://' + hostParts.slice(1).join('.') + '/'
+        }
+      } catch (_e) { /* keep default */ }
+
+      logInfo('custom-keycloak middleware: /logout intercepted, postLogoutRedirect=' + postLogoutRedirect)
+
+      // Terminate the Keycloak SSO session server-side via backchannel revocation
+      // (POST to KC logout endpoint with refresh_token). This avoids the browser
+      // confirmation page entirely and does not require id_token_hint.
+      // deauthenticatedNew only clears the local session; this.deauthenticated
+      // also revokes the refresh_token at KC, killing the SSO session.
+      const clearCookies = () => {
+        const host = req.get('host')
+        let domainUrl = ''
+        if (host !== undefined) {
+          if (host.includes('localhost')) {
+            domainUrl = 'localhost'
+          } else {
+            const hostParts = host.split('.')
+            if (hostParts.length > 2) {
+              domainUrl = '.' + hostParts.slice(1).join('.')
+            } else {
+              domainUrl = host
+            }
+          }
+        }
+        res.clearCookie('connect.sid', { httpOnly: true, secure: true, })
+        res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: false, path: '/', secure: true, })
+      }
+
+      this.deauthenticated(req)
+        .then(() => {
+          logInfo('custom-keycloak middleware: KC backchannel logout completed, redirecting to ' + postLogoutRedirect)
+          clearCookies()
+          res.redirect(postLogoutRedirect)
+        })
+        .catch((err) => {
+          logError('custom-keycloak middleware: deauthenticated failed: ' + err)
+          clearCookies()
+          res.redirect(postLogoutRedirect)
+        })
+      return
+    }
+
     const middleware = composable(
       keycloak.middleware({
         admin: '/callback',
@@ -37,7 +92,7 @@ export class CustomKeycloak {
     middleware(req, res, next)
   }
 
-  getKeyCloakObject(req: express.Request): keycloakConnect {
+  getKeyCloakObject(req: express.Request): InstanceType<typeof keycloakConnect> {
     const rootOrg =
       (req.headers ? req.header('rootOrg') : '') || (req.cookies ? req.cookies.rootorg : '')
     let domain = ''
@@ -51,19 +106,98 @@ export class CustomKeycloak {
 
     return (this.multiTenantKeycloak.get(req.hostname) ||
       this.multiTenantKeycloak.get(domain) ||
-      this.multiTenantKeycloak.get('common')) as keycloakConnect
+      this.multiTenantKeycloak.get('common'))
   }
 
   // tslint:disable-next-line: no-any
   authenticated = (reqObj: any, next: any) => {
     logDebug('Step 3: authenticated function', '------', new Date().toString())
     reqObj.session.authenticated = true
+
+    // Persist id_token at login so it remains available at logout time.
+    // Keycloak 24+ no longer returns id_token in token-refresh responses,
+    // so we cannot rely on session['keycloak-token'] containing it later.
     try {
-      const userId = reqObj.kauth.grant.access_token.content.sub.split(':')
-      reqObj.session.userId = userId[userId.length - 1]
+      const idTokenRaw: string =
+        (reqObj.kauth &&
+          reqObj.kauth.grant &&
+          reqObj.kauth.grant.id_token &&
+          reqObj.kauth.grant.id_token.token) ||
+        ''
+      if (idTokenRaw) {
+        reqObj.session.idToken = idTokenRaw
+      }
+    } catch (_e) { /* ignore */ }
+
+    try {
+      // Log token information safely without circular references
+      // tslint:disable: whitespace
+      const tokenInfo = {
+        contentSub: reqObj.content?.sub,
+        hasContent: !!reqObj.content,
+        hasKauth: !!reqObj.kauth,
+        kauthSub: reqObj.kauth?.grant?.access_token?.content?.sub,
+      }
+
+      // tslint:enable: whitespace
+      logDebug('KC24 test ::', '------', JSON.stringify(tokenInfo))
+
+      let userId: string
+
+      // Handle Keycloak 24 format (direct token structure)
+      if (reqObj.content && reqObj.content.sub) {
+        const userIdParts = reqObj.content.sub.split(':')
+        userId = userIdParts[userIdParts.length - 1]
+        reqObj.session.userId = userId
+        logDebug(
+          'KC24 format - userId extracted from reqObj.content.sub:',
+          userId,
+          '------',
+          new Date().toString()
+        )
+      } else if (
+        reqObj.kauth &&
+        reqObj.kauth.grant &&
+        reqObj.kauth.grant.access_token &&
+        reqObj.kauth.grant.access_token.content &&
+        reqObj.kauth.grant.access_token.content.sub
+      ) {
+        const userIdParts = reqObj.kauth.grant.access_token.content.sub.split(':')
+        userId = userIdParts[userIdParts.length - 1]
+        reqObj.session.userId = userId
+        logDebug(
+          'KC7 format - userId extracted from reqObj.kauth.grant.access_token.content.sub:',
+          userId,
+          '------',
+          new Date().toString()
+        )
+      } else {
+        throw new Error('Unable to extract user ID from token - unsupported token format')
+      }
+
       logDebug('userId ::', userId, '------', new Date().toString())
-    } catch (err) {
-      logError('userId conversation error' + reqObj.kauth.grant.access_token.content.sub, '------', new Date().toString())
+    } catch (err: any) {
+      // tslint:disable: whitespace
+      const errorMsg = reqObj.content?.sub ||
+        reqObj.kauth?.grant?.access_token?.content?.sub ||
+        'unknown token format'
+      // tslint:enable: whitespace
+      logError(
+        'userId conversation error: ' + errorMsg + ' - ' + (err.message || err),
+        '------',
+        new Date().toString()
+      )
+      // Set a fallback userId to prevent undefined issues
+      // tslint:disable-next-line: whitespace
+      if (reqObj.content?.sub) {
+        try {
+          const userIdParts = reqObj.content.sub.split(':')
+          reqObj.session.userId = userIdParts[userIdParts.length - 1]
+          logDebug('Fallback userId set from content.sub:', reqObj.session.userId, '------', new Date().toString())
+        } catch (fallbackErr) {
+          logError('Failed to set fallback userId', '------', new Date().toString())
+        }
+      }
     }
     const postLoginRequest = []
     // tslint:disable-next-line: no-any
@@ -72,7 +206,7 @@ export class CustomKeycloak {
     })
 
     // tslint:disable-next-line: no-any
-    async.series(postLoginRequest, (err: any) =>  {
+    async.series(postLoginRequest, (err: any) => {
       if (err) {
         logError('error loggin in user', '------', new Date().toString())
         next(err, null)
@@ -85,89 +219,142 @@ export class CustomKeycloak {
 
   // tslint:disable-next-line: no-any
   deauthenticatedNew = (reqObj: any) => {
-    delete reqObj.session.userRoles
-    delete reqObj.session.userId
-    delete reqObj.session.keycloakClientId
-    delete reqObj.session.keycloakClientSecret
     if (reqObj.session) {
+      delete reqObj.session.userRoles
+      delete reqObj.session.userId
+      delete reqObj.session.keycloakClientId
+      delete reqObj.session.keycloakClientSecret
       reqObj.session.destroy()
     }
     logDebug(`${process.pid}: User Deauthenticated New`)
   }
 
   // tslint:disable-next-line: no-any
-  deauthenticated = (reqObj: any) => {
+  deauthenticated = async (reqObj: any) => {
     const keyCloakPropertyName = 'keycloak-token'
+
+    logInfo(`custom-keycloak deauthenticated: Method started for PID ${process.pid}`)
+
+    // Check if session exists before attempting to access its properties
+    if (!reqObj.session) {
+      logError(`${process.pid}: User Deauthenticated - No session found`)
+      return
+    }
+
     if (reqObj.session.hasOwnProperty(keyCloakPropertyName)) {
       const keycloakToken = reqObj.session[keyCloakPropertyName]
       if (keycloakToken) {
-        const tokenObject = JSON.parse(keycloakToken)
-        const refreshToken = tokenObject.refresh_token
+        let tokenObject: any
+        try {
+          tokenObject = JSON.parse(keycloakToken)
+        } catch (parseErr) {
+          logError('custom-keycloak deauthenticated: Failed to parse keycloak-token: ' + parseErr)
+        }
+
+        const refreshToken = tokenObject ? tokenObject.refresh_token : null
         if (refreshToken) {
-          const host = reqObj.get('host')
-          const urlValue = `https://${host}` + '/auth/realms/' + CONSTANTS.KEYCLOAK_REALM + '/protocol/openid-connect/logout'
+
+          const urlValue = `${CONSTANTS.PORTAL_AUTH_SERVER_URL}/realms/${CONSTANTS.KEYCLOAK_REALM}/protocol/openid-connect/logout`
           const formData: Record<string, string> = {
             client_id: 'portal',
             refresh_token: refreshToken,
           }
 
-          if (reqObj.session.hasOwnProperty('keycloakClientId') && (reqObj.session.keycloakClientId !== '')) {
+          if (reqObj.session.hasOwnProperty('keycloakClientId') && reqObj.session.keycloakClientId !== '') {
             formData.client_id = reqObj.session.keycloakClientId
             formData.client_secret = reqObj.session.keycloakClientSecret
           }
+
+          logInfo(
+            `custom-keycloak deauthenticated: Calling Keycloak backchannel logout URL: ${urlValue} ` +
+            `with client_id: ${formData.client_id}`
+          )
           logDebug('formData used in logout: ' + JSON.stringify(formData))
+
           try {
+            await new Promise<void>((resolve, reject) => {
               request.post({
-                  form: formData,
-                  url: urlValue,
+                form: formData,
+                url: urlValue,
+              }, (err: any, res: any, body: any) => {
+                if (err) {
+                  logError(
+                    'custom-keycloak deauthenticated: Keycloak backchannel logout request failed with error: ' +
+                    JSON.stringify(err)
+                  )
+                  reject(err)
+                } else {
+                  const statusCode = res ? res.statusCode : 'unknown'
+                  logInfo(`custom-keycloak deauthenticated: Keycloak backchannel logout responded with status code: ${statusCode}`)
+                  logDebug('Keycloak backchannel logout body: ' + JSON.stringify(body))
+                  resolve()
+                }
               })
+            })
           } catch (err) {
-              // tslint:disable-next-line: no-console
-              console.log('Failed to call keycloak logout API ', err, '------', new Date().toString())
+            logError('custom-keycloak deauthenticated: Caught exception during Keycloak logout request: ' + err)
           }
 
           if (reqObj.session.parichayToken) {
-            logDebug('Parichay login found... trying to logout from Parichay...')
+            logInfo('custom-keycloak deauthenticated: Parichay login found... trying to logout from Parichay...')
             try {
-              request.get({
+              await new Promise<void>((resolve) => {
+                request.get({
                   headers: {
                     Authorization: reqObj.session.parichayToken.access_token,
                   },
                   url: CONSTANTS.PARICHAY_REVOKE_URL,
-              }, (err: any, res: any, body: any) => { // tslint:disable-line: no-any
-                if (err) {
-                  logError('Received error when calling Parichay logout... ')
-                  logError(JSON.stringify(err))
-                }
-                if (res) {
-                  logDebug('Received response from Parichay logout... ')
-                  logDebug(JSON.stringify(res.body))
-                }
-                if (body) {
-                  logDebug('Received body from Parichay logout...')
-                  logDebug(JSON.stringify(body))
-                }
+                }, (err: any, res: any, body: any) => {
+                  if (err) {
+                    logError('custom-keycloak deauthenticated: Received error when calling Parichay logout: ' + JSON.stringify(err))
+                  } else {
+                    const statusCode = res ? res.statusCode : 'unknown'
+                    logInfo(`custom-keycloak deauthenticated: Parichay logout completed with status code: ${statusCode}`)
+                    logDebug('Parichay logout body: ' + JSON.stringify(body))
+                  }
+                  resolve()
+                })
               })
             } catch (err) {
-                // tslint:disable-next-line: no-console
-                console.log('Failed to call parichay revoke API ', err, '------', new Date().toString())
+              logError('custom-keycloak deauthenticated: Failed to call parichay revoke API: ' + err)
             }
           }
         } else {
-          logError('Not able to retrieve refresh_token value from Session. Logout process failed.')
+          logError('custom-keycloak deauthenticated: Not able to retrieve refresh_token value from Session. Logout process failed.')
         }
       } else {
-        logError('Not able to retrieve keycloak-token value from Session. Logout process failed.')
+        logError('custom-keycloak deauthenticated: Not able to retrieve keycloak-token value from Session. Logout process failed.')
       }
     } else {
-      logError('Session does not have property with name: ' + keyCloakPropertyName)
+      logError('custom-keycloak deauthenticated: Session does not have property with name: ' + keyCloakPropertyName)
     }
-    delete reqObj.session.userRoles
-    delete reqObj.session.userId
-    delete reqObj.session.keycloakClientId
-    delete reqObj.session.keycloakClientSecret
-    reqObj.session.destroy()
-    logDebug(`${process.pid}: User Deauthenticated`)
+
+    // Clean up session properties if session exists
+    if (reqObj.session) {
+      logInfo('custom-keycloak deauthenticated: Cleaning session and starting destroy')
+      delete reqObj.session.userRoles
+      delete reqObj.session.userId
+      delete reqObj.session.keycloakClientId
+      delete reqObj.session.keycloakClientSecret
+      if (typeof reqObj.session.destroy === 'function') {
+        try {
+          await new Promise<void>((resolve) => {
+            reqObj.session.destroy((err: any) => {
+              if (err) {
+                logError('custom-keycloak deauthenticated: Error destroying session: ' + err)
+              } else {
+                logInfo('custom-keycloak deauthenticated: Express session successfully destroyed in store')
+              }
+              resolve()
+            })
+          })
+        } catch (err) {
+          logError('custom-keycloak deauthenticated: Exception during session destroy: ' + err)
+        }
+      }
+    }
+
+    logInfo(`custom-keycloak deauthenticated: Method completed for PID ${process.pid}`)
   }
 
   protect = (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -179,12 +366,34 @@ export class CustomKeycloak {
     sessionConfig: expressSession.SessionOptions,
     url?: string,
     realm?: string
-  ): keycloakConnect {
+  ): InstanceType<typeof keycloakConnect> {
     const keycloak = new keycloakConnect(
       { store: sessionConfig.store },
       getKeycloakConfig(url, realm)
     )
-    keycloak.authenticated = this.authenticated
+      // Override logoutUrl to use OIDC RP-Initiated Logout spec (Keycloak 18+).
+      // Keycloak 18+ requires post_logout_redirect_uri + client_id instead of redirect_uri.
+      // tslint:disable-next-line: no-any align
+      ; (keycloak as any).logoutUrl = (redirectUrl: string): string => {
+        // tslint:disable-next-line: no-any
+        const cfg = (keycloak as any).config
+        // Derive the root domain by stripping the first subdomain from the host.
+        // e.g. https://portal.dev.karmayogibharat.net/... -> https://dev.karmayogibharat.net
+        let postLogoutRedirect = redirectUrl
+        try {
+          const parsed = new URL(redirectUrl)
+          const hostParts = parsed.hostname.split('.')
+          if (hostParts.length > 2) {
+            postLogoutRedirect = parsed.protocol + '//' + hostParts.slice(1).join('.') + '/'
+          }
+        } catch (_e) { /* keep original redirectUrl if parsing fails */ }
+        return cfg.realmUrl +
+          '/protocol/openid-connect/logout' +
+          '?client_id=' + encodeURIComponent(cfg.clientId) +
+          '&post_logout_redirect_uri=' + encodeURIComponent(postLogoutRedirect)
+      }
+    // tslint:disable-next-line: no-any
+    keycloak.authenticated = this.authenticated as any
     keycloak.deauthenticated = this.deauthenticatedNew
     return keycloak
   }

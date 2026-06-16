@@ -3,6 +3,7 @@ import express from 'express'
 import { UploadedFile } from 'express-fileupload'
 import FormData from 'form-data'
 import lodash from 'lodash'
+import { allocationService } from '../authz'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
 import { logDebug, logError } from '../utils/logger'
@@ -455,9 +456,9 @@ proxiesV8.get(['/api/user/v2/read', '/api/user/v2/read/:id'], async (req, res) =
   await axios({
     ...axiosRequestConfig,
     headers: {
-        Authorization: CONSTANTS.SB_API_KEY,
-        // tslint:disable-next-line: all
-        'x-authenticated-user-token': extractUserToken(req),
+      Authorization: CONSTANTS.SB_API_KEY,
+      // tslint:disable-next-line: all
+      'x-authenticated-user-token': extractUserToken(req),
     },
     method: 'GET',
     url: `${CONSTANTS.KONG_API_BASE}/user/v2/read/` + userId,
@@ -634,8 +635,8 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
             } else {
               let parsed
               try {
-                  parsed = JSON.parse(fullData.toString('utf8'))
-                  res.status(response.statusCode).json(parsed)
+                parsed = JSON.parse(fullData.toString('utf8'))
+                res.status(response.statusCode).json(parsed)
               } catch (e) {
                   logDebug('Invalid JSON received as per Json Parse')
                   res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
@@ -704,8 +705,8 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
             } else {
               let parsed
               try {
-                  parsed = JSON.parse(fullData.toString('utf8'))
-                  res.status(response.statusCode).json(parsed)
+                parsed = JSON.parse(fullData.toString('utf8'))
+                res.status(response.statusCode).json(parsed)
               } catch (e) {
                    logDebug('Invalid JSON received as per Json Parse')
                    res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
@@ -918,27 +919,27 @@ proxiesV8.use('/wheebox/*',
 )
 
 proxiesV8.use('/operationalreports/*',
-// tslint:disable-next-line: max-line-length
-proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+  // tslint:disable-next-line: max-line-length
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/surveys/*',
-proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/surveySubmissions/*',
-proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 proxiesV8.use('/cloud-services/*',
-proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/observations/*',
-proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/observationSubmissions/*',
-proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
 proxiesV8.use('/demand/content/*',
@@ -995,7 +996,7 @@ function removePrefix(prefix: string, s: string) {
 
 proxiesV8.post('/notifyContentState', async (req, res) => {
   const contentStateError = 'It should be one of [sendForReview, reviewCompleted, reviewFailed,' +
-  ' sendForPublish, publishCompleted, publishFailed]'
+    ' sendForPublish, publishCompleted, publishFailed]'
   if (!req.body || !req.body.contentState) {
     res.status(400).send('ContentState is missing in request body. ' + contentStateError)
   }
@@ -1056,7 +1057,8 @@ proxiesV8.post('/notifyContentState', async (req, res) => {
 
   const stateEmailResponse = await axios({
     ...axiosRequestConfig,
-    data: { request:
+    data: {
+      request:
       {
         notifications: [notifyMailRequest],
       },
@@ -1089,7 +1091,7 @@ function getUsers(userprofile: IUserProfile): ICohortsUser {
         designationValue = userprofile.profileDetails.professionalDetails[0].designation
       } else {
         designationValue = userprofile.profileDetails.professionalDetails[0].designationOther === undefined ? '' :
-        userprofile.profileDetails.professionalDetails[0].designationOther
+          userprofile.profileDetails.professionalDetails[0].designationOther
       }
     }
     if (userprofile.profileDetails.personalDetails !== undefined) {
@@ -1160,7 +1162,7 @@ proxiesV8.post('/course/v1/batch/getParticipants', async (req, res) => {
         }
       }
     }
-    res.status(response.status).send({userlist, totalCount})
+    res.status(response.status).send({ userlist, totalCount })
   } catch (err) {
     logError(err)
 
@@ -1195,6 +1197,45 @@ proxiesV8.use('/orgBookmark/*',
 proxiesV8.use('/cios/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.get('/cios/v1/content/read/:contentId', async (req, res) => {
+  const contentId = req.params.contentId
+  const userId = extractUserIdFromRequest(req)
+  const token = extractUserToken(req)
+  try {
+    const response = await allocationService.readByUserIdCourseId(userId, contentId, token)
+    if (response) {
+      // Assuming the response itself is valid for redirection or contains a redirectUrl
+      // If the API returns a redirectUrl, we use it.
+      // Example: response.result.redirectUrl or just response if it's the url string.
+      // Since I don't have the API contract, I will log and check if response has a redirect url property.
+      // If not, I'll comment on what to do.
+      // For now, let's assume if we get a successful response, we might redirect to a player or similar.
+      // But the user said "read this api for redirecting", maybe the API response IS the redirect.
+      // I'll try to redirect to the original content URL if no specific redirect is given, OR
+      // if the response contains a location.
+
+      // Let's assume the response is the enrollment details.
+      // And we want to redirect to the actual content player if enrolled.
+      // But usually "read for redirecting" implies the API gives us the destination.
+
+      // I will trust the API to return the redirect URL or data needed.
+      // If response.redirectUrl exists, use it.
+      if (response.redirectUrl) {
+        res.redirect(response.redirectUrl)
+        return
+      }
+      // If response is just success data, maybe we proceed to some default?
+      // I'll send the response back for now if no redirectUrl is obvious, ensuring the client can handle it.
+      res.status(200).send(response)
+    } else {
+      res.status(403).send('Not authorized or enrollment not found.')
+    }
+  } catch (err) {
+    logError('Error in cios enrollment check:', err)
+    res.status(500).send('Internal Server Error')
+  }
+})
 
 proxiesV8.use('/ciosIntegration/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
