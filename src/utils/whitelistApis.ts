@@ -8570,8 +8570,6 @@ export const API_LIST = {
             '/proxies/v8/contenthealth/v1/report/:id',
             '/proxies/v8/contenthealth/v1/summary',
             '/proxies/v8/ai/cbp/v1/mdo/approval-requests/publish/retry',
-            '/proxies/v8/api/user/volunteer/v1/read',
-            '/proxies/v8/api/user/volunteer/v1/create',
             '/proxies/v8/read/content-progres/ngo/:do_id',
             '/proxies/v8/content-progres/ngo/:do_id',
             '/proxies/v8/comment/v1/ngo/addFirst',
