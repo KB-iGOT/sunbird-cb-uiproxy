@@ -107,7 +107,7 @@ export class Server {
       if (rootOrg && req.hostname.toLowerCase().includes('localhost')) {
         res.cookie('rootorg', rootOrg)
       }
-      Object.keys(req.cookies).forEach(cookieName => {
+      Object.keys(req.cookies).forEach((cookieName) => {
         res.cookie(cookieName, req.cookies[cookieName], { httpOnly: false })
       })
       next()
