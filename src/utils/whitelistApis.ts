@@ -7555,6 +7555,14 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
             ],
         },
+        '/proxies/v8/content/v5/dictionary': {
+           checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -8511,5 +8519,6 @@ export const API_LIST = {
             '/proxies/v8/contenthealth/v1/report/:id',
             '/proxies/v8/contenthealth/v1/summary',
             '/proxies/v8/ai/cbp/v1/mdo/approval-requests/publish/retry',
+            '/proxies/v8/content/v5/dictionary',
         ],
 }
