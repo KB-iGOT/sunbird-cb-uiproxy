@@ -7645,6 +7645,13 @@ export const API_LIST = {
                 ROLE.PROGRAM_COORDINATOR,
             ],
         },
+        '/proxies/v8/learner/course/v4/user/ngo/enrollment/list': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.VOLUNTEER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -8612,6 +8619,7 @@ export const API_LIST = {
             '/proxies/v8/user/v1/role/assign',
             '/proxies/v8/learner/course/v4/user/ngo/enrollment/summary',
             '/proxies/v8/learner/course/v4/user/ngo/enrollment/details',
-            '/proxies/v8/bp/v2/bpreport/list'
+            '/proxies/v8/bp/v2/bpreport/list',
+            '/proxies/v8/learner/course/v4/user/ngo/enrollment/list',
         ],
 }
