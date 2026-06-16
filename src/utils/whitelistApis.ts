@@ -7571,6 +7571,8 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.PROGRAM_COORDINATOR,
+            ],
+        },
         '/proxies/v8/content/v5/dictionary': {
            checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
