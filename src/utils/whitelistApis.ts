@@ -7622,6 +7622,20 @@ export const API_LIST = {
                 ROLE.STATE_ADMIN,
             ],
         },
+        '/proxies/v8/learner/course/v4/user/ngo/enrollment/summary': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.VOLUNTEER,
+            ],
+        },
+        '/proxies/v8/learner/course/v4/user/ngo/enrollment/details': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -8587,5 +8601,7 @@ export const API_LIST = {
             '/proxies/v8/user/ngo/profile/v1/extended/all',
             '/proxies/v8/user/ngo/profile/v1/getAdditionalFields',
             '/proxies/v8/user/v1/role/assign',
+            '/proxies/v8/learner/course/v4/user/ngo/enrollment/summary',
+            '/proxies/v8/learner/course/v4/user/ngo/enrollment/details',
         ],
 }
