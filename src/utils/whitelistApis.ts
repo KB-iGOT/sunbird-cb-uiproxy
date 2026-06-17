@@ -7574,8 +7574,10 @@ export const API_LIST = {
         '/proxies/v8/volunteer/user/v2/insights': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
-            ROLE_CHECK: [
-
+          ROLE_CHECK: [
+            ROLE.PUBLIC,
+          ],
+        },
         '/proxies/v8/bp/v2/generate/report': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -7684,6 +7686,27 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.VOLUNTEER,
             ],
+        },
+        '/proxies/v8/formsConfig/v1/create': {
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+            ROLE.SPV_ADMIN,
+          ],
+        },
+        '/proxies/v8/formsConfig/v1/read': {
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+            ROLE.PUBLIC
+          ],
+        },
+        '/proxies/v8/formsConfig/v1/update': {
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+            ROLE.SPV_ADMIN,
+          ],
         },
     },
     URL_PATTERN:
@@ -8659,5 +8682,8 @@ export const API_LIST = {
             '/proxies/v8/learner/course/v4/user/ngo/enrollment/details',
             '/proxies/v8/bp/v2/bpreport/list',
             '/proxies/v8/learner/course/v4/user/ngo/enrollment/list',
+            '/proxies/v8/formsConfig/v1/create',
+            '/proxies/v8/formsConfig/v1/read',
+            '/proxies/v8/formsConfig/v1/update',
         ],
 }
