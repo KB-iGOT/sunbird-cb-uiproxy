@@ -1653,3 +1653,7 @@ proxiesV8.use('/contenthealth/*',
 proxiesV8.use('/volunteer/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/formsConfig/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
