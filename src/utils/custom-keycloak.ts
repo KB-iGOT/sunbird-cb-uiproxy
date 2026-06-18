@@ -32,16 +32,36 @@ export class CustomKeycloak {
     // Intercept /logout before keycloak's middleware chain so we can read the
     // session and inject id_token_hint — required by KC18+ to auto-redirect
     // without showing the Keycloak logout confirmation page.
-    if (req.url === '/logout') {
-      // Derive post-logout destination: strip first subdomain
+    if (req.path === '/logout') {
+      // Derive post-logout destination.
+      // For 'portal.*' subdomains: strip first subdomain to reach the parent domain.
       // e.g. portal.dev.karmayogibharat.net -> https://dev.karmayogibharat.net
+      // For all other subdomains (e.g. 'spv.*'): redirect back to the same host.
+      // e.g. spv.dev.karmayogibharat.net -> https://spv.dev.karmayogibharat.net
       let postLogoutRedirect = req.protocol + '://' + req.hostname + '/'
       try {
         const hostParts = req.hostname.split('.')
-        if (hostParts.length > 2) {
+        if (hostParts.length > 2 && hostParts[0].toLowerCase() === 'portal') {
           postLogoutRedirect = 'https://' + hostParts.slice(1).join('.') + '/'
         }
       } catch (_e) { /* keep default */ }
+
+      // Honour a redirect_uri query param (KC7 clients pass this) when it is safe
+      // (same base domain), so SPV can return to a specific path after logout.
+      const rawRedirectUri = req.query.redirect_uri
+      if (rawRedirectUri && typeof rawRedirectUri === 'string') {
+        try {
+          const redirectParsed = new URL(rawRedirectUri)
+          const hostParts = req.hostname.split('.')
+          const baseDomain = hostParts.length > 1 ? hostParts.slice(-2).join('.') : req.hostname
+          if (
+            redirectParsed.hostname === req.hostname ||
+            redirectParsed.hostname.endsWith('.' + baseDomain)
+          ) {
+            postLogoutRedirect = rawRedirectUri
+          }
+        } catch (_e) { /* ignore invalid redirect_uri */ }
+      }
 
       logInfo('custom-keycloak middleware: /logout intercepted, postLogoutRedirect=' + postLogoutRedirect)
 
@@ -372,13 +392,14 @@ export class CustomKeycloak {
       ; (keycloak as any).logoutUrl = (redirectUrl: string): string => {
         // tslint:disable-next-line: no-any
         const cfg = (keycloak as any).config
-        // Derive the root domain by stripping the first subdomain from the host.
+        // For 'portal.*' subdomains: strip first subdomain to reach the parent domain.
         // e.g. https://portal.dev.karmayogibharat.net/... -> https://dev.karmayogibharat.net
+        // For all other subdomains (e.g. 'spv.*'): keep the original redirectUrl.
         let postLogoutRedirect = redirectUrl
         try {
           const parsed = new URL(redirectUrl)
           const hostParts = parsed.hostname.split('.')
-          if (hostParts.length > 2) {
+          if (hostParts.length > 2 && hostParts[0].toLowerCase() === 'portal') {
             postLogoutRedirect = parsed.protocol + '//' + hostParts.slice(1).join('.') + '/'
           }
         } catch (_e) { /* keep original redirectUrl if parsing fails */ }
