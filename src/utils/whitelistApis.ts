@@ -7576,7 +7576,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.VOLUNTEER,
-            ]
+            ],
         },
         '/proxies/v8/bp/v2/generate/report': {
             checksNeeded: [CHECK.ROLE],
