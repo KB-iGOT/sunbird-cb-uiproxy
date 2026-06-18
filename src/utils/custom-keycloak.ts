@@ -33,30 +33,23 @@ export class CustomKeycloak {
     // session and inject id_token_hint — required by KC18+ to auto-redirect
     // without showing the Keycloak logout confirmation page.
     if (req.url === '/logout') {
-      // Preserve the incoming host so channel-specific domains (mdo/cbp/spv)
-      // are redirected back to the same host after logout.
-      const redirectHost = req.get('host') || req.hostname
-      const postLogoutRedirect = 'https://' + redirectHost + '/'
+      // Derive post-logout destination: strip first subdomain
+      // e.g. portal.dev.karmayogibharat.net -> https://dev.karmayogibharat.net
+      let postLogoutRedirect = req.protocol + '://' + req.hostname + '/'
+      try {
+        const hostParts = req.hostname.split('.')
+        if (hostParts.length > 2) {
+          postLogoutRedirect = 'https://' + hostParts.slice(1).join('.') + '/'
+        }
+      } catch (_e) { /* keep default */ }
 
       logInfo('custom-keycloak middleware: /logout intercepted, postLogoutRedirect=' + postLogoutRedirect)
 
-      // Build KC front-channel logout URL (OIDC RP-Initiated Logout).
-      // After backchannel token revocation we must send the browser through
-      // Keycloak's logout endpoint so KC clears its own browser session/cookies.
-      // Without this the browser still holds a valid KC session, causing the app
-      // to detect no local session and trigger /logout again — an infinite loop.
-      const kcCfg = (keycloak as any).config
-      const kcFrontChannelLogoutUrl = kcCfg.realmUrl +
-        '/protocol/openid-connect/logout' +
-        '?client_id=' + encodeURIComponent(kcCfg.clientId) +
-        '&post_logout_redirect_uri=' + encodeURIComponent(postLogoutRedirect)
-
-      // Check upfront whether the session has a live KC token.
-      // If there is no keycloak-token the browser has no active KC session to
-      // clear, so routing through KC front-channel logout would just cause KC
-      // to redirect back immediately, restarting the loop.
-      const hasKcSession = req.session && req.session.hasOwnProperty('keycloak-token')
-
+      // Terminate the Keycloak SSO session server-side via backchannel revocation
+      // (POST to KC logout endpoint with refresh_token). This avoids the browser
+      // confirmation page entirely and does not require id_token_hint.
+      // deauthenticatedNew only clears the local session; this.deauthenticated
+      // also revokes the refresh_token at KC, killing the SSO session.
       const clearCookies = () => {
         const host = req.get('host')
         let domainUrl = ''
@@ -78,20 +71,9 @@ export class CustomKeycloak {
 
       this.deauthenticated(req)
         .then(() => {
+          logInfo('custom-keycloak middleware: KC backchannel logout completed, redirecting to ' + postLogoutRedirect)
           clearCookies()
-          if (hasKcSession) {
-            // Active KC session existed — route through KC front-channel so
-            // KC clears its own browser cookies before returning to the app.
-            logInfo('custom-keycloak middleware: KC backchannel logout completed, ' +
-              'redirecting through KC front-channel to ' + postLogoutRedirect)
-            res.redirect(kcFrontChannelLogoutUrl)
-          } else {
-            // No KC session token in store — redirect straight to the app to
-            // avoid an empty KC logout round-trip that would restart the loop.
-            logInfo('custom-keycloak middleware: no KC session found, ' +
-              'redirecting directly to ' + postLogoutRedirect)
-            res.redirect(postLogoutRedirect)
-          }
+          res.redirect(postLogoutRedirect)
         })
         .catch((err) => {
           logError('custom-keycloak middleware: deauthenticated failed: ' + err)
@@ -136,12 +118,7 @@ export class CustomKeycloak {
     // Keycloak 24+ no longer returns id_token in token-refresh responses,
     // so we cannot rely on session['keycloak-token'] containing it later.
     try {
-      const idTokenRaw: string =
-        (reqObj.kauth &&
-          reqObj.kauth.grant &&
-          reqObj.kauth.grant.id_token &&
-          reqObj.kauth.grant.id_token.token) ||
-        ''
+      const idTokenRaw: string = reqObj.kauth?.grant?.id_token?.token || ''
       if (idTokenRaw) {
         reqObj.session.idToken = idTokenRaw
       }
@@ -395,12 +372,15 @@ export class CustomKeycloak {
       ; (keycloak as any).logoutUrl = (redirectUrl: string): string => {
         // tslint:disable-next-line: no-any
         const cfg = (keycloak as any).config
-        // Preserve the exact host from redirectUrl to avoid cross-channel fallback
-        // (e.g. cbp.qa... should not be rewritten to qa...).
+        // Derive the root domain by stripping the first subdomain from the host.
+        // e.g. https://portal.dev.karmayogibharat.net/... -> https://dev.karmayogibharat.net
         let postLogoutRedirect = redirectUrl
         try {
           const parsed = new URL(redirectUrl)
-          postLogoutRedirect = parsed.protocol + '//' + parsed.host + '/'
+          const hostParts = parsed.hostname.split('.')
+          if (hostParts.length > 2) {
+            postLogoutRedirect = parsed.protocol + '//' + hostParts.slice(1).join('.') + '/'
+          }
         } catch (_e) { /* keep original redirectUrl if parsing fails */ }
         return cfg.realmUrl +
           '/protocol/openid-connect/logout' +
