@@ -45,21 +45,31 @@ export class CustomKeycloak {
       // Derive the final destination the browser lands on after KC clears its SSO session.
       // Always use https:// — req.protocol is 'http' inside K8s pods (TLS terminated at ingress).
       // Keycloak rejects http:// post_logout_redirect_uri values that only have https:// registered.
-      // portal.*  -> strip first subdomain  e.g. portal.dev.x.net -> https://dev.x.net/
-      // all other -> root '/' on same host (registered in KC; SSO loop is not a risk here
-      //              because KC front-channel logout clears the SSO browser cookie first)
+      // portal.*                      -> strip first subdomain  e.g. portal.dev.x.net -> https://dev.x.net/
+      // LOGOUT_PUBLIC_HOME_HOSTS list -> append /public/home  e.g. spv.dev.x.net -> https://spv.dev.x.net/public/home
+      // all other                     -> root '/'  e.g. https://host/
+      const publicHomeHosts = (CONSTANTS.LOGOUT_PUBLIC_HOME_HOSTS || '')
+        .split(',')
+        .map((h: string) => h.trim().toLowerCase())
+        .filter(Boolean)
       let postLogoutRedirect = 'https://' + logoutHost + '/'
       try {
         const hostParts = logoutHost.split('.')
         if (hostParts.length > 2 && hostParts[0].toLowerCase() === 'portal') {
           postLogoutRedirect = 'https://' + hostParts.slice(1).join('.') + '/'
           logInfo(
-            '[logout] portal host detected, stripping first subdomain' +
+            '[logout] portal host, stripping subdomain' +
+            ' -> postLogoutRedirect=' + postLogoutRedirect
+          )
+        } else if (publicHomeHosts.includes(logoutHost.toLowerCase())) {
+          postLogoutRedirect = 'https://' + logoutHost + '/public/home'
+          logInfo(
+            '[logout] host in LOGOUT_PUBLIC_HOME_HOSTS, appending /public/home' +
             ' -> postLogoutRedirect=' + postLogoutRedirect
           )
         } else {
           logInfo(
-            '[logout] non-portal host, using https root' +
+            '[logout] host not in special lists, using https root' +
             ' -> postLogoutRedirect=' + postLogoutRedirect
           )
         }
@@ -460,7 +470,7 @@ export class CustomKeycloak {
         const kcUrl = cfg.realmUrl +
           '/protocol/openid-connect/logout' +
           '?client_id=' + encodeURIComponent(cfg.clientId) +
-          '&post_logout_redirect_uri=' + encodeURIComponent(postLogoutRedirect) + '/public/home'
+          '&post_logout_redirect_uri=' + encodeURIComponent(postLogoutRedirect)
         logInfo('[logoutUrl] built KC logout URL=' + kcUrl)
         return kcUrl
       }
