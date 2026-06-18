@@ -460,7 +460,7 @@ export class CustomKeycloak {
         const kcUrl = cfg.realmUrl +
           '/protocol/openid-connect/logout' +
           '?client_id=' + encodeURIComponent(cfg.clientId) +
-          '&post_logout_redirect_uri=' + encodeURIComponent(postLogoutRedirect)
+          '&post_logout_redirect_uri=' + encodeURIComponent(postLogoutRedirect) + '/public/home'
         logInfo('[logoutUrl] built KC logout URL=' + kcUrl)
         return kcUrl
       }
