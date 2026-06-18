@@ -33,12 +33,14 @@ export class CustomKeycloak {
     // session and inject id_token_hint — required by KC18+ to auto-redirect
     // without showing the Keycloak logout confirmation page.
     if (req.path === '/logout') {
-      // Derive post-logout destination.
+      // Derive the final destination the browser should land on after KC clears its SSO session.
       // For 'portal.*' subdomains: strip first subdomain to reach the parent domain.
-      // e.g. portal.dev.karmayogibharat.net -> https://dev.karmayogibharat.net
-      // For all other subdomains (e.g. 'spv.*'): redirect back to the same host.
-      // e.g. spv.dev.karmayogibharat.net -> https://spv.dev.karmayogibharat.net
-      let postLogoutRedirect = req.protocol + '://' + req.hostname + '/'
+      // e.g. portal.dev.karmayogibharat.net -> https://dev.karmayogibharat.net/
+      // For all other subdomains (e.g. 'spv.*'): redirect to /public/home on the same host.
+      // e.g. spv.dev.karmayogibharat.net -> https://spv.dev.karmayogibharat.net/public/home
+      // /public/home is an unauthenticated page — redirecting to '/' causes a loop because
+      // the protected root triggers KC auto-login via the still-valid SSO browser cookie.
+      let postLogoutRedirect = req.protocol + '://' + req.hostname + '/public/home'
       try {
         const hostParts = req.hostname.split('.')
         if (hostParts.length > 2 && hostParts[0].toLowerCase() === 'portal') {
@@ -91,14 +93,24 @@ export class CustomKeycloak {
 
       this.deauthenticated(req)
         .then(() => {
-          logInfo('custom-keycloak middleware: KC backchannel logout completed, redirecting to ' + postLogoutRedirect)
           clearCookies()
-          res.redirect(postLogoutRedirect)
+          // Redirect browser through KC's front-channel logout URL so KC clears its own
+          // SSO session cookie. Backchannel revocation only invalidates the refresh token;
+          // without this redirect the KC SSO browser cookie remains valid, causing KC to
+          // auto-login the user immediately and create a redirect loop.
+          const kcLogoutUrl: string = typeof (keycloak as any).logoutUrl === 'function'
+            ? (keycloak as any).logoutUrl(postLogoutRedirect)
+            : postLogoutRedirect
+          logInfo('custom-keycloak middleware: KC backchannel logout completed, redirecting to ' + kcLogoutUrl)
+          res.redirect(kcLogoutUrl)
         })
         .catch((err) => {
           logError('custom-keycloak middleware: deauthenticated failed: ' + err)
           clearCookies()
-          res.redirect(postLogoutRedirect)
+          const kcLogoutUrl: string = typeof (keycloak as any).logoutUrl === 'function'
+            ? (keycloak as any).logoutUrl(postLogoutRedirect)
+            : postLogoutRedirect
+          res.redirect(kcLogoutUrl)
         })
       return
     }
