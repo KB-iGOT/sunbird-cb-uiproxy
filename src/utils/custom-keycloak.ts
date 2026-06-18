@@ -43,9 +43,12 @@ export class CustomKeycloak {
       )
 
       // Derive the final destination the browser lands on after KC clears its SSO session.
+      // Always use https:// — req.protocol is 'http' inside K8s pods (TLS terminated at ingress).
+      // Keycloak rejects http:// post_logout_redirect_uri values that only have https:// registered.
       // portal.*  -> strip first subdomain  e.g. portal.dev.x.net -> https://dev.x.net/
-      // all other -> /public/home on same host (public page, avoids SSO auto-login loop)
-      let postLogoutRedirect = logoutProtocol + '://' + logoutHost + '/public/home'
+      // all other -> root '/' on same host (registered in KC; SSO loop is not a risk here
+      //              because KC front-channel logout clears the SSO browser cookie first)
+      let postLogoutRedirect = 'https://' + logoutHost + '/'
       try {
         const hostParts = logoutHost.split('.')
         if (hostParts.length > 2 && hostParts[0].toLowerCase() === 'portal') {
@@ -56,7 +59,7 @@ export class CustomKeycloak {
           )
         } else {
           logInfo(
-            '[logout] non-portal host, using /public/home' +
+            '[logout] non-portal host, using https root' +
             ' -> postLogoutRedirect=' + postLogoutRedirect
           )
         }
