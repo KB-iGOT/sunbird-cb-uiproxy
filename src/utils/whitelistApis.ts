@@ -7642,7 +7642,7 @@ export const API_LIST = {
             '/proxies/v8/discussion/popular',
             '/proxies/v8/action/content/v3/publish/:do_id',
             '/proxies/v8/action/content/v3/reject/:do_id',
-            '/proxies/v8/user/private/v1/assign/role'
+            '/proxies/v8/user/private/v1/assign/role',
             '/proxies/v8/user/v1/search',
             `/proxies/v8/user/v1/admin/search`,
             '/proxies/v8/org/v1/read',
