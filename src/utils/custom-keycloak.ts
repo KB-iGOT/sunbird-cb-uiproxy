@@ -51,6 +51,12 @@ export class CustomKeycloak {
         '?client_id=' + encodeURIComponent(kcCfg.clientId) +
         '&post_logout_redirect_uri=' + encodeURIComponent(postLogoutRedirect)
 
+      // Check upfront whether the session has a live KC token.
+      // If there is no keycloak-token the browser has no active KC session to
+      // clear, so routing through KC front-channel logout would just cause KC
+      // to redirect back immediately, restarting the loop.
+      const hasKcSession = req.session && req.session.hasOwnProperty('keycloak-token')
+
       const clearCookies = () => {
         const host = req.get('host')
         let domainUrl = ''
@@ -72,15 +78,25 @@ export class CustomKeycloak {
 
       this.deauthenticated(req)
         .then(() => {
-          logInfo('custom-keycloak middleware: KC backchannel logout completed, ' +
-            'redirecting through KC front-channel to ' + postLogoutRedirect)
           clearCookies()
-          res.redirect(kcFrontChannelLogoutUrl)
+          if (hasKcSession) {
+            // Active KC session existed — route through KC front-channel so
+            // KC clears its own browser cookies before returning to the app.
+            logInfo('custom-keycloak middleware: KC backchannel logout completed, ' +
+              'redirecting through KC front-channel to ' + postLogoutRedirect)
+            res.redirect(kcFrontChannelLogoutUrl)
+          } else {
+            // No KC session token in store — redirect straight to the app to
+            // avoid an empty KC logout round-trip that would restart the loop.
+            logInfo('custom-keycloak middleware: no KC session found, ' +
+              'redirecting directly to ' + postLogoutRedirect)
+            res.redirect(postLogoutRedirect)
+          }
         })
         .catch((err) => {
           logError('custom-keycloak middleware: deauthenticated failed: ' + err)
           clearCookies()
-          res.redirect(kcFrontChannelLogoutUrl)
+          res.redirect(postLogoutRedirect)
         })
       return
     }
