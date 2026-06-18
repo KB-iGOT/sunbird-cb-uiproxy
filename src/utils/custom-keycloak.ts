@@ -72,7 +72,8 @@ export class CustomKeycloak {
 
       this.deauthenticated(req)
         .then(() => {
-          logInfo('custom-keycloak middleware: KC backchannel logout completed, redirecting through KC front-channel to ' + postLogoutRedirect)
+          logInfo('custom-keycloak middleware: KC backchannel logout completed, ' +
+            'redirecting through KC front-channel to ' + postLogoutRedirect)
           clearCookies()
           res.redirect(kcFrontChannelLogoutUrl)
         })
