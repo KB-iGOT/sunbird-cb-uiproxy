@@ -210,6 +210,7 @@ export class Server {
   }
   private resetCookies() {
     this.app.use('/reset', (_req, res) => {
+      res.set('Connection', 'close')
       logDebug('CLEARING RES COOKIES')
       const host = _req.get('host')
       logDebug('host is: ' + host)
