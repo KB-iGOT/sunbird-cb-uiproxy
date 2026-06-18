@@ -33,15 +33,10 @@ export class CustomKeycloak {
     // session and inject id_token_hint — required by KC18+ to auto-redirect
     // without showing the Keycloak logout confirmation page.
     if (req.url === '/logout') {
-      // Derive post-logout destination: strip first subdomain
-      // e.g. portal.dev.karmayogibharat.net -> https://dev.karmayogibharat.net
-      let postLogoutRedirect = req.protocol + '://' + req.hostname + '/'
-      try {
-        const hostParts = req.hostname.split('.')
-        if (hostParts.length > 2) {
-          postLogoutRedirect = 'https://' + hostParts.slice(1).join('.') + '/'
-        }
-      } catch (_e) { /* keep default */ }
+      // Preserve the incoming host so channel-specific domains (mdo/cbp/spv)
+      // are redirected back to the same host after logout.
+      const redirectHost = req.get('host') || req.hostname
+      const postLogoutRedirect = 'https://' + redirectHost + '/'
 
       logInfo('custom-keycloak middleware: /logout intercepted, postLogoutRedirect=' + postLogoutRedirect)
 
@@ -377,15 +372,12 @@ export class CustomKeycloak {
       ; (keycloak as any).logoutUrl = (redirectUrl: string): string => {
         // tslint:disable-next-line: no-any
         const cfg = (keycloak as any).config
-        // Derive the root domain by stripping the first subdomain from the host.
-        // e.g. https://portal.dev.karmayogibharat.net/... -> https://dev.karmayogibharat.net
+        // Preserve the exact host from redirectUrl to avoid cross-channel fallback
+        // (e.g. cbp.qa... should not be rewritten to qa...).
         let postLogoutRedirect = redirectUrl
         try {
           const parsed = new URL(redirectUrl)
-          const hostParts = parsed.hostname.split('.')
-          if (hostParts.length > 2) {
-            postLogoutRedirect = parsed.protocol + '//' + hostParts.slice(1).join('.') + '/'
-          }
+          postLogoutRedirect = parsed.protocol + '//' + parsed.host + '/'
         } catch (_e) { /* keep original redirectUrl if parsing fails */ }
         return cfg.realmUrl +
           '/protocol/openid-connect/logout' +
