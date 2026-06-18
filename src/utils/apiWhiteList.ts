@@ -408,6 +408,12 @@ export function apiWhiteListLogger() {
             return
         }
         const REQ_URL = req.path
+        // Allow user profile bootstrap call so session roles can be initialized.
+        // This prevents 419 -> /logout loops before userRoles are populated.
+        if (REQ_URL === '/proxies/v8/api/user/v2/read' || REQ_URL.startsWith('/proxies/v8/api/user/v2/read/')) {
+            next()
+            return
+        }
         // tslint:disable-next-line: max-line-length
         if (!_.includes(REQ_URL, '/resource') && !_.includes(REQ_URL, '/eclogin') && !_.includes(REQ_URL, '/aiassessmentlogin') && (req.session)) {
              logDebug('UIPROXY:: apiWhiteListLogger : checking if the login is to resource  and session is there')
