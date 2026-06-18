@@ -40,11 +40,17 @@ export class CustomKeycloak {
 
       logInfo('custom-keycloak middleware: /logout intercepted, postLogoutRedirect=' + postLogoutRedirect)
 
-      // Terminate the Keycloak SSO session server-side via backchannel revocation
-      // (POST to KC logout endpoint with refresh_token). This avoids the browser
-      // confirmation page entirely and does not require id_token_hint.
-      // deauthenticatedNew only clears the local session; this.deauthenticated
-      // also revokes the refresh_token at KC, killing the SSO session.
+      // Build KC front-channel logout URL (OIDC RP-Initiated Logout).
+      // After backchannel token revocation we must send the browser through
+      // Keycloak's logout endpoint so KC clears its own browser session/cookies.
+      // Without this the browser still holds a valid KC session, causing the app
+      // to detect no local session and trigger /logout again — an infinite loop.
+      const kcCfg = (keycloak as any).config
+      const kcFrontChannelLogoutUrl = kcCfg.realmUrl +
+        '/protocol/openid-connect/logout' +
+        '?client_id=' + encodeURIComponent(kcCfg.clientId) +
+        '&post_logout_redirect_uri=' + encodeURIComponent(postLogoutRedirect)
+
       const clearCookies = () => {
         const host = req.get('host')
         let domainUrl = ''
@@ -66,14 +72,15 @@ export class CustomKeycloak {
 
       this.deauthenticated(req)
         .then(() => {
-          logInfo('custom-keycloak middleware: KC backchannel logout completed, redirecting to ' + postLogoutRedirect)
+          logInfo('custom-keycloak middleware: KC backchannel logout completed, ' +
+            'redirecting through KC front-channel to ' + postLogoutRedirect)
           clearCookies()
-          res.redirect(postLogoutRedirect)
+          res.redirect(kcFrontChannelLogoutUrl)
         })
         .catch((err) => {
           logError('custom-keycloak middleware: deauthenticated failed: ' + err)
           clearCookies()
-          res.redirect(postLogoutRedirect)
+          res.redirect(kcFrontChannelLogoutUrl)
         })
       return
     }
