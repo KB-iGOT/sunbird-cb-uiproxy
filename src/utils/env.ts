@@ -72,6 +72,9 @@ export const CONSTANTS = {
   LOG_LEVEL_POLL_INTERVAL_MS: Number(env.LOG_LEVEL_POLL_INTERVAL_MS) || 10000,
   LOG_LEVEL_REDIS_KEY: env.LOG_LEVEL_REDIS_KEY || 'ui_proxy_log_level',
   LOG_LEVEL_SYNC_ENABLED: env.LOG_LEVEL_SYNC_ENABLED || 'false',
+  LOGOUT_PUBLIC_HOME_HOSTS:
+    env.LOGOUT_PUBLIC_HOME_HOSTS ||
+    'spv.dev.karmayogibharat.net,cbp.dev.karmayogibharat.net,mdo.dev.karmayogibharat.net,support.dev.karmayogibharat.net',
   MULTI_TENANT_KEYCLOAK:
     env.MULTI_TENANT_KEYCLOAK ||
     'igot,https://portal.karmayogi.nic.in,sunbird',
