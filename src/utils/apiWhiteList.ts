@@ -288,13 +288,28 @@ const respond403 = (req: Request, res: Response) => {
 
 const respond419 = (req: Request, res: Response) => {
     const REQ_URL = req.path
+    const host = req.get('host') || ''
+    const ref = req.get('referer') || ''
+    const ajax = req.get('x-requested-with') || ''
+    const hasSession = !!req.session
+    const hasUserRoles = !!_.get(req, 'session.userRoles')
+    logDebug('API WHITELIST 419 trace: method=' + req.method +
+      ' path=' + REQ_URL + ' host=' + host)
+    logDebug('API WHITELIST 419 trace: hasSession=' + hasSession +
+      ' hasUserRoles=' + hasUserRoles + ' ajax=' + ajax)
+    if (ref) {
+        logDebug('API WHITELIST 419 trace: referer=' + ref)
+    }
     if (_.includes(REQ_URL, '/reset')) {
+        logDebug('API WHITELIST 419 trace: /reset redirecting to /apis/logout')
         res.redirect('/apis/logout')
     } else {
         const err = ({ msg: 'API WHITELIST :: Unauthorized access for API [ ' + REQ_URL + ' ]', url: REQ_URL })
         logError(err.msg)
+        const loginUrl = redirectToLogin(req)
+        logDebug('API WHITELIST 419 trace: location header set to ' + loginUrl)
         res.status(419)
-        res.setHeader('location', redirectToLogin(req))
+        res.setHeader('location', loginUrl)
         res.send(
             {
                 id: 'api.error',
@@ -311,7 +326,7 @@ const respond419 = (req: Request, res: Response) => {
                     errmsg: 'UNAUTHORIZED: Access is denied',
                 },
                 responseCode: 'UNAUTHORIZED',
-                redirectUrl: redirectToLogin(req),
+                redirectUrl: loginUrl,
                 result: {},
             })
     }
@@ -332,8 +347,12 @@ export const isAllowed = () => {
     return function(req: Request, res: Response, next: NextFunction) {
         let REQ_URL = req.path
         if (CONSTANTS.PORTAL_API_WHITELIST_CHECK === 'true') {
-            // tslint:disable-next-line: max-line-length
-            if (shouldAllow(req) || _.includes(REQ_URL, '/resource') || _.includes(REQ_URL, '/eclogin') || _.includes(REQ_URL, '/aiassessmentlogin')) {
+            if (
+                shouldAllow(req) ||
+                _.includes(REQ_URL, '/resource') ||
+                _.includes(REQ_URL, '/eclogin') ||
+                _.includes(REQ_URL, '/aiassessmentlogin')
+            ) {
                 logDebug('Path : ' + REQ_URL + ' is in excluded list.')
                 next()
             } else {
@@ -411,13 +430,19 @@ export function apiWhiteListLogger() {
         // Allow user profile bootstrap call so session roles can be initialized.
         // This prevents 419 -> /logout loops before userRoles are populated.
         if (REQ_URL === '/proxies/v8/api/user/v2/read' || REQ_URL.startsWith('/proxies/v8/api/user/v2/read/')) {
+            logDebug('apiWhiteListLogger trace: bootstrap bypass for ' + REQ_URL)
             next()
             return
         }
-        // tslint:disable-next-line: max-line-length
-        if (!_.includes(REQ_URL, '/resource') && !_.includes(REQ_URL, '/eclogin') && !_.includes(REQ_URL, '/aiassessmentlogin') && (req.session)) {
+        if (
+            !_.includes(REQ_URL, '/resource') &&
+            !_.includes(REQ_URL, '/eclogin') &&
+            !_.includes(REQ_URL, '/aiassessmentlogin') &&
+            (req.session)
+        ) {
              logDebug('UIPROXY:: apiWhiteListLogger : checking if the login is to resource  and session is there')
              if (!('userRoles' in req.session) || (('userRoles' in req.session) && (req.session.userRoles.length === 0))) {
+                logDebug('apiWhiteListLogger trace: session exists but userRoles missing or empty for ' + REQ_URL)
                 logError('Portal_API_WHITELIST_LOGGER: User needs to authenticated themselves', '------', new Date().toString())
                 logDebug('UIPROXY:: apiWhiteListLogger :  respond419 method will be called')
                 respond419(req, res)

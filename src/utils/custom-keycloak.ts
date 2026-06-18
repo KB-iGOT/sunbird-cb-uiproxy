@@ -37,8 +37,16 @@ export class CustomKeycloak {
       // are redirected back to the same host after logout.
       const redirectHost = req.get('host') || req.hostname
       const postLogoutRedirect = 'https://' + redirectHost + '/'
+      const ref = req.get('referer') || ''
+      const hasSession = !!req.session
+      const hasGrant = !!(req as any).kauth && !!(req as any).kauth.grant
 
       logInfo('custom-keycloak middleware: /logout intercepted, postLogoutRedirect=' + postLogoutRedirect)
+      logInfo('custom-keycloak logout trace: host=' + redirectHost +
+        ' hasSession=' + hasSession + ' hasGrant=' + hasGrant)
+      if (ref) {
+        logDebug('custom-keycloak logout trace: referer=' + ref)
+      }
 
       // Build KC front-channel logout URL (OIDC RP-Initiated Logout).
       // After backchannel token revocation we must send the browser through
@@ -56,6 +64,7 @@ export class CustomKeycloak {
       // clear, so routing through KC front-channel logout would just cause KC
       // to redirect back immediately, restarting the loop.
       const hasKcSession = req.session && req.session.hasOwnProperty('keycloak-token')
+      logInfo('custom-keycloak logout trace: hasKcSession=' + !!hasKcSession)
 
       const clearCookies = () => {
         const host = req.get('host')
@@ -84,6 +93,8 @@ export class CustomKeycloak {
             // KC clears its own browser cookies before returning to the app.
             logInfo('custom-keycloak middleware: KC backchannel logout completed, ' +
               'redirecting through KC front-channel to ' + postLogoutRedirect)
+            logInfo('custom-keycloak logout trace: kcFrontChannelLogoutUrl=' +
+              kcFrontChannelLogoutUrl)
             res.redirect(kcFrontChannelLogoutUrl)
           } else {
             // No KC session token in store — redirect straight to the app to
@@ -95,6 +106,7 @@ export class CustomKeycloak {
         })
         .catch((err) => {
           logError('custom-keycloak middleware: deauthenticated failed: ' + err)
+          logInfo('custom-keycloak logout trace: fallback redirect=' + postLogoutRedirect)
           clearCookies()
           res.redirect(postLogoutRedirect)
         })
