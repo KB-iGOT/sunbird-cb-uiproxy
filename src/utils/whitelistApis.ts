@@ -550,18 +550,6 @@ export const API_LIST = {
                 ROLE.PROGRAM_COORDINATOR,
             ],
         },
-        '/proxies/v8/user/private/v1/assign/role': {
-            checksNeeded: [CHECK.ROLE],
-            // tslint:disable-next-line: object-literal-sort-keys
-            ROLE_CHECK: [
-                ROLE.MDO_ADMIN,
-                ROLE.MDO_LEADER,
-                ROLE.SPV_ADMIN,
-                ROLE.CBP_ADMIN,
-                ROLE.STATE_ADMIN,
-                ROLE.CONTENT_CREATOR,
-            ],
-        },
         '/proxies/v8/user/v1/search': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -7581,6 +7569,17 @@ export const API_LIST = {
                 ROLE.VOLUNTEER,
             ],
         },
+        '/proxies/v8/user/v1/role/assign': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.SPV_ADMIN,
+                ROLE.CBP_ADMIN,
+                ROLE.STATE_ADMIN,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -7642,7 +7641,6 @@ export const API_LIST = {
             '/proxies/v8/discussion/popular',
             '/proxies/v8/action/content/v3/publish/:do_id',
             '/proxies/v8/action/content/v3/reject/:do_id',
-            '/proxies/v8/user/private/v1/assign/role'
             '/proxies/v8/user/v1/search',
             `/proxies/v8/user/v1/admin/search`,
             '/proxies/v8/org/v1/read',
@@ -8540,5 +8538,6 @@ export const API_LIST = {
             '/proxies/v8/bp/v2/generate/report',
             '/proxies/v8/bp/v2/bpreport/status',
             '/proxies/v8/content/v5/dictionary',
+            '/proxies/v8/user/v1/role/assign',
         ],
 }
