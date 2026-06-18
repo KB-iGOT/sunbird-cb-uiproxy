@@ -33,39 +33,65 @@ export class CustomKeycloak {
     // session and inject id_token_hint — required by KC18+ to auto-redirect
     // without showing the Keycloak logout confirmation page.
     if (req.path === '/logout') {
-      // Derive the final destination the browser should land on after KC clears its SSO session.
-      // For 'portal.*' subdomains: strip first subdomain to reach the parent domain.
-      // e.g. portal.dev.karmayogibharat.net -> https://dev.karmayogibharat.net/
-      // For all other subdomains (e.g. 'spv.*'): redirect to /public/home on the same host.
-      // e.g. spv.dev.karmayogibharat.net -> https://spv.dev.karmayogibharat.net/public/home
-      // /public/home is an unauthenticated page — redirecting to '/' causes a loop because
-      // the protected root triggers KC auto-login via the still-valid SSO browser cookie.
-      let postLogoutRedirect = req.protocol + '://' + req.hostname + '/public/home'
+      const logoutHost = req.hostname
+      const logoutProtocol = req.protocol
+      logInfo(
+        '[logout] request intercepted' +
+        ' host=' + logoutHost +
+        ' protocol=' + logoutProtocol +
+        ' url=' + req.url
+      )
+
+      // Derive the final destination the browser lands on after KC clears its SSO session.
+      // portal.*  -> strip first subdomain  e.g. portal.dev.x.net -> https://dev.x.net/
+      // all other -> /public/home on same host (public page, avoids SSO auto-login loop)
+      let postLogoutRedirect = logoutProtocol + '://' + logoutHost + '/public/home'
       try {
-        const hostParts = req.hostname.split('.')
+        const hostParts = logoutHost.split('.')
         if (hostParts.length > 2 && hostParts[0].toLowerCase() === 'portal') {
           postLogoutRedirect = 'https://' + hostParts.slice(1).join('.') + '/'
+          logInfo(
+            '[logout] portal host detected, stripping first subdomain' +
+            ' -> postLogoutRedirect=' + postLogoutRedirect
+          )
+        } else {
+          logInfo(
+            '[logout] non-portal host, using /public/home' +
+            ' -> postLogoutRedirect=' + postLogoutRedirect
+          )
         }
       } catch (_e) { /* keep default */ }
 
-      // Honour a redirect_uri query param (KC7 clients pass this) when it is safe
-      // (same base domain), so SPV can return to a specific path after logout.
+      // Honour a redirect_uri query param (KC7 clients pass this) when safe (same base domain).
       const rawRedirectUri = req.query.redirect_uri
+      logInfo('[logout] redirect_uri query param=' + (rawRedirectUri || '(none)'))
       if (rawRedirectUri && typeof rawRedirectUri === 'string') {
         try {
           const redirectParsed = new URL(rawRedirectUri)
-          const hostParts = req.hostname.split('.')
-          const baseDomain = hostParts.length > 1 ? hostParts.slice(-2).join('.') : req.hostname
-          if (
-            redirectParsed.hostname === req.hostname ||
-            redirectParsed.hostname.endsWith('.' + baseDomain)
-          ) {
+          const hostParts = logoutHost.split('.')
+          const baseDomain =
+            hostParts.length > 1 ? hostParts.slice(-2).join('.') : logoutHost
+          const isSameHost = redirectParsed.hostname === logoutHost
+          const isSameDomain = redirectParsed.hostname.endsWith('.' + baseDomain)
+          logInfo(
+            '[logout] redirect_uri validation' +
+            ' parsed.hostname=' + redirectParsed.hostname +
+            ' baseDomain=' + baseDomain +
+            ' isSameHost=' + isSameHost +
+            ' isSameDomain=' + isSameDomain
+          )
+          if (isSameHost || isSameDomain) {
             postLogoutRedirect = rawRedirectUri
+            logInfo('[logout] redirect_uri accepted -> postLogoutRedirect=' + postLogoutRedirect)
+          } else {
+            logInfo('[logout] redirect_uri rejected (cross-domain), keeping default')
           }
-        } catch (_e) { /* ignore invalid redirect_uri */ }
+        } catch (_e) {
+          logInfo('[logout] redirect_uri invalid URL, ignoring: ' + rawRedirectUri)
+        }
       }
 
-      logInfo('custom-keycloak middleware: /logout intercepted, postLogoutRedirect=' + postLogoutRedirect)
+      logInfo('[logout] final postLogoutRedirect=' + postLogoutRedirect)
 
       // Terminate the Keycloak SSO session server-side via backchannel revocation
       // (POST to KC logout endpoint with refresh_token). This avoids the browser
@@ -87,29 +113,37 @@ export class CustomKeycloak {
             }
           }
         }
-        res.clearCookie('connect.sid', { httpOnly: true, secure: true, })
-        res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: false, path: '/', secure: true, })
+        logInfo('[logout] clearing cookies for domain=' + domainUrl)
+        res.clearCookie('connect.sid', { httpOnly: true, secure: true })
+        res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: false, path: '/', secure: true })
       }
 
+      // Build the KC front-channel logout URL. Redirecting the browser through this
+      // clears the KC SSO browser cookie — backchannel revocation alone does not do this.
+      const buildKcLogoutUrl = (): string => {
+        if (typeof (keycloak as any).logoutUrl === 'function') {
+          const url: string = (keycloak as any).logoutUrl(postLogoutRedirect)
+          logInfo('[logout] KC front-channel logout URL=' + url)
+          return url
+        }
+        logInfo('[logout] logoutUrl not a function, falling back to postLogoutRedirect')
+        return postLogoutRedirect
+      }
+
+      logInfo('[logout] starting backchannel deauthentication')
       this.deauthenticated(req)
         .then(() => {
+          logInfo('[logout] backchannel deauthentication succeeded')
           clearCookies()
-          // Redirect browser through KC's front-channel logout URL so KC clears its own
-          // SSO session cookie. Backchannel revocation only invalidates the refresh token;
-          // without this redirect the KC SSO browser cookie remains valid, causing KC to
-          // auto-login the user immediately and create a redirect loop.
-          const kcLogoutUrl: string = typeof (keycloak as any).logoutUrl === 'function'
-            ? (keycloak as any).logoutUrl(postLogoutRedirect)
-            : postLogoutRedirect
-          logInfo('custom-keycloak middleware: KC backchannel logout completed, redirecting to ' + kcLogoutUrl)
+          const kcLogoutUrl = buildKcLogoutUrl()
+          logInfo('[logout] 302 -> ' + kcLogoutUrl)
           res.redirect(kcLogoutUrl)
         })
         .catch((err) => {
-          logError('custom-keycloak middleware: deauthenticated failed: ' + err)
+          logError('[logout] backchannel deauthentication failed: ' + err)
           clearCookies()
-          const kcLogoutUrl: string = typeof (keycloak as any).logoutUrl === 'function'
-            ? (keycloak as any).logoutUrl(postLogoutRedirect)
-            : postLogoutRedirect
+          const kcLogoutUrl = buildKcLogoutUrl()
+          logInfo('[logout] 302 (after error) -> ' + kcLogoutUrl)
           res.redirect(kcLogoutUrl)
         })
       return
@@ -404,21 +438,28 @@ export class CustomKeycloak {
       ; (keycloak as any).logoutUrl = (redirectUrl: string): string => {
         // tslint:disable-next-line: no-any
         const cfg = (keycloak as any).config
-        // For 'portal.*' subdomains: strip first subdomain to reach the parent domain.
-        // e.g. https://portal.dev.karmayogibharat.net/... -> https://dev.karmayogibharat.net
-        // For all other subdomains (e.g. 'spv.*'): keep the original redirectUrl.
+        logInfo('[logoutUrl] input redirectUrl=' + redirectUrl)
+        // portal.* -> strip first subdomain  e.g. portal.dev.x.net -> https://dev.x.net/
+        // all other (e.g. spv.*) -> keep original redirectUrl
         let postLogoutRedirect = redirectUrl
         try {
           const parsed = new URL(redirectUrl)
           const hostParts = parsed.hostname.split('.')
           if (hostParts.length > 2 && hostParts[0].toLowerCase() === 'portal') {
             postLogoutRedirect = parsed.protocol + '//' + hostParts.slice(1).join('.') + '/'
+            logInfo('[logoutUrl] portal host, stripped subdomain -> ' + postLogoutRedirect)
+          } else {
+            logInfo('[logoutUrl] non-portal host, keeping redirectUrl -> ' + postLogoutRedirect)
           }
-        } catch (_e) { /* keep original redirectUrl if parsing fails */ }
-        return cfg.realmUrl +
+        } catch (_e) {
+          logInfo('[logoutUrl] could not parse redirectUrl, keeping as-is -> ' + postLogoutRedirect)
+        }
+        const kcUrl = cfg.realmUrl +
           '/protocol/openid-connect/logout' +
           '?client_id=' + encodeURIComponent(cfg.clientId) +
           '&post_logout_redirect_uri=' + encodeURIComponent(postLogoutRedirect)
+        logInfo('[logoutUrl] built KC logout URL=' + kcUrl)
+        return kcUrl
       }
     // tslint:disable-next-line: no-any
     keycloak.authenticated = this.authenticated as any
