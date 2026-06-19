@@ -158,7 +158,7 @@
   resolved "https://registry.npmjs.org/@opentelemetry/api/-/api-1.9.1.tgz"
   integrity sha512-gLyJlPHPZYdAk1JENA9LeHejZe1Ti77/pTeFm/nMXmQH/HFZlcS/O2XJB+L8fkbrNSqhdtlvjBVjxwUYanNH5Q==
 
-"@project-sunbird/ext-framework-server@^0.1.28":
+"@project-sunbird/ext-framework-server@^0.1.28", "@project-sunbird/ext-framework-server@^0.1.6":
   version "0.1.28"
   resolved "https://registry.npmjs.org/@project-sunbird/ext-framework-server/-/ext-framework-server-0.1.28.tgz"
   integrity sha512-agFe9r+p3b6K4zoMjFVTyJQ4ywN6O6PN/Ce2l+xfYXtP8S4SnmAcVj5AyGBnV7L+e1ZCsdc5U+IM7ukemqC7rw==
@@ -202,7 +202,7 @@
   resolved "https://registry.npmjs.org/@redis/bloom/-/bloom-5.10.0.tgz"
   integrity sha512-doIF37ob+l47n0rkpRNgU8n4iacBlKM9xLiP1LtTZTvz8TloJB8qx/MgvhMhKdYG+CvCY2aPBnN2706izFn/4A==
 
-"@redis/client@5.10.0":
+"@redis/client@^5.10.0", "@redis/client@5.10.0":
   version "5.10.0"
   resolved "https://registry.npmjs.org/@redis/client/-/client-5.10.0.tgz"
   integrity sha512-JXmM4XCoso6C75Mr3lhKA3eNxSzkYi3nCzxDIKY+YOszYsJjuKbFgVtguVPbLMOttN4iu2fXoc2BGhdnYhIOxA==
@@ -6287,7 +6287,7 @@ tsutils@^3.0.0:
   dependencies:
     tslib "^1.8.1"
 
-tsutils@^3.5.0:
+tsutils@^3.5.0, tsutils@>=2.29.0:
   version "3.21.0"
   resolved "https://registry.npmjs.org/tsutils/-/tsutils-3.21.0.tgz"
   integrity sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==
@@ -6341,7 +6341,12 @@ typescript-ioc@^1.2.4:
     reflect-metadata "^0.1.13"
     require-glob "^3.2.0"
 
-typescript@^4.9.5:
+"typescript@^2.1.0 || ^3.0.0", "typescript@^2.2.0 || ^3.0.0", "typescript@>= 3.3.0 || >= 3.6.0-dev || >= 3.7.0-dev", "typescript@>=2.1.4 || >=2.1.0-dev || >=2.2.0-dev || >=2.3.0-dev || >=2.4.0-dev || >=2.5.0-dev || >=2.6.0-dev || >=2.7.0-dev || >=2.8.0-dev || >=2.9.0-dev || >=3.0.0-dev || >=3.1.0-dev || >=3.2.0-dev || >=3.3.0-dev || >=3.4.0-dev", "typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta":
+  version "3.9.10"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-3.9.10.tgz"
+  integrity sha512-w6fIxVE/H1PkLKcCPsFqKE7Kv7QUwhU8qQY2MueZXWx5cPZdwFupLgKK3vntcK98BtNHZtAF4LA/yl2a7k8R6Q==
+
+typescript@^4.9.5, "typescript@>=2.1.0 || >=2.1.0-dev || >=2.2.0-dev || >=2.3.0-dev || >=2.4.0-dev || >=2.5.0-dev || >=2.6.0-dev || >=2.7.0-dev || >=2.8.0-dev || >=2.9.0-dev || >= 3.0.0-dev || >= 3.1.0-dev", "typescript@>=2.3.0-dev || >=2.4.0-dev || >=2.5.0-dev || >=2.6.0-dev || >=2.7.0-dev || >=2.8.0-dev || >=2.9.0-dev || >=3.0.0-dev || >= 3.1.0-dev || >= 3.2.0-dev || >= 4.0.0-dev", typescript@>=2.7, "typescript@~2.7.1 || >=2.8.0-dev || >=2.9.0-dev || ~3.0.0 || >=3.0.0-dev || >=3.1.0-dev || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.7.0-dev ":
   version "4.9.5"
   resolved "https://registry.npmjs.org/typescript/-/typescript-4.9.5.tgz"
   integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==

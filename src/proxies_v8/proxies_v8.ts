@@ -1654,6 +1654,6 @@ proxiesV8.use('/volunteer/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
-proxiesV8.use('/formsConfig/*',
+proxiesV8.use('/ai/chatbot/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
