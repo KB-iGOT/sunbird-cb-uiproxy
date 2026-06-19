@@ -1658,6 +1658,6 @@ proxiesV8.use('/ai/chatbot/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
-proxiesV8.use('/formConfig/*',
+proxiesV8.use('/formsConfig/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
