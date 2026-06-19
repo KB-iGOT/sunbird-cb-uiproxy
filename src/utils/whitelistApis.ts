@@ -7709,11 +7709,12 @@ export const API_LIST = {
             ],
         },
         '/proxies/v8/ai/chatbot/v1/sessions/turn/:id': {
-            checksNeeded: [CHECK.ROLE],
-            // tslint:disable-next-line: object-literal-sort-keys
-            ROLE_CHECK: [
-                ROLE.PUBLIC,
-            ],
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+            ROLE.PUBLIC,
+          ],
+        }, 
         '/proxies/v8/formsConfig/v1/create': {
           checksNeeded: [CHECK.ROLE],
           // tslint:disable-next-line: object-literal-sort-keys
@@ -7725,7 +7726,7 @@ export const API_LIST = {
           checksNeeded: [CHECK.ROLE],
           // tslint:disable-next-line: object-literal-sort-keys
           ROLE_CHECK: [
-            ROLE.PUBLIC
+            ROLE.VOLUNTEER
           ],
         },
         '/proxies/v8/formsConfig/v1/update': {
