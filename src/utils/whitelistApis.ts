@@ -7639,7 +7639,7 @@ export const API_LIST = {
                 ROLE.VOLUNTEER,
             ],
         },
-        '/proxies/v8/learner/ngo/achievement/list': {
+        '/proxies/v8/learner/achievement/ngo/list': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -7737,6 +7737,35 @@ export const API_LIST = {
             ROLE.SPV_ADMIN,
           ],
         },
+      '/proxies/v8/user/ngo/profile/v2/getAdditionalFields': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+          ROLE.PUBLIC,
+        ],
+      },
+      '/proxies/v8/user/ngo/profile/v2/extended/all': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+          ROLE.PUBLIC,
+        ],
+      },
+      '/proxies/v8/learner/achievement/v1/list': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+          ROLE.PUBLIC,
+        ],
+      },
+      '/proxies/v8/user/profile/v2/basic': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+          ROLE.PUBLIC,
+        ],
+      },
+      
     },
     URL_PATTERN:
         [
@@ -8702,7 +8731,7 @@ export const API_LIST = {
             '/proxies/v8/content/v5/dictionary',
             '/proxies/v8/org/ngo/v1/read',
             '/proxies/v8/api/user/volunteer/v1/read',
-            '/proxies/v8/learner/ngo/achievement/list',
+            '/proxies/v8/learner/achievement/ngo/list',
             '/proxies/v8/user/ngo/profile/v1/basic',
             '/proxies/v8/user/ngo/profile/v1/extended/all',
             '/proxies/v8/user/ngo/profile/v1/getAdditionalFields',
@@ -8718,5 +8747,10 @@ export const API_LIST = {
             '/proxies/v8/formsConfig/v1/create',
             '/proxies/v8/formsConfig/v1/read',
             '/proxies/v8/formsConfig/v1/update',
+            '/proxies/v8/user/profile/v2/basic',
+            '/proxies/v8/user/profile/v2/extended/all',
+            '/proxies/v8/user/profile/v2/getAdditionalFields',
+            '/proxies/v8/learner/achievement/v1/list'       
+              
         ],
 }
