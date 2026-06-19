@@ -7714,6 +7714,26 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.PUBLIC,
             ],
+        '/proxies/v8/formsConfig/v1/create': {
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+            ROLE.SPV_ADMIN,
+          ],
+        },
+        '/proxies/v8/formsConfig/v1/read': {
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+            ROLE.PUBLIC
+          ],
+        },
+        '/proxies/v8/formsConfig/v1/update': {
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+            ROLE.SPV_ADMIN,
+          ],
         },
     },
     URL_PATTERN:
@@ -8693,5 +8713,8 @@ export const API_LIST = {
             '/proxies/v8/ai/chatbot/v1/sessions/list',
             '/proxies/v8/ai/chatbot/v1/sessions/history/:id',
             '/proxies/v8/ai/chatbot/v1/sessions/turn/:id',
+            '/proxies/v8/formsConfig/v1/create',
+            '/proxies/v8/formsConfig/v1/read',
+            '/proxies/v8/formsConfig/v1/update',
         ],
 }
