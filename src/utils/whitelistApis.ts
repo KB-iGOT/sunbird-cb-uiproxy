@@ -7726,7 +7726,8 @@ export const API_LIST = {
           checksNeeded: [CHECK.ROLE],
           // tslint:disable-next-line: object-literal-sort-keys
           ROLE_CHECK: [
-            ROLE.VOLUNTEER
+            ROLE.VOLUNTEER,
+            ROLE.PUBLIC,
           ],
         },
         '/proxies/v8/formsConfig/v1/update': {
