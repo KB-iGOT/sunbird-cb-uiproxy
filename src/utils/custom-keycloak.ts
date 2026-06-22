@@ -197,6 +197,7 @@ export class CustomKeycloak {
     // Keycloak 24+ no longer returns id_token in token-refresh responses,
     // so we cannot rely on session['keycloak-token'] containing it later.
     try {
+      // tslint:disable-next-line: whitespace
       const idTokenRaw: string = reqObj.kauth?.grant?.id_token?.token || ''
       if (idTokenRaw) {
         reqObj.session.idToken = idTokenRaw

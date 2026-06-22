@@ -7714,6 +7714,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.PUBLIC,
             ],
+        },
         '/proxies/v8/formsConfig/v1/create': {
           checksNeeded: [CHECK.ROLE],
           // tslint:disable-next-line: object-literal-sort-keys
@@ -7725,7 +7726,7 @@ export const API_LIST = {
           checksNeeded: [CHECK.ROLE],
           // tslint:disable-next-line: object-literal-sort-keys
           ROLE_CHECK: [
-            ROLE.PUBLIC
+            ROLE.PUBLIC,
           ],
         },
         '/proxies/v8/formsConfig/v1/update': {
@@ -7735,6 +7736,7 @@ export const API_LIST = {
             ROLE.SPV_ADMIN,
           ],
         },
+
     },
     URL_PATTERN:
         [
@@ -8186,10 +8188,6 @@ export const API_LIST = {
             '/proxies/v8/cios/v1/content/delete/:contentId',
             '/proxies/v8/ciosIntegration/v1/loadContentFromExcel/:partnercode/:partnerId',
             '/proxies/v8/ciosIntegration/v1/readAllContentFromDb',
-            '/proxies/v8/tenders/v4/read/:do_id',
-            '/proxies/v8/tenders/v4/publish/:do_id',
-            '/proxies/v8/tenders/v4/create',
-            '/proxies/v8/tenders/v4/update/:do_id',
             '/proxies/v8/user/v2/bulkupload',
             '/proxies/v8/workflow/admin/v2/bulkupdate/transition',
             '/proxies/v8/playList/v1/search/program',
@@ -8690,21 +8688,21 @@ export const API_LIST = {
             '/proxies/v8/contenthealth/v1/report/:id',
             '/proxies/v8/contenthealth/v1/summary',
             '/proxies/v8/ai/cbp/v1/mdo/approval-requests/publish/retry',
+            '/proxies/v8/bp/v2/generate/report',
+            '/proxies/v8/bp/v2/bpreport/status',
+            '/proxies/v8/content/v5/dictionary',
+            '/proxies/v8/user/v1/role/assign',
             '/proxies/v8/read/content-progres/ngo/:do_id',
             '/proxies/v8/content-progres/ngo/:do_id',
             '/proxies/v8/comment/v1/ngo/addFirst',
             '/proxies/v8/volunteer/ratings/v1/read',
             '/proxies/v8/volunteer/user/v2/insights',
-            '/proxies/v8/bp/v2/generate/report',
-            '/proxies/v8/bp/v2/bpreport/status',
-            '/proxies/v8/content/v5/dictionary',
             '/proxies/v8/org/ngo/v1/read',
             '/proxies/v8/api/user/volunteer/v1/read',
             '/proxies/v8/learner/ngo/achievement/list',
             '/proxies/v8/user/ngo/profile/v1/basic',
             '/proxies/v8/user/ngo/profile/v1/extended/all',
             '/proxies/v8/user/ngo/profile/v1/getAdditionalFields',
-            '/proxies/v8/user/v1/role/assign',
             '/proxies/v8/learner/course/v4/user/ngo/enrollment/summary',
             '/proxies/v8/learner/course/v4/user/ngo/enrollment/details',
             '/proxies/v8/bp/v2/bpreport/list',
