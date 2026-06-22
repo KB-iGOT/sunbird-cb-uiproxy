@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
@@ -12,7 +12,7 @@ export const usersApi = Router()
 
 usersApi.post('/createuser', async (req, res) => {
   try {
-    const keycloak: boolean = JSON.parse(req.query.keycloak)
+    const keycloak: boolean = JSON.parse(req.query.keycloak as string)
     const rootOrg = req.header('rootOrg')
     if (!rootOrg) {
       res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
@@ -34,8 +34,9 @@ usersApi.post('/createuser', async (req, res) => {
       url: API_END_POINTS.createuser,
     })
     res.send(response.data)
-  } catch (err) {
-    logError('CREATE USER ERR -> ', err)
+  } catch (errAny) {
+    const err = errAny as AxiosError
+    logError('CREATE USER ERR -> ', String(err))
     res.status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
         error: 'Failed due to unknown reason',

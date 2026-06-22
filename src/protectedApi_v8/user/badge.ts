@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { IBadgeRecent, IBadgeResponse } from '../../models/badge.model'
@@ -26,9 +26,9 @@ badgeApi.get('/', async (req, res) => {
       ...axiosRequestConfig,
       headers: { rootOrg, langCode },
     })
-    res.send(processAllBadges(response.data))
-  } catch (err) {
-    return err
+    return res.send(processAllBadges(response.data))
+  } catch (errAny) {
+    return res.status(500).send(errAny)
   }
 })
 
@@ -42,9 +42,9 @@ badgeApi.get('/for/:wid', async (req, res) => {
       ...axiosRequestConfig,
       headers: { rootOrg, langCode },
     })
-    res.send(processAllBadges(response.data))
-  } catch (err) {
-    return err
+    return res.send(processAllBadges(response.data))
+  } catch (errAny) {
+    return res.status(500).send(errAny)
   }
 })
 
@@ -52,16 +52,16 @@ badgeApi.get('/badgeDetail', async (req, res) => {
   const userId = extractUserIdFromRequest(req)
   const rootOrg = req.header('rootOrg')
   const langCode = req.header('locale')
-  const badgeIds = req.query('badgeIds')
+  const badgeIds = req.query.badgeIds
   const url = `${API_END_POINTS.newBadges(userId)}/newUser/${badgeIds}`
   try {
     const response = await axios.get(url, {
       ...axiosRequestConfig,
       headers: { rootOrg, langCode },
     })
-    res.send(processAllBadges(response.data))
-  } catch (err) {
-    return err
+    return res.send(processAllBadges(response.data))
+  } catch (errAny) {
+    return res.status(500).send(errAny)
   }
 })
 
@@ -80,7 +80,8 @@ badgeApi.post('/newUser', async (req, res) => {
     )
 
     res.json(response.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as AxiosError
     res.status(500).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -104,7 +105,8 @@ badgeApi.post('/update', async (req, res) => {
     )
 
     res.json(response.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as AxiosError
     res.status(500).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,
@@ -133,7 +135,8 @@ badgeApi.get('/notification', async (req, res) => {
       result = processRecentBadges(response.data.result.response)
     }
     res.send(result)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as AxiosError
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
         error: GENERAL_ERROR_MSG,

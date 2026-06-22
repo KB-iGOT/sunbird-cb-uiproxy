@@ -6,7 +6,7 @@ import { extractUserEmailFromRequest, extractUserId, extractUserToken } from '..
 import { CONSTANTS } from './env'
 import { logDebug, logError, logInfo } from './logger'
 
-const _ = require('lodash')
+import _ from 'lodash'
 
 /** Upload paths that must not have their body re-serialised (binary streams) */
 const UPLOAD_EXCLUSIONS = ['/storage/upload', '/storage/profilePhotoUpload/']

@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
@@ -74,7 +74,8 @@ cohortsApi.get('/:cohortType/:contentId', async (req, res) => {
       })
       res.status(response.status).send(response.data)
     }
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as AxiosError
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
         error: unknownError,
@@ -92,9 +93,10 @@ cohortsApi.get('/:groupId', async (req, res) => {
       res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
       return
     }
-    const response = await axios.get(API_END_POINTS.groupCohorts(groupId))
+    const response = await axios.get(API_END_POINTS.groupCohorts(Number(groupId)))
     res.status(response.status).send(response.data)
-  } catch (err) {
+  } catch (errAny) {
+    const err = errAny as AxiosError
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
         error: unknownError,
@@ -142,8 +144,9 @@ export async function getAuthorsDetails(host: string, auth: string, contentId: s
       }
     }
     return userlist
-  } catch (error) {
-    logError('ERROR WHILE FETCHING THE AUTHORS DETAILS --> ', error)
+  } catch (errorAny) {
+    const error = errorAny as AxiosError
+    logError('ERROR WHILE FETCHING THE AUTHORS DETAILS --> ', String(error))
     return false
   }
 }
@@ -173,8 +176,9 @@ cohortsApi.get('/user/autoenrollment/:courseId', async (req, res) => {
       params: req.query,
     })
     res.status(response.status).send(response.data)
-  } catch (err) {
-    logError(err)
+  } catch (errAny) {
+    const err = errAny as AxiosError
+    logError(String(err))
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
         error: unknownError,
@@ -196,8 +200,9 @@ cohortsApi.patch('/course/batch/cert/template/add', async (req, res) => {
     })
 
     res.status(response.status).send(response.data)
-  } catch (err) {
-    logError(err)
+  } catch (errAny) {
+    const err = errAny as AxiosError
+    logError(String(err))
 
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
@@ -220,8 +225,9 @@ cohortsApi.post('/course/batch/cert/issue', async (req, res) => {
     })
 
     res.status(response.status).send(response.data)
-  } catch (err) {
-    logError(err)
+  } catch (errAny) {
+    const err = errAny as AxiosError
+    logError(String(err))
 
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
@@ -244,8 +250,9 @@ cohortsApi.get('/course/batch/cert/download/:certId', async (req, res) => {
     })
 
     res.status(response.status).send(response.data)
-  } catch (err) {
-    logError(err)
+  } catch (errAny) {
+    const err = errAny as AxiosError
+    logError(String(err))
 
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
@@ -299,8 +306,9 @@ cohortsApi.get('/course/getUsersForBatch/:batchId/:deptName?', async (req, res) 
       }
     }
     res.status(response.status).send(userlist)
-  } catch (err) {
-    logError(err)
+  } catch (errAny) {
+    const err = errAny as AxiosError
+    logError(String(err))
 
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
@@ -323,7 +331,7 @@ function getUsers(userprofile: IUserProfile): ICohortsUser {
         designationValue = userprofile.profileDetails.professionalDetails[0].designation
       } else {
         designationValue = userprofile.profileDetails.professionalDetails[0].designationOther === undefined ? '' :
-        userprofile.profileDetails.professionalDetails[0].designationOther
+          userprofile.profileDetails.professionalDetails[0].designationOther
       }
     }
     if (userprofile.profileDetails.personalDetails !== undefined) {
