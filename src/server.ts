@@ -208,40 +208,40 @@ export class Server {
       this.app.use('/authApi', authApi)
     }
   }
+  private getDomainUrl(host: string | undefined): string {
+    if (host === undefined) {
+      return ''
+    }
+    if (host.includes('localhost')) {
+      return 'localhost'
+    }
+    const hostParts = host.split('.')
+    return hostParts.length > 2 ? '.' + hostParts.slice(1).join('.') : host
+  }
   private resetCookies() {
     this.app.use('/reset', (_req, res) => {
-      res.set('Connection', 'close')
-      logDebug('CLEARING RES COOKIES')
-      const host = _req.get('host')
-      logDebug('host is: ' + host)
-      logDebug('response cookies: ' + JSON.stringify(_req.session))
-      logDebug('Cookies:' + _req.get('cookies'))
-      logDebug('Cookie:' + _req.get('cookie'))
-      logDebug('Cookies::::' + JSON.stringify(_req.cookies))
-      let domainUrl = ''
-      if (host !== undefined) {
-        if (host.includes('localhost')) {
-          domainUrl = 'localhost' // For localhost, set domainUrl to localhost
-        } else {
-          const hostParts = host.split('.')
-          if (hostParts.length > 2) {
-            domainUrl = '.' + hostParts.slice(1).join('.')
-          } else {
-            domainUrl = host
-          }
+      // Guarantee no connection reuse regardless of header middleware (CSD fix)
+      res.once('finish', () => {
+        try {
+          _req.socket.destroy()
+        } catch (_e) {
+          /* noop */
         }
-      }
-      res.clearCookie('connect.sid', {httpOnly: true, secure: true, })
-      res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: false, path: '/', secure: true, })
-      logDebug('After delete Cookies::::' + JSON.stringify(_req.cookies))
-      if (_req.session) {
-        _req.session.destroy(() => {
-          logDebug('Session Destroyed')
-          res.redirect('/apis/logout')
-        })
-      } else {
-        logDebug('No Session to destroy.')
+      })
+
+      const domainUrl = this.getDomainUrl(_req.get('host'))
+
+      const finalize = () => {
+        res.set('Connection', 'close')
+        res.clearCookie('connect.sid', { httpOnly: true, secure: true })
+        res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: false, path: '/', secure: true })
         res.redirect('/apis/logout')
+      }
+
+      if (_req.session) {
+        _req.session.destroy(finalize)
+      } else {
+        finalize()
       }
     })
   }
