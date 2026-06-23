@@ -62,9 +62,9 @@ export class CustomKeycloak {
             ' -> postLogoutRedirect=' + postLogoutRedirect
           )
         } else if (publicHomeHosts.includes(logoutHost.toLowerCase())) {
-          postLogoutRedirect = 'https://' + logoutHost + '/app/home'
+          postLogoutRedirect = 'https://' + logoutHost + '/public/home'
           logInfo(
-            '[logout] host in LOGOUT_PUBLIC_HOME_HOSTS, appending /app/home' +
+            '[logout] host in LOGOUT_PUBLIC_HOME_HOSTS, appending /public/home' +
             ' -> postLogoutRedirect=' + postLogoutRedirect
           )
         } else {
