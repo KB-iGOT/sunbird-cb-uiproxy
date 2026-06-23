@@ -8788,7 +8788,7 @@ export const API_LIST = {
             '/proxies/v8/read/v5/content-progres/:do_id',
             '/proxies/v8/v5/content-progres/:do_id',
             '/proxies/v8/learner/course/v5/user/enrollment/list',
-            '/proxies/v8/learner/course/v5/user/enrollment/details/:id',
+            '/proxies/v8/learner/course/v5/user/enrollment/details',
             '/proxies/v8/learner/course/v5/user/enrollment/summary',
         ],
 }
