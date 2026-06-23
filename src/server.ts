@@ -220,29 +220,17 @@ export class Server {
   }
   private resetCookies() {
     this.app.use('/reset', (_req, res) => {
-      // Guarantee no connection reuse regardless of header middleware (CSD fix)
-      res.once('finish', () => {
-        try {
-          _req.socket.destroy()
-        } catch (_e) {
-          /* noop */
-        }
-      })
-
       const domainUrl = this.getDomainUrl(_req.get('host'))
 
-      const finalize = () => {
-        res.set('Connection', 'close')
-        res.clearCookie('connect.sid', { httpOnly: true, secure: true })
-        res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: false, path: '/', secure: true })
-        res.redirect('/apis/logout')
+      // Remove the server-side session, but don't block the response on it.
+      if (_req.session) {
+        _req.session.destroy((err) => { if (err) { logError('reset: destroy failed: ' + err) } })
       }
 
-      if (_req.session) {
-        _req.session.destroy(finalize)
-      } else {
-        finalize()
-      }
+      res.set('Connection', 'close')
+      res.clearCookie('connect.sid', { httpOnly: true, secure: true })
+      res.clearCookie('connect.sid', { domain: domainUrl, httpOnly: false, path: '/', secure: true })
+      res.redirect('/apis/logout')
     })
   }
 
