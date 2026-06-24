@@ -72,8 +72,12 @@ parichayAuth.get('/callback', async (req, res) => {
             url: CONSTANTS.PARICHAY_TOKEN_URL,
         })
         logDebug(
-            `[PARICHAY_TOKEN_SUCCESS] accessTokenPresent=${!!tokenResponse?.data?.access_token}, ` +
-            `refreshTokenPresent=${!!tokenResponse?.data?.refresh_token}`
+            `[PARICHAY_TOKEN_SUCCESS] accessTokenPresent=${Boolean(
+            tokenResponse.data && tokenResponse.data.access_token
+            )}, ` +
+            `refreshTokenPresent=${Boolean(
+            tokenResponse.data && tokenResponse.data.refresh_token
+            )}`
         )
         if (req.session) {
             req.session.parichayToken = tokenResponse.data
@@ -167,11 +171,20 @@ parichayAuth.get('/callback', async (req, res) => {
         }
     } catch (err: unknown) {
         if (axios.isAxiosError(err)) {
+            const status = err.response ? err.response.status : undefined
+            let responseData = '{}'
+            try {
+                responseData = JSON.stringify(
+                    err.response ? err.response.data : {}
+                )
+            } catch (stringifyError) {
+                responseData = '[unserializable response]'
+            }
             logError(
                 `[PARICHAY_CALLBACK_ERROR] code=${req.query.code}, ` +
                 `message=${err.message}, ` +
-                `status=${err.response?.status}, ` +
-                `response=${JSON.stringify(err.response?.data || {})}`
+                `status=${status}, ` +
+                `response=${responseData}`
             )
         } else {
             logError(
