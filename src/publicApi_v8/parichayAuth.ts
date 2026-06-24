@@ -71,14 +71,7 @@ parichayAuth.get('/callback', async (req, res) => {
             method: 'POST',
             url: CONSTANTS.PARICHAY_TOKEN_URL,
         })
-        logDebug(
-            `[PARICHAY_TOKEN_SUCCESS] accessTokenPresent=${Boolean(
-            tokenResponse.data && tokenResponse.data.access_token
-            )}, ` +
-            `refreshTokenPresent=${Boolean(
-            tokenResponse.data && tokenResponse.data.refresh_token
-            )}`
-        )
+        logDebug('[PARICHAY_TOKEN_RESPONSE_RECEIVED]')
         if (req.session) {
             req.session.parichayToken = tokenResponse.data
             req.session.cookie.expires = new Date(getCurrnetExpiryTime(tokenResponse.data.access_token))
