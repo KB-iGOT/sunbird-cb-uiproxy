@@ -63,7 +63,11 @@ parichayAuth.get('/callback', async (req, res) => {
             method: 'POST',
             url: CONSTANTS.PARICHAY_TOKEN_URL,
         })
-        logDebug(`[PARICHAY_TOKEN_SUCCESS] accessTokenPresent=${!!tokenResponse?.data?.access_token}, refreshTokenPresent=${!!tokenResponse?.data?.refresh_token}`)
+        logDebug(
+            `[PARICHAY_TOKEN_REQUEST] code=${req.query.code}, ` +
+            `redirectUrl=${redirectUrl}, ` +
+            `tokenUrl=${CONSTANTS.PARICHAY_TOKEN_URL}`
+        )
         if (req.session) {
             req.session.parichayToken = tokenResponse.data
             req.session.cookie.expires = new Date(getCurrnetExpiryTime(tokenResponse.data.access_token))
@@ -81,7 +85,12 @@ parichayAuth.get('/callback', async (req, res) => {
         })
 
         logDebug('User information from Parichay : ' + JSON.stringify(userDetailResponse.data))
-        logDebug(`[PARICHAY_USER_DATA] loginId=${userDetailResponse.data.loginId}, ` +`mobileNo=${userDetailResponse.data.MobileNo}, ` +`firstName=${userDetailResponse.data.FirstName}, ` +`lastName=${userDetailResponse.data.LastName}`)
+        logDebug(
+            `[PARICHAY_USER_DATA] loginId=${userDetailResponse.data.loginId}, ` +
+            `mobileNo=${userDetailResponse.data.MobileNo}, ` +
+            `firstName=${userDetailResponse.data.FirstName}, ` +
+            `lastName=${userDetailResponse.data.LastName}`
+        )
         const loginId = userDetailResponse.data.loginId
         if (!loginId) {
             const errorMessage = 'iGOT login failed. You must allow Email id on the consent form for Login. '
