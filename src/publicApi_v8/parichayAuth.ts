@@ -72,9 +72,8 @@ parichayAuth.get('/callback', async (req, res) => {
             url: CONSTANTS.PARICHAY_TOKEN_URL,
         })
         logDebug(
-            `[PARICHAY_TOKEN_REQUEST] code=${req.query.code}, ` +
-            `redirectUrl=${redirectUrl}, ` +
-            `tokenUrl=${CONSTANTS.PARICHAY_TOKEN_URL}`
+            `[PARICHAY_TOKEN_SUCCESS] accessTokenPresent=${!!tokenResponse?.data?.access_token}, ` +
+            `refreshTokenPresent=${!!tokenResponse?.data?.refresh_token}`
         )
         if (req.session) {
             req.session.parichayToken = tokenResponse.data
@@ -109,7 +108,6 @@ parichayAuth.get('/callback', async (req, res) => {
         }
 
         let result: { errMessage: string, rootOrgId: string, userExist: boolean, }
-        logDebug(`[PARICHAY_FETCH_USER_REQUEST] loginId=${userDetailResponse.data.loginId}`)
         logDebug(`[PARICHAY_FETCH_USER_REQUEST] loginId=${userDetailResponse.data.loginId}`)
         result = await fetchUserByEmailId(userDetailResponse.data.loginId)
         logDebug('For Parichay emailId ? ' + userDetailResponse.data.loginId + ', isUserExist ? ' + result.userExist
@@ -148,7 +146,6 @@ parichayAuth.get('/callback', async (req, res) => {
                     access_token: string, errMessage: string, keycloakSessionCreated: boolean, refresh_token: string
                 }
                 logDebug(`[PARICHAY_KEYCLOAK_REQUEST] loginId=${userDetailResponse.data.loginId}`)
-                logDebug(`[PARICHAY_KEYCLOAK_REQUEST] loginId=${userDetailResponse.data.loginId}`)
                 keycloakResult = await updateKeycloakSession(userDetailResponse.data.loginId, req, res)
                 if (keycloakResult.errMessage !== '') {
                     logError('For Parichay emailId:' + userDetailResponse.data.loginId
@@ -168,9 +165,17 @@ parichayAuth.get('/callback', async (req, res) => {
                 resRedirectUrl = `https://${host}/public/welcome`
             }
         }
-    } catch (err) {
-        logError('Failed to process callback API for Parichay code : ' + req.query.code + '..with the error: ' + JSON.stringify(err))
-        resRedirectUrl = `https://${host}/public/logout?error=` + encodeURIComponent('Internal Server Error. Please contact administrator.')
+    } catch (err: any) {
+        logError(
+            `[PARICHAY_CALLBACK_ERROR] code=${req.query.code}, ` +
+            `message=${err?.message}, ` +
+            `status=${err?.response?.status}, ` +
+            `response=${JSON.stringify(err?.response?.data || {})}`
+        )
+
+        resRedirectUrl =
+            `https://${host}/public/logout?error=` +
+            encodeURIComponent('Internal Server Error. Please contact administrator.')
     }
     res.redirect(resRedirectUrl)
 })
