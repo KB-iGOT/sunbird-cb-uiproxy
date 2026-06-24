@@ -31,7 +31,11 @@ parichayAuth.get('/auth', async (req, res) => {
 
 parichayAuth.get('/callback', async (req, res) => {
     const host = req.get('host')
-    logDebug(`[PARICHAY_CALLBACK_START] host=${host}, hostname=${req.hostname}, code=${req.query.code}`)
+    logDebug(
+        `[PARICHAY_CALLBACK_START] host=${host}, ` +
+        `hostname=${req.hostname}, ` +
+        `code=${req.query.code}`
+    )
     if (!req.query.code) {
         logDebug('Received host : ' + host)
         logError('Failed to login in Parichay, authorization code is missing. Redirecting to /error')
