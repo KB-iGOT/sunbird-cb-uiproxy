@@ -7800,7 +7800,7 @@ export const API_LIST = {
           ROLE.PUBLIC,
         ],
       },
-      '/composite/v5/search': {
+      '/proxies/v8/composite/v5/search': {
         checksNeeded: [CHECK.ROLE],
         // tslint:disable-next-line: object-literal-sort-keys
         ROLE_CHECK: [
@@ -8797,6 +8797,6 @@ export const API_LIST = {
             '/proxies/v8/learner/course/v5/user/enrollment/list',
             '/proxies/v8/learner/course/v5/user/enrollment/details',
             '/proxies/v8/learner/course/v5/user/enrollment/summary',
-            '/composite/v5/search',
+            '/proxies/v8/composite/v5/search',
         ],
 }
