@@ -32,6 +32,7 @@ parichayAuth.get('/auth', async (req, res) => {
 parichayAuth.get('/callback', async (req, res) => {
     const host = req.get('host')
     logDebug(`[PARICHAY_CALLBACK_START] host=${host}, hostname=${req.hostname}, code=${req.query.code}`)
+    logDebug(`[PARICHAY_CALLBACK_START] host=${host}, hostname=${req.hostname}, code=${req.query.code}`)
     if (!req.query.code) {
         logDebug('Received host : ' + host)
         logError('Failed to login in Parichay, authorization code is missing. Redirecting to /error')
@@ -48,6 +49,7 @@ parichayAuth.get('/callback', async (req, res) => {
     }
     try {
         const redirectUrl = 'https://' + req.hostname + CONSTANTS.PARICHAY_AUTH_CALLBACK_URL
+        logDebug(`[PARICHAY_TOKEN_REQUEST] code=${req.query.code}, redirectUrl=${redirectUrl}, tokenUrl=${CONSTANTS.PARICHAY_TOKEN_URL}`)
         logDebug(`[PARICHAY_TOKEN_REQUEST] code=${req.query.code}, redirectUrl=${redirectUrl}, tokenUrl=${CONSTANTS.PARICHAY_TOKEN_URL}`)
         const tokenResponse = await axios({
             ...axiosRequestConfig,
@@ -102,6 +104,7 @@ parichayAuth.get('/callback', async (req, res) => {
 
         let result: { errMessage: string, rootOrgId: string, userExist: boolean, }
         logDebug(`[PARICHAY_FETCH_USER_REQUEST] loginId=${userDetailResponse.data.loginId}`)
+        logDebug(`[PARICHAY_FETCH_USER_REQUEST] loginId=${userDetailResponse.data.loginId}`)
         result = await fetchUserByEmailId(userDetailResponse.data.loginId)
         logDebug('For Parichay emailId ? ' + userDetailResponse.data.loginId + ', isUserExist ? ' + result.userExist
             + ', rootOrgId ? ' + result.rootOrgId + ', errorMessage ? ' + result.errMessage)
@@ -138,6 +141,7 @@ parichayAuth.get('/callback', async (req, res) => {
                 let keycloakResult: {
                     access_token: string, errMessage: string, keycloakSessionCreated: boolean, refresh_token: string
                 }
+                logDebug(`[PARICHAY_KEYCLOAK_REQUEST] loginId=${userDetailResponse.data.loginId}`)
                 logDebug(`[PARICHAY_KEYCLOAK_REQUEST] loginId=${userDetailResponse.data.loginId}`)
                 keycloakResult = await updateKeycloakSession(userDetailResponse.data.loginId, req, res)
                 if (keycloakResult.errMessage !== '') {
