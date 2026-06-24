@@ -31,7 +31,11 @@ parichayAuth.get('/auth', async (req, res) => {
 
 parichayAuth.get('/callback', async (req, res) => {
     const host = req.get('host')
-    logDebug(`[PARICHAY_CALLBACK_START] host=${host}, hostname=${req.hostname}, code=${req.query.code}`)
+    logDebug(
+        `[PARICHAY_CALLBACK_START] host=${host}, ` +
+        `hostname=${req.hostname}, ` +
+        `code=${req.query.code}`
+    )
     if (!req.query.code) {
         logDebug('Received host : ' + host)
         logError('Failed to login in Parichay, authorization code is missing. Redirecting to /error')
@@ -48,7 +52,11 @@ parichayAuth.get('/callback', async (req, res) => {
     }
     try {
         const redirectUrl = 'https://' + req.hostname + CONSTANTS.PARICHAY_AUTH_CALLBACK_URL
-        logDebug(`[PARICHAY_TOKEN_REQUEST] code=${req.query.code}, redirectUrl=${redirectUrl}, tokenUrl=${CONSTANTS.PARICHAY_TOKEN_URL}`)
+        logDebug(
+            `[PARICHAY_TOKEN_REQUEST] code=${req.query.code}, ` +
+            `redirectUrl=${redirectUrl}, ` +
+            `tokenUrl=${CONSTANTS.PARICHAY_TOKEN_URL}`
+        )
         const tokenResponse = await axios({
             ...axiosRequestConfig,
             data: {
@@ -63,7 +71,11 @@ parichayAuth.get('/callback', async (req, res) => {
             method: 'POST',
             url: CONSTANTS.PARICHAY_TOKEN_URL,
         })
-        logDebug(`[PARICHAY_TOKEN_SUCCESS] accessTokenPresent=${!!tokenResponse?.data?.access_token}, refreshTokenPresent=${!!tokenResponse?.data?.refresh_token}`)
+        logDebug(
+            `[PARICHAY_TOKEN_REQUEST] code=${req.query.code}, ` +
+            `redirectUrl=${redirectUrl}, ` +
+            `tokenUrl=${CONSTANTS.PARICHAY_TOKEN_URL}`
+        )
         if (req.session) {
             req.session.parichayToken = tokenResponse.data
             req.session.cookie.expires = new Date(getCurrnetExpiryTime(tokenResponse.data.access_token))
@@ -81,7 +93,12 @@ parichayAuth.get('/callback', async (req, res) => {
         })
 
         logDebug('User information from Parichay : ' + JSON.stringify(userDetailResponse.data))
-        logDebug(`[PARICHAY_USER_DATA] loginId=${userDetailResponse.data.loginId}, ` +`mobileNo=${userDetailResponse.data.MobileNo}, ` +`firstName=${userDetailResponse.data.FirstName}, ` +`lastName=${userDetailResponse.data.LastName}`)
+        logDebug(
+            `[PARICHAY_USER_DATA] loginId=${userDetailResponse.data.loginId}, ` +
+            `mobileNo=${userDetailResponse.data.MobileNo}, ` +
+            `firstName=${userDetailResponse.data.FirstName}, ` +
+            `lastName=${userDetailResponse.data.LastName}`
+        )
         const loginId = userDetailResponse.data.loginId
         if (!loginId) {
             const errorMessage = 'iGOT login failed. You must allow Email id on the consent form for Login. '
@@ -92,6 +109,7 @@ parichayAuth.get('/callback', async (req, res) => {
         }
 
         let result: { errMessage: string, rootOrgId: string, userExist: boolean, }
+        logDebug(`[PARICHAY_FETCH_USER_REQUEST] loginId=${userDetailResponse.data.loginId}`)
         logDebug(`[PARICHAY_FETCH_USER_REQUEST] loginId=${userDetailResponse.data.loginId}`)
         result = await fetchUserByEmailId(userDetailResponse.data.loginId)
         logDebug('For Parichay emailId ? ' + userDetailResponse.data.loginId + ', isUserExist ? ' + result.userExist
@@ -129,6 +147,7 @@ parichayAuth.get('/callback', async (req, res) => {
                 let keycloakResult: {
                     access_token: string, errMessage: string, keycloakSessionCreated: boolean, refresh_token: string
                 }
+                logDebug(`[PARICHAY_KEYCLOAK_REQUEST] loginId=${userDetailResponse.data.loginId}`)
                 logDebug(`[PARICHAY_KEYCLOAK_REQUEST] loginId=${userDetailResponse.data.loginId}`)
                 keycloakResult = await updateKeycloakSession(userDetailResponse.data.loginId, req, res)
                 if (keycloakResult.errMessage !== '') {
