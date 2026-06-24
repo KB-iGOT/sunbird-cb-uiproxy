@@ -169,29 +169,11 @@ parichayAuth.get('/callback', async (req, res) => {
                 resRedirectUrl = `https://${host}/public/welcome`
             }
         }
-    } catch (err: unknown) {
-        if (axios.isAxiosError(err)) {
-            const status = err.response ? err.response.status : undefined
-            let responseData = '{}'
-            try {
-                responseData = JSON.stringify(
-                    err.response ? err.response.data : {}
-                )
-            } catch (stringifyError) {
-                responseData = '[unserializable response]'
-            }
-            logError(
-                `[PARICHAY_CALLBACK_ERROR] code=${req.query.code}, ` +
-                `message=${err.message}, ` +
-                `status=${status}, ` +
-                `response=${responseData}`
-            )
-        } else {
-            logError(
-                `[PARICHAY_CALLBACK_ERROR] code=${req.query.code}, ` +
-                `error=${String(err)}`
-            )
-        }
+    } catch (err) {
+        logError(
+            '[PARICHAY_CALLBACK_ERROR] code=' + req.query.code +
+            ', error=' + JSON.stringify(err)
+        )
 
         resRedirectUrl =
             `https://${host}/public/logout?error=` +
