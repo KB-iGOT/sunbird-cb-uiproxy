@@ -25,7 +25,6 @@
     "LA_HOST_PROXY": "http://10.177.157.29",
     "NAVIGATOR_JSON_HOST": "http://localhost:3007/web-hosted/navigator/json",
     "NODE_API_BASE_2_CLIENT_ID": "admin",
-    "NODE_API_BASE_2_CLIENT_SECRET": "MdiDn@342$",
     "NODE_API_BASE_2": "http://localhost:3009",
     "NODE_API_BASE_3": "http://localhost:3015",
     "NODE_API_BASE": "http://localhost:5001",
