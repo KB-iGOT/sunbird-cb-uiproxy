@@ -7737,14 +7737,14 @@ export const API_LIST = {
             ROLE.SPV_ADMIN,
           ],
         },
-      '/proxies/v8/user/ngo/profile/v2/getAdditionalFields': {
+      '/proxies/v8/user/profile/v2/getAdditionalFields': {
         checksNeeded: [CHECK.ROLE],
         // tslint:disable-next-line: object-literal-sort-keys
         ROLE_CHECK: [
           ROLE.PUBLIC,
         ],
       },
-      '/proxies/v8/user/ngo/profile/v2/extended/all': {
+      '/proxies/v8/user/profile/v2/extended/all': {
         checksNeeded: [CHECK.ROLE],
         // tslint:disable-next-line: object-literal-sort-keys
         ROLE_CHECK: [
