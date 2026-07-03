@@ -7580,6 +7580,20 @@ export const API_LIST = {
                 ROLE.STATE_ADMIN,
             ],
         },
+        '/proxies/v8/course/v2/unenroll': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/course/v1/reenroll': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },      
     },
     URL_PATTERN:
         [
@@ -8539,5 +8553,7 @@ export const API_LIST = {
             '/proxies/v8/bp/v2/bpreport/status',
             '/proxies/v8/content/v5/dictionary',
             '/proxies/v8/user/v1/role/assign',
+            '/proxies/v8/course/v2/unenroll',
+            '/proxies/v8/course/v1/reenroll',
         ],
 }
