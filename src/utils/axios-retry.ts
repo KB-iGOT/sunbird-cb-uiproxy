@@ -26,7 +26,7 @@ axios.interceptors.response.use(undefined, (err: AxiosError) => {
   config.__retryCount += 1
 
   // Create new promise to handle exponential delay
-  const delay = new Promise((resolve) => {
+  const delay = new Promise<void>((resolve) => {
     setTimeout(() => {
       resolve()
     }, config.retryDelay || 0)
