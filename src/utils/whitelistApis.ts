@@ -7800,6 +7800,21 @@ export const API_LIST = {
           ROLE.PUBLIC,
         ],
       },
+      '/proxies/v8/composite/v5/search': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+          ROLE.PUBLIC,
+          ROLE.VOLUNTEER,
+        ],
+      },
+      '/proxies/v8/org/v1/status/update': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+          ROLE.SPV_ADMIN,
+        ],
+      },
     },
     URL_PATTERN:
         [
@@ -8790,5 +8805,7 @@ export const API_LIST = {
             '/proxies/v8/learner/course/v5/user/enrollment/list',
             '/proxies/v8/learner/course/v5/user/enrollment/details',
             '/proxies/v8/learner/course/v5/user/enrollment/summary',
+            '/proxies/v8/composite/v5/search',
+            '/proxies/v8/org/v1/status/update'
         ],
 }
