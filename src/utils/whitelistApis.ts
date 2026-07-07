@@ -7736,6 +7736,14 @@ export const API_LIST = {
             ROLE.SPV_ADMIN,
           ],
         },
+        '/proxies/v8/user/nongovt/v1/bulkupload': {
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+            ROLE.MDO_ADMIN,
+            ROLE.SPV_ADMIN,
+          ],
+        },
 
     },
     URL_PATTERN:
@@ -8714,5 +8722,6 @@ export const API_LIST = {
             '/proxies/v8/formsConfig/v1/create',
             '/proxies/v8/formsConfig/v1/read',
             '/proxies/v8/formsConfig/v1/update',
+            '/proxies/v8/user/nongovt/v1/bulkupload',
         ],
 }
