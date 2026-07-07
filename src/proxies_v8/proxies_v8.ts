@@ -263,6 +263,11 @@ proxiesV8.use('/sunbirdigot/*',
   proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/composite/v1/search`)
 )
 
+proxiesV8.use('/composite/v5/search',
+  // tslint:disable-next-line: max-line-length
+  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/composite/v5/search`)
+)
+
 proxiesV8.use('/v1/content/retire',
   proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KNOWLEDGE_MW_API_BASE}`)
 )
@@ -279,6 +284,11 @@ proxiesV8.use('/learnervm/private/content/*',
   proxyContentLearnerVM(express.Router(), `${CONSTANTS.VM_LEARNING_SERVICE_URL}`)
 )
 
+proxiesV8.use('/v5/content-progres',
+  // tslint:disable-next-line: max-line-length
+  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/course/v5/content/state/update`)
+)
+
 proxiesV8.use('/content-progres/ngo*',
   // tslint:disable-next-line: max-line-length
   proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/course/v1/content/state/update/ngo`)
@@ -287,6 +297,11 @@ proxiesV8.use('/content-progres/ngo*',
 proxiesV8.use('/content-progres/*',
   // tslint:disable-next-line: max-line-length
   proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/course/v1/content/state/update`)
+)
+
+proxiesV8.use('/v5/read/content-progres/ngo/*',
+  // tslint:disable-next-line: max-line-length
+  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/course/v5/content/state/read`)
 )
 
 proxiesV8.use('/read/content-progres/ngo/*',
@@ -1655,5 +1670,9 @@ proxiesV8.use('/volunteer/*',
 )
 
 proxiesV8.use('/ai/chatbot/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
+proxiesV8.use('/formsConfig/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )

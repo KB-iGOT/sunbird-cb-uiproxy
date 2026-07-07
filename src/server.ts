@@ -215,6 +215,7 @@ export class Server {
   }
   private resetCookies() {
     this.app.use('/reset', (_req, res) => {
+      res.set('Connection', 'close')
       logDebug('Reset clicked. Redirecting to /apis/logout for deauthentication')
       res.redirect('/apis/logout')
     })
