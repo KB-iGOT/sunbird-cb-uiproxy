@@ -7727,6 +7727,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/formsConfig/v1/update': {
@@ -8802,7 +8803,7 @@ export const API_LIST = {
             '/proxies/v8/learner/course/v5/user/enrollment/details',
             '/proxies/v8/learner/course/v5/user/enrollment/summary',
             '/proxies/v8/composite/v5/search',
-            '/proxies/v8/org/v1/status/update'
+            '/proxies/v8/org/v1/status/update',
             '/proxies/v8/user/nongovt/v1/bulkupload',
         ],
 }
