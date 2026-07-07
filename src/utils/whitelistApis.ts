@@ -7722,12 +7722,6 @@ export const API_LIST = {
                 ROLE.SPV_ADMIN,
             ],
         },
-          checksNeeded: [CHECK.ROLE],
-          // tslint:disable-next-line: object-literal-sort-keys
-          ROLE_CHECK: [
-            ROLE.PUBLIC,
-          ],
-        },
         '/proxies/v8/formsConfig/v1/create': {
           checksNeeded: [CHECK.ROLE],
           // tslint:disable-next-line: object-literal-sort-keys
@@ -8799,7 +8793,7 @@ export const API_LIST = {
             '/proxies/v8/ai/chatbot/v1/sessions/list',
             '/proxies/v8/ai/chatbot/v1/sessions/history/:id',
             '/proxies/v8/ai/chatbot/v1/sessions/turn/:id',
-            '/proxies/v8/org/v1/status/update'
+            '/proxies/v8/org/v1/status/update',
             '/proxies/v8/formsConfig/v1/create',
             '/proxies/v8/formsConfig/v1/read',
             '/proxies/v8/formsConfig/v1/update',
