@@ -8814,5 +8814,6 @@ export const API_LIST = {
             '/proxies/v8/org/v1/status/update',
             '/proxies/v8/user/nongovt/v1/bulkupload',
             '/proxies/v8/ratings/v1/read/:activity_id/:type',
+          
         ],
 }
