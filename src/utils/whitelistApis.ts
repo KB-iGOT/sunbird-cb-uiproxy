@@ -7820,8 +7820,7 @@ export const API_LIST = {
           checksNeeded: [CHECK.ROLE],
           // tslint:disable-next-line: object-literal-sort-keys
           ROLE_CHECK: [
-            ROLE.MDO_ADMIN,
-            ROLE.SPV_ADMIN,
+            ROLE.PUBLIC,
           ],
         },
     },
@@ -8814,6 +8813,5 @@ export const API_LIST = {
             '/proxies/v8/org/v1/status/update',
             '/proxies/v8/user/nongovt/v1/bulkupload',
             '/proxies/v8/ratings/v1/read/:activity_id/:type',
-          
         ],
 }
