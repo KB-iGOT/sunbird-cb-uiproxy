@@ -7830,6 +7830,13 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/content/user/info': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
 
     },
     URL_PATTERN:
@@ -8822,5 +8829,6 @@ export const API_LIST = {
             '/proxies/v8/composite/v5/search',
             '/proxies/v8/org/v1/status/update',
             '/proxies/v8/user/nongovt/v1/bulkupload',
+            '/proxies/v8/content/user/info',
         ],
 }
