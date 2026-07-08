@@ -1666,3 +1666,8 @@ proxiesV8.use('/ai/chatbot/*',
 proxiesV8.use('/formsConfig/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/composite/v5/search',
+  // tslint:disable-next-line: max-line-length
+  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/composite/v5/search`)
+)
