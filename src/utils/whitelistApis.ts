@@ -7801,13 +7801,6 @@ export const API_LIST = {
           ROLE.VOLUNTEER,
         ],
       },
-      '/proxies/v8/org/v1/status/update': {
-            checksNeeded: [CHECK.ROLE],
-            // tslint:disable-next-line: object-literal-sort-keys
-            ROLE_CHECK: [
-                ROLE.SPV_ADMIN,
-            ],
-        },
         '/proxies/v8/user/nongovt/v1/bulkupload': {
           checksNeeded: [CHECK.ROLE],
           // tslint:disable-next-line: object-literal-sort-keys
@@ -8819,7 +8812,6 @@ export const API_LIST = {
             '/proxies/v8/learner/course/v5/user/enrollment/details',
             '/proxies/v8/learner/course/v5/user/enrollment/summary',
             '/proxies/v8/composite/v5/search',
-            '/proxies/v8/org/v1/status/update',
             '/proxies/v8/user/nongovt/v1/bulkupload',
             '/proxies/v8/ratings/v1/read/:activity_id/:type',
         ],
