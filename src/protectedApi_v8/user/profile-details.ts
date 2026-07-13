@@ -260,6 +260,8 @@ profileDeatailsApi.post('/createUser', async (req, res) => {
                     mobile: sbphone_ ? Number(sbphone_) : undefined,
                     phoneVerified: sbphoneVerified_,
                     primaryEmail: sbemail_,
+                    pincode: sbpincode_,
+                    tags: req.body.personalDetails.tags,
                 },
                 profileDesignationStatus: notVerifiedStatus,
                 profileGroupStatus: notVerifiedStatus,
