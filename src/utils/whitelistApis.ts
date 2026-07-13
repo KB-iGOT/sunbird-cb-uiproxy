@@ -7630,7 +7630,6 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.VOLUNTEER,
-                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/user/ngo/profile/v1/getAdditionalFields': {
