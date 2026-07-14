@@ -247,17 +247,21 @@ profileDeatailsApi.post('/createUser', async (req, res) => {
         const isEmailRequired = (req.body.personalDetails.isEmailRequired) ? req.body.personalDetails.isEmailRequired : true
         const userRoles = (req.body.personalDetails.roles) ? req.body.personalDetails.roles : undefined
         const sbtags_ = req.body.personalDetails.tags || []
+        const isNgo_ =req.body.personalDetails.isNgo || false
+        const additionalProperties_ = req.body.personalDetails.additionalProperties || {}
         let sbUserProfile: Partial<ISBUser> = {
             channel: sbChannel, email: sbemail_, emailVerified: sbemailVerified_,
             firstName: sbfirstName_, phone: sbphone_,
             profileDetails: {
                 mandatoryFieldsExists: false,
                 personalDetails: {
+                    additionalProperties: additionalProperties_,
                     category: sbcategory_,
                     dob: sbdob_,
                     domicileMedium: sbdomicileMedium_,
                     firstname: sbfirstName_,
                     gender: sbgender_,
+                    isNgo: isNgo_,
                     mobile: sbphone_ ? Number(sbphone_) : undefined,
                     phoneVerified: sbphoneVerified_,
                     primaryEmail: sbemail_,
