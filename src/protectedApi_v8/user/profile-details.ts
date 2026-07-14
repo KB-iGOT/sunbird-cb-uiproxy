@@ -247,7 +247,7 @@ profileDeatailsApi.post('/createUser', async (req, res) => {
         const isEmailRequired = (req.body.personalDetails.isEmailRequired) ? req.body.personalDetails.isEmailRequired : true
         const userRoles = (req.body.personalDetails.roles) ? req.body.personalDetails.roles : undefined
         const sbtags_ = req.body.personalDetails.tags || []
-        const isNgo_ =req.body.personalDetails.isNgo || false
+        const isNgo_ = req.body.personalDetails.isNgo || false
         const additionalProperties_ = req.body.personalDetails.additionalProperties || {}
         let sbUserProfile: Partial<ISBUser> = {
             channel: sbChannel, email: sbemail_, emailVerified: sbemailVerified_,
@@ -264,8 +264,8 @@ profileDeatailsApi.post('/createUser', async (req, res) => {
                     isNgo: isNgo_,
                     mobile: sbphone_ ? Number(sbphone_) : undefined,
                     phoneVerified: sbphoneVerified_,
-                    primaryEmail: sbemail_,
                     pincode: sbpincode_,
+                    primaryEmail: sbemail_,
                     tags: sbtags_,
                 },
                 profileDesignationStatus: notVerifiedStatus,
