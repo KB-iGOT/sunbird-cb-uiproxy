@@ -2596,6 +2596,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/user/v1/admin/autocomplete/:searchTerm': {
@@ -5880,6 +5881,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/user/profile/v1/extended/all/:id': {
@@ -7819,6 +7821,7 @@ export const API_LIST = {
           ROLE_CHECK: [
             ROLE.MDO_ADMIN,
             ROLE.SPV_ADMIN,
+            ROLE.MDO_LEADER,
           ],
         },
         '/proxies/v8/ratings/v1/read/:activity_id/:type': {
@@ -7833,6 +7836,27 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/course/v2/unenroll': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/course/v1/reenroll': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/user/content/info': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
             ],
         },
 
@@ -8815,6 +8839,8 @@ export const API_LIST = {
             '/proxies/v8/formsConfig/v1/read',
             '/proxies/v8/formsConfig/v1/update',
             '/proxies/v8/org/v1/status/update',
+            '/proxies/v8/course/v2/unenroll',
+            '/proxies/v8/course/v1/reenroll',
             '/proxies/v8/user/profile/v2/basic',
             '/proxies/v8/user/profile/v2/extended/all',
             '/proxies/v8/user/profile/v2/getAdditionalFields',
@@ -8827,5 +8853,6 @@ export const API_LIST = {
             '/proxies/v8/composite/v5/search',
             '/proxies/v8/user/nongovt/v1/bulkupload',
             '/proxies/v8/ratings/v1/read/:activity_id/:type',
+            '/proxies/v8/user/content/info',
         ],
 }
