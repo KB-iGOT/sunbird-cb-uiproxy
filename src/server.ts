@@ -110,6 +110,9 @@ export class Server {
         res.cookie('rootorg', rootOrg)
       }
       Object.keys(req.cookies).forEach((cookieName) => {
+        if (cookieName === 'connect.sid') {
+          return
+        }
         res.cookie(cookieName, req.cookies[cookieName], { httpOnly: false })
       })
       next()
