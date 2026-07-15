@@ -614,6 +614,7 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
     if (!channel) {
       channel = ''
     }
+
     const uploadHeaders: { [key: string]: string } = {
       // tslint:disable-next-line:max-line-length
       Authorization: CONSTANTS.SB_API_KEY,
@@ -621,7 +622,7 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
       'x-authenticated-user-channel': encodeURIComponent(channel),
       'x-authenticated-user-orgid': rootOrgId,
       'x-authenticated-user-orgname': encodeURIComponent(channel),
-      'x-authenticated-user-token': extractUserToken(req),
+      'x-authenticated-user-token': extractUserToken(req) || '',
       'x-authenticated-userid': extractUserIdFromRequest(req),
     }
     const targetOrgId = _.get(req, 'body.targetorgid') || _.get(req, 'headers.targetorgid')
@@ -696,7 +697,7 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
       'x-authenticated-user-channel': encodeURIComponent(channel),
       'x-authenticated-user-orgid': rootOrgId,
       'x-authenticated-user-orgname': encodeURIComponent(channel),
-      'x-authenticated-user-token': extractUserToken(req),
+      'x-authenticated-user-token': extractUserToken(req) || '',
       'x-authenticated-userid': extractUserIdFromRequest(req),
     }
     const targetOrgId = _.get(req, 'body.targetorgid') || _.get(req, 'headers.targetorgid')
@@ -1227,7 +1228,7 @@ proxiesV8.use('/cios/*',
 proxiesV8.get('/cios/v1/content/read/:contentId', async (req, res) => {
   const contentId = req.params.contentId
   const userId = extractUserIdFromRequest(req)
-  const token = extractUserToken(req)
+  const token = extractUserToken(req) || ''
   try {
     const response = await allocationService.readByUserIdCourseId(userId, contentId, token)
     if (response) {
