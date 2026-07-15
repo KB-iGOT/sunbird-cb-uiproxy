@@ -614,18 +614,23 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
     if (!channel) {
       channel = ''
     }
+    const uploadHeaders: { [key: string]: string } = {
+      // tslint:disable-next-line:max-line-length
+      Authorization: CONSTANTS.SB_API_KEY,
+      // tslint:disable-next-line: all
+      'x-authenticated-user-channel': encodeURIComponent(channel),
+      'x-authenticated-user-orgid': rootOrgId,
+      'x-authenticated-user-orgname': encodeURIComponent(channel),
+      'x-authenticated-user-token': extractUserToken(req),
+      'x-authenticated-userid': extractUserIdFromRequest(req),
+    }
+    const targetOrgId = _.get(req, 'body.targetorgid') || _.get(req, 'headers.targetorgid')
+    if (targetOrgId) {
+      uploadHeaders.targetorgid = targetOrgId
+    }
     formData.submit(
       {
-        headers: {
-          // tslint:disable-next-line:max-line-length
-          Authorization: CONSTANTS.SB_API_KEY,
-          // tslint:disable-next-line: all
-          'x-authenticated-user-channel': encodeURIComponent(channel),
-          'x-authenticated-user-orgid': rootOrgId,
-          'x-authenticated-user-orgname': encodeURIComponent(channel),
-          'x-authenticated-user-token': extractUserToken(req),
-          'x-authenticated-userid': extractUserIdFromRequest(req),
-        },
+        headers: uploadHeaders,
         host: 'kong',
         path: url,
         port: 8000,
@@ -684,18 +689,23 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
     if (!channel) {
       channel = ''
     }
+    const uploadHeaders: { [key: string]: string } = {
+      // tslint:disable-next-line:max-line-length
+      Authorization: CONSTANTS.SB_API_KEY,
+      // tslint:disable-next-line: all
+      'x-authenticated-user-channel': encodeURIComponent(channel),
+      'x-authenticated-user-orgid': rootOrgId,
+      'x-authenticated-user-orgname': encodeURIComponent(channel),
+      'x-authenticated-user-token': extractUserToken(req),
+      'x-authenticated-userid': extractUserIdFromRequest(req),
+    }
+    const targetOrgId = _.get(req, 'body.targetorgid') || _.get(req, 'headers.targetorgid')
+    if (targetOrgId) {
+      uploadHeaders.targetorgid = targetOrgId
+    }
     formData.submit(
       {
-        headers: {
-          // tslint:disable-next-line:max-line-length
-          Authorization: CONSTANTS.SB_API_KEY,
-          // tslint:disable-next-line: all
-          'x-authenticated-user-channel': encodeURIComponent(channel),
-          'x-authenticated-user-orgid': rootOrgId,
-          'x-authenticated-user-orgname': encodeURIComponent(channel),
-          'x-authenticated-user-token': extractUserToken(req),
-          'x-authenticated-userid': extractUserIdFromRequest(req),
-        },
+        headers: uploadHeaders,
         host: 'kong',
         path: url,
         port: 8000,
