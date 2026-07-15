@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
@@ -21,7 +21,7 @@ publicTnc.get('/', async (req, res) => {
       return
     }
     if (req.query.locale) {
-      locale = req.query.locale
+      locale = req.query.locale as string
     }
     const response = await axios({
       ...axiosRequestConfig,
@@ -34,8 +34,9 @@ publicTnc.get('/', async (req, res) => {
       url: apiEndpoints.tnc,
     })
     res.json(response.data)
-  } catch (err) {
-    logError('TNC ERR >', err)
+  } catch (errAny) {
+    const err = errAny as AxiosError
+    logError('TNC ERR >', String(err))
     res.status((err && err.response && err.response.status) || 500).send(
       (err && err.response && err.response.data) || {
         error: 'Failed due to unknown reason',

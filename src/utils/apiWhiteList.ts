@@ -226,28 +226,27 @@ const urlChecks = {
  * @since release-3.1.0
  */
 // tslint:disable-next-line: no-any
-const executeChecks = async (req: Request, res: Response , next: NextFunction, checksToExecute: any = []) => {
+const executeChecks = async (req: Request, res: Response, next: NextFunction, checksToExecute: any = []) => {
     try {
-        // tslint:disable-next-line: no-any
-        await (Promise as any).allSettled(checksToExecute)
-        // tslint:disable-next-line: no-any
-        .then((pSuccess: any) => {
-            if (pSuccess) {
-                const _isRejected = _.find(pSuccess, {status: 'rejected'})
-                if (_isRejected) {
-                    throw new Error(_isRejected.reason)
+        await Promise.allSettled(checksToExecute)
+            // tslint:disable-next-line: no-any
+            .then((pSuccess: any) => {
+                if (pSuccess) {
+                    const _isRejected = _.find(pSuccess, { status: 'rejected' })
+                    if (_isRejected) {
+                        throw new Error(_isRejected.reason)
+                    } else {
+                        next()
+                    }
                 } else {
-                    next()
+                    throw new Error('API whitelisting validation failed')
                 }
-            } else {
-                throw new Error('API whitelisting validation failed')
-            }
-        })
-        // tslint:disable-next-line: no-any
-        .catch((pError: any) => {
-            logError(pError)
-            respond403(req, res)
-        })
+            })
+            // tslint:disable-next-line: no-any
+            .catch((pError: any) => {
+                logError(pError)
+                respond403(req, res)
+            })
     } catch (error) {
         // tslint:disable-next-line: no-console
         console.log('ERROR --', error)

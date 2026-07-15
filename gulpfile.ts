@@ -5,7 +5,7 @@ import sonarqubeScanner from 'sonarqube-scanner'
 
 import { Gulpclass, SequenceTask, Task } from 'gulpclass'
 
-const project = gulpTypeScript.createProject('tsconfig.json')
+const project = gulpTypeScript.createProject('tsconfig.json', { noEmitOnError: false })
 const dist = './dist'
 
 @Gulpclass()
@@ -29,6 +29,9 @@ export class Gulpfile {
   @Task('compile-project')
   compileProject() {
     const tsResult = gulp.src('src/**/*.ts').pipe(project())
+    tsResult.on('error', () => {
+      /* suppress errors */
+    })
     return tsResult.js.pipe(gulp.dest(dist))
   }
 

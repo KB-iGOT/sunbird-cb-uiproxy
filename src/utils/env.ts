@@ -72,9 +72,12 @@ export const CONSTANTS = {
   LOG_LEVEL_POLL_INTERVAL_MS: Number(env.LOG_LEVEL_POLL_INTERVAL_MS) || 10000,
   LOG_LEVEL_REDIS_KEY: env.LOG_LEVEL_REDIS_KEY || 'ui_proxy_log_level',
   LOG_LEVEL_SYNC_ENABLED: env.LOG_LEVEL_SYNC_ENABLED || 'false',
+  LOGOUT_PUBLIC_HOME_HOSTS:
+    env.LOGOUT_PUBLIC_HOME_HOSTS ||
+    'spv.dev.karmayogibharat.net,cbp.dev.karmayogibharat.net,mdo.dev.karmayogibharat.net,support.dev.karmayogibharat.net',
   MULTI_TENANT_KEYCLOAK:
     env.MULTI_TENANT_KEYCLOAK ||
-    'igot,https://portal.karmayogi.nic.in/auth,sunbird',
+    'igot,https://portal.karmayogi.nic.in,sunbird',
   NAVIGATOR_JSON_HOST:
     env.NAVIGATOR_JSON_HOST || 'http://localhost:3007/web-hosted/navigator/json',
   NODE_API_BASE: env.NODE_API_BASE || 'http://localhost:5001',
@@ -184,7 +187,7 @@ export const CONSTANTS = {
   PARICHAY_CLIENT_SECRET: env.PARICHAY_CLIENT_SECRET || 'parichayClientSecret',
   KEYCLOAK_GOOGLE_CLIENT_ID: env.KEYCLOAK_GOOGLE_CLIENT_ID || 'keycloakGoogleClientId',
   KEYCLOAK_GOOGLE_CLIENT_SECRET: env.KEYCLOAK_GOOGLE_CLIENT_SECRET || 'keycloakGoogleClientSecret',
-  PORTAL_AUTH_SERVER_URL: env.PORTAL_AUTH_SERVER_URL || 'https://portal.karmayogi.nic.in/auth',
+  PORTAL_AUTH_SERVER_URL: env.PORTAL_AUTH_SERVER_URL || 'http://localhost:8080',
   PARICHAY_CODE_CHALLENGE: env.PARICHAY_CODE_CHALLENGE || 'parichayCodeChallenge',
   PARICHAY_CODE_VERIFIER: env.PARICHAY_CODE_VERIFIER || 'parichayCodeVerfifier',
   PARICHAY_AUTH_URL: env.PARICHAY_AUTH_URL || 'parichayAuthUrl',
