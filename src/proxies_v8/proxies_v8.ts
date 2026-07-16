@@ -614,7 +614,6 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
     if (!channel) {
       channel = ''
     }
-
     const uploadHeaders: { [key: string]: string } = {
       // tslint:disable-next-line:max-line-length
       Authorization: CONSTANTS.SB_API_KEY,

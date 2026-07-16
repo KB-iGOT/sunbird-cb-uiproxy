@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import express from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
@@ -59,8 +59,9 @@ portalApi.get('/listDeptNames', async (req, res) => {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + req.originalUrl + err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError(failedToProcess + req.originalUrl + String(err))
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
                 error: unknownError,
@@ -71,7 +72,7 @@ portalApi.get('/listDeptNames', async (req, res) => {
 
 portalApi.get('/spv/mydepartment', async (req, res) => {
     try {
-        let isUserInfoRequired = req.query.allUsers as boolean
+        let isUserInfoRequired = req.query.allUsers as unknown as boolean
         if (!isUserInfoRequired) {
             isUserInfoRequired = false
         }
@@ -80,8 +81,9 @@ portalApi.get('/spv/mydepartment', async (req, res) => {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + req.originalUrl + err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError(failedToProcess + req.originalUrl + String(err))
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
                 error: unknownError,
@@ -102,8 +104,9 @@ portalApi.get(spvDeptPath, async (req, res) => {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError(failedToProcess + String(err))
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
                 error: unknownError,
@@ -116,7 +119,7 @@ portalApi.get(spvDeptPath + '/:deptId', async (req, res) => {
     try {
         const userId = req.headers.wid as string
         // tslint:disable-next-line: no-useless-cast
-        const deptId = req.params.deptId as string
+        const deptId = req.params.deptId
         // tslint:disable-next-line: no-useless-cast
         let isUserInfoRequired = req.query.allUsers as unknown as boolean
         if (!isUserInfoRequired) {
@@ -131,8 +134,9 @@ portalApi.get(spvDeptPath + '/:deptId', async (req, res) => {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError(failedToProcess + String(err))
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
                 error: unknownError,
@@ -160,8 +164,9 @@ portalApi.post(spvDeptPath, async (req, res) => {
             },
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError(failedToProcess + String(err))
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
                 error: unknownError,
@@ -174,7 +179,7 @@ portalApi.delete(spvDeleteDepartment + '/:deptId', async (req, res) => {
     try {
         const userId = req.headers.wid as string
         // tslint:disable-next-line: no-useless-cast
-        const deptId = req.params.deptId as string
+        const deptId = req.params.deptId
         // tslint:disable-next-line: no-useless-cast
         let isUserInfoRequired = req.query.allUsers as unknown as boolean
         if (!isUserInfoRequired) {
@@ -189,8 +194,9 @@ portalApi.delete(spvDeleteDepartment + '/:deptId', async (req, res) => {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError(failedToProcess + String(err))
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
                 error: unknownError,
@@ -264,8 +270,9 @@ portalApi.get(cbcDeptPath, async (req, res) => {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError(failedToProcess + String(err))
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
                 error: unknownError,
@@ -278,7 +285,7 @@ portalApi.get(cbcDeptPath + '/:deptId', async (req, res) => {
     try {
         const userId = req.headers.wid as string
         // tslint:disable-next-line: no-useless-cast
-        const deptId = req.params.deptId as string
+        const deptId = req.params.deptId
         let isUserInfoRequired = req.query.allUsers as unknown as boolean
         if (!isUserInfoRequired) {
             isUserInfoRequired = false
@@ -292,8 +299,9 @@ portalApi.get(cbcDeptPath + '/:deptId', async (req, res) => {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError(failedToProcess + String(err))
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
                 error: unknownError,
@@ -326,8 +334,9 @@ portalApi.get('/deptRole', async (req, res) => {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError(failedToProcess + String(err))
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
                 error: unknownError,
@@ -339,14 +348,15 @@ portalApi.get('/deptRole', async (req, res) => {
 portalApi.get('/deptRole/:deptTypeName', async (req, res) => {
     try {
         // tslint:disable-next-line: no-useless-cast
-        const deptTypeName = req.params.deptTypeName as string
+        const deptTypeName = req.params.deptTypeName
         const response = await axios.get(API_END_POINTS.roleByTypeApi(deptTypeName), {
             ...axiosRequestConfig,
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError(failedToProcess + String(err))
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
                 error: unknownError,
@@ -359,7 +369,7 @@ portalApi.get('/deptRole/:deptTypeName', async (req, res) => {
 // tslint:disable-next-line: no-any
 export async function getMyDepartment(portalName: string, req: any, res: any) {
     try {
-        let isUserInfoRequired = req.query.allUsers as boolean
+        let isUserInfoRequired = req.query.allUsers as unknown as boolean
         if (!isUserInfoRequired) {
             isUserInfoRequired = false
         }
@@ -368,8 +378,9 @@ export async function getMyDepartment(portalName: string, req: any, res: any) {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + req.originalUrl + err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError(failedToProcess + req.originalUrl + String(err))
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
                 error: unknownError,
@@ -391,8 +402,9 @@ export async function updateDepartment(portalName: string, req: any, res: any) {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError(failedToProcess + String(err))
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
                 error: unknownError,
@@ -409,8 +421,9 @@ export async function addUserRole(portalName: string, req: any, res: any) {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError(failedToProcess + String(err))
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
                 error: unknownError,
@@ -427,8 +440,9 @@ export async function updateUserRole(portalName: string, req: any, res: any) {
             headers: req.headers,
         })
         res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError(failedToProcess + String(err))
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
                 error: unknownError,
@@ -441,8 +455,9 @@ portalApi.get(departmentType, async (req, res) => {
     try {
         const response = await axios.get(API_END_POINTS.deptType)
         res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + req.originalUrl + err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError(failedToProcess + req.originalUrl + String(err))
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
                 error: unknownError,
@@ -454,11 +469,12 @@ portalApi.get(departmentType, async (req, res) => {
 portalApi.get(departmentType + '/:deptType', async (req, res) => {
     try {
         // tslint:disable-next-line: no-useless-cast
-        const deptType = req.params.deptType as string
+        const deptType = req.params.deptType
         const response = await axios.get(API_END_POINTS.deptTypeByName(deptType))
         res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + req.originalUrl + err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError(failedToProcess + req.originalUrl + String(err))
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
                 error: unknownError,
@@ -470,11 +486,12 @@ portalApi.get(departmentType + '/:deptType', async (req, res) => {
 portalApi.get('/userrole/:userId', async (req, res) => {
     try {
         // tslint:disable-next-line: no-useless-cast
-        const userId = req.params.userId as string
+        const userId = req.params.userId
         const response = await axios.get(API_END_POINTS.userRolesApi(userId))
         res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + req.originalUrl + err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError(failedToProcess + req.originalUrl + String(err))
         res.status((err && err.response && err.response.status) || 500).send(
             (err && err.response && err.response.data) || {
                 error: unknownError,
@@ -487,8 +504,9 @@ export async function getRoles(userId: string) {
     try {
         const response = await axios.get(API_END_POINTS.userRolesApi(userId))
         return response.data
-    } catch (error) {
-        logError('ERROR WHILE FETCHING THE USER ROLES --> ', error)
+    } catch (errorAny) {
+        const error = errorAny as AxiosError
+        logError('ERROR WHILE FETCHING THE USER ROLES --> ', String(error))
         return []
     }
 }
@@ -502,7 +520,8 @@ export async function getUserStatus(userId: string) {
             },
         })
         return response.data
-    } catch (err) {
-        logError(failedToProcess + err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError(failedToProcess + String(err))
     }
 }

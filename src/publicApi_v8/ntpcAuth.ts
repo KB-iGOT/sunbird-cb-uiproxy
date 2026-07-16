@@ -71,7 +71,7 @@ ntpcAuth.get('/login/callback', async (req, res) => {
             data: querystring.stringify({
                 client_id: CONSTANTS.NTPC_CLIENT_ID,
                 client_secret: CONSTANTS.NTPC_CLIENT_SECRET,
-                code: decodeURIComponent(req.query.code),
+                code: decodeURIComponent(req.query.code as string),
                 grant_type: 'authorization_code',
                 redirect_uri: redirectUrl,
             }),
