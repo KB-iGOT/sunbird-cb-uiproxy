@@ -10,6 +10,134 @@ const async = require('async')
 
 const composable = require('composable-middleware')
 
+// tslint:disable-next-line: no-any
+export async function deauthenticateKeycloakSession(reqObj: any): Promise<void> {
+  const keyCloakPropertyName = 'keycloak-token'
+
+  logInfo(`custom-keycloak deauthenticated: Method started for PID ${process.pid}`)
+
+  // Check if session exists before attempting to access its properties
+  if (!reqObj.session) {
+    logError(`${process.pid}: User Deauthenticated - No session found`)
+    return
+  }
+
+  if (reqObj.session.hasOwnProperty(keyCloakPropertyName)) {
+    const keycloakToken = reqObj.session[keyCloakPropertyName]
+    if (keycloakToken) {
+      let tokenObject: any
+      try {
+        tokenObject = JSON.parse(keycloakToken)
+      } catch (parseErr) {
+        logError('custom-keycloak deauthenticated: Failed to parse keycloak-token: ' + parseErr)
+      }
+
+      const refreshToken = tokenObject ? tokenObject.refresh_token : null
+      if (refreshToken) {
+
+        const urlValue = `${CONSTANTS.PORTAL_AUTH_SERVER_URL}/realms/${CONSTANTS.KEYCLOAK_REALM}/protocol/openid-connect/logout`
+        const formData: Record<string, string> = {
+          client_id: 'portal',
+          refresh_token: refreshToken,
+        }
+
+        if (reqObj.session.hasOwnProperty('keycloakClientId') && reqObj.session.keycloakClientId !== '') {
+          formData.client_id = reqObj.session.keycloakClientId
+          formData.client_secret = reqObj.session.keycloakClientSecret
+        }
+
+        logInfo(
+          `custom-keycloak deauthenticated: Calling Keycloak backchannel logout URL: ${urlValue} ` +
+          `with client_id: ${formData.client_id}`
+        )
+        logDebug('formData used in logout: ' + JSON.stringify(formData))
+
+        try {
+          await new Promise<void>((resolve, reject) => {
+            request.post({
+              form: formData,
+              url: urlValue,
+            }, (err: any, res: any, body: any) => {
+              if (err) {
+                logError(
+                  'custom-keycloak deauthenticated: Keycloak backchannel logout request failed with error: ' +
+                  JSON.stringify(err)
+                )
+                reject(err)
+              } else {
+                const statusCode = res ? res.statusCode : 'unknown'
+                logInfo(`custom-keycloak deauthenticated: Keycloak backchannel logout responded with status code: ${statusCode}`)
+                logDebug('Keycloak backchannel logout body: ' + JSON.stringify(body))
+                resolve()
+              }
+            })
+          })
+        } catch (err) {
+          logError('custom-keycloak deauthenticated: Caught exception during Keycloak logout request: ' + err)
+        }
+
+        if (reqObj.session.parichayToken) {
+          logInfo('custom-keycloak deauthenticated: Parichay login found... trying to logout from Parichay...')
+          try {
+            await new Promise<void>((resolve) => {
+              request.get({
+                headers: {
+                  Authorization: reqObj.session.parichayToken.access_token,
+                },
+                url: CONSTANTS.PARICHAY_REVOKE_URL,
+              }, (err: any, res: any, body: any) => {
+                if (err) {
+                  logError('custom-keycloak deauthenticated: Received error when calling Parichay logout: ' + JSON.stringify(err))
+                } else {
+                  const statusCode = res ? res.statusCode : 'unknown'
+                  logInfo(`custom-keycloak deauthenticated: Parichay logout completed with status code: ${statusCode}`)
+                  logDebug('Parichay logout body: ' + JSON.stringify(body))
+                }
+                resolve()
+              })
+            })
+          } catch (err) {
+            logError('custom-keycloak deauthenticated: Failed to call parichay revoke API: ' + err)
+          }
+        }
+      } else {
+        logError('custom-keycloak deauthenticated: Not able to retrieve refresh_token value from Session. Logout process failed.')
+      }
+    } else {
+      logError('custom-keycloak deauthenticated: Not able to retrieve keycloak-token value from Session. Logout process failed.')
+    }
+  } else {
+    logError('custom-keycloak deauthenticated: Session does not have property with name: ' + keyCloakPropertyName)
+  }
+
+  // Clean up session properties if session exists
+  if (reqObj.session) {
+    logInfo('custom-keycloak deauthenticated: Cleaning session and starting destroy')
+    delete reqObj.session.userRoles
+    delete reqObj.session.userId
+    delete reqObj.session.keycloakClientId
+    delete reqObj.session.keycloakClientSecret
+    if (typeof reqObj.session.destroy === 'function') {
+      try {
+        await new Promise<void>((resolve) => {
+          reqObj.session.destroy((err: any) => {
+            if (err) {
+              logError('custom-keycloak deauthenticated: Error destroying session: ' + err)
+            } else {
+              logInfo('custom-keycloak deauthenticated: Express session successfully destroyed in store')
+            }
+            resolve()
+          })
+        })
+      } catch (err) {
+        logError('custom-keycloak deauthenticated: Exception during session destroy: ' + err)
+      }
+    }
+  }
+
+  logInfo(`custom-keycloak deauthenticated: Method completed for PID ${process.pid}`)
+}
+
 export class CustomKeycloak {
   private multiTenantKeycloak = new Map<string, InstanceType<typeof keycloakConnect>>()
 
@@ -305,132 +433,7 @@ export class CustomKeycloak {
   }
 
   // tslint:disable-next-line: no-any
-  deauthenticated = async (reqObj: any) => {
-    const keyCloakPropertyName = 'keycloak-token'
-
-    logInfo(`custom-keycloak deauthenticated: Method started for PID ${process.pid}`)
-
-    // Check if session exists before attempting to access its properties
-    if (!reqObj.session) {
-      logError(`${process.pid}: User Deauthenticated - No session found`)
-      return
-    }
-
-    if (reqObj.session.hasOwnProperty(keyCloakPropertyName)) {
-      const keycloakToken = reqObj.session[keyCloakPropertyName]
-      if (keycloakToken) {
-        let tokenObject: any
-        try {
-          tokenObject = JSON.parse(keycloakToken)
-        } catch (parseErr) {
-          logError('custom-keycloak deauthenticated: Failed to parse keycloak-token: ' + parseErr)
-        }
-
-        const refreshToken = tokenObject ? tokenObject.refresh_token : null
-        if (refreshToken) {
-
-          const urlValue = `${CONSTANTS.PORTAL_AUTH_SERVER_URL}/realms/${CONSTANTS.KEYCLOAK_REALM}/protocol/openid-connect/logout`
-          const formData: Record<string, string> = {
-            client_id: 'portal',
-            refresh_token: refreshToken,
-          }
-
-          if (reqObj.session.hasOwnProperty('keycloakClientId') && reqObj.session.keycloakClientId !== '') {
-            formData.client_id = reqObj.session.keycloakClientId
-            formData.client_secret = reqObj.session.keycloakClientSecret
-          }
-
-          logInfo(
-            `custom-keycloak deauthenticated: Calling Keycloak backchannel logout URL: ${urlValue} ` +
-            `with client_id: ${formData.client_id}`
-          )
-          logDebug('formData used in logout: ' + JSON.stringify(formData))
-
-          try {
-            await new Promise<void>((resolve, reject) => {
-              request.post({
-                form: formData,
-                url: urlValue,
-              }, (err: any, res: any, body: any) => {
-                if (err) {
-                  logError(
-                    'custom-keycloak deauthenticated: Keycloak backchannel logout request failed with error: ' +
-                    JSON.stringify(err)
-                  )
-                  reject(err)
-                } else {
-                  const statusCode = res ? res.statusCode : 'unknown'
-                  logInfo(`custom-keycloak deauthenticated: Keycloak backchannel logout responded with status code: ${statusCode}`)
-                  logDebug('Keycloak backchannel logout body: ' + JSON.stringify(body))
-                  resolve()
-                }
-              })
-            })
-          } catch (err) {
-            logError('custom-keycloak deauthenticated: Caught exception during Keycloak logout request: ' + err)
-          }
-
-          if (reqObj.session.parichayToken) {
-            logInfo('custom-keycloak deauthenticated: Parichay login found... trying to logout from Parichay...')
-            try {
-              await new Promise<void>((resolve) => {
-                request.get({
-                  headers: {
-                    Authorization: reqObj.session.parichayToken.access_token,
-                  },
-                  url: CONSTANTS.PARICHAY_REVOKE_URL,
-                }, (err: any, res: any, body: any) => {
-                  if (err) {
-                    logError('custom-keycloak deauthenticated: Received error when calling Parichay logout: ' + JSON.stringify(err))
-                  } else {
-                    const statusCode = res ? res.statusCode : 'unknown'
-                    logInfo(`custom-keycloak deauthenticated: Parichay logout completed with status code: ${statusCode}`)
-                    logDebug('Parichay logout body: ' + JSON.stringify(body))
-                  }
-                  resolve()
-                })
-              })
-            } catch (err) {
-              logError('custom-keycloak deauthenticated: Failed to call parichay revoke API: ' + err)
-            }
-          }
-        } else {
-          logError('custom-keycloak deauthenticated: Not able to retrieve refresh_token value from Session. Logout process failed.')
-        }
-      } else {
-        logError('custom-keycloak deauthenticated: Not able to retrieve keycloak-token value from Session. Logout process failed.')
-      }
-    } else {
-      logError('custom-keycloak deauthenticated: Session does not have property with name: ' + keyCloakPropertyName)
-    }
-
-    // Clean up session properties if session exists
-    if (reqObj.session) {
-      logInfo('custom-keycloak deauthenticated: Cleaning session and starting destroy')
-      delete reqObj.session.userRoles
-      delete reqObj.session.userId
-      delete reqObj.session.keycloakClientId
-      delete reqObj.session.keycloakClientSecret
-      if (typeof reqObj.session.destroy === 'function') {
-        try {
-          await new Promise<void>((resolve) => {
-            reqObj.session.destroy((err: any) => {
-              if (err) {
-                logError('custom-keycloak deauthenticated: Error destroying session: ' + err)
-              } else {
-                logInfo('custom-keycloak deauthenticated: Express session successfully destroyed in store')
-              }
-              resolve()
-            })
-          })
-        } catch (err) {
-          logError('custom-keycloak deauthenticated: Exception during session destroy: ' + err)
-        }
-      }
-    }
-
-    logInfo(`custom-keycloak deauthenticated: Method completed for PID ${process.pid}`)
-  }
+  deauthenticated = deauthenticateKeycloakSession
 
   protect = (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const keycloak = this.getKeyCloakObject(req)
