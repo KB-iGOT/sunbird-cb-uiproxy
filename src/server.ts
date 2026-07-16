@@ -16,6 +16,7 @@ import { protectedApiV8 } from './protectedApi_v8/protectedApiV8'
 import { proxiesV8 } from './proxies_v8/proxies_v8'
 import { publicApiV8 } from './publicApi_v8/publicApiV8'
 import { CustomKeycloak } from './utils/custom-keycloak'
+import { deviceSignatureValidator } from './utils/deviceSignature'
 import { CONSTANTS } from './utils/env'
 import { logDebug, logError, logSuccess } from './utils/logger'
 import {
@@ -187,25 +188,25 @@ export class Server {
 
   private serverProtectedApi() {
     if (this.keycloak) {
-      this.app.use('/protected/v8', this.keycloak.protect, protectedApiV8)
+      this.app.use('/protected/v8', this.keycloak.protect, deviceSignatureValidator(), protectedApiV8)
     }
   }
   private serverProxies() {
     if (this.keycloak) {
-      this.app.use('/proxies/v8', this.keycloak.protect, proxiesV8)
+      this.app.use('/proxies/v8', this.keycloak.protect, deviceSignatureValidator(), proxiesV8)
     }
   }
   private authoringProxies() {
     if (this.keycloak) {
-      this.app.use('/authContent', this.keycloak.protect, authContent)
-      this.app.use('/authNotificationApi', this.keycloak.protect, authNotification)
-      this.app.use('/authIapApi', this.keycloak.protect, authIapBackend)
+      this.app.use('/authContent', this.keycloak.protect, deviceSignatureValidator(), authContent)
+      this.app.use('/authNotificationApi', this.keycloak.protect, deviceSignatureValidator(), authNotification)
+      this.app.use('/authIapApi', this.keycloak.protect, deviceSignatureValidator(), authIapBackend)
     }
   }
   private authoringApi() {
     if (this.keycloak) {
-      this.app.use('/authSearchApi', this.keycloak.protect, authSearch)
-      this.app.use('/authApi', authApi)
+      this.app.use('/authSearchApi', this.keycloak.protect, deviceSignatureValidator(), authSearch)
+      this.app.use('/authApi', deviceSignatureValidator(), authApi)
     }
   }
   private resetCookies() {
