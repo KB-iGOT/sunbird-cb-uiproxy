@@ -27,6 +27,10 @@ export const CONSTANTS = {
   DASHBOARD_API_BASE: env.DASHBOARD_API_BASE || 'https://igot-dashboard.tarento.com/api',
   DEFAULT_ORG: env.DEFAULT_ORG || 'dopt',
   DEFAULT_ROOT_ORG: env.DEFAULT_ROOT_ORG || 'igot',
+  // device signature validation mode: 'disabled' | 'log' | 'enforce'
+  DEVICE_SIGNATURE_MODE: env.DEVICE_SIGNATURE_MODE || 'disabled',
+  // tslint:disable-next-line: ban
+  DEVICE_SIGNATURE_SKEW_MS: parseInt(env.DEVICE_SIGNATURE_SKEW_MS || '0', 10) || 5 * 60 * 1000,
   ES_BASE: env.ES_BASE || 'http://localhost:9200',
   ES_PASSWORD: env.ES_PASSWORD || 'iGOT@123+',
   ES_USERNAME: env.ES_USERNAME || 'elastic',
