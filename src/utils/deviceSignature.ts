@@ -9,6 +9,12 @@ import { redis } from './redis'
 // tslint:disable-next-line: no-var-requires
 const subtle = require('crypto').webcrypto.subtle
 
+// top-level browser navigations (redirects from Keycloak login etc.) can never carry
+// signature headers — these paths only set cookies / redirect and return no user data
+const EXEMPT_PATH_PREFIXES = [
+  '/protected/v8/resource',
+]
+
 interface IJwk {
   kty: string
   crv: string
@@ -118,7 +124,11 @@ async function validate(req: Request): Promise<IValidationResult> {
   const keyHeader = req.header('x-device-key')
   // tslint:disable-next-line: no-any
   const session = req.session as any
-  const boundKey = session.deviceKey as IBoundKey | undefined
+  // the session cookie spans all subdomains (spv/cbp/mdo/...), but browser crypto keys are
+  // per-origin — so each subdomain host binds and validates its own key within the session
+  const host = req.hostname || ''
+  const deviceKeys = (session.deviceKeys || {}) as { [h: string]: IBoundKey }
+  const boundKey = deviceKeys[host]
 
   const headerValidation = parseAndValidateHeaders(signature, ts, nonce, boundKey)
   if (headerValidation.errorResult) {
@@ -153,9 +163,12 @@ async function validate(req: Request): Promise<IValidationResult> {
     return { ok: false, reason: 'nonce-replay' }
   }
   if (!boundKey) {
-    // trust-on-first-use: bind this browser's public key to the session on its first valid signed request
-    session.deviceKey = { boundAt: Date.now(), jwk, thumbprint: jwkThumbprint(jwk!) }
-    logInfo('Device key bound to session ' + req.sessionID + ' thumbprint ' + session.deviceKey.thumbprint)
+    // trust-on-first-use: bind this browser's public key to the session for this host
+    // on its first valid signed request
+    deviceKeys[host] = { boundAt: Date.now(), jwk: jwk!, thumbprint: jwkThumbprint(jwk!) }
+    session.deviceKeys = deviceKeys
+    logInfo('Device key bound to session ' + req.sessionID + ' host ' + host +
+      ' thumbprint ' + deviceKeys[host].thumbprint)
   }
   return { ok: true }
 }
@@ -186,6 +199,11 @@ export function deviceSignatureValidator() {
       return
     }
     if (req.originalUrl.toLowerCase().includes('public') || !req.session) {
+      next()
+      return
+    }
+    const pathname = req.originalUrl.split('?')[0]
+    if (EXEMPT_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
       next()
       return
     }
