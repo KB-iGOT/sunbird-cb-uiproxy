@@ -173,6 +173,10 @@ async function validate(req: Request): Promise<IValidationResult> {
   return { ok: true }
 }
 
+// only active-forgery signals kill the session; a merely unsigned request (e.g. a portal that
+// hasn't been onboarded yet, sharing the domain-wide cookie) is rejected without collateral damage
+const SESSION_KILL_REASONS = ['key-mismatch', 'invalid-signature', 'nonce-replay']
+
 function handleFailure(req: Request, res: Response, next: NextFunction, reason: string | undefined, mode: string) {
   const detail = 'reason=' + reason + ' session=' + req.sessionID +
     ' url=' + req.method + ' ' + req.originalUrl
@@ -181,19 +185,35 @@ function handleFailure(req: Request, res: Response, next: NextFunction, reason: 
     next()
     return
   }
-  logError('Device signature validation failed (enforce mode, rejecting): ' + detail)
-  if (req.session) {
+  if (req.session && reason && SESSION_KILL_REASONS.indexOf(reason) >= 0) {
+    logError('Device signature validation failed (enforce mode, rejecting and destroying session): ' + detail)
     req.session.destroy(() => {
       res.status(419).json({ error: 'Device signature validation failed' })
     })
-  } else {
-    res.status(419).json({ error: 'Device signature validation failed' })
+    return
   }
+  logError('Device signature validation failed (enforce mode, rejecting): ' + detail)
+  res.status(419).json({ error: 'Device signature validation failed' })
+}
+
+// 'enforce' applies only to hosts listed in DEVICE_SIGNATURE_ENFORCED_HOSTS (all hosts when
+// the list is empty); other hosts are downgraded to 'log' so portals can be onboarded one at a time
+function effectiveMode(host: string): string {
+  const mode = CONSTANTS.DEVICE_SIGNATURE_MODE
+  if (mode !== 'enforce') {
+    return mode
+  }
+  const enforcedHosts = CONSTANTS.DEVICE_SIGNATURE_ENFORCED_HOSTS
+    .split(',').map((h: string) => h.trim().toLowerCase()).filter((h: string) => h.length > 0)
+  if (enforcedHosts.length === 0 || enforcedHosts.indexOf(host.toLowerCase()) >= 0) {
+    return 'enforce'
+  }
+  return 'log'
 }
 
 export function deviceSignatureValidator() {
   return (req: Request, res: Response, next: NextFunction) => {
-    const mode = CONSTANTS.DEVICE_SIGNATURE_MODE
+    const mode = effectiveMode(req.hostname || '')
     if (mode !== 'log' && mode !== 'enforce') {
       next()
       return

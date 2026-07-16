@@ -27,6 +27,9 @@ export const CONSTANTS = {
   DASHBOARD_API_BASE: env.DASHBOARD_API_BASE || 'https://igot-dashboard.tarento.com/api',
   DEFAULT_ORG: env.DEFAULT_ORG || 'dopt',
   DEFAULT_ROOT_ORG: env.DEFAULT_ROOT_ORG || 'igot',
+  // comma-separated hosts to enforce on when mode is 'enforce'; other hosts fall back to
+  // log mode. Empty = enforce on all hosts. Lets portals be onboarded one at a time.
+  DEVICE_SIGNATURE_ENFORCED_HOSTS: env.DEVICE_SIGNATURE_ENFORCED_HOSTS || '',
   // device signature validation mode: 'disabled' | 'log' | 'enforce'
   DEVICE_SIGNATURE_MODE: env.DEVICE_SIGNATURE_MODE || 'disabled',
   // tslint:disable-next-line: ban
