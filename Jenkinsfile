@@ -17,12 +17,13 @@ node() {
               sh '''
               cd $docker_file_path
               pwd
+              docker rm -f $docker_pre_build || true
               docker build -f ./Dockerfile.build -t $docker_pre_build .
               docker run --name=$docker_pre_build $docker_pre_build && docker cp $docker_pre_build:/usr/src/app/dist.zip .
               sleep 30
               docker rm -f $docker_pre_build
               docker rmi -f $docker_pre_build
-              unzip dist.zip              
+              unzip -o dist.zip              
                 '''
         }
       

@@ -1,8 +1,8 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { getRootOrg } from '../../authoring/utils/header'
 import { axiosRequestConfig } from '../../configs/request.config'
-import { getUserUIDBySession} from '../../utils/discussionHub-helper'
+import { getUserUIDBySession } from '../../utils/discussionHub-helper'
 import { CONSTANTS } from '../../utils/env'
 import { logDebug, logError } from '../../utils/logger'
 import { extractUserIdFromRequest, extractUserToken } from '../../utils/requestExtract'
@@ -31,16 +31,19 @@ topicsApi.get('/recent', async (req, res) => {
         logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}, Url: ${url}`)
         const response = await axios.get(
             url,
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                rootOrg,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             } }
+            {
+                ...axiosRequestConfig, headers: {
+                    Authorization: CONSTANTS.SB_API_KEY,
+                    rootOrg,
+                    // tslint:disable-next-line: all
+                    'x-authenticated-user-token': extractUserToken(req)
+                },
+            }
         )
         res.send(response.data)
-    } catch (err) {
-        logError('ERROR ON GET topicsApi /recent >', err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError('ERROR ON GET topicsApi /recent >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -54,16 +57,19 @@ topicsApi.get('/top', async (req, res) => {
         const url = API_ENDPOINTS.getTopTopics
         const response = await axios.get(
             url,
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                rootOrg,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             } }
+            {
+                ...axiosRequestConfig, headers: {
+                    Authorization: CONSTANTS.SB_API_KEY,
+                    rootOrg,
+                    // tslint:disable-next-line: all
+                    'x-authenticated-user-token': extractUserToken(req)
+                },
+            }
         )
         res.send(response.data)
-    } catch (err) {
-        logError('ERROR ON GET topicsApi /top >', err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError('ERROR ON GET topicsApi /top >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -78,16 +84,19 @@ topicsApi.get('/popular', async (req, res) => {
         const url = API_ENDPOINTS.getPopularTopics
         const response = await axios.get(
             `${url}?page=${pageNo}`,
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                rootOrg,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             } }
+            {
+                ...axiosRequestConfig, headers: {
+                    Authorization: CONSTANTS.SB_API_KEY,
+                    rootOrg,
+                    // tslint:disable-next-line: all
+                    'x-authenticated-user-token': extractUserToken(req)
+                },
+            }
         )
         res.send(response.data)
-    } catch (err) {
-        logError('ERROR ON GET topicsApi /popular >', err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError('ERROR ON GET topicsApi /popular >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -102,17 +111,19 @@ topicsApi.get('/unread', async (req, res) => {
         const url = API_ENDPOINTS.getUnreadTopics + `?_uid=${userUid}`
         const response = await axios.get(
             url,
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                rootOrg,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             },
-             }
+            {
+                ...axiosRequestConfig, headers: {
+                    Authorization: CONSTANTS.SB_API_KEY,
+                    rootOrg,
+                    // tslint:disable-next-line: all
+                    'x-authenticated-user-token': extractUserToken(req)
+                },
+            }
         )
         res.send(response.data)
-    } catch (err) {
-        logError('ERROR ON GET topicsApi /unread >', err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError('ERROR ON GET topicsApi /unread >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -127,16 +138,19 @@ topicsApi.get('/unread/total', async (req, res) => {
         const url = API_ENDPOINTS.getUnreadTopicsTotal + `?_uid=${userUid}`
         const response = await axios.get(
             url,
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                rootOrg,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             } }
+            {
+                ...axiosRequestConfig, headers: {
+                    Authorization: CONSTANTS.SB_API_KEY,
+                    rootOrg,
+                    // tslint:disable-next-line: all
+                    'x-authenticated-user-token': extractUserToken(req)
+                },
+            }
         )
         res.send(response.data)
-    } catch (err) {
-        logError('ERROR ON GET topicsApi /unread >', err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError('ERROR ON GET topicsApi /unread >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }
@@ -151,19 +165,22 @@ topicsApi.get('/:tid', async (req, res) => {
         logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
         const tid = req.params.tid
         const userUid = await getUserUIDBySession(req)
-        const url = API_ENDPOINTS.getTopicDetails(tid) + `?page=${pageNo}&_uid=${userUid}&sort=${sort}`
+        const url = API_ENDPOINTS.getTopicDetails(Number(tid)) + `?page=${pageNo}&_uid=${userUid}&sort=${sort}`
         const response = await axios.get(
             url,
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                rootOrg,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             } }
+            {
+                ...axiosRequestConfig, headers: {
+                    Authorization: CONSTANTS.SB_API_KEY,
+                    rootOrg,
+                    // tslint:disable-next-line: all
+                    'x-authenticated-user-token': extractUserToken(req)
+                },
+            }
         )
         res.send(response.data)
-    } catch (err) {
-        logError('ERROR ON GET topicsApi /:tid >', err)
+    } catch (errAny) {
+        const err = errAny as AxiosError
+        logError('ERROR ON GET topicsApi /:tid >', String(err))
         res.status((err && err.response && err.response.status) || 500)
             .send(err && err.response && err.response.data || {})
     }

@@ -1,9 +1,10 @@
-const _                 = require('lodash')
-const uuidv1            = require('uuid/v1')
-const { pathToRegexp }  = require('path-to-regexp')
-const dateFormat        = require('dateformat')
+const _ = require('lodash')
+const uuidv1 = require('uuid/v1')
+const { pathToRegexp } = require('path-to-regexp')
+const dateFormat = require('dateformat')
 
 import { NextFunction, Request, Response } from 'express'
+import { deauthenticateKeycloakSession } from './custom-keycloak'
 import { CONSTANTS } from './env'
 import { logDebug, logError } from './logger'
 import { ROLE } from './roles'
@@ -103,25 +104,25 @@ const urlChecks = {
             // tslint:disable-next-line: no-any
             checksParams.checks.forEach((ownerCheckObj: any) => {
                 ownerChecks.push(new Promise((res, rej) => {
-                const _checkFor = _.get(ownerCheckObj, 'entity')
-                if (_checkFor && typeof urlChecks[_checkFor] === 'function') {
-                    urlChecks[_checkFor](res, rej, req, ownerCheckObj, REQ_URL)
-                }
+                    const _checkFor = _.get(ownerCheckObj, 'entity')
+                    if (_checkFor && typeof urlChecks[_checkFor] === 'function') {
+                        urlChecks[_checkFor](res, rej, req, ownerCheckObj, REQ_URL)
+                    }
                 }))
             })
             try {
                 await Promise.all(ownerChecks)
-                .then((_pSuccess) => {
-                    resolve()
-                })
-                .catch((pError) => {
-                    return reject(pError)
-                })
+                    .then((_pSuccess) => {
+                        resolve()
+                    })
+                    .catch((pError) => {
+                        return reject(pError)
+                    })
             } catch (error) {
                 return reject()
             }
         } else {
-          return reject('Owner check validation failed.')
+            return reject('Owner check validation failed.')
         }
     },
     // tslint:disable-next-line: no-any
@@ -141,7 +142,7 @@ const urlChecks = {
         }
     },
     // tslint:disable-next-line: no-any
-    SCOPE_CHECK : (resolve: any, reject: any, req: Request, rolesForURL: any, REQ_URL: any) => {
+    SCOPE_CHECK: (resolve: any, reject: any, req: Request, rolesForURL: any, REQ_URL: any) => {
         logDebug('Portal_API_WHITELIST_SCOPE_CHECK : Middleware for URL [ ' + REQ_URL + ' ]')
         const orgData = (_.get(req, 'session.orgs')) ? _.get(req, 'session.orgs') : []
         const orgId = (_.get(req, 'query.orgId')) ? _.get(req, 'query.orgId') : ''
@@ -183,7 +184,7 @@ const urlChecks = {
                     resolve()
                 } else {
                     return reject('Mismatch in user id verification. Session UserId [ ' + _sessionUserId +
-                    ' ] is not an admin or does not match with request body UserId [ ' + _reqUserId + ' ]')
+                        ' ] is not an admin or does not match with request body UserId [ ' + _reqUserId + ' ]')
                 }
             }
         } catch (error) {
@@ -226,28 +227,27 @@ const urlChecks = {
  * @since release-3.1.0
  */
 // tslint:disable-next-line: no-any
-const executeChecks = async (req: Request, res: Response , next: NextFunction, checksToExecute: any = []) => {
+const executeChecks = async (req: Request, res: Response, next: NextFunction, checksToExecute: any = []) => {
     try {
-        // tslint:disable-next-line: no-any
-        await (Promise as any).allSettled(checksToExecute)
-        // tslint:disable-next-line: no-any
-        .then((pSuccess: any) => {
-            if (pSuccess) {
-                const _isRejected = _.find(pSuccess, {status: 'rejected'})
-                if (_isRejected) {
-                    throw new Error(_isRejected.reason)
+        await Promise.allSettled(checksToExecute)
+            // tslint:disable-next-line: no-any
+            .then((pSuccess: any) => {
+                if (pSuccess) {
+                    const _isRejected = _.find(pSuccess, { status: 'rejected' })
+                    if (_isRejected) {
+                        throw new Error(_isRejected.reason)
+                    } else {
+                        next()
+                    }
                 } else {
-                    next()
+                    throw new Error('API whitelisting validation failed')
                 }
-            } else {
-                throw new Error('API whitelisting validation failed')
-            }
-        })
-        // tslint:disable-next-line: no-any
-        .catch((pError: any) => {
-            logError(pError)
-            respond403(req, res)
-        })
+            })
+            // tslint:disable-next-line: no-any
+            .catch((pError: any) => {
+                logError(pError)
+                respond403(req, res)
+            })
     } catch (error) {
         // tslint:disable-next-line: no-console
         console.log('ERROR --', error)
@@ -267,36 +267,6 @@ const respond403 = (req: Request, res: Response) => {
     logError(err.msg)
     res.status(403)
     res.send(
-    {
-        id: 'api.error',
-        ver: '1.0',
-        // tslint:disable-next-line: object-literal-sort-keys
-        ts: dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss:lo'),
-        params:
-        {
-            resmsgid: uuidv1(),
-            // tslint:disable-next-line: object-literal-sort-keys
-            msgid: null,
-            status: 'failed',
-            err: 'FORBIDDEN_ERROR',
-            errmsg: 'Forbidden: API WHITELIST Access is denied',
-        },
-        responseCode: 'FORBIDDEN',
-        result: {},
-    })
-    res.end()
-}
-
-const respond419 = (req: Request, res: Response) => {
-    const REQ_URL = req.path
-    if (_.includes(REQ_URL, '/reset')) {
-        res.redirect('/apis/logout')
-    } else {
-        const err = ({ msg: 'API WHITELIST :: Unauthorized access for API [ ' + REQ_URL + ' ]', url: REQ_URL })
-        logError(err.msg)
-        res.status(419)
-        res.setHeader('location', redirectToLogin(req))
-        res.send(
         {
             id: 'api.error',
             ver: '1.0',
@@ -308,15 +278,49 @@ const respond419 = (req: Request, res: Response) => {
                 // tslint:disable-next-line: object-literal-sort-keys
                 msgid: null,
                 status: 'failed',
-                err: 'UNAUTHORIZED_ERROR',
-                errmsg: 'UNAUTHORIZED: Access is denied',
+                err: 'FORBIDDEN_ERROR',
+                errmsg: 'Forbidden: API WHITELIST Access is denied',
             },
-            responseCode: 'UNAUTHORIZED',
-            redirectUrl: redirectToLogin(req),
+            responseCode: 'FORBIDDEN',
             result: {},
         })
-    }
+    res.end()
+}
 
+const respond419 = async (req: Request, res: Response) => {
+    const REQ_URL = req.path
+    if (_.includes(REQ_URL, '/reset')) {
+        res.redirect('/apis/logout')
+    } else {
+        const err = ({ msg: 'API WHITELIST :: Unauthorized access for API [ ' + REQ_URL + ' ]', url: REQ_URL })
+        logError(err.msg)
+        try {
+            await deauthenticateKeycloakSession(req)
+        } catch (deauthErr) {
+            logError('API WHITELIST :: Error deauthenticating Keycloak session on 419 response: ' + deauthErr)
+        }
+        res.status(419)
+        res.setHeader('location', redirectToLogin(req))
+        res.send(
+            {
+                id: 'api.error',
+                ver: '1.0',
+                // tslint:disable-next-line: object-literal-sort-keys
+                ts: dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss:lo'),
+                params:
+                {
+                    resmsgid: uuidv1(),
+                    // tslint:disable-next-line: object-literal-sort-keys
+                    msgid: null,
+                    status: 'failed',
+                    err: 'UNAUTHORIZED_ERROR',
+                    errmsg: 'UNAUTHORIZED: Access is denied',
+                },
+                responseCode: 'UNAUTHORIZED',
+                redirectUrl: redirectToLogin(req),
+                result: {},
+            })
+    }
     res.end()
 }
 
@@ -359,9 +363,9 @@ export const isAllowed = () => {
                         urlChecksNeeded.forEach((CHECK: any) => {
                             // tslint:disable-next-line: no-shadowed-variable
                             checksToExecute.push(new Promise((res, rej) => {
-                            if (_.get(URL_RULE_OBJ, CHECK) && typeof urlChecks[CHECK] === 'function') {
-                                urlChecks[CHECK](res, rej, req, URL_RULE_OBJ[CHECK], REQ_URL)
-                            }
+                                if (_.get(URL_RULE_OBJ, CHECK) && typeof urlChecks[CHECK] === 'function') {
+                                    urlChecks[CHECK](res, rej, req, URL_RULE_OBJ[CHECK], REQ_URL)
+                                }
                             }))
                         })
                         executeChecks(req, res, next, checksToExecute)
@@ -403,7 +407,7 @@ const validateAPI = (req: Request, res: Response, next: NextFunction) => {
  * This function is used for checking whether
  */
 export function apiWhiteListLogger() {
-    return (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
         if (req.path === '/' || checkIsStaticRoute(req.path)) {
             next()
             return
@@ -415,7 +419,7 @@ export function apiWhiteListLogger() {
              if (!('userRoles' in req.session) || (('userRoles' in req.session) && (req.session.userRoles.length === 0))) {
                 logError('Portal_API_WHITELIST_LOGGER: User needs to authenticated themselves', '------', new Date().toString())
                 logDebug('UIPROXY:: apiWhiteListLogger :  respond419 method will be called')
-                respond419(req, res)
+                await respond419(req, res)
             } else {
                 // Pattern match for URL
                 logDebug('In WhilteList Call========' + REQ_URL, '------', new Date().toString())
