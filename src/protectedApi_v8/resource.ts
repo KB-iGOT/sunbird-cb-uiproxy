@@ -157,7 +157,7 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
     } else {
         // tslint:disable-next-line: max-line-length
         redirectUrl = `${CONSTANTS.AI_ASSESSMENT_PORTAL_HOST}`
-            + `${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}${queryParam}` // 'https://' + host + '/page/home'
+            + `${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}` // 'https://' + host + '/page/home'
         logInfo('resource.ts userAuthKeyCloakEcApi: default AI assessment redirect url=' + redirectUrl)
     }
     logDebug('Redirecting to: ' + redirectUrl)
