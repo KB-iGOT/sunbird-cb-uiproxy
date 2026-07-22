@@ -2771,6 +2771,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/user/totalkarmapoints': {
