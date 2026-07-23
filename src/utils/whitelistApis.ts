@@ -7608,7 +7608,6 @@ export const API_LIST = {
             ],
         },
         '/proxies/v8/volunteer/ratings/v1/read/:activity_id/:type': {
-        '/proxies/v8/volunteer/ratings/v1/read': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -8853,7 +8852,6 @@ export const API_LIST = {
             '/proxies/v8/comment/v1/ngo/addFirst',
             '/proxies/v8/volunteer/ratings/v1/read/:activity_id/:type',
             '/proxies/v8/learner/achievement/ngo/list',
-            '/proxies/v8/volunteer/ratings/v1/read',
             '/proxies/v8/volunteer/user/v2/insights',
             '/proxies/v8/org/ngo/v1/read',
             '/proxies/v8/api/user/volunteer/v1/read',
