@@ -1,4 +1,3 @@
-const _                 = require('lodash')
 import axios from 'axios'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from './env'
@@ -27,9 +26,6 @@ export const PERMISSION_HELPER = {
                 reqObj.session.userPositions = userData.result.response.profileDetails.userRoles
             } else {
                 reqObj.session.userPositions = []
-            }
-            if (!_.includes(reqObj.session.userRoles, 'PUBLIC')) {
-                reqObj.session.userRoles.push('PUBLIC')
             }
             // Save session to Cassandra BEFORE calling callback.
             // The callback triggers post-auth.js response.redirect(), which causes the browser
