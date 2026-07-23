@@ -32,7 +32,7 @@ export async function getUserDetailsFromApi(userId: string): Promise<IUserDetail
       `${apiEndpoints.details}/${userId}`,
       axiosRequestConfig
     )
-    return res.data || {}
+    return res.data || null
   } catch (err) {
     return null
   }

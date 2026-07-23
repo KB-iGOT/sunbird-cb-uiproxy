@@ -10,7 +10,7 @@ export const parichayAuth = express.Router()
 
 parichayAuth.get('/auth', async (req, res) => {
     logDebug('Received host : ' + req.hostname)
-    const rawIiidem = Array.isArray(req.query.iiidem) ? req.query.iiidem[0] : req.query.iiidem
+    const rawIiidem = Array.isArray(req.query.iiidem) ? req.query.iiidem[0] : req.query.iiidem as string
     const iiidemFlag = rawIiidem === '1'
     if (req.session) {
         req.session.parichayIsEclogin = iiidemFlag
@@ -52,7 +52,7 @@ parichayAuth.get('/callback', async (req, res) => {
             data: {
                 client_id: CONSTANTS.PARICHAY_CLIENT_ID,
                 client_secret: CONSTANTS.PARICHAY_CLIENT_SECRET,
-                code: decodeURIComponent(req.query.code),
+                code: decodeURIComponent(req.query.code as string),
                 // tslint:disable-next-line: max-line-length
                 code_verifier: CONSTANTS.PARICHAY_CODE_VERIFIER,
                 grant_type: 'authorization_code',

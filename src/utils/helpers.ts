@@ -7,8 +7,10 @@ export function* range(end: number, step = 1) {
   }
 }
 
+// tslint:disable-next-line: no-any
 export function getStringifiedQueryParams(obj: {
-  [key: string]: string | number | undefined;
+  // tslint:disable-next-line: no-any
+  [key: string]: any;
 }) {
   return Object.entries(obj)
     .filter((u) => u[1])

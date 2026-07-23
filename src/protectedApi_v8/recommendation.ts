@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { EContentTypes, IContent } from '../models/content.model'
@@ -32,7 +32,7 @@ recommendationApi.get('/', async (req, res) => {
       res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
       return
     }
-    const filters = req.query.filters
+    const filters = req.query.filters as string
     let decodedFilters = {
       recommendationCategory: 'org',
     }
@@ -72,8 +72,9 @@ recommendationApi.get('/', async (req, res) => {
       hasMore: false,
     }
     res.json(result)
-  } catch (err) {
-    logError('RECOMMENDATIONS FETCH ERROR >', err)
+  } catch (errAny) {
+    const err = errAny as AxiosError
+    logError('RECOMMENDATIONS FETCH ERROR >', String(err))
     res.status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
         error: ERROR.GENERAL_ERR_MSG,
@@ -125,8 +126,9 @@ recommendationApi.get('/interestBased', async (req, res) => {
       hasMore: false,
     }
     res.json(result)
-  } catch (err) {
-    logError('INTEREST BASED RECOMMENDATIONS FETCH ERROR >', err)
+  } catch (errAny) {
+    const err = errAny as AxiosError
+    logError('INTEREST BASED RECOMMENDATIONS FETCH ERROR >', String(err))
     res.status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
         error: ERROR.GENERAL_ERR_MSG,
@@ -179,8 +181,9 @@ recommendationApi.get('/keyword', async (req, res) => {
       }
       res.json(result)
     }
-  } catch (err) {
-    logError('RECOMMENDATIONS TYPE FETCH ERROR >', err)
+  } catch (errAny) {
+    const err = errAny as AxiosError
+    logError('RECOMMENDATIONS TYPE FETCH ERROR >', String(err))
     res.status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
         error: ERROR.GENERAL_ERR_MSG,
@@ -225,8 +228,9 @@ recommendationApi.get('/usageBased', async (req, res) => {
       hasMore: false,
     }
     res.json(result)
-  } catch (err) {
-    logError('USAGE BASED RECOMMENDATIONS FETCH ERROR >', err)
+  } catch (errAny) {
+    const err = errAny as AxiosError
+    logError('USAGE BASED RECOMMENDATIONS FETCH ERROR >', String(err))
     res.status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
         error: ERROR.GENERAL_ERR_MSG,
@@ -243,7 +247,7 @@ recommendationApi.get('/:recommendationType', async (req, res) => {
       res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
       return
     }
-    const filters = req.query.filters
+    const filters = req.query.filters as string
     let decodedFilters = {
       recommendationCategory: 'org',
     }
@@ -253,7 +257,7 @@ recommendationApi.get('/:recommendationType', async (req, res) => {
     const recommendationCategory = decodedFilters.recommendationCategory
     const pageNo = req.query.pageNo || 0
     const pageSize = req.query.pageSize || 20
-    const sourceFields = req.query.sourceFields
+    const sourceFields = req.query.sourceFields as string
     const recommendationType = req.params.recommendationType
     // tslint:disable-next-line: no-any
     const params: any = {
@@ -270,7 +274,7 @@ recommendationApi.get('/:recommendationType', async (req, res) => {
         params.excludeContentType = `${EContentTypes.KNOWLEDGE_ARTIFACT},${EContentTypes.RESOURCE},${EContentTypes.MODULE},${EContentTypes.CHANNEL}`
       } else {
         if (req.query.excludeContentType) {
-          params.excludeContentType = req.query.excludeContentType
+          params.excludeContentType = req.query.excludeContentType as string
         }
       }
       if (rootOrg !== 'PNG' && org !== 'PNG') {
@@ -295,8 +299,9 @@ recommendationApi.get('/:recommendationType', async (req, res) => {
       hasMore: false,
     }
     res.json(result)
-  } catch (err) {
-    logError('RECOMMENDATIONS TYPE FETCH ERROR >', err)
+  } catch (errAny) {
+    const err = errAny as AxiosError
+    logError('RECOMMENDATIONS TYPE FETCH ERROR >', String(err))
     res.status((err && err.response && err.response.status) || 500)
       .send((err && err.response && err.response.data) || {
         error: ERROR.GENERAL_ERR_MSG,

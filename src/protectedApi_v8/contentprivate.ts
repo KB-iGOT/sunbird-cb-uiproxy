@@ -29,7 +29,7 @@ contentPrivateApi.patch('/update/:id', async (req, res) => {
         const content = req.body.request.content
         const fields = Object.keys(content)
         const userId = extractUserId(req)
-        const userToken = extractUserToken(req) as string
+        const userToken = extractUserToken(req)
         let validationErrorFlag = false
         if (!userId) {
             res.status(400).send(userIdFailedMessage)
@@ -95,7 +95,7 @@ contentPrivateApi.patch('/migratereviewer/:id', async (req, res) => {
         const content = req.body.request.content
         const fields = Object.keys(content)
         const userId = extractUserId(req)
-        const userToken = extractUserToken(req) as string
+        const userToken = extractUserToken(req)
         let validationErrorFlag = false
         if (!userId) {
             res.status(400).send(userIdFailedMessage)
@@ -155,7 +155,7 @@ contentPrivateApi.patch('/migratepublisher/:id', async (req, res) => {
         const content = req.body.request.content
         const fields = Object.keys(content)
         const userId = extractUserId(req)
-        const userToken = extractUserToken(req) as string
+        const userToken = extractUserToken(req)
         let validationErrorFlag = false
 
         if (!userId) {
