@@ -5926,6 +5926,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/user/profile/v1/extended/delete': {
@@ -5955,6 +5956,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/masterdata/list/degrees': {
@@ -6738,6 +6740,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/promotionalcontent/v1/assignedto/users': {
@@ -7039,6 +7042,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/learner/achievement/update': {
@@ -7046,6 +7050,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/learner/achievement/read/:id': {
@@ -7082,6 +7087,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/knowledge/centre/create/:type': {
@@ -7377,6 +7383,7 @@ export const API_LIST = {
                 ROLE.PROGRAM_INSTRUCTOR,
                 ROLE.STATE_ADMIN,
                 ROLE.CBP_ADMIN,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/operationalreports/v3/download/:rootOrgId': {
