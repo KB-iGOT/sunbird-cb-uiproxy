@@ -27,11 +27,7 @@ export const PERMISSION_HELPER = {
             } else {
                 reqObj.session.userPositions = []
             }
-            // Save session to Cassandra BEFORE calling callback.
-            // The callback triggers post-auth.js response.redirect(), which causes the browser
-            // to immediately follow the redirect. If session.save() hasn't committed to Cassandra
-            // by then, the follow-up request reads a session without keycloak-token, causing
-            // grant-attacher to fail silently and protect.js to redirect back to KC login (race condition).
+            this.createNodeBBUser(reqObj, callback)
             // tslint:disable-next-line: no-any
             reqObj.session.save((error: any) => {
                 if (error) {
