@@ -251,6 +251,7 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
                 ROLE.CONTENT_CREATOR,
                 ROLE.CONTENT_REVIEWER,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/action/content/v3/reject/:do_id': {
