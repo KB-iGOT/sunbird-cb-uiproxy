@@ -1235,6 +1235,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/protected/v8/frac/getAllNodes/:type': {
@@ -2339,6 +2340,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/user/assessment/v4/result': {
@@ -2346,6 +2348,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/ratings/v2/read': {
@@ -2831,6 +2834,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/ehrms/details': {
@@ -6414,6 +6418,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/forms/v2/saveFormSubmit': {
@@ -6421,6 +6426,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/forms/v2/getApplicationsById': {
