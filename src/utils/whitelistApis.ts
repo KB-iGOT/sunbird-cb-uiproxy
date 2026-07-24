@@ -199,6 +199,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/discussion/user/v1/create': {
@@ -1967,6 +1968,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/question/read': {
@@ -2196,6 +2198,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/mdo/content/v3/create': {
@@ -3361,6 +3364,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/protected/v8/user/evaluate/assessment/submit/v5': {
@@ -5270,6 +5274,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+
             ],
         },
         '/proxies/v8/community/v1/category/create': {
@@ -6058,6 +6063,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/user/profile/v1/extended/locationDetails/:id': {
@@ -7785,6 +7791,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
             ],
         },
         '/proxies/v8/learner/achievement/v1/list': {
