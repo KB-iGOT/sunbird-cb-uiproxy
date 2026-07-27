@@ -7894,6 +7894,36 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+      '/proxies/v8/action/content/v1/durationSync/:do_id': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+          ROLE.CONTENT_CREATOR,
+          ROLE.EDITOR,
+          ROLE.MDO_ADMIN,
+          ROLE.MDO_LEADER,
+          ROLE.PROGRAM_COORDINATOR,
+          ROLE.SPV_ADMIN,
+          ROLE.SPV_PUBLISHER,
+          ROLE.CONTENT_PUBLISHER,
+          ROLE.PROGRAM_INSTRUCTOR,
+        ],
+      },
+      '/proxies/v8/action/content/v1/replaceVideo': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+          ROLE.CONTENT_CREATOR,
+          ROLE.EDITOR,
+          ROLE.MDO_ADMIN,
+          ROLE.MDO_LEADER,
+          ROLE.PROGRAM_COORDINATOR,
+          ROLE.SPV_ADMIN,
+          ROLE.SPV_PUBLISHER,
+          ROLE.CONTENT_PUBLISHER,
+          ROLE.PROGRAM_INSTRUCTOR,
+        ],
+      },
 
     },
     URL_PATTERN:
@@ -8889,5 +8919,7 @@ export const API_LIST = {
             '/proxies/v8/user/nongovt/v1/bulkupload',
             '/proxies/v8/ratings/v1/read/:activity_id/:type',
             '/proxies/v8/user/content/info',
+            '/proxies/v8/action/content/v1/durationSync/:do_id',
+            '/proxies/v8/action/content/v1/replaceVideo'
         ],
 }
