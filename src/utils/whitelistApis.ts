@@ -7899,14 +7899,8 @@ export const API_LIST = {
         // tslint:disable-next-line: object-literal-sort-keys
         ROLE_CHECK: [
           ROLE.CONTENT_CREATOR,
-          ROLE.EDITOR,
-          ROLE.MDO_ADMIN,
-          ROLE.MDO_LEADER,
-          ROLE.PROGRAM_COORDINATOR,
-          ROLE.SPV_ADMIN,
           ROLE.SPV_PUBLISHER,
           ROLE.CONTENT_PUBLISHER,
-          ROLE.PROGRAM_INSTRUCTOR,
         ],
       },
       '/proxies/v8/action/content/v1/replaceVideo': {
@@ -7914,14 +7908,8 @@ export const API_LIST = {
         // tslint:disable-next-line: object-literal-sort-keys
         ROLE_CHECK: [
           ROLE.CONTENT_CREATOR,
-          ROLE.EDITOR,
-          ROLE.MDO_ADMIN,
-          ROLE.MDO_LEADER,
-          ROLE.PROGRAM_COORDINATOR,
-          ROLE.SPV_ADMIN,
           ROLE.SPV_PUBLISHER,
           ROLE.CONTENT_PUBLISHER,
-          ROLE.PROGRAM_INSTRUCTOR,
         ],
       },
 
