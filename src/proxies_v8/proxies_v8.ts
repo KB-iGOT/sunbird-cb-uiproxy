@@ -210,6 +210,13 @@ proxiesV8.use('/content/v1/retirement/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
+proxiesV8.use('/content/admin/v1/durationSync/*',
+  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+proxiesV8.use('/content/admin/v1/replaceVideo',
+  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
 proxiesV8.use(
   '/content',
   proxyCreatorRoute(express.Router(), CONSTANTS.CONTENT_API_BASE + '/content')
@@ -530,12 +537,6 @@ proxiesV8.use('/action/content/v3/hierarchyUpdate',
 )
 proxiesV8.use('/action/*',
   proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KNOWLEDGE_MW_API_BASE}`)
-)
-proxiesV8.use('/content/admin/v1/durationSync/*',
-  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-proxiesV8.use('/content/admin/v1/replaceVideo',
-  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 proxiesV8.use('/mdo/content/*',
   proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
