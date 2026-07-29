@@ -294,10 +294,14 @@ const respond419 = async (req: Request, res: Response) => {
     } else {
         const err = ({ msg: 'API WHITELIST :: Unauthorized access for API [ ' + REQ_URL + ' ]', url: REQ_URL })
         logError(err.msg)
-        try {
-            await deauthenticateKeycloakSession(req)
-        } catch (deauthErr) {
-            logError('API WHITELIST :: Error deauthenticating Keycloak session on 419 response: ' + deauthErr)
+        if (req.session && typeof req.session.destroy === 'function') {
+            req.session.destroy((destroyErr: any) => {
+                if (destroyErr) {
+                    logError('API WHITELIST :: Error destroying session on 419 response: ' + destroyErr)
+                } else {
+                    logDebug('API WHITELIST :: Session destroyed after 419 response')
+                }
+            })
         }
         res.status(419)
         res.setHeader('location', redirectToLogin(req))
