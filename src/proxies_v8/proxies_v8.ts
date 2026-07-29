@@ -528,6 +528,12 @@ proxiesV8.use('private/content/v4/system/update',
 proxiesV8.use('/action/content/v3/hierarchyUpdate',
   proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+proxiesV8.use('/admin/content/v1/durationSync/*',
+  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+proxiesV8.use('/admin/content/v1/replaceVideo',
+  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
 proxiesV8.use('/action/*',
   proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KNOWLEDGE_MW_API_BASE}`)
 )
