@@ -210,6 +210,13 @@ proxiesV8.use('/content/v1/retirement/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
+proxiesV8.use('/content/admin/v1/durationSync/*',
+  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+proxiesV8.use('/content/admin/v1/replaceVideo',
+  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
+
 proxiesV8.use(
   '/content',
   proxyCreatorRoute(express.Router(), CONSTANTS.CONTENT_API_BASE + '/content')
@@ -531,7 +538,6 @@ proxiesV8.use('/action/content/v3/hierarchyUpdate',
 proxiesV8.use('/action/*',
   proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KNOWLEDGE_MW_API_BASE}`)
 )
-
 proxiesV8.use('/mdo/content/*',
   proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
@@ -614,18 +620,24 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
     if (!channel) {
       channel = ''
     }
+
+    const uploadHeaders: { [key: string]: string } = {
+      // tslint:disable-next-line:max-line-length
+      Authorization: CONSTANTS.SB_API_KEY,
+      // tslint:disable-next-line: all
+      'x-authenticated-user-channel': encodeURIComponent(channel),
+      'x-authenticated-user-orgid': rootOrgId,
+      'x-authenticated-user-orgname': encodeURIComponent(channel),
+      'x-authenticated-user-token': extractUserToken(req) || '',
+      'x-authenticated-userid': extractUserIdFromRequest(req),
+    }
+    const targetOrgId = _.get(req, 'body.targetorgid') || _.get(req, 'headers.targetorgid')
+    if (targetOrgId) {
+      uploadHeaders.targetorgid = targetOrgId
+    }
     formData.submit(
       {
-        headers: {
-          // tslint:disable-next-line:max-line-length
-          Authorization: CONSTANTS.SB_API_KEY,
-          // tslint:disable-next-line: all
-          'x-authenticated-user-channel': encodeURIComponent(channel),
-          'x-authenticated-user-orgid': rootOrgId,
-          'x-authenticated-user-orgname': encodeURIComponent(channel),
-          'x-authenticated-user-token': extractUserToken(req),
-          'x-authenticated-userid': extractUserIdFromRequest(req),
-        },
+        headers: uploadHeaders,
         host: 'kong',
         path: url,
         port: 8000,
@@ -684,18 +696,23 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
     if (!channel) {
       channel = ''
     }
+    const uploadHeaders: { [key: string]: string } = {
+      // tslint:disable-next-line:max-line-length
+      Authorization: CONSTANTS.SB_API_KEY,
+      // tslint:disable-next-line: all
+      'x-authenticated-user-channel': encodeURIComponent(channel),
+      'x-authenticated-user-orgid': rootOrgId,
+      'x-authenticated-user-orgname': encodeURIComponent(channel),
+      'x-authenticated-user-token': extractUserToken(req) || '',
+      'x-authenticated-userid': extractUserIdFromRequest(req),
+    }
+    const targetOrgId = _.get(req, 'body.targetorgid') || _.get(req, 'headers.targetorgid')
+    if (targetOrgId) {
+      uploadHeaders.targetorgid = targetOrgId
+    }
     formData.submit(
       {
-        headers: {
-          // tslint:disable-next-line:max-line-length
-          Authorization: CONSTANTS.SB_API_KEY,
-          // tslint:disable-next-line: all
-          'x-authenticated-user-channel': encodeURIComponent(channel),
-          'x-authenticated-user-orgid': rootOrgId,
-          'x-authenticated-user-orgname': encodeURIComponent(channel),
-          'x-authenticated-user-token': extractUserToken(req),
-          'x-authenticated-userid': extractUserIdFromRequest(req),
-        },
+        headers: uploadHeaders,
         host: 'kong',
         path: url,
         port: 8000,
@@ -1217,7 +1234,7 @@ proxiesV8.use('/cios/*',
 proxiesV8.get('/cios/v1/content/read/:contentId', async (req, res) => {
   const contentId = req.params.contentId
   const userId = extractUserIdFromRequest(req)
-  const token = extractUserToken(req)
+  const token = extractUserToken(req) || ''
   try {
     const response = await allocationService.readByUserIdCourseId(userId, contentId, token)
     if (response) {

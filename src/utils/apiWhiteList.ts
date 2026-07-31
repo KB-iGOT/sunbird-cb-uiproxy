@@ -4,6 +4,7 @@ const { pathToRegexp } = require('path-to-regexp')
 const dateFormat = require('dateformat')
 
 import { NextFunction, Request, Response } from 'express'
+import { deauthenticateKeycloakSession } from './custom-keycloak'
 import { CONSTANTS } from './env'
 import { logDebug, logError } from './logger'
 import { ROLE } from './roles'
@@ -286,13 +287,22 @@ const respond403 = (req: Request, res: Response) => {
     res.end()
 }
 
-const respond419 = (req: Request, res: Response) => {
+const respond419 = async (req: Request, res: Response) => {
     const REQ_URL = req.path
     if (_.includes(REQ_URL, '/reset')) {
         res.redirect('/apis/logout')
     } else {
         const err = ({ msg: 'API WHITELIST :: Unauthorized access for API [ ' + REQ_URL + ' ]', url: REQ_URL })
         logError(err.msg)
+        if (req.session && typeof req.session.destroy === 'function') {
+            req.session.destroy((destroyErr: any) => {
+                if (destroyErr) {
+                    logError('API WHITELIST :: Error destroying session on 419 response: ' + destroyErr)
+                } else {
+                    logDebug('API WHITELIST :: Session destroyed after 419 response')
+                }
+            })
+        }
         res.status(419)
         res.setHeader('location', redirectToLogin(req))
         res.send(
@@ -315,7 +325,6 @@ const respond419 = (req: Request, res: Response) => {
                 result: {},
             })
     }
-
     res.end()
 }
 
@@ -402,7 +411,7 @@ const validateAPI = (req: Request, res: Response, next: NextFunction) => {
  * This function is used for checking whether
  */
 export function apiWhiteListLogger() {
-    return (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
         if (req.path === '/' || checkIsStaticRoute(req.path)) {
             next()
             return
@@ -414,7 +423,7 @@ export function apiWhiteListLogger() {
              if (!('userRoles' in req.session) || (('userRoles' in req.session) && (req.session.userRoles.length === 0))) {
                 logError('Portal_API_WHITELIST_LOGGER: User needs to authenticated themselves', '------', new Date().toString())
                 logDebug('UIPROXY:: apiWhiteListLogger :  respond419 method will be called')
-                respond419(req, res)
+                await respond419(req, res)
             } else {
                 // Pattern match for URL
                 logDebug('In WhilteList Call========' + REQ_URL, '------', new Date().toString())
