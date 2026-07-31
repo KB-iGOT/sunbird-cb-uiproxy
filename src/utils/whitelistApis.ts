@@ -7940,6 +7940,7 @@ export const API_LIST = {
         // tslint:disable-next-line: object-literal-sort-keys
         ROLE_CHECK: [
           ROLE.SPV_ADMIN,
+          ROLE.IGOT_SUPPORT_ADMIN,
         ],
       },
       '/proxies/v8/formsConfig/v2/update': {
@@ -7947,6 +7948,7 @@ export const API_LIST = {
         // tslint:disable-next-line: object-literal-sort-keys
         ROLE_CHECK: [
           ROLE.SPV_ADMIN,
+          ROLE.IGOT_SUPPORT_ADMIN,
         ],
       },
     },
