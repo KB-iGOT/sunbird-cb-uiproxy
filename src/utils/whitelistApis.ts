@@ -7935,6 +7935,20 @@ export const API_LIST = {
             ROLE.PROGRAM_COORDINATOR,
         ],
       },
+      '/proxies/v8/formsConfig/v2/create': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+          ROLE.SPV_ADMIN,
+        ],
+      },
+      '/proxies/v8/formsConfig/v2/update': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+          ROLE.SPV_ADMIN,
+        ],
+      },
     },
     URL_PATTERN:
         [
@@ -8939,5 +8953,7 @@ export const API_LIST = {
             '/proxies/v8/batch/enrollment/qrcode/download/:do_id/:batch_id',
             '/proxies/v8/batch/enrollment/qrcode/status/:do_id/:batch_id',
             '/proxies/v8/composite/v4/bp/search',
+            '/proxies/v8/formsConfig/v2/create',
+            '/proxies/v8/formsConfig/v2/update'
         ],
 }
