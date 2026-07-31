@@ -1598,7 +1598,7 @@ proxiesV8.use('/peersurvey/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
-proxiesV8.use('/batch/enrollment/qrcode/*',
+proxiesV8.use('/batch/v1/enrollment/qrcode/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
