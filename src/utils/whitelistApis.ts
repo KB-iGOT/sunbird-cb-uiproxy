@@ -8929,7 +8929,7 @@ export const API_LIST = {
             '/proxies/v8/program/coordinator/:do_id',
             '/proxies/v8/program/coordinator/list/:do_id',
             '/proxies/v8/batch/enrollment/qrcode/download/:do_id/:batch_id',
-            '/proxies/v8/batch/enrollment/qrcode/download/:do_id/:batch_id',
+            '/proxies/v8/batch/enrollment/qrcode/status/:do_id/:batch_id',
             '/proxies/v8/composite/v4/bp/search',
         ],
 }
