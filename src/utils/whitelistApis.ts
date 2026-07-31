@@ -8956,6 +8956,6 @@ export const API_LIST = {
             '/proxies/v8/batch/v1/enrollment/qrcode/status/:do_id/:batch_id',
             '/proxies/v8/composite/v4/bp/search',
             '/proxies/v8/formsConfig/v2/create',
-            '/proxies/v8/formsConfig/v2/update'
+            '/proxies/v8/formsConfig/v2/update',
         ],
 }
