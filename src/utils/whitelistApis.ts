@@ -7791,6 +7791,14 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/user/profile/v2/extended': {
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+            ROLE.PUBLIC,
+            ROLE.VOLUNTEER
+          ],
+        },
         '/proxies/v8/learner/achievement/v1/list': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -8896,6 +8904,7 @@ export const API_LIST = {
             '/proxies/v8/course/v1/reenroll',
             '/proxies/v8/user/profile/v2/basic',
             '/proxies/v8/user/profile/v2/extended/all',
+            '/proxies/v8/user/profile/v2/extended',
             '/proxies/v8/user/profile/v2/getAdditionalFields',
             '/proxies/v8/learner/achievement/v1/list',
             '/proxies/v8/read/v5/content-progres/:do_id',
