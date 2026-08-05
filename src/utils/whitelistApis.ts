@@ -7942,6 +7942,64 @@ export const API_LIST = {
           ROLE.CONTENT_PUBLISHER,
         ],
       },
+      '/proxies/v8/program/coordinator/:do_id': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+            ROLE.PROGRAM_COORDINATOR,
+        ],
+      },
+      '/proxies/v8/program/coordinator/list/:do_id': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+            ROLE.PROGRAM_COORDINATOR,
+        ],
+      },
+      '/proxies/v8/program/coordinator/roles': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+            ROLE.PROGRAM_COORDINATOR,
+        ],
+      },
+      '/proxies/v8/batch/v1/enrollment/qrcode/download/:do_id/:batch_id': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+            ROLE.PROGRAM_COORDINATOR,
+        ],
+      },
+      '/proxies/v8/batch/v1/enrollment/qrcode/status/:do_id/:batch_id': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+            ROLE.PROGRAM_COORDINATOR,
+        ],
+      },
+      '/proxies/v8/composite/v4/bp/search': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+            ROLE.PROGRAM_COORDINATOR,
+        ],
+      },
+      '/proxies/v8/formsConfig/v2/create': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+          ROLE.SPV_ADMIN,
+          ROLE.IGOT_SUPPORT_ADMIN,
+        ],
+      },
+      '/proxies/v8/formsConfig/v2/update': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+          ROLE.SPV_ADMIN,
+          ROLE.IGOT_SUPPORT_ADMIN,
+        ],
+      },
     },
     URL_PATTERN:
         [
@@ -8939,7 +8997,15 @@ export const API_LIST = {
             '/proxies/v8/ratings/v1/read/:activity_id/:type',
             '/proxies/v8/user/content/info',
             '/proxies/v8/user/v1/learning/dictionary',
-            '/proxies/v8/action/content/v1/durationSync/:do_id',
-            '/proxies/v8/action/content/v1/replaceVideo'
+            '/proxies/v8/content/admin/v1/durationSync/:do_id',
+            '/proxies/v8/content/admin/v1/replaceVideo',
+            '/proxies/v8/program/coordinator/:do_id',
+            '/proxies/v8/program/coordinator/list/:do_id',
+            '/proxies/v8/program/coordinator/roles',
+            '/proxies/v8/batch/v1/enrollment/qrcode/download/:do_id/:batch_id',
+            '/proxies/v8/batch/v1/enrollment/qrcode/status/:do_id/:batch_id',
+            '/proxies/v8/composite/v4/bp/search',
+            '/proxies/v8/formsConfig/v2/create',
+            '/proxies/v8/formsConfig/v2/update',
         ],
 }
