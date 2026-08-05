@@ -263,7 +263,16 @@ export class CustomKeycloak {
       // clears the KC SSO browser cookie — backchannel revocation alone does not do this.
       const buildKcLogoutUrl = (): string => {
         if (typeof (keycloak as any).logoutUrl === 'function') {
-          const url: string = (keycloak as any).logoutUrl(postLogoutRedirect)
+          let url: string = (keycloak as any).logoutUrl(postLogoutRedirect)
+          // Without id_token_hint, KC18+ shows the "Do you want to log out?"
+          // confirmation page instead of silently redirecting.
+          const idTokenHint = req.session ? (req.session as any).idToken : undefined
+          if (idTokenHint) {
+            url += '&id_token_hint=' + encodeURIComponent(idTokenHint)
+            logInfo('[logout] appended id_token_hint to KC front-channel logout URL')
+          } else {
+            logInfo('[logout] no id_token in session; KC will show the logout confirmation page')
+          }
           logInfo('[logout] KC front-channel logout URL=' + url)
           return url
         }
