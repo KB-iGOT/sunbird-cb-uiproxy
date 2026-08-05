@@ -280,6 +280,22 @@ export class CustomKeycloak {
         return postLogoutRedirect
       }
 
+      // A visitor whose local session was never authenticated (no keycloak-token,
+      // no idToken) has nothing to log out. Redirecting them through KC's real
+      // /logout endpoint anyway would still show the confirmation page (no
+      // id_token_hint to silently prove which session to end) and could even
+      // tear down an unrelated app's live SSO session on the same KC realm.
+      const hasAuthenticatedSession = !!(
+        req.session &&
+        (req.session.hasOwnProperty('keycloak-token') || (req.session as any).idToken)
+      )
+      if (!hasAuthenticatedSession) {
+        logInfo('[logout] no authenticated keycloak session locally; skipping KC round-trip')
+        clearCookies()
+        res.redirect(postLogoutRedirect)
+        return
+      }
+
       logInfo('[logout] starting backchannel deauthentication')
       this.deauthenticated(req)
         .then(() => {
