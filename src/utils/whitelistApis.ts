@@ -7799,6 +7799,14 @@ export const API_LIST = {
                 ROLE.VOLUNTEER,
             ],
         },
+        '/proxies/v8/user/profile/v2/extended': {
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+            ROLE.PUBLIC,
+            ROLE.VOLUNTEER
+          ],
+        },
         '/proxies/v8/learner/achievement/v1/list': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -7872,13 +7880,6 @@ export const API_LIST = {
             ROLE.SPV_ADMIN,
           ],
         },
-        '/proxies/v8/formsConfig/v1/read': {
-          checksNeeded: [CHECK.ROLE],
-          // tslint:disable-next-line: object-literal-sort-keys
-          ROLE_CHECK: [
-            ROLE.PUBLIC,
-          ],
-        },
         '/proxies/v8/org/v1/status/update': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -7923,7 +7924,7 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
-      '/proxies/v8/content/admin/v1/durationSync/:do_id': {
+      '/proxies/v8/action/content/v1/durationSync/:do_id': {
         checksNeeded: [CHECK.ROLE],
         // tslint:disable-next-line: object-literal-sort-keys
         ROLE_CHECK: [
@@ -7932,7 +7933,7 @@ export const API_LIST = {
           ROLE.CONTENT_PUBLISHER,
         ],
       },
-      '/proxies/v8/content/admin/v1/replaceVideo': {
+      '/proxies/v8/action/content/v1/replaceVideo': {
         checksNeeded: [CHECK.ROLE],
         // tslint:disable-next-line: object-literal-sort-keys
         ROLE_CHECK: [
@@ -8925,6 +8926,7 @@ export const API_LIST = {
             '/proxies/v8/course/v1/reenroll',
             '/proxies/v8/user/profile/v2/basic',
             '/proxies/v8/user/profile/v2/extended/all',
+            '/proxies/v8/user/profile/v2/extended',
             '/proxies/v8/user/profile/v2/getAdditionalFields',
             '/proxies/v8/learner/achievement/v1/list',
             '/proxies/v8/read/v5/content-progres/:do_id',
@@ -8937,7 +8939,7 @@ export const API_LIST = {
             '/proxies/v8/ratings/v1/read/:activity_id/:type',
             '/proxies/v8/user/content/info',
             '/proxies/v8/user/v1/learning/dictionary',
-            '/proxies/v8/content/admin/v1/durationSync/:do_id',
-            '/proxies/v8/content/admin/v1/replaceVideo'
+            '/proxies/v8/action/content/v1/durationSync/:do_id',
+            '/proxies/v8/action/content/v1/replaceVideo'
         ],
 }
