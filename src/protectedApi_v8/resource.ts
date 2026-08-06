@@ -129,8 +129,11 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
         redirectUrl = `${CONSTANTS.AI_ASSESSMENT_PORTAL_HOST}${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}${queryParam}`
     } else {
         // tslint:disable-next-line: max-line-length
-        redirectUrl = `${CONSTANTS.AI_ASSESSMENT_PORTAL_HOST}`
-            + `${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}` // 'https://' + host + '/page/home'
+        // redirectUrl = `${CONSTANTS.AI_ASSESSMENT_PORTAL_HOST}`
+        //     + `${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}` // 'https://' + host + '/page/home'
+         // redirectUrl = `${CONSTANTS.AI_ASSESSMENT_PORTAL_HOST}${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}${queryParam}` //   'https://' + host + '/page/home'
+
+        redirectUrl = `${CONSTANTS.IIM_PORTAL_HOST}${CONSTANTS.EC_REDIRECT_PATH}`
     }
     logDebug('Redirecting to: ' + redirectUrl)
 
