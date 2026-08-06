@@ -1,23 +1,27 @@
 import { Router } from 'express'
 import * as _ from 'lodash'
 import { CONSTANTS } from '../utils/env'
-import { logDebug, logInfo } from '../utils/logger'
+import { logDebug } from '../utils/logger'
 export const userAuthKeyCloakApi = Router()
 export const userAuthKeyCloakEcApi = Router()
+export const userAuthKeyCloakAssessmentLoginApi = Router()
+const LOCALHOST = 'localhost'
+const COOKIE_NAME = 'connect.sid'
+const SAME_SITE_NONE = 'None'
+const LOG_RECEIVED_QUERY = 'Received query param: '
+const LOG_REDIRECT_URL = 'Received redirectUrl value : '
+const LOG_AUTH = 'User is authenticated.. Updating Cookie with Secure and SameSite flags'
 userAuthKeyCloakApi.get('/', (req, res) => {
     const host = req.get('host')
     let queryParam = ''
     let isLocal = 0
     let domain = ''
-    logInfo('resource.ts userAuthKeyCloakApi: handler entered host=' + host
-        + ' query=' + JSON.stringify(req.query))
-    logDebug('Received query param: ' + JSON.stringify(req.query))
+    logDebug(LOG_RECEIVED_QUERY  + JSON.stringify(req.query))
     if (req.session && req.session.authenticated) {
-        logInfo('resource.ts userAuthKeyCloakApi: session authenticated, updating connect.sid cookie')
-        logDebug('User is authenticated.. Updating Cookie with Secure and SameSite flags')
+       logDebug(LOG_AUTH)
         if (host !== undefined) {
-            if (host.includes('localhost')) {
-                domain = 'localhost' // For localhost, set domain to localhost
+            if (host.includes(LOCALHOST)) {
+                domain = LOCALHOST // For localhost, set domain to localhost
             } else {
                 const hostParts = host.split('.')
                 if (hostParts.length > 2) {
@@ -27,17 +31,16 @@ userAuthKeyCloakApi.get('/', (req, res) => {
                 }
             }
         }
-        logInfo('resource.ts userAuthKeyCloakApi: resolved cookie domain=' + domain)
-        const COOKIE_NAME = 'connect.sid'
+        const COOKIE_NAME_NEW = COOKIE_NAME
         const COOKIE_OPTIONS = {
             httpOnly: true,
             secure: true,
         }
-        res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS)
-        res.cookie(COOKIE_NAME, req.cookies[COOKIE_NAME], {
-            domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
-            sameSite: 'none', ...COOKIE_OPTIONS,
-        })
+        res.clearCookie(COOKIE_NAME_NEW, {
+                        COOKIE_OPTIONS,
+          })
+        res.cookie(COOKIE_NAME_NEW, req.cookies[COOKIE_NAME_NEW], { domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
+          sameSite: SAME_SITE_NONE, ...COOKIE_OPTIONS })
 
         // res.cookie('express.sid', req.cookies['express.sid'], {
         //     httpOnly: true,
@@ -45,38 +48,24 @@ userAuthKeyCloakApi.get('/', (req, res) => {
         //     sameSite: 'Lax',
         //     secure: true,
         // })
-    } else {
-        logInfo('resource.ts userAuthKeyCloakApi: session NOT authenticated'
-            + ' hasSession=' + String(!!req.session)
-            + ' authenticated=' + String(req.session && req.session.authenticated))
-    }
+    } 
     if (!_.isEmpty(req.query) && (req.query as any) !== 'protected/v8/resources') {
         queryParam = req.query.q as string
-        logInfo('resource.ts userAuthKeyCloakApi: query params present'
-            + ' q=' + queryParam
-            + ' redirect_uri=' + String(req.query.redirect_uri))
-        if (queryParam && queryParam.includes('localhost')) {
+        if (queryParam && queryParam.includes(LOCALHOST)) {
             isLocal = 1
-            logInfo('resource.ts userAuthKeyCloakApi: detected localhost in q param, isLocal=1')
         }
         if (req.query.redirect_uri) {
-            logInfo('resource.ts userAuthKeyCloakApi: redirect_uri present, redirecting to '
-                + String(req.query.redirect_uri))
-            logDebug('Received redirectUrl value : ' + req.query.redirect_uri)
+            logDebug(LOG_REDIRECT_URL + req.query.redirect_uri)
             res.redirect(req.query.redirect_uri as string)
             return
         }
-    } else {
-        logInfo('resource.ts userAuthKeyCloakApi: no query params, will use default redirect')
-    }
+    } 
     let redirectUrl = ''
     if (isLocal) {
         redirectUrl = queryParam
-        logInfo('resource.ts userAuthKeyCloakApi: isLocal=1, redirecting to ' + redirectUrl)
     } else {
         // redirectUrl = `https://${host}${queryParam}` //   'https://' + host + '/page/home'
         redirectUrl = 'https://' + host + '/page/home'
-        logInfo('resource.ts userAuthKeyCloakApi: redirecting to /page/home url=' + redirectUrl)
     }
     res.redirect(redirectUrl)
 })
@@ -86,15 +75,13 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
     let queryParam = ''
     let isLocal = 0
     let domain = ''
-    logInfo('resource.ts userAuthKeyCloakEcApi: handler entered host=' + host
-        + ' query=' + JSON.stringify(req.query))
-    logDebug('Received query param: ' + JSON.stringify(req.query))
+    
+    logDebug(LOG_RECEIVED_QUERY + JSON.stringify(req.query))
     if (req.session && req.session.authenticated) {
-        logInfo('resource.ts userAuthKeyCloakEcApi: session authenticated, updating connect.sid cookie')
-        logDebug('User is authenticated.. Updating Cookie with Secure and SameSite flags')
+        logDebug(LOG_AUTH)
         if (host !== undefined) {
-            if (host.includes('localhost')) {
-                domain = 'localhost' // For localhost, set domain to localhost
+            if (host.includes(LOCALHOST)) {
+                domain = LOCALHOST // For localhost, set domain to localhost
             } else {
                 const hostParts = host.split('.')
                 if (hostParts.length > 2) {
@@ -104,17 +91,17 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
                 }
             }
         }
-        logInfo('resource.ts userAuthKeyCloakEcApi: resolved cookie domain=' + domain)
-        const COOKIE_NAME = 'connect.sid'
-        const COOKIE_OPTIONS = {
+        
+        const COOKIE_NAME_EC = COOKIE_NAME
+        const COOKIE_OPTIONS_EC = {
             httpOnly: true,
             secure: true,
         }
-        res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS)
-        res.cookie(COOKIE_NAME, req.cookies[COOKIE_NAME], {
-            domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
-            sameSite: 'none', ...COOKIE_OPTIONS,
-        })
+        res.clearCookie(COOKIE_NAME_EC, {
+                        COOKIE_OPTIONS_EC,
+          })
+        res.cookie(COOKIE_NAME_EC, req.cookies[COOKIE_NAME_EC], { domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
+          sameSite: SAME_SITE_NONE, ...COOKIE_OPTIONS_EC })
 
         // res.cookie('express.sid', req.cookies['express.sid'], {
         //     httpOnly: true,
@@ -122,43 +109,92 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
         //     sameSite: 'Lax',
         //     secure: true,
         // })
-    } else {
-        logInfo('resource.ts userAuthKeyCloakEcApi: session NOT authenticated'
-            + ' hasSession=' + String(!!req.session)
-            + ' authenticated=' + String(req.session && req.session.authenticated))
     }
     if (!_.isEmpty(req.query)) {
-        queryParam = req.query.q as string
-        logInfo('resource.ts userAuthKeyCloakEcApi: query params present'
-            + ' q=' + queryParam
-            + ' redirect_uri=' + String(req.query.redirect_uri))
-        if (queryParam && queryParam.includes('localhost')) {
+        queryParam = req.query.q
+        if (queryParam && queryParam.includes(LOCALHOST)) {
             isLocal = 1
-            logInfo('resource.ts userAuthKeyCloakEcApi: detected localhost in q param, isLocal=1')
         }
         if (req.query.redirect_uri) {
-            logInfo('resource.ts userAuthKeyCloakEcApi: redirect_uri present, redirecting to '
-                + String(req.query.redirect_uri))
-            logDebug('Received redirectUrl value : ' + req.query.redirect_uri)
-            res.redirect(req.query.redirect_uri as string)
+            logDebug(LOG_REDIRECT_URL + req.query.redirect_uri)
+            res.redirect(req.query.redirect_uri)
             return
         }
-    } else {
-        logInfo('resource.ts userAuthKeyCloakEcApi: no query params, will use AI assessment default redirect')
     }
     let redirectUrl = ''
     if (isLocal) {
         redirectUrl = queryParam
-        logInfo('resource.ts userAuthKeyCloakEcApi: isLocal=1, redirecting to ' + redirectUrl)
     } else if (queryParam && queryParam.includes('aiassessmentlogin')) {
         // tslint:disable-next-line: max-line-length
         redirectUrl = `${CONSTANTS.AI_ASSESSMENT_PORTAL_HOST}${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}${queryParam}`
-        logInfo('resource.ts userAuthKeyCloakEcApi: aiassessmentlogin path redirectUrl=' + redirectUrl)
     } else {
         // tslint:disable-next-line: max-line-length
         redirectUrl = `${CONSTANTS.AI_ASSESSMENT_PORTAL_HOST}`
-            + `${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}${queryParam}` // 'https://' + host + '/page/home'
-        logInfo('resource.ts userAuthKeyCloakEcApi: default AI assessment redirect url=' + redirectUrl)
+            + `${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}` // 'https://' + host + '/page/home'
+    }
+    logDebug('Redirecting to: ' + redirectUrl)
+
+    res.redirect(redirectUrl)
+})
+userAuthKeyCloakAssessmentLoginApi.get('/', (req, res) => {
+    const host = req.get('host')
+    let queryParam = ''
+    let isLocal = 0
+    let domain = ''
+    logDebug(LOG_RECEIVED_QUERY + JSON.stringify(req.query))
+    if (req.session && req.session.authenticated ) {
+        logDebug(LOG_AUTH)
+        if (host !== undefined) {
+            if (host.includes(LOCALHOST)) {
+                domain = LOCALHOST // For localhost, set domain to localhost
+            } else {
+                const hostParts = host.split('.')
+                if (hostParts.length > 2) {
+                    domain = '.' + hostParts.slice(1).join('.')
+                } else {
+                    domain = host
+                }
+            }
+        }
+        const COOKIE_NAME_ASSESSMENT = COOKIE_NAME
+        const COOKIE_OPTIONS_ASSESSMENT = {
+                httpOnly: true,
+                secure: true,
+            }
+        res.clearCookie(COOKIE_NAME_ASSESSMENT, {
+                        COOKIE_OPTIONS_ASSESSMENT,
+          })
+        res.cookie(COOKIE_NAME_ASSESSMENT, req.cookies[COOKIE_NAME_ASSESSMENT], { domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
+          sameSite: SAME_SITE_NONE, ...COOKIE_OPTIONS_ASSESSMENT })
+
+        // res.cookie('express.sid', req.cookies['express.sid'], {
+        //     httpOnly: true,
+        //     maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
+        //     sameSite: 'Lax',
+        //     secure: true,
+        // })
+    }
+    if (!_.isEmpty(req.query)) {
+        queryParam = req.query.q
+        if (queryParam && queryParam.includes(LOCALHOST)) {
+            isLocal = 1
+        }
+        if (req.query.redirect_uri) {
+            logDebug(LOG_REDIRECT_URL + req.query.redirect_uri)
+            res.redirect(req.query.redirect_uri)
+            return
+        }
+    }
+    let redirectUrl = ''
+    if (isLocal) {
+        redirectUrl = queryParam
+    } else if (queryParam && queryParam.includes('aiassessmentlogin')) {
+        // tslint:disable-next-line: max-line-length
+       redirectUrl = `${CONSTANTS.AI_ASSESSMENT_PORTAL_HOST}${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}${queryParam}`
+
+    } else {
+        // tslint:disable-next-line: max-line-length
+        redirectUrl = `${CONSTANTS.AI_ASSESSMENT_PORTAL_HOST}${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}` //   'https://' + host + '/page/home'
     }
     logDebug('Redirecting to: ' + redirectUrl)
 
