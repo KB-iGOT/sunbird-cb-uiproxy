@@ -9,7 +9,6 @@ import { chatBotTranscoderAPIIntegration } from './chatBotTranscoderAPIIntegrati
 import { ntpcAuth } from './ntpcAuth'
 import { oilAuth } from './oilAuth'
 import { parichayAuth } from './parichayAuth'
-import { samlAuth } from './samlAuth'
 import { samlDeeplink } from './samlDeeplink'
 import { workallocationPublic } from './workallocationPublic'
 import { youtubePlaylist } from './youtubePlaylist'
@@ -93,7 +92,6 @@ publicApiV8.use('/oil', oilAuth)
 
 publicApiV8.use('/ntpc', ntpcAuth)
 
-publicApiV8.use('/saml', samlAuth)
 publicApiV8.use('/saml', samlDeeplink)
 
 publicApiV8.use('/halloffame/read', proxyCreatorRoute(express.Router(), CONSTANTS.KONG_API_BASE + '/halloffame/read'))
