@@ -7905,6 +7905,10 @@ export const API_LIST = {
         // tslint:disable-next-line: object-literal-sort-keys
         ROLE_CHECK: [
             ROLE.PROGRAM_COORDINATOR,
+            ROLE.CONTENT_CREATOR,
+            ROLE.CONTENT_REVIEWER,
+            ROLE.CONTENT_PUBLISHER,
+            ROLE.SPV_PUBLISHER
         ],
       },
       '/proxies/v8/program/coordinator/roles': {
@@ -7951,6 +7955,16 @@ export const API_LIST = {
           ROLE.IGOT_SUPPORT_ADMIN,
         ],
       },
+      '/proxies/v8/program/admin/coordinator/upsert/:do_id': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+            ROLE.PROGRAM_COORDINATOR,
+            ROLE.CONTENT_CREATOR,
+            ROLE.SPV_PUBLISHER,
+            ROLE.CONTENT_PUBLISHER
+        ],
+      }
     },
     URL_PATTERN:
         [
@@ -8957,5 +8971,6 @@ export const API_LIST = {
             '/proxies/v8/composite/v4/bp/search',
             '/proxies/v8/formsConfig/v2/create',
             '/proxies/v8/formsConfig/v2/update',
+            '/proxies/v8/program/admin/coordinator/upsert/:do_id'
         ],
 }
