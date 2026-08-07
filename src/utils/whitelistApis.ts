@@ -8008,6 +8008,20 @@ export const API_LIST = {
           ROLE.IGOT_SUPPORT_ADMIN,
         ],
       },
+      '/proxies/v8/scorm/v1/validate': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CONTENT_CREATOR,
+            ],
+      },
+      '/proxies/v8/scorm/v1/status': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CONTENT_CREATOR,
+            ],
+      },
     },
     URL_PATTERN:
         [
@@ -9015,5 +9029,7 @@ export const API_LIST = {
             '/proxies/v8/composite/v4/bp/search',
             '/proxies/v8/formsConfig/v2/create',
             '/proxies/v8/formsConfig/v2/update',
+            '/proxies/v8/scorm/v1/validate',
+            '/proxies/v8/scorm/v1/status',
         ],
 }
