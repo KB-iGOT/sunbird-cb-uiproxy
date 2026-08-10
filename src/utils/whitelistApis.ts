@@ -9022,6 +9022,6 @@ export const API_LIST = {
             '/proxies/v8/composite/v4/bp/search',
             '/proxies/v8/formsConfig/v2/create',
             '/proxies/v8/formsConfig/v2/update',
-          '/proxies/v8/cios-enroll/v1/search',
+            '/proxies/v8/cios-enroll/v1/search',
         ],
 }
