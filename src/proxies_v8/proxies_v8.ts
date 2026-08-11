@@ -1697,3 +1697,7 @@ proxiesV8.use('/composite/v4/bp/search',
   // tslint:disable-next-line: max-line-length
   proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/composite/v4/bp/search`)
 )
+
+proxiesV8.use('/scorm/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
