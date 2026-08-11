@@ -1,6 +1,7 @@
 import * as express from 'express'
 import expressSession from 'express-session'
 import keycloakConnect from 'keycloak-connect'
+import { URL } from 'url'
 import { getKeycloakConfig } from '../configs/keycloak.config'
 import { CONSTANTS } from './env'
 import { logDebug, logError, logInfo } from './logger'
@@ -173,6 +174,7 @@ export class CustomKeycloak {
       // Derive the final destination the browser lands on after KC clears its SSO session.
       // Always use https:// — req.protocol is 'http' inside K8s pods (TLS terminated at ingress).
       // Keycloak rejects http:// post_logout_redirect_uri values that only have https:// registered.
+      // IIM_PORTAL_HOST (iiidem-portal.*) -> IIIDEM_PORTAL_HOST  e.g. iiidem-portal.x.net -> https://iiidem.x.net/
       // portal.*                      -> strip first subdomain  e.g. portal.dev.x.net -> https://dev.x.net/
       // LOGOUT_PUBLIC_HOME_HOSTS list -> append /public/home  e.g. spv.dev.x.net -> https://spv.dev.x.net/public/home
       // all other                     -> root '/'  e.g. https://host/
@@ -180,10 +182,19 @@ export class CustomKeycloak {
         .split(',')
         .map((h: string) => h.trim().toLowerCase())
         .filter(Boolean)
+      const iimPortalHost = (CONSTANTS.IIM_PORTAL_HOST || '')
+        .replace(/^https?:\/\//, '')
+        .toLowerCase()
       let postLogoutRedirect = 'https://' + logoutHost + '/'
       try {
         const hostParts = logoutHost.split('.')
-        if (hostParts.length > 2 && hostParts[0].toLowerCase() === 'portal') {
+        if (iimPortalHost && logoutHost.toLowerCase() === iimPortalHost) {
+          postLogoutRedirect = 'https://' + CONSTANTS.IIIDEM_PORTAL_HOST + '/'
+          logInfo(
+            '[logout] iiidem-portal host, redirecting to IIIDEM_PORTAL_HOST' +
+            ' -> postLogoutRedirect=' + postLogoutRedirect
+          )
+        } else if (hostParts.length > 2 && hostParts[0].toLowerCase() === 'portal') {
           postLogoutRedirect = 'https://' + hostParts.slice(1).join('.') + '/'
           logInfo(
             '[logout] portal host, stripping subdomain' +
