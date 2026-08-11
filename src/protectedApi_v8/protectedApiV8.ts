@@ -26,7 +26,7 @@ import { networkConnectionApi } from './network'
 import { networkHubApi } from './network-hub'
 import { portalApi } from './portal-v3'
 import { recommendationApi } from './recommendation'
-import { userAuthKeyCloakApi, userAuthKeyCloakEcApi } from './resource'
+import { userAuthKeyCloakApi, userAuthKeyCloakEcApi, userAuthKeyCloakAssessmentLoginApi } from './resource'
 import { roleActivityApi } from './roleActivity'
 import { scoringApi } from './scoring'
 import { scromApi } from './scrom'
@@ -82,4 +82,5 @@ protectedApiV8.use('/workallocation', workAllocationApi)
 protectedApiV8.use('/frac', fracApi)
 protectedApiV8.use('/contentprivate', contentPrivateApi),
 protectedApiV8.use('/eclogin', userAuthKeyCloakEcApi)
-protectedApiV8.use('/aiassessmentlogin', userAuthKeyCloakEcApi)
+protectedApiV8.use('/aiassessmentlogin', userAuthKeyCloakAssessmentLoginApi)
+
