@@ -170,7 +170,7 @@ export class CustomKeycloak {
         ' protocol=' + logoutProtocol +
         ' url=' + req.url
       )
-
+      logInfo('NEW log added for seeing request object: ' + JSON.stringify(req))
       // Derive the final destination the browser lands on after KC clears its SSO session.
       // Always use https:// — req.protocol is 'http' inside K8s pods (TLS terminated at ingress).
       // Keycloak rejects http:// post_logout_redirect_uri values that only have https:// registered.
