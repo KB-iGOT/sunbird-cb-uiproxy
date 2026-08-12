@@ -186,6 +186,10 @@ export class CustomKeycloak {
         .replace(/^https?:\/\//, '')
         .toLowerCase()
       let postLogoutRedirect = 'https://' + logoutHost + '/'
+      logInfo(
+            '[logout] New log added--->iiidem-portal host, redirecting to IIIDEM_PORTAL_HOST' + iimPortalHost +
+            ' -> postLogoutRedirect=' + postLogoutRedirect
+          )
       try {
         const hostParts = logoutHost.split('.')
         if (iimPortalHost && logoutHost.toLowerCase() === iimPortalHost) {
