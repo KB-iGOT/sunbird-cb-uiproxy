@@ -8042,9 +8042,18 @@ export const API_LIST = {
             ROLE.PROGRAM_COORDINATOR,
             ROLE.CONTENT_CREATOR,
             ROLE.SPV_PUBLISHER,
-            ROLE.CONTENT_PUBLISHER
+            ROLE.CONTENT_PUBLISHER,
         ],
-      }
+      },
+      '/proxies/v8/cios/v2/content/read/:contentId': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+          ROLE.PUBLIC,
+          ROLE.SPV_ADMIN,
+          ROLE.SPV_PUBLISHER,
+        ],
+      },
     },
     URL_PATTERN:
         [
@@ -9056,5 +9065,6 @@ export const API_LIST = {
             '/proxies/v8/scorm/v1/validate',
             '/proxies/v8/scorm/v1/status',
             '/proxies/v8/program/admin/coordinator/upsert/:do_id',
+            '/proxies/v8/cios/v2/content/read/:contentId',
         ],
 }
