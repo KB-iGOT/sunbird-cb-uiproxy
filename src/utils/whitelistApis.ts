@@ -8021,7 +8021,62 @@ export const API_LIST = {
             ROLE.SPV_PUBLISHER,
             ROLE.CONTENT_PUBLISHER
         ],
-      }
+      },
+        '/proxies/v8/cbplan/v3/create': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/cbplan/v3/update': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/cbplan/v3/publish': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/cbplan/v3/read/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/cbplan/v3/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/cbplan/v3/archive': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/cbplan/v3/user/dictionary': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -9029,6 +9084,13 @@ export const API_LIST = {
             '/proxies/v8/composite/v4/bp/search',
             '/proxies/v8/formsConfig/v2/create',
             '/proxies/v8/formsConfig/v2/update',
-            '/proxies/v8/program/admin/coordinator/upsert/:do_id'
+            '/proxies/v8/program/admin/coordinator/upsert/:do_id',
+            '/proxies/v8/cbplan/v3/create',
+            '/proxies/v8/cbplan/v3/update',
+            '/proxies/v8/cbplan/v3/publish',
+            '/proxies/v8/cbplan/v3/read/:id',
+            '/proxies/v8/cbplan/v3/search',
+            '/proxies/v8/cbplan/v3/archive',
+            '/proxies/v8/cbplan/v3/user/dictionary',
         ],
 }
