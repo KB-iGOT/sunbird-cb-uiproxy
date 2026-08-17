@@ -170,7 +170,8 @@ ntpcAuth.get('/login/callback', async (req, res) => {
             }
         }
     } catch (err) {
-        logError('Failed to process callback API for NTPC code : ' + code + '..with the error: ' + JSON.stringify(err))
+        const errorData = err && err.response && err.response.data ? err.response.data : err
+        logError('Failed to process callback API for NTPC code : ' + code + '..with the error: ' + JSON.stringify(errorData))
         resRedirectUrl = `https://${host}/public/logout?error=` + encodeURIComponent('Internal Server Error. Please contact administrator.')
     }
     res.redirect(resRedirectUrl)
