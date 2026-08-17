@@ -170,10 +170,10 @@ export class CustomKeycloak {
         ' protocol=' + logoutProtocol +
         ' url=' + req.url
       )
-      logInfo('[logout] headers=' + JSON.stringify(req.headers))
-      logInfo('[logout] query=' + JSON.stringify(req.query))
-      logInfo('[logout] cookies=' + JSON.stringify(req.cookies))
-      logInfo('[logout] referer=' + req.headers.referer)
+      logDebug('[logout] headers=' + JSON.stringify(req.headers))
+      logDebug('[logout] query=' + JSON.stringify(req.query))
+      logDebug('[logout] cookies=' + JSON.stringify(req.cookies))
+      logDebug('[logout] referer=' + req.headers.referer)
       // Derive the final destination the browser lands on after KC clears its SSO session.
       // Always use https:// — req.protocol is 'http' inside K8s pods (TLS terminated at ingress).
       // Keycloak rejects http:// post_logout_redirect_uri values that only have https:// registered.

@@ -9,6 +9,7 @@ import { getCurrnetExpiryTime } from '../utils/jwtHelper'
 import { logDebug, logError } from '../utils/logger'
 import { redis } from '../utils/redis'
 import { createUserWithMailId, fetchUserByEmailId, updateKeycloakSession } from './ssoUserHelper'
+import { extractQueryParam } from '../utils/requestExtract'
 
 export const ntpcAuth = express.Router()
 
@@ -39,7 +40,8 @@ ntpcAuth.get('/auth', async (req, res) => {
 
 ntpcAuth.get('/login/callback', async (req, res) => {
     const host = req.get('host')
-    if (!req.query.code) {
+    const code = extractQueryParam(req, 'code')
+    if (!code) {
         logDebug('Received host : ' + host)
         logError('Failed to login in NTPC, authorization code is missing. Redirecting to /error')
         const errorMessage = 'Failed to login using NTPC. Your NTPC session has expired.'
@@ -48,7 +50,7 @@ ntpcAuth.get('/login/callback', async (req, res) => {
         res.redirect(`https://${host}/public/logout?error=` + encodeURIComponent(errorMessage))
         return
     }
-    const state = req.query.state
+    const state = extractQueryParam(req, 'state')
     const stateKey = `ntpc_auth_state:${state}`
     const isStateValid = await redis.get(stateKey)
     if (!isStateValid) {
@@ -71,7 +73,7 @@ ntpcAuth.get('/login/callback', async (req, res) => {
             data: querystring.stringify({
                 client_id: CONSTANTS.NTPC_CLIENT_ID,
                 client_secret: CONSTANTS.NTPC_CLIENT_SECRET,
-                code: decodeURIComponent(req.query.code as string),
+                code: decodeURIComponent(code),
                 grant_type: 'authorization_code',
                 redirect_uri: redirectUrl,
             }),
@@ -168,7 +170,7 @@ ntpcAuth.get('/login/callback', async (req, res) => {
             }
         }
     } catch (err) {
-        logError('Failed to process callback API for NTPC code : ' + req.query.code + '..with the error: ' + JSON.stringify(err))
+        logError('Failed to process callback API for NTPC code : ' + code + '..with the error: ' + JSON.stringify(err))
         resRedirectUrl = `https://${host}/public/logout?error=` + encodeURIComponent('Internal Server Error. Please contact administrator.')
     }
     res.redirect(resRedirectUrl)
