@@ -8022,6 +8022,13 @@ export const API_LIST = {
             ROLE.CONTENT_PUBLISHER,
         ],
       },
+      '/proxies/v8/user/profile/v2/getAdditionalFields': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+          ROLE.PUBLIC,
+        ],
+      },
     },
     URL_PATTERN:
         [
