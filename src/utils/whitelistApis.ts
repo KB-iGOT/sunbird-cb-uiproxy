@@ -7932,7 +7932,7 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
-      '/proxies/v8/action/content/v1/durationSync/:do_id': {
+      '/proxies/v8/content/admin/v1/durationSync/:do_id': {
         checksNeeded: [CHECK.ROLE],
         // tslint:disable-next-line: object-literal-sort-keys
         ROLE_CHECK: [
@@ -7941,7 +7941,7 @@ export const API_LIST = {
           ROLE.CONTENT_PUBLISHER,
         ],
       },
-      '/proxies/v8/action/content/v1/replaceVideo': {
+      '/proxies/v8/content/admin/v1/replaceVideo': {
         checksNeeded: [CHECK.ROLE],
         // tslint:disable-next-line: object-literal-sort-keys
         ROLE_CHECK: [
