@@ -8109,6 +8109,13 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/cios-enroll/v1/karmapoints/deductionrule': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -9128,5 +9135,6 @@ export const API_LIST = {
             '/proxies/v8/cbplan/v3/search',
             '/proxies/v8/cbplan/v3/archive',
             '/proxies/v8/cbplan/v3/user/dictionary',
+            '/proxies/v8/cios-enroll/v1/karmapoints/deductionrule',
         ],
 }
