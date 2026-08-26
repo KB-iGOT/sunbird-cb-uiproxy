@@ -140,8 +140,8 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
                 redirectUrl = `${CONSTANTS.ADIKARMAYOGI_PORTAL_HOST}${CONSTANTS.ADI_REDIRECT_PATH}`
                 break
             default:
-                logDebug('Host did not match any known portal host,'+
-                    + 'defaulting to IIM_PORTAL_HOST: ' + host)
+                logDebug('Host did not match any known portal host, ' +
+                    'defaulting to IIM_PORTAL_HOST: ' + host)
                 // tslint:disable-next-line: max-line-length
                 redirectUrl = `${CONSTANTS.IIM_PORTAL_HOST}${CONSTANTS.EC_REDIRECT_PATH}`
         }
