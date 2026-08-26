@@ -130,14 +130,18 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
     } else {
         switch (true) {
             case host !== undefined && host.includes(CONSTANTS.IIM_PORTAL_HOST):
+                logDebug('Host matched IIM_PORTAL_HOST: ' + host)
                 // tslint:disable-next-line: max-line-length
                 redirectUrl = `${CONSTANTS.IIM_PORTAL_HOST}${CONSTANTS.EC_REDIRECT_PATH}`
                 break
             case host !== undefined && host.includes(CONSTANTS.ADI_PORTAL_HOST):
+                logDebug('Host matched ADI_PORTAL_HOST: ' + host)
                 // tslint:disable-next-line: max-line-length
                 redirectUrl = `${CONSTANTS.ADIKARMAYOGI_PORTAL_HOST}${CONSTANTS.ADI_REDIRECT_PATH}`
                 break
             default:
+                logDebug('Host did not match any known portal host,'+
+                    + 'defaulting to IIM_PORTAL_HOST: ' + host)
                 // tslint:disable-next-line: max-line-length
                 redirectUrl = `${CONSTANTS.IIM_PORTAL_HOST}${CONSTANTS.EC_REDIRECT_PATH}`
         }
