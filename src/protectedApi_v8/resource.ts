@@ -128,6 +128,7 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
         // tslint:disable-next-line: max-line-length
         redirectUrl = `${CONSTANTS.AI_ASSESSMENT_PORTAL_HOST}${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}${queryParam}`
     } else {
+        logDebug('HOST VALUE IS LIKE: ' + host)
         switch (true) {
             case host !== undefined && CONSTANTS.IIIDEM_PORTAL_HOST.includes(host):
                 logDebug('Host matched IIM_PORTAL_HOST: ' + host)
