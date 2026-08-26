@@ -129,12 +129,12 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
         redirectUrl = `${CONSTANTS.AI_ASSESSMENT_PORTAL_HOST}${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}${queryParam}`
     } else {
         switch (true) {
-            case host !== undefined && host.includes(CONSTANTS.IIM_PORTAL_HOST):
+            case host !== undefined && CONSTANTS.IIM_PORTAL_HOST.includes(host):
                 logDebug('Host matched IIM_PORTAL_HOST: ' + host)
                 // tslint:disable-next-line: max-line-length
                 redirectUrl = `${CONSTANTS.IIM_PORTAL_HOST}${CONSTANTS.EC_REDIRECT_PATH}`
                 break
-            case host !== undefined && host.includes(CONSTANTS.ADI_PORTAL_HOST):
+            case host !== undefined && CONSTANTS.ADI_PORTAL_HOST.includes(host):
                 logDebug('Host matched ADI_PORTAL_HOST: ' + host)
                 // tslint:disable-next-line: max-line-length
                 redirectUrl = `${CONSTANTS.ADIKARMAYOGI_PORTAL_HOST}${CONSTANTS.ADI_REDIRECT_PATH}`
