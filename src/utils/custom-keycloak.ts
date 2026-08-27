@@ -185,7 +185,7 @@ export class CustomKeycloak {
       const iimPortalHost = (CONSTANTS.IIM_PORTAL_HOST || '')
         .replace(/^https?:\/\//, '')
         .toLowerCase()
-      const adikarmayogi = (CONSTANTS.ADIKARMAYOGI_PORTAL_HOST || '')
+      const adikarmayogi = (CONSTANTS.ADI_PORTAL_HOST || '')
         .replace(/^https?:\/\//, '')
         .toLowerCase()
       let postLogoutRedirect = 'https://' + logoutHost + '/'
