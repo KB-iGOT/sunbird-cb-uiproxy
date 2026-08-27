@@ -129,23 +129,13 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
         redirectUrl = `${CONSTANTS.AI_ASSESSMENT_PORTAL_HOST}${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}${queryParam}`
     } else {
         logDebug('HOST VALUE IS LIKE: ' + host)
-        switch (true) {
-            case host !== undefined && CONSTANTS.IIIDEM_PORTAL_HOST.includes(host):
-                logDebug('Host matched IIM_PORTAL_HOST: ' + host)
-                // tslint:disable-next-line: max-line-length
-                redirectUrl = `${CONSTANTS.IIM_PORTAL_HOST}${CONSTANTS.EC_REDIRECT_PATH}`
-                break
-            case host !== undefined && CONSTANTS.ADIKARMAYOGI_PORTAL_HOST.includes(host):
-                logDebug('Host matched ADI_PORTAL_HOST: ' + host)
-                // tslint:disable-next-line: max-line-length
-                redirectUrl = `${CONSTANTS.ADIKARMAYOGI_PORTAL_HOST}${CONSTANTS.ADI_REDIRECT_PATH}`
-                break
-            default:
-                logDebug('Host did not match any known portal host, ' +
-                    'defaulting to IIM_PORTAL_HOST: ' + host)
-                // tslint:disable-next-line: max-line-length
-                redirectUrl = `${CONSTANTS.IIM_PORTAL_HOST}${CONSTANTS.EC_REDIRECT_PATH}`
-        }
+        // tslint:disable-next-line: max-line-length
+        // redirectUrl = `${CONSTANTS.AI_ASSESSMENT_PORTAL_HOST}`
+        //     + `${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}` // 'https://' + host + '/page/home'
+         // redirectUrl = `${CONSTANTS.AI_ASSESSMENT_PORTAL_HOST}${CONSTANTS.AI_ASSESSMENT_REDIRECT_PATH}`
+         //     + `${queryParam}` //   'https://' + host + '/page/home'
+        // tslint:disable-next-line: max-line-length
+        redirectUrl = `${CONSTANTS.IIM_PORTAL_HOST}${CONSTANTS.EC_REDIRECT_PATH}`;
     }
     logDebug('Redirecting to: ' + redirectUrl)
 
