@@ -185,6 +185,9 @@ export class CustomKeycloak {
       const iimPortalHost = (CONSTANTS.IIM_PORTAL_HOST || '')
         .replace(/^https?:\/\//, '')
         .toLowerCase()
+      const adikarmayogi = (CONSTANTS.ADI_PORTAL_HOST || '')
+        .replace(/^https?:\/\//, '')
+        .toLowerCase()
       let postLogoutRedirect = 'https://' + logoutHost + '/'
       try {
         const hostParts = logoutHost.split('.')
@@ -192,6 +195,12 @@ export class CustomKeycloak {
           postLogoutRedirect = 'https://' + CONSTANTS.IIIDEM_PORTAL_HOST + '/'
           logInfo(
             '[logout] iiidem-portal host, redirecting to IIIDEM_PORTAL_HOST' +
+            ' -> postLogoutRedirect=' + postLogoutRedirect
+          )
+        } else if (adikarmayogi && logoutHost.toLowerCase() === adikarmayogi) {
+          postLogoutRedirect = 'https://' + CONSTANTS.ADIKARMAYOGI_PORTAL_HOST + '/'
+          logInfo(
+            '[logout] adikarmayogi host, redirecting to ADIKARMAYOGI_PORTAL_HOST' +
             ' -> postLogoutRedirect=' + postLogoutRedirect
           )
         } else if (hostParts.length > 2 && hostParts[0].toLowerCase() === 'portal') {
