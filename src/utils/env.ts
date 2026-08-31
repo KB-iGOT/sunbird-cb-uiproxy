@@ -255,6 +255,9 @@ export const CONSTANTS = {
   AI_ASSESSMENT_PORTAL_HOST: env.AI_ASSESSMENT_PORTAL_HOST || 'https://portal.uat.karmayogibharat.net/ai-assessment',
   AI_ASSESSMENT_REDIRECT_PATH: env.AI_ASSESSMENT_REDIRECT_PATH || '/',
   AIC_ASSESSMENT_PORTAL_HOST: env.AIC_ASSESSMENT_PORTAL_HOST || 'portal.uat.karmayogibharat.net/ai-assessment',
+  ADI_PORTAL_HOST: env.ADI_PORTAL_HOST || 'https://adikarmayogi-portal.igotkarmayogi.gov.in',
+  ADI_REDIRECT_PATH: env.ADI_REDIRECT_PATH || '/page/home',
+  ADIKARMAYOGI_PORTAL_HOST: env.ADIKARMAYOGI_PORTAL_HOST || 'adikarmayogi.igotkarmayogi.gov.in',
 }
 
 export const RESTRICTED_PYTHON_STMT: string[] = process.env.RESTRICTED_CHARACTERS
