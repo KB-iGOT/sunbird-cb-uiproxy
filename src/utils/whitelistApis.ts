@@ -6118,6 +6118,7 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
                 ROLE.MDO_LEADER,
                 ROLE.MDO_ADMIN,
+                ROLE.SPV_ADMIN,
             ],
         },
         '/proxies/v8/accessSettings/read/:contentId': {
