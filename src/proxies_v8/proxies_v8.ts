@@ -1701,3 +1701,7 @@ proxiesV8.use('/composite/v4/bp/search',
 proxiesV8.use('/scorm/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/karmawallet/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
