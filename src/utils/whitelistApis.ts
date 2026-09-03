@@ -7813,7 +7813,7 @@ export const API_LIST = {
           // tslint:disable-next-line: object-literal-sort-keys
           ROLE_CHECK: [
             ROLE.PUBLIC,
-            ROLE.VOLUNTEER
+            ROLE.VOLUNTEER,
           ],
         },
         '/proxies/v8/learner/achievement/v1/list': {
@@ -7966,7 +7966,7 @@ export const API_LIST = {
             ROLE.CONTENT_CREATOR,
             ROLE.CONTENT_REVIEWER,
             ROLE.CONTENT_PUBLISHER,
-            ROLE.SPV_PUBLISHER
+            ROLE.SPV_PUBLISHER,
         ],
       },
       '/proxies/v8/program/coordinator/roles': {
@@ -8111,6 +8111,27 @@ export const API_LIST = {
             ],
         },
         '/proxies/v8/cios-enroll/v1/karmapoints/deductionrule': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/karmawallet/v1/summary': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/karmawallet/v1/transactions': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/karmawallet/v1/redeem': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -9137,5 +9158,8 @@ export const API_LIST = {
             '/proxies/v8/cbplan/v3/archive',
             '/proxies/v8/cbplan/v3/user/dictionary',
             '/proxies/v8/cios-enroll/v1/karmapoints/deductionrule',
+            '/proxies/v8/karmawallet/v1/summary',
+            '/proxies/v8/karmawallet/v1/transactions',
+            '/proxies/v8/karmawallet/v1/redeem',
         ],
 }

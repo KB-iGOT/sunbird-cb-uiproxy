@@ -19,7 +19,7 @@ userAuthKeyCloakApi.get('/', (req, res) => {
     logDebug(LOG_RECEIVED_QUERY  + JSON.stringify(req.query))
     if (req.session && req.session.authenticated) {
        logDebug(LOG_AUTH)
-        if (host !== undefined) {
+       if (host !== undefined) {
             if (host.includes(LOCALHOST)) {
                 domain = LOCALHOST // For localhost, set domain to localhost
             } else {
@@ -31,15 +31,15 @@ userAuthKeyCloakApi.get('/', (req, res) => {
                 }
             }
         }
-        const COOKIE_NAME_NEW = COOKIE_NAME
-        const COOKIE_OPTIONS = {
+       const COOKIE_NAME_NEW = COOKIE_NAME
+       const COOKIE_OPTIONS = {
             httpOnly: true,
             secure: true,
         }
-        res.clearCookie(COOKIE_NAME_NEW, {
+       res.clearCookie(COOKIE_NAME_NEW, {
                         COOKIE_OPTIONS,
           })
-        res.cookie(COOKIE_NAME_NEW, req.cookies[COOKIE_NAME_NEW], { domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
+       res.cookie(COOKIE_NAME_NEW, req.cookies[COOKIE_NAME_NEW], { domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
           sameSite: SAME_SITE_NONE, ...COOKIE_OPTIONS })
 
         // res.cookie('express.sid', req.cookies['express.sid'], {
@@ -48,7 +48,7 @@ userAuthKeyCloakApi.get('/', (req, res) => {
         //     sameSite: 'Lax',
         //     secure: true,
         // })
-    } 
+    }
     if (!_.isEmpty(req.query) && (req.query as any) !== 'protected/v8/resources') {
         queryParam = req.query.q as string
         if (queryParam && queryParam.includes(LOCALHOST)) {
@@ -59,7 +59,7 @@ userAuthKeyCloakApi.get('/', (req, res) => {
             res.redirect(req.query.redirect_uri as string)
             return
         }
-    } 
+    }
     let redirectUrl = ''
     if (isLocal) {
         redirectUrl = queryParam
@@ -75,7 +75,7 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
     let queryParam = ''
     let isLocal = 0
     let domain = ''
-    
+
     logDebug(LOG_RECEIVED_QUERY + JSON.stringify(req.query))
     if (req.session && req.session.authenticated) {
         logDebug(LOG_AUTH)
@@ -91,7 +91,7 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
                 }
             }
         }
-        
+
         const COOKIE_NAME_EC = COOKIE_NAME
         const COOKIE_OPTIONS_EC = {
             httpOnly: true,
