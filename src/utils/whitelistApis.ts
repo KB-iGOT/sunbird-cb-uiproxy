@@ -7813,7 +7813,7 @@ export const API_LIST = {
           // tslint:disable-next-line: object-literal-sort-keys
           ROLE_CHECK: [
             ROLE.PUBLIC,
-            ROLE.VOLUNTEER
+            ROLE.VOLUNTEER,
           ],
         },
         '/proxies/v8/learner/achievement/v1/list': {
@@ -7966,7 +7966,7 @@ export const API_LIST = {
             ROLE.CONTENT_CREATOR,
             ROLE.CONTENT_REVIEWER,
             ROLE.CONTENT_PUBLISHER,
-            ROLE.SPV_PUBLISHER
+            ROLE.SPV_PUBLISHER,
         ],
       },
       '/proxies/v8/program/coordinator/roles': {
