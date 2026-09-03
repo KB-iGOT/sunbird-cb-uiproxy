@@ -140,9 +140,6 @@ export async function deauthenticateKeycloakSession(reqObj: any): Promise<void> 
 }
 
 export class CustomKeycloak {
-
-  // tslint:disable-next-line: no-any
-  deauthenticated = deauthenticateKeycloakSession
   private multiTenantKeycloak = new Map<string, InstanceType<typeof keycloakConnect>>()
 
   constructor(sessionConfig: expressSession.SessionOptions) {
@@ -479,6 +476,9 @@ export class CustomKeycloak {
     }
     logDebug(`${process.pid}: User Deauthenticated New`)
   }
+
+  // tslint:disable-next-line: no-any
+  deauthenticated = deauthenticateKeycloakSession
 
   protect = (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const keycloak = this.getKeyCloakObject(req)
