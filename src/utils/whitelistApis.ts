@@ -8145,6 +8145,46 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/usergroup/v1/create': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/usergroup/v1/update/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/usergroup/v1/read/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/usergroup/v1/delete/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/usergroup/v1/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -9168,6 +9208,11 @@ export const API_LIST = {
             '/proxies/v8/karmawallet/v1/summary',
             '/proxies/v8/karmawallet/v1/transactions',
             '/proxies/v8/karmawallet/v1/redeem',
-            '/proxies/v8/karmawallet/v1/redeem/status/:id'
+            '/proxies/v8/karmawallet/v1/redeem/status/:id',
+            '/proxies/v8/usergroup/v1/create',
+            '/proxies/v8/usergroup/v1/update/:id',
+            '/proxies/v8/usergroup/v1/read/:id',
+            '/proxies/v8/usergroup/v1/delete/:id',
+            '/proxies/v8/usergroup/v1/search',
         ],
 }
