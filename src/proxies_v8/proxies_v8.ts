@@ -1705,3 +1705,7 @@ proxiesV8.use('/scorm/*',
 proxiesV8.use('/karmawallet/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.use('/usergroup/*',
+  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+)
