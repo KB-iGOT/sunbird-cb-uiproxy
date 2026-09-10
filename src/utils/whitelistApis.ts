@@ -8153,7 +8153,7 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
             ],
         },
-        '/proxies/v8/usergroup/v1/update/:id': {
+        '/proxies/v8/usergroup/v1/update': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -9210,7 +9210,7 @@ export const API_LIST = {
             '/proxies/v8/karmawallet/v1/redeem',
             '/proxies/v8/karmawallet/v1/redeem/status/:id',
             '/proxies/v8/usergroup/v1/create',
-            '/proxies/v8/usergroup/v1/update/:id',
+            '/proxies/v8/usergroup/v1/update',
             '/proxies/v8/usergroup/v1/read/:id',
             '/proxies/v8/usergroup/v1/delete/:id',
             '/proxies/v8/usergroup/v1/search',
