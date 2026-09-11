@@ -800,6 +800,17 @@ export const API_LIST = {
                 ROLE.STATE_ADMIN,
             ],
         },
+        '/proxies/v8/user/private/v2/migrate': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CBC_ADMIN,
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
+            ],
+        },
         '/proxies/v8/user/private/v1/assign/role/userrole': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -914,6 +925,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER
             ],
         },
         '/protected/v8/scrom/get/:id': {
@@ -6604,6 +6616,16 @@ export const API_LIST = {
                 ROLE.STATE_ADMIN,
             ],
         },
+        '/proxies/v8/user/v2/org-migration/bulk-upload/:orgHierarchyFrameworkId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+                ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
+            ],
+        },
         '/proxies/v8/user/v1/org-migration/bulk-upload/progress/:orgId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -7813,7 +7835,7 @@ export const API_LIST = {
           // tslint:disable-next-line: object-literal-sort-keys
           ROLE_CHECK: [
             ROLE.PUBLIC,
-            ROLE.VOLUNTEER
+            ROLE.VOLUNTEER,
           ],
         },
         '/proxies/v8/learner/achievement/v1/list': {
@@ -7966,7 +7988,7 @@ export const API_LIST = {
             ROLE.CONTENT_CREATOR,
             ROLE.CONTENT_REVIEWER,
             ROLE.CONTENT_PUBLISHER,
-            ROLE.SPV_PUBLISHER
+            ROLE.SPV_PUBLISHER,
         ],
       },
       '/proxies/v8/program/coordinator/roles': {
@@ -8117,6 +8139,13 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/user/profile/v2/getAdditionalFields': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+          ROLE.PUBLIC,
+        ],
+      },
     },
     URL_PATTERN:
         [
@@ -8204,6 +8233,7 @@ export const API_LIST = {
             '/proxies/v8/user/v1/autocomplete/:key',
             '/proxies/v8/user/v1/migrate',
             '/proxies/v8/user/private/v1/migrate',
+            '/proxies/v8/user/private/v2/migrate',
             '/proxies/v8/user/private/v1/assign/role/userrole',
             '/proxies/v8/learnervm/private/content/v3/retire/',
             '/proxies/v8/private/content/v3/update/:do_id',
@@ -8947,6 +8977,7 @@ export const API_LIST = {
             '/proxies/v8/user/v3/bulkupload',
             '/proxies/v8/user/v1/org-migration/sample-file/:orgHierarchyFrameworkId',
             '/proxies/v8/user/v1/org-migration/bulk-upload/:orgHierarchyFrameworkId',
+            '/proxies/v8/user/v2/org-migration/bulk-upload/:orgHierarchyFrameworkId',
             '/proxies/v8/user/v1/org-migration/bulk-upload/progress/:orgId',
             '/proxies/v8/user/v1/org-migration/bulk-upload/result/:fileName',
             '/proxies/v8/assignment/v1/create',
@@ -9137,5 +9168,6 @@ export const API_LIST = {
             '/proxies/v8/cbplan/v3/archive',
             '/proxies/v8/cbplan/v3/user/dictionary',
             '/proxies/v8/cios-enroll/v1/karmapoints/deductionrule',
+            '/proxies/v8/program/admin/coordinator/upsert/:do_id',
         ],
 }

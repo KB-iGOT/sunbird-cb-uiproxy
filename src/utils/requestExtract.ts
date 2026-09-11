@@ -74,3 +74,59 @@ export const extractRootOrgFromRequest = (req: IAuthorizedRequest): string => {
 }
 
 export const getUUID = () => uuid.v1()
+
+/**
+ * Extracts a query parameter from an express Request object robustly.
+ * Handles cases where:
+ * 1. The parameter is present in `req.query` (either as a string or an array).
+ * 2. `req.query` is empty/disabled, but the query string is present in `req.originalUrl`.
+ * 3. `req.query` is empty/disabled, but the query string is present in `req.url`.
+ * 4. The value contains special characters or is URL-encoded.
+ */
+export const extractQueryParam = (req: Request, paramName: string): string | undefined => {
+  // 1. Try standard req.query first
+  if (req.query && req.query[paramName]) {
+    const val = req.query[paramName]
+    if (Array.isArray(val)) {
+      return val[0] as string
+    }
+    if (typeof val === 'string') {
+      return val
+    }
+  }
+
+  // 2. Try parsing from req.originalUrl
+  if (req.originalUrl) {
+    try {
+      const urlParts = req.originalUrl.split('?')
+      if (urlParts.length > 1) {
+        const searchParams = new URLSearchParams(urlParts[1])
+        const val = searchParams.get(paramName)
+        if (val) {
+          return val
+        }
+      }
+    } catch (e) {
+      // Ignore error and fall back
+    }
+  }
+
+  // 3. Try parsing from req.url
+  if (req.url) {
+    try {
+      const urlParts = req.url.split('?')
+      if (urlParts.length > 1) {
+        const searchParams = new URLSearchParams(urlParts[1])
+        const val = searchParams.get(paramName)
+        if (val) {
+          return val
+        }
+      }
+    } catch (e) {
+      // Ignore error and fall back
+    }
+  }
+
+  return undefined
+}
+
