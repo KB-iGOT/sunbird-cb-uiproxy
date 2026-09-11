@@ -8185,7 +8185,7 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
             ],
         },
-          '/proxies/v8/cbplan/v4/create': {
+        '/proxies/v8/cbplan/v4/create': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -8213,7 +8213,7 @@ export const API_LIST = {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
-                ROLE.PUBLIC
+                ROLE.PUBLIC,
             ],
         },
         '/proxies/v8/cbplan/v4/admin/read/:id': {
