@@ -8145,6 +8145,22 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/ca/v1/publish/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+              ROLE.MDO_ADMIN,
+              ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/ca/questionset/v1/publish/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+              ROLE.MDO_ADMIN,
+              ROLE.MDO_LEADER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -9168,6 +9184,8 @@ export const API_LIST = {
             '/proxies/v8/karmawallet/v1/summary',
             '/proxies/v8/karmawallet/v1/transactions',
             '/proxies/v8/karmawallet/v1/redeem',
-            '/proxies/v8/karmawallet/v1/redeem/status/:id'
+            '/proxies/v8/karmawallet/v1/redeem/status/:id',
+            '/proxies/v8/ca/v1/publish/:id',
+            '/proxies/v8/ca/questionset/v1/publish/:id'
         ],
 }
