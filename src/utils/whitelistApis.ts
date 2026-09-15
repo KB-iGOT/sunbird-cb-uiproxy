@@ -8240,6 +8240,22 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
             ],
         },
+        '/proxies/v8/ca/v1/publish/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+              ROLE.MDO_ADMIN,
+              ROLE.MDO_LEADER,
+            ],
+        },
+        '/proxies/v8/ca/questionset/v1/publish/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+              ROLE.MDO_ADMIN,
+              ROLE.MDO_LEADER,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -9276,5 +9292,7 @@ export const API_LIST = {
             '/proxies/v8/cbplan/v4/admin/read/:id',
             '/proxies/v8/cbplan/v4/search',
             '/proxies/v8/cbplan/v4/archive',
+            '/proxies/v8/ca/v1/publish/:id',
+            '/proxies/v8/ca/questionset/v1/publish/:id',
         ],
 }
