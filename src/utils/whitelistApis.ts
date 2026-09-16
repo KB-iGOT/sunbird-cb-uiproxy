@@ -8145,6 +8145,13 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/cios-enroll/v2/readby/useridcourseid/:courseid': {
+              checksNeeded: [CHECK.ROLE],
+              // tslint:disable-next-line: object-literal-sort-keys
+              ROLE_CHECK: [
+                  ROLE.PUBLIC,
+              ],
+          },
         '/proxies/v8/usergroup/v1/create': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -9280,6 +9287,7 @@ export const API_LIST = {
             '/proxies/v8/karmawallet/v1/transactions',
             '/proxies/v8/karmawallet/v1/redeem',
             '/proxies/v8/karmawallet/v1/redeem/status/:id',
+            '/proxies/v8/cios-enroll/v2/readby/useridcourseid/:courseid',
             '/proxies/v8/usergroup/v1/create',
             '/proxies/v8/usergroup/v1/update',
             '/proxies/v8/usergroup/v1/read/:id',
