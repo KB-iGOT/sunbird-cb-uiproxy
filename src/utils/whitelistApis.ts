@@ -8140,12 +8140,40 @@ export const API_LIST = {
             ],
         },
         '/proxies/v8/user/profile/v2/getAdditionalFields': {
-        checksNeeded: [CHECK.ROLE],
-        // tslint:disable-next-line: object-literal-sort-keys
-        ROLE_CHECK: [
-          ROLE.PUBLIC,
-        ],
-      },
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+            ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/ai/assessments/v1/questions/create/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.AI_ASSESSMENT_CREATOR,
+            ],
+        },
+        '/proxies/v8/ai/assessments/v1/questions/update/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.AI_ASSESSMENT_CREATOR,
+            ],
+        },
+        '/proxies/v8/ai/assessments/v1/questions/delete/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.AI_ASSESSMENT_CREATOR,
+            ],
+        },
+        '/proxies/v8/ai/assessments/v1/questions/order/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.AI_ASSESSMENT_CREATOR,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -9169,5 +9197,9 @@ export const API_LIST = {
             '/proxies/v8/cbplan/v3/user/dictionary',
             '/proxies/v8/cios-enroll/v1/karmapoints/deductionrule',
             '/proxies/v8/program/admin/coordinator/upsert/:do_id',
+            '/proxies/v8/ai/assessments/v1/questions/create/:id',
+            '/proxies/v8/ai/assessments/v1/questions/update/:id',
+            '/proxies/v8/ai/assessments/v1/questions/delete/:id',
+            '/proxies/v8/ai/assessments/v1/questions/order/:id',
         ],
 }
