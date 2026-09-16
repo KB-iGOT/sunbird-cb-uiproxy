@@ -8117,6 +8117,62 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/karmawallet/v1/summary': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/karmawallet/v1/transactions': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/karmawallet/v1/redeem': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/karmawallet/v1/redeem/status/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/ai/assessments/v1/questions/create/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.AI_ASSESSMENT_CREATOR,
+            ],
+        },
+        '/proxies/v8/ai/assessments/v1/questions/update/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.AI_ASSESSMENT_CREATOR,
+            ],
+        },
+        '/proxies/v8/ai/assessments/v1/questions/delete/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.AI_ASSESSMENT_CREATOR,
+            ],
+        },
+        '/proxies/v8/ai/assessments/v1/questions/order/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.AI_ASSESSMENT_CREATOR,
+            ],
+        },
     },
     URL_PATTERN:
         [
@@ -9137,5 +9193,13 @@ export const API_LIST = {
             '/proxies/v8/cbplan/v3/archive',
             '/proxies/v8/cbplan/v3/user/dictionary',
             '/proxies/v8/cios-enroll/v1/karmapoints/deductionrule',
+            '/proxies/v8/karmawallet/v1/summary',
+            '/proxies/v8/karmawallet/v1/transactions',
+            '/proxies/v8/karmawallet/v1/redeem',
+            '/proxies/v8/karmawallet/v1/redeem/status/:id',
+            '/proxies/v8/ai/assessments/v1/questions/create/:id',
+            '/proxies/v8/ai/assessments/v1/questions/update/:id',
+            '/proxies/v8/ai/assessments/v1/questions/delete/:id',
+            '/proxies/v8/ai/assessments/v1/questions/order/:id',
         ],
 }
