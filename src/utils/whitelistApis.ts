@@ -2237,6 +2237,13 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
             ],
         },
+        '/proxies/v8/mdo/content/v4/system/update/:do_id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+            ],
+        },
         '/proxies/v8/mdo/content/v3/batch/addUser': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -8545,6 +8552,7 @@ export const API_LIST = {
             '/proxies/v8/mdo/content/v3/hierarchy/update',
             '/proxies/v8/mdo/content/v3/update/:do_id',
             '/proxies/v8/mdo/content/v3/publish/:do_id',
+            '/proxies/v8/mdo/content/v4/system/update/:do_id',
             '/proxies/v8/mdo/content/v3/batch/addUser',
             '/proxies/v8/mdo/content/v3/batch/removeUser',
             '/proxies/v8/user/offensive/data/flag',
