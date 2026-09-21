@@ -9334,7 +9334,7 @@ export const API_LIST = {
             '/proxies/v8/action/ca/v1/publish/:id',
             '/proxies/v8/ca/questionset/v1/publish/:id',
             '/proxies/v8/cbplan/v4/user/dictionary',
-            '/proxies/v8/ca/v1/autoenrollment',
             '/proxies/v8/user/v2/content/info',
+            '/proxies/v8/ca/v1/autoenrollment/:caId',
         ],
 }
