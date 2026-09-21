@@ -8284,14 +8284,6 @@ export const API_LIST = {
             ROLE.PUBLIC,
             ROLE.VOLUNTEER,
           ],
-        }
-        '/proxies/v8/user/v2/content/info': {
-            checksNeeded: [CHECK.ROLE],
-            // tslint:disable-next-line: object-literal-sort-keys
-            ROLE_CHECK: [
-                ROLE.PUBLIC,
-                ROLE.VOLUNTEER,
-            ],
         },
     },
     URL_PATTERN:
@@ -9336,5 +9328,6 @@ export const API_LIST = {
             '/proxies/v8/cbplan/v4/user/dictionary',
             '/proxies/v8/ca/v1/autoenrollment',
             '/proxies/v8/user/v2/content/info',
+            '/proxies/v8/ca/v1/autoenrollment/:caId',
         ],
 }
