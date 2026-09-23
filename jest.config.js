@@ -1,12 +1,11 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  roots: ['<rootDir>/src'],
+  roots: ['<rootDir>/tests/unit'],
   testMatch: ['**/*.test.ts'],
   collectCoverage: true,
   collectCoverageFrom: [
     'src/**/*.ts',
-    '!src/**/*.test.ts',
     '!src/**/*.d.ts',
     // Pre-existing TS compile errors (unrelated to tests) break coverage instrumentation
     '!src/protectedApi_v8/resource.ts',
