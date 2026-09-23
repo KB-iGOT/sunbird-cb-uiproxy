@@ -8,6 +8,7 @@
     "gulp": "gulp",
     "lint": "tslint -c tslint.json -p tsconfig.json --fix",
     "prebuild": "npm run lint",
+    "prescan": "jest --coverage",
     "scan": "gulp scan",
     "serve": "node ./index.js",
     "test": "jest",
