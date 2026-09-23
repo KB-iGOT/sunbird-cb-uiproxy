@@ -1,80 +1,116 @@
-// tslint:disable: no-console no-any cognitive-complexity
+import axios from 'axios'
 import { allocationService, extractCourseId, extractPartner, validateKeycloak } from './authz'
 
-const pass = (msg: string) => console.log(`✅ PASS: ${msg}`)
-const fail = (msg: string, err?: any) => {
-    console.error(`❌ FAIL: ${msg}`)
-    if (err) console.error(err)
-    throw new Error('Test failed')
-}
+jest.mock('axios')
+const mockedAxios = axios as jest.Mocked<typeof axios>
 
-async function runTests() {
-    console.log('Starting Authz Tests...')
+describe('validateKeycloak', () => {
+  it('returns null when no cookie is present', () => {
+    expect(validateKeycloak(undefined)).toBeNull()
+  })
 
-    // 1. Test validateKeycloak
-    try {
-        const noCookie = validateKeycloak(undefined)
-        if (noCookie !== null) fail('validateKeycloak should return null for undefined cookie')
-        else pass('validateKeycloak(undefined)')
+  it('returns null when the cookie has no access_token', () => {
+    expect(validateKeycloak('some=cookie')).toBeNull()
+  })
 
-        const invalidCookie = validateKeycloak('some=cookie')
-        if (invalidCookie !== null) fail('validateKeycloak should return null for invalid cookie')
-        else pass('validateKeycloak(invalid)')
+  it('returns a user when the cookie contains an access_token', () => {
+    expect(validateKeycloak('access_token=123')).toEqual({ id: 'user-123' })
+  })
+})
 
-        const validCookie = validateKeycloak('access_token=123')
-        if (validCookie === null || validCookie.id !== 'user-123') fail('validateKeycloak should return user for valid cookie')
-        else pass('validateKeycloak(valid)')
-    } catch (e) { fail('validateKeycloak threw error', e) }
+describe('extractPartner', () => {
+  it('returns null when the header is missing', () => {
+    expect(extractPartner(undefined)).toBeNull()
+  })
 
-    // 2. Test extractPartner
-    try {
-        const noHeader = extractPartner(undefined)
-        if (noHeader !== null) fail('extractPartner should return null for undefined header')
-        else pass('extractPartner(undefined)')
+  it('returns null when the uri has no partner segment', () => {
+    expect(extractPartner('/some/path')).toBeNull()
+  })
 
-        const plainUrl = extractPartner('/some/path')
-        if (plainUrl !== null) fail('extractPartner should return null if no partner found')
-        else pass('extractPartner(no partner)')
+  it('extracts the partner id from the uri', () => {
+    expect(extractPartner('/partner/my-partner/action')).toBe('my-partner')
+  })
 
-        const partnerUrl = extractPartner('/partner/my-partner/action')
-        if (partnerUrl !== 'my-partner') fail(`extractPartner should extract "my-partner", got "${partnerUrl}"`)
-        else pass('extractPartner(valid)')
-    } catch (e) { fail('extractPartner threw error', e) }
+  it('reads the first value when the header is an array', () => {
+    expect(extractPartner(['/partner/my-partner/action', '/partner/other'])).toBe('my-partner')
+  })
+})
 
-    // 3. Test extractCourseId
-    try {
-        const noHeader = extractCourseId(undefined)
-        if (noHeader !== null) fail('extractCourseId should return null for undefined header')
-        else pass('extractCourseId(undefined)')
+describe('extractCourseId', () => {
+  it('returns null when the header is missing', () => {
+    expect(extractCourseId(undefined)).toBeNull()
+  })
 
-        const plainUrl = extractCourseId('/some/path')
-        if (plainUrl !== null) fail('extractCourseId should return null if no course found')
-        else pass('extractCourseId(no course)')
+  it('returns null when the uri has no course segment', () => {
+    expect(extractCourseId('/some/path')).toBeNull()
+  })
 
-        const courseUrl = extractCourseId('/course/my-course-id/action')
-        if (courseUrl !== 'my-course-id') fail(`extractCourseId should extract "my-course-id", got "${courseUrl}"`)
-        else pass('extractCourseId(valid)')
-    } catch (e) { fail('extractCourseId threw error', e) }
+  it('extracts the course id from the uri', () => {
+    expect(extractCourseId('/course/my-course-id/action')).toBe('my-course-id')
+  })
 
-    // 4. Test allocationService
-    try {
-        // Mock readByUserIdCourseId
-        allocationService.readByUserIdCourseId = async () => ({ some: 'data' })
+  it('reads the first value when the header is an array', () => {
+    expect(extractCourseId(['/course/my-course-id/action'])).toBe('my-course-id')
+  })
+})
 
-        const allowed = await allocationService.isEnrolledToCourse('u1', 'p1', 'c1', 'token')
-        if (allowed !== true) fail('allocationService should return true (mock)')
-        else pass('allocationService(mock)')
+describe('allocationService.isEnrolledToCourse', () => {
+  it('returns false when userId is missing', async () => {
+    const allowed = await allocationService.isEnrolledToCourse('', 'p1', 'c1', 'token')
+    expect(allowed).toBe(false)
+  })
 
-        // Test with missing params
-        const notAllowed1 = await allocationService.isEnrolledToCourse('', 'p1', 'c1', 'token')
-        if (notAllowed1 !== false) fail('allocationService should fail if no user')
-        else pass('allocationService(missing user)')
-    } catch (e) { fail('allocationService threw error', e) }
+  it('returns false when partner is missing', async () => {
+    const allowed = await allocationService.isEnrolledToCourse('u1', null, 'c1', 'token')
+    expect(allowed).toBe(false)
+  })
 
-    console.log('All tests passed!')
-}
+  it('returns false when courseName is missing', async () => {
+    const allowed = await allocationService.isEnrolledToCourse('u1', 'p1', null, 'token')
+    expect(allowed).toBe(false)
+  })
 
-runTests().catch((e) => {
-    console.error(e)
-    process.exit(1)
+  it('returns true when the enrollment lookup resolves with data', async () => {
+    const spy = jest.spyOn(allocationService, 'readByUserIdCourseId').mockResolvedValue({ some: 'data' })
+    const allowed = await allocationService.isEnrolledToCourse('u1', 'p1', 'c1', 'token')
+    expect(allowed).toBe(true)
+    spy.mockRestore()
+  })
+
+  it('returns false when the enrollment lookup resolves with no data', async () => {
+    const spy = jest.spyOn(allocationService, 'readByUserIdCourseId').mockResolvedValue(null)
+    const allowed = await allocationService.isEnrolledToCourse('u1', 'p1', 'c1', 'token')
+    expect(allowed).toBe(false)
+    spy.mockRestore()
+  })
+
+  it('returns false when the enrollment lookup throws', async () => {
+    const spy = jest.spyOn(allocationService, 'readByUserIdCourseId').mockRejectedValue(new Error('boom'))
+    const allowed = await allocationService.isEnrolledToCourse('u1', 'p1', 'c1', 'token')
+    expect(allowed).toBe(false)
+    spy.mockRestore()
+  })
+})
+
+describe('allocationService.readByUserIdCourseId', () => {
+  it('returns the response data on success', async () => {
+    mockedAxios.get.mockResolvedValue({ data: { enrolled: true } })
+    const result = await allocationService.readByUserIdCourseId('u1', 'c1', 'token')
+    expect(result).toEqual({ enrolled: true })
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      expect.stringContaining('/proxies/v8/cios-enroll/v1/readby/useridcourseid/c1'),
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          'x-authenticated-user-token': 'token',
+          'x-authenticated-userid': 'u1',
+        }),
+      })
+    )
+  })
+
+  it('returns null when the request fails', async () => {
+    mockedAxios.get.mockRejectedValue(new Error('network error'))
+    const result = await allocationService.readByUserIdCourseId('u1', 'c1', 'token')
+    expect(result).toBeNull()
+  })
 })
