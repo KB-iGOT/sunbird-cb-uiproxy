@@ -3,6 +3,7 @@ import { Router } from 'express'
 
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 
 const API_END_POINTS = {
     getAllDepartment: `${CONSTANTS.SB_EXT_API_BASE_2}/portal/getAllDept`,
@@ -18,11 +19,7 @@ deptApi.get('/getAllDept', async (_req, res) => {
         res.status(response.status).send(response.data)
     } catch (errAny) {
         const err = errAny as AxiosError
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })
 
@@ -33,10 +30,6 @@ deptApi.get('/searchDept', async (req, res) => {
         res.status(response.status).send(response.data)
     } catch (errAny) {
         const err = errAny as AxiosError
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })

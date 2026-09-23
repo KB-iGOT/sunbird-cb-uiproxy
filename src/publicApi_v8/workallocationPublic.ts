@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 import { logDebug, logError } from '../utils/logger'
 import { ERROR } from '../utils/message'
 const API_END_POINTS = {
@@ -21,10 +22,6 @@ workallocationPublic.get('/getWaPdf/:waId', async (req, res) => {
         res.redirect(response.data)
     } catch (err) {
         logError(err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
+        sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
     }
 })

@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { logError } from '../../utils/logger'
 import { extractUserIdFromRequest } from '../../utils/requestExtract'
 
@@ -30,10 +31,6 @@ classDiagramApi.post('/classdiagram/submit/:contentId', async (req, res) => {
     res.json(response.data)
   } catch (err) {
     logError(err)
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: 'Failed due to unknown reason',
-      }
-    )
+    sendUpstreamError(res, err, { error: 'Failed due to unknown reason' })
   }
 })

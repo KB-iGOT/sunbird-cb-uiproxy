@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Request, Response, Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 
 const API_END_POINTS = {
     filterTranslate: `${CONSTANTS.SB_EXT_API_BASE_2}/filters`,
@@ -27,9 +28,7 @@ translateApi.get('/filterdata/:lang', async (req: Request, res: Response) => {
         })
         res.json(response.data)
     } catch (err) {
-        res
-            .status((err && err.response && err.response.status) || 500)
-            .send((err && err.response && err.response.data) || err)
+        sendUpstreamError(res, err, err)
     }
 
 }

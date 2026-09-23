@@ -5,6 +5,7 @@ import { EContentTypes, IContent } from '../models/content.model'
 import { IPaginatedApiResponse } from '../models/paginatedApi.model'
 import { processContent, shuffleContent } from '../utils/contentHelpers'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 import { getStringifiedQueryParams } from '../utils/helpers'
 import { logError } from '../utils/logger'
 import { ERROR } from '../utils/message'
@@ -75,10 +76,7 @@ recommendationApi.get('/', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('RECOMMENDATIONS FETCH ERROR >', String(err))
-    res.status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: ERROR.GENERAL_ERR_MSG,
-      })
+    sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
   }
 })
 
@@ -129,10 +127,7 @@ recommendationApi.get('/interestBased', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('INTEREST BASED RECOMMENDATIONS FETCH ERROR >', String(err))
-    res.status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: ERROR.GENERAL_ERR_MSG,
-      })
+    sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
   }
 })
 
@@ -184,10 +179,7 @@ recommendationApi.get('/keyword', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('RECOMMENDATIONS TYPE FETCH ERROR >', String(err))
-    res.status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: ERROR.GENERAL_ERR_MSG,
-      })
+    sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
   }
 })
 
@@ -231,10 +223,7 @@ recommendationApi.get('/usageBased', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('USAGE BASED RECOMMENDATIONS FETCH ERROR >', String(err))
-    res.status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: ERROR.GENERAL_ERR_MSG,
-      })
+    sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
   }
 })
 
@@ -302,9 +291,6 @@ recommendationApi.get('/:recommendationType', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('RECOMMENDATIONS TYPE FETCH ERROR >', String(err))
-    res.status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: ERROR.GENERAL_ERR_MSG,
-      })
+    sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
   }
 })

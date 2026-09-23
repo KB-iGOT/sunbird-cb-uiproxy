@@ -95,7 +95,7 @@ describe('checkUUIDMaster', () => {
     __mockExecute.mockImplementation((_q: string, cb: (err: unknown, result: unknown) => void) => {
       cb(null, { rows: [] })
     })
-    await expect(checkUUIDMaster('missing')).rejects.toBe(false)
+    await expect(checkUUIDMaster('missing')).rejects.toThrow('checkUUIDMaster: No records')
   })
 })
 

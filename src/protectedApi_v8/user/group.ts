@@ -3,6 +3,7 @@ import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { IUserGroup } from '../../models/usergroup.model'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { logError } from '../../utils/logger'
 import { ERROR } from '../../utils/message'
 import { extractUserIdFromRequest } from '../../utils/requestExtract'
@@ -47,11 +48,7 @@ userGroupApi.get('/groupContent', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('SEARCH V6 API ERROR >', String(err))
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: 'Failed due to unknown reason',
-      }
-    )
+    sendUpstreamError(res, err, { error: 'Failed due to unknown reason' })
   }
 })
 
@@ -69,10 +66,6 @@ userGroupApi.get('/fetchUserGroup', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('GROUP COHORT CONTENT >', String(err))
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: 'Failed due to unknown reason',
-      }
-    )
+    sendUpstreamError(res, err, { error: 'Failed due to unknown reason' })
   }
 })

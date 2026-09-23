@@ -3,6 +3,7 @@ import { Router } from 'express'
 
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 import { logDebug, logError } from '../utils/logger'
 import { ERROR } from '../utils/message'
 import { extractAuthorizationFromRequest } from '../utils/requestExtract'
@@ -61,11 +62,7 @@ fracApi.get('/getAllNodes/:type', async (req, res) => {
         })
         res.status(response.status).send(response.data)
     } catch (err) {
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })
 
@@ -79,11 +76,7 @@ fracApi.post('/addDataNode', async (req, res) => {
         })
         res.status(response.status).send(response.data)
     } catch (err) {
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })
 
@@ -97,11 +90,7 @@ fracApi.post('/addDataNodeBulk', async (req, res) => {
         })
         res.status(response.status).send(response.data)
     } catch (err) {
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })
 
@@ -115,11 +104,7 @@ fracApi.post('/searchNodes', async (req, res) => {
         })
         res.status(response.status).send(response.data)
     } catch (err) {
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })
 
@@ -133,11 +118,7 @@ fracApi.post('/filterByMappings', async (req, res) => {
         })
         res.status(response.status).send(response.data)
     } catch (err) {
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })
 
@@ -158,11 +139,7 @@ fracApi.get('/getNodeById/:id/:type', async (req, res) => {
         })
         res.status(response.status).send(response.data)
     } catch (err) {
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })
 
@@ -204,11 +181,7 @@ fracApi.get('/:type/:key', async (req, res) => {
         res.status(200).send(response.data)
     } catch (err) {
         logError('ERROR --> ', err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
+        sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
     }
 })
 
@@ -222,10 +195,6 @@ fracApi.post('/bookmarkDataNode', async (req, res) => {
         })
         res.status(response.status).send(response.data)
     } catch (err) {
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })

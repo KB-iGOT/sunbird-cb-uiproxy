@@ -80,6 +80,6 @@ protectedApiV8.use('/roleactivity', roleActivityApi)
 protectedApiV8.use('/resource', userAuthKeyCloakApi)
 protectedApiV8.use('/workallocation', workAllocationApi)
 protectedApiV8.use('/frac', fracApi)
-protectedApiV8.use('/contentprivate', contentPrivateApi),
+protectedApiV8.use('/contentprivate', contentPrivateApi)
 protectedApiV8.use('/eclogin', userAuthKeyCloakEcApi)
 protectedApiV8.use('/aiassessmentlogin', userAuthKeyCloakAssessmentLoginApi)

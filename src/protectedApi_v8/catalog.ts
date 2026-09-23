@@ -5,6 +5,7 @@ import { CONSTANTS } from '../utils/env'
 
 import { IFilterUnitContent } from '../models/catalog.model'
 import { getFilters, getFilterUnitByType } from '../service/catalog'
+import { sendUpstreamError } from '../utils/errors'
 import { logError } from '../utils/logger'
 import { ERROR } from '../utils/message'
 import {extractUserIdFromRequest, extractUserToken} from '../utils/requestExtract'
@@ -28,11 +29,7 @@ catalogApi.get('/', async (req, res) => {
     res.status(response.status).send(response.data)
   } catch (err) {
     logError(failedToProcess + err)
-    res.status((err && err.response && err.response.status) || 500).send(
-        (err && err.response && err.response.data) || {
-            error: ERROR.GENERAL_ERR_MSG,
-        }
-    )
+    sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
   }
 })
 
@@ -57,11 +54,7 @@ catalogApi.post('/tags', async (req, res) => {
       res.status(400).send({ error: ERROR.ERROR_NO_ORG_DATA })
     }
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: 'Failed due to unknown reason',
-      }
-    )
+    sendUpstreamError(res, err, { error: 'Failed due to unknown reason' })
   }
 })
 

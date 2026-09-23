@@ -3,6 +3,7 @@ import { Request, Response, Router } from 'express'
 import { IGenericApiResponse } from '../../models/generic.model'
 import { ITopic, ITopicResponse, ITopicsApiResponse } from '../../models/topic.model'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 
 const apiEndPoints = {
   autocomplete: `${CONSTANTS.ES_BASE}/lex_topic/_search`,
@@ -23,11 +24,7 @@ topicApi.get('/recommend', async (_req: Request, res: Response) => {
     }))
     res.send(topics)
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: 'Failed due to unknown reason',
-      }
-    )
+    sendUpstreamError(res, err, { error: 'Failed due to unknown reason' })
   }
 })
 
@@ -54,10 +51,6 @@ topicApi.get('/autocomplete', async (req: Request, res: Response) => {
     })
     res.json(response.data)
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: 'Failed due to unknown reason',
-      }
-    )
+    sendUpstreamError(res, err, { error: 'Failed due to unknown reason' })
   }
 })

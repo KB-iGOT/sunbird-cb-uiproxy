@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { logError, logErrorHeading } from '../../utils/logger'
 import { ERROR } from '../../utils/message'
 import { extractUserIdFromRequest } from '../../utils/requestExtract'
@@ -41,11 +42,7 @@ realTimeProgressApi.post('/update/:contentId', async (req, res) => {
   } catch (err) {
     logErrorHeading('REAL TIME PROGRESS ERROR')
     logError(err)
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: 'Failed due to unknown reason',
-      }
-    )
+    sendUpstreamError(res, err, { error: 'Failed due to unknown reason' })
   }
 })
 
@@ -67,10 +64,6 @@ realTimeProgressApi.post('/markAsComplete/:contentId', async (req, res) => {
     res.json(response.data)
   } catch (err) {
     logError('MARK AS COMPLETE ERROR -> ', err)
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: 'Failed due to unknown reason',
-      }
-    )
+    sendUpstreamError(res, err, { error: 'Failed due to unknown reason' })
   }
 })

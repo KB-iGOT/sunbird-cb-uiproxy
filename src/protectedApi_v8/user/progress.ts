@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { logDebug, logError, logErrorHeading } from '../../utils/logger'
 import { ERROR } from '../../utils/message'
 import { extractUserId, extractUserIdFromRequest } from '../../utils/requestExtract'
@@ -33,11 +34,7 @@ progressApi.get('/:contentId', async (req, res) => {
     res.json(response.data)
   } catch (err) {
     logError('FETCH MARK AS COMPLETE META => ', err)
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -64,11 +61,7 @@ progressApi.get('/', async (req, res) => {
   } catch (err) {
     logErrorHeading('PROGRESS HASH ERROR')
     logError(err)
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -96,10 +89,6 @@ progressApi.post('/', async (req, res) => {
   } catch (err) {
     logErrorHeading('PROGRESS HASH ERROR POST')
     logError(err)
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })

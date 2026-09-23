@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 
 const apiEndpoints = {
   tokenWithCode: `${CONSTANTS.CONTENT_API_BASE}/user-access-token?code=`,
@@ -30,10 +31,6 @@ userTokenApi.get('/', async (req, res) => {
         )
     }
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: 'Failed due to unknown reason',
-      }
-    )
+    sendUpstreamError(res, err, { error: 'Failed due to unknown reason' })
   }
 })

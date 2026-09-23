@@ -4,6 +4,7 @@ import { UploadedFile } from 'express-fileupload'
 import FormData from 'form-data'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { logError } from '../../utils/logger'
 import { ERROR } from '../../utils/message'
 import { extractUserIdFromRequest } from '../../utils/requestExtract'
@@ -34,10 +35,7 @@ bannerApi.post('/publish', async (req, res) => {
         res.send(response.data)
     } catch (err) {
         logError('ERR BANNER PUBLISH -> ', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send((err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            })
+        sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
     }
 })
 
@@ -70,10 +68,7 @@ bannerApi.post('/upload', async (req, res) => {
         }
     } catch (err) {
         logError('ERR BANNER UPLOAD TO S3 -> ', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send((err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            })
+        sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
     }
 })
 
@@ -100,10 +95,7 @@ bannerApi.get('/currentBanners', async (req, res) => {
         res.send(response.data)
     } catch (err) {
         logError('ERR FETCHING CURRENT BANNERS -> ', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send((err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            })
+        sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
     }
 })
 
@@ -135,10 +127,7 @@ bannerApi.post('/createBanner', async (req, res) => {
         res.send(response.data)
     } catch (err) {
         logError('ERR CREATING NEW BANNER -> ', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send((err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            })
+        sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
     }
 })
 
@@ -170,10 +159,7 @@ bannerApi.post('/updateCurrentBanner', async (req, res) => {
         res.send(response.data)
     } catch (err) {
         logError('ERR UPDATING CURRENT BANNERS -> ', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send((err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            })
+        sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
     }
 })
 
@@ -206,9 +192,6 @@ bannerApi.post('/updateBanner/:bannerId', async (req, res) => {
         res.send(response.data)
     } catch (err) {
         logError('ERR UPDATING BANNER -> ', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send((err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            })
+        sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
     }
 })

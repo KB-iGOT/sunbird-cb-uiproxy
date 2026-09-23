@@ -21,6 +21,12 @@ function getRejectedHandler() {
   return mockedAxios.__rejectedHandler
 }
 
+// Real AxiosErrors are Error instances, so the interceptor passes them through unchanged
+// tslint:disable-next-line: no-any
+function axiosError(fields: any) {
+  return Object.assign(new Error('Request failed'), fields)
+}
+
 describe('axios retry interceptor', () => {
   it('registers a response interceptor on import', () => {
     // clearMocks wipes call history between tests, so we assert on the durable
@@ -29,24 +35,24 @@ describe('axios retry interceptor', () => {
   })
 
   it('rejects immediately for a client error (status < 500)', async () => {
-    const err = { config: { retry: 3 }, response: { status: 404 } }
+    const err = axiosError({ config: { retry: 3 }, response: { status: 404 } })
     await expect(getRejectedHandler()(err)).rejects.toBe(err)
     expect(mockedAxios).not.toHaveBeenCalled()
   })
 
   it('rejects immediately when the config has no retry option set', async () => {
-    const err = { config: {}, response: { status: 500 } }
+    const err = axiosError({ config: {}, response: { status: 500 } })
     await expect(getRejectedHandler()(err)).rejects.toBe(err)
   })
 
   it('rejects immediately when there is no config at all', async () => {
-    const err = { response: { status: 500 } }
+    const err = axiosError({ response: { status: 500 } })
     await expect(getRejectedHandler()(err)).rejects.toBe(err)
   })
 
   it('sets err.code to 404 once the retry budget is exhausted', async () => {
     // tslint:disable-next-line: no-any
-    const err: any = { config: { __retryCount: 2, retry: 2 }, response: { status: 500 } }
+    const err: any = axiosError({ config: { __retryCount: 2, retry: 2 }, response: { status: 500 } })
     await expect(getRejectedHandler()(err)).rejects.toBe(err)
     expect(err.code).toBe('404')
   })

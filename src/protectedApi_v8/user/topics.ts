@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Request, Response, Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { ERROR } from '../../utils/message'
 import { extractUserIdFromRequest } from '../../utils/requestExtract'
 const apiEndPoints = {
@@ -33,11 +34,7 @@ topicsApi.get('/', async (req: Request, res: Response) => {
 
     res.status(500).send(response.data)
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -53,11 +50,7 @@ topicsApi.post('/', async (req: Request, res: Response) => {
     const response = await axios.post(apiEndPoints.add, body, axiosRequestConfig)
     res.json(response.data)
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -75,11 +68,7 @@ topicsApi.get('/v2', async (req: Request, res: Response) => {
     }
     res.status(200).send([])
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -100,11 +89,7 @@ topicsApi.delete('/', async (req: Request, res: Response) => {
 
     res.status(response.status).send(response.data)
   } catch (err) {
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -118,11 +103,7 @@ topicsApi.patch('/addMultiple', async (req: Request, res: Response) => {
     })
     res.json(response.data)
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -136,11 +117,7 @@ topicsApi.patch('/', async (req: Request, res: Response) => {
     })
     res.json(response.data)
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -157,11 +134,7 @@ topicsApi.get('/suggested', async (req: Request, res: Response) => {
 
     res.send(response.data)
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -182,10 +155,6 @@ topicsApi.get('/autocomplete', async (req: Request, res: Response) => {
     })
     res.send(response.data)
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })

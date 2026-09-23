@@ -3,6 +3,7 @@ import { RequiredActionAlias } from '@keycloak/keycloak-admin-client/lib/defs/re
 import cassandraDriver from 'cassandra-driver'
 import request from 'request'
 import { CONSTANTS } from './env'
+import { toError } from './errors'
 import { logDebug, logError } from './logger'
 
 const CASSANDRA_KEYSPACE = CONSTANTS.CASSANDRA_KEYSPACE
@@ -65,7 +66,7 @@ export function checkUUIDMaster(uniqueKey: any): Promise<any> {
                     resolve(key)
                 } else {
                     logDebug('Error on DB request : ')
-                    reject(false)
+                    reject(new Error('checkUUIDMaster: No records'))
                 }
                 clientConnect.shutdown()
             })
@@ -157,37 +158,31 @@ export async function createKeycloakUser(req: any) {
 // tslint:disable-next-line: no-any
 export async function getAuthToken(email: any): Promise<any> {
     logDebug('Starting to get new user token from keycloak...')
-    // tslint:disable-next-line: no-try-promise
-    try {
-        const request1 = {
-            client_id: 'portal',
-            grant_type: 'password',
-            scope: 'openid',
-            username: email,
-            // tslint:disable-next-line: object-literal-sort-keys
-            password: defaultNewUserPassword,
-        }
-
-        return new Promise((resolve, reject) => {
-            request.post({
-                url: `${CONSTANTS.PORTAL_AUTH_SERVER_URL}/realms/${CONSTANTS.KEYCLOAK_REALM}/protocol/openid-connect/token`,
-                // tslint:disable-next-line: object-literal-sort-keys
-                form: request1,
-            }, (err: any, _httpResponse: any, body: any) => { // tslint:disable-line: no-any
-                if (err) {
-                    logError('err in getAuthToken api ', err)
-                    reject(err)
-                }
-                if (body) {
-                    resolve(JSON.parse(body))
-                }
-            })
-        })
-
-    } catch (err) {
-        logError('ERROR ON Keycloak openid-connect/token >', String(err))
-        return err
+    const request1 = {
+        client_id: 'portal',
+        grant_type: 'password',
+        scope: 'openid',
+        username: email,
+        // tslint:disable-next-line: object-literal-sort-keys
+        password: defaultNewUserPassword,
     }
+
+    return new Promise((resolve, reject) => {
+        request.post({
+            url: `${CONSTANTS.PORTAL_AUTH_SERVER_URL}/realms/${CONSTANTS.KEYCLOAK_REALM}/protocol/openid-connect/token`,
+            // tslint:disable-next-line: object-literal-sort-keys
+            form: request1,
+        }, (err: any, _httpResponse: any, body: any) => { // tslint:disable-line: no-any
+            if (err) {
+                logError('err in getAuthToken api ', err)
+                reject(toError(err))
+                return
+            }
+            if (body) {
+                resolve(JSON.parse(body))
+            }
+        })
+    })
 }
 
 export async function UpdateKeycloakUserPassword(keycloakId: string, isTemporary: boolean) {

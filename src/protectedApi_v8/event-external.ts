@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
+import { sendUpstreamError } from '../utils/errors'
 
 const externalApiEndpoint = 'https://igot.in'
 
@@ -16,7 +17,6 @@ externalEventsApi.get('/', async (_req, res) => {
         const data = response.data
         res.json(data || {})
     } catch (err) {
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })

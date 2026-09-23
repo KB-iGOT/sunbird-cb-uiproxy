@@ -2,6 +2,7 @@ import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 import { ERROR } from '../utils/message'
 import { extractUserIdFromRequest } from '../utils/requestExtract'
 
@@ -37,9 +38,7 @@ attendedContentApi.get('/attendedCourses', async (req, res) => {
     res.json(finalResponse)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || err)
+    sendUpstreamError(res, err, err)
   }
 })
 
@@ -59,9 +58,7 @@ attendedContentApi.get('/attendedUsers/:contentId', async (req, res) => {
     res.status(response.status).send(response.data)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || err)
+    sendUpstreamError(res, err, err)
   }
 })
 
@@ -82,8 +79,6 @@ attendedContentApi.get('/verifyAttendedUsers', async (req, res) => {
     res.status(response.status).send(response.data)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || err)
+    sendUpstreamError(res, err, err)
   }
 })

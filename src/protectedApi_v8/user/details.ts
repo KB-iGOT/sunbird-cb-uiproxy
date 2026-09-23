@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError, toError } from '../../utils/errors'
 import { logDebug, logError } from '../../utils/logger'
 import { ERROR } from '../../utils/message'
 import { request } from '../../utils/request-adapter'
@@ -143,7 +144,8 @@ export function wTokenApiMock(req: any, token: any): Promise<any> {
 
       request.post(url, options, async (error: any, _res: any, body: any) => { // tslint:disable-line: no-any
         if (error) {
-          reject(error)
+          reject(toError(error))
+          return
         }
         if (body.user) {
           const user = body.user
@@ -176,7 +178,7 @@ export function wTokenApiMock(req: any, token: any): Promise<any> {
     } catch (err) {
       // tslint:disable-next-line: no-console
       console.log('------------------W TOKEN ERROR---------\n', err)
-      reject()
+      reject(toError(err))
     }
   })
 }
@@ -195,9 +197,7 @@ detailsApi.post('/managerDetails', async (req, res) => {
     )
     res.status(response.status).send(response.data)
   } catch (err) {
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || err)
+    sendUpstreamError(res, err, err)
   }
 })
 

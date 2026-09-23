@@ -2,6 +2,7 @@ import axios from 'axios'
 import express, { Request } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 import { logError } from '../utils/logger'
 import { proxyCreatorRoute } from '../utils/proxyCreator'
 import { redis } from '../utils/redis'
@@ -71,11 +72,7 @@ publicApiV8.post('/course/batch/cert/download/mobile', async (req, res) => {
   } catch (err) {
     logError(err)
 
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: 'Failed due to unknown reason',
-      }
-    )
+    sendUpstreamError(res, err, { error: 'Failed due to unknown reason' })
   }
 })
 

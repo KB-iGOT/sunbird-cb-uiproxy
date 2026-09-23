@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 import { logError } from '../utils/logger'
 import { ERROR } from '../utils/message'
 import { extractUserIdFromRequest } from '../utils/requestExtract'
@@ -46,11 +47,7 @@ scromApi.get('/get/:id', async (req, res) => {
 
   } catch (err) {
     logError(err)
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: unknown,
-      }
-    )
+    sendUpstreamError(res, err, { error: unknown })
   }
 })
 
@@ -92,11 +89,7 @@ scromApi.post('/add/:id', async (req, res) => {
 
   } catch (err) {
     logError(err)
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: unknown,
-      }
-    )
+    sendUpstreamError(res, err, { error: unknown })
   }
 })
 scromApi.delete('/remove/:id', async (req, res) => {
@@ -131,10 +124,6 @@ scromApi.delete('/remove/:id', async (req, res) => {
 
   } catch (err) {
     logError(err)
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: unknown,
-      }
-    )
+    sendUpstreamError(res, err, { error: unknown })
   }
 })

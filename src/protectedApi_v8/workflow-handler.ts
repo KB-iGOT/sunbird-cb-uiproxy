@@ -1,8 +1,9 @@
-import axios from 'axios'
-import { Router } from 'express'
+import axios, { AxiosResponse } from 'axios'
+import { Request, Response, Router } from 'express'
 
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 import { logError } from '../utils/logger'
 import { ERROR } from '../utils/message'
 import { extractUserToken } from '../utils/requestExtract'
@@ -28,347 +29,86 @@ export const workflowHandlerApi = Router()
 const unknownError = 'Failed due to unknown reason'
 const failedToProcess = 'Failed to process the request. '
 
-workflowHandlerApi.post('/transition', async (req, res) => {
-    try {
-        const rootOrgValue = req.headers.rootorg
-        const orgValue = req.headers.org
-        if (!rootOrgValue || !orgValue) {
-            res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
-            return
-        }
-        const response = await axios.post(
-            API_END_POINTS.applicationTransition,
-            req.body,
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    org: orgValue,
-                    rootOrg: rootOrgValue,
-                     // tslint:disable-next-line: all
-                     'x-authenticated-user-token': extractUserToken(req),
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
-    }
+const rootOrgHeaders = (req: Request) => ({
+    Authorization: CONSTANTS.SB_API_KEY,
+    rootOrg: req.headers.rootorg,
+    // tslint:disable-next-line: all
+    'x-authenticated-user-token': extractUserToken(req),
 })
 
-workflowHandlerApi.post('/applicationsSearch', async (req, res) => {
-    try {
-        const rootOrgValue = req.headers.rootorg
-        const orgValue = req.headers.org
-        if (!rootOrgValue || !orgValue) {
-            res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
-            return
-        }
-        const response = await axios.post(
-            API_END_POINTS.applicationsSearch,
-            req.body,
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    org: orgValue,
-                    rootOrg: rootOrgValue,
-                     // tslint:disable-next-line: all
-                     'x-authenticated-user-token': extractUserToken(req),
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
-    }
+const orgHeaders = (req: Request) => ({
+    ...rootOrgHeaders(req),
+    org: req.headers.org,
 })
 
-workflowHandlerApi.get('/nextActionSearch/:serviceName/:state', async (req, res) => {
-    try {
-        const serviceName = req.params.serviceName
-        const state = req.params.state
-        const rootOrgValue = req.headers.rootorg
-        const orgValue = req.headers.org
-        const response = await axios.get(API_END_POINTS.nextActionSearch(serviceName, state), {
+const widHeader = (req: Request) => ({ wid: req.headers.wid })
+
+// tslint:disable-next-line: no-any
+const sessionRootOrgIdHeader = (req: any) => ({
+    'x-authenticated-user-orgid': req && req.session && req.session.hasOwnProperty('rootOrgId')
+        ? req.session.rootOrgId
+        : '',
+})
+
+// Relays the upstream response; a call that has already answered (validation failure) resolves to undefined
+const forwardToWorkflow = (call: (req: Request, res: Response) => Promise<AxiosResponse | undefined>) =>
+    async (req: Request, res: Response) => {
+        try {
+            const response = await call(req, res)
+            if (response) {
+                res.status(response.status).send(response.data)
+            }
+        } catch (err) {
+            logError(failedToProcess + err)
+            sendUpstreamError(res, err, { error: unknownError })
+        }
+    }
+
+// POSTs the request body with org headers, rejecting requests without rootOrg/org
+const postWithOrg = (endPoint: string, extraHeaders: (req: Request) => object = () => ({})) =>
+    forwardToWorkflow(async (req, res) => {
+        if (!req.headers.rootorg || !req.headers.org) {
+            res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
+            return undefined
+        }
+        return axios.post(endPoint, req.body, {
             ...axiosRequestConfig,
-            headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                org: orgValue,
-                rootOrg: rootOrgValue,
-                 // tslint:disable-next-line: all
-                 'x-authenticated-user-token': extractUserToken(req),
-            },
+            headers: { ...orgHeaders(req), ...extraHeaders(req) },
         })
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
-    }
-})
+    })
 
-workflowHandlerApi.get('/historyByApplicationIdAndWfId/:applicationId/:wfId', async (req, res) => {
-    try {
-        const wfId = req.params.wfId
-        const applicationId = req.params.applicationId
-        const rootOrgValue = req.headers.rootorg
-        const orgValue = req.headers.org
-        const response = await axios.get(API_END_POINTS.historyBasedOnWfId(wfId, applicationId), {
-            ...axiosRequestConfig,
-            headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                org: orgValue,
-                rootOrg: rootOrgValue,
-                 // tslint:disable-next-line: all
-                 'x-authenticated-user-token': extractUserToken(req),
-            },
-        })
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
-    }
-})
+const getWithHeaders = (endPoint: (req: Request) => string, buildHeaders: (req: Request) => object = orgHeaders) =>
+    forwardToWorkflow((req) => axios.get(endPoint(req), { ...axiosRequestConfig, headers: buildHeaders(req) }))
 
-workflowHandlerApi.get('/workflowProcess/:wfId', async (req, res) => {
-    try {
-        const wfId = req.params.wfId
-        const rootOrgValue = req.headers.rootorg
-        const response = await axios.get(API_END_POINTS.workflowProcess(wfId), {
-            ...axiosRequestConfig,
-            headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                rootOrg: rootOrgValue,
-                 // tslint:disable-next-line: all
-                 'x-authenticated-user-token': extractUserToken(req),
-            },
-        })
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
-    }
-})
+workflowHandlerApi.post('/transition', postWithOrg(API_END_POINTS.applicationTransition))
 
-workflowHandlerApi.get('/historyByApplicationId/:applicationId', async (req, res) => {
-    try {
-        const applicationId = req.params.applicationId
-        const rootOrgValue = req.headers.rootorg
-        const orgValue = req.headers.org
-        const response = await axios.get(API_END_POINTS.historyBasedOnApplicationId(applicationId), {
-            ...axiosRequestConfig,
-            headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                org: orgValue,
-                rootOrg: rootOrgValue,
-                  // tslint:disable-next-line: all
-                  'x-authenticated-user-token': extractUserToken(req),
-            },
-        })
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
-    }
-})
+workflowHandlerApi.post('/applicationsSearch', postWithOrg(API_END_POINTS.applicationsSearch))
 
-workflowHandlerApi.post('/updateUserProfileWf', async (req, res) => {
-    try {
-        const rootOrgValue = req.headers.rootorg
-        const orgValue = req.headers.org
-        if (!rootOrgValue || !orgValue) {
-            res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
-            return
-        }
-        const response = await axios.post(
-            API_END_POINTS.userProfileUpdate,
-            req.body,
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    org: orgValue,
-                    rootOrg: rootOrgValue,
-                     // tslint:disable-next-line: all
-                     'x-authenticated-user-token': extractUserToken(req),
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
-    }
-})
+workflowHandlerApi.get('/nextActionSearch/:serviceName/:state', getWithHeaders((req) =>
+    API_END_POINTS.nextActionSearch(req.params.serviceName, req.params.state)
+))
 
-workflowHandlerApi.post('/userWfSearch', async (req, res) => {
-    try {
-        const rootOrgValue = req.headers.rootorg
-        const orgValue = req.headers.org
-        const wid = req.headers.wid
-        if (!rootOrgValue || !orgValue) {
-            res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
-            return
-        }
-        const response = await axios.post(
-            API_END_POINTS.userWfSearch,
-            req.body,
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    org: orgValue,
-                    rootOrg: rootOrgValue,
-                    wid,
-                    // tslint:disable-next-line: all
-                    'x-authenticated-user-token': extractUserToken(req),
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
-    }
-})
+workflowHandlerApi.get('/historyByApplicationIdAndWfId/:applicationId/:wfId', getWithHeaders((req) =>
+    API_END_POINTS.historyBasedOnWfId(req.params.wfId, req.params.applicationId)
+))
 
-workflowHandlerApi.post('/userWFApplicationFieldsSearch', async (req, res) => {
-    try {
-        const rootOrgValue = req.headers.rootorg
-        const orgValue = req.headers.org
-        const wid = req.headers.wid
-        if (!rootOrgValue || !orgValue) {
-            res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
-            return
-        }
-        const response = await axios.post(
-            API_END_POINTS.userWfFieldsSearch,
-            req.body,
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    org: orgValue,
-                    rootOrg: rootOrgValue,
-                    wid,
-                     // tslint:disable-next-line: all
-                     'x-authenticated-user-token': extractUserToken(req),
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
-    }
-})
+workflowHandlerApi.get('/workflowProcess/:wfId', getWithHeaders(
+    (req) => API_END_POINTS.workflowProcess(req.params.wfId),
+    rootOrgHeaders
+))
 
-workflowHandlerApi.post('/profileApprovalSearch', async (req, res) => {
-    try {
-        const rootOrgValue = req.headers.rootorg
-        const orgValue = req.headers.org
-        if (!rootOrgValue || !orgValue) {
-            res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
-            return
-        }
-        let rootOrgId = ''
-        if (req && req.session && req.session.hasOwnProperty('rootOrgId')) {
-            rootOrgId = req.session.rootOrgId
-        }
-        const response = await axios.post(
-            API_END_POINTS.profileApprovalSearch,
-            req.body,
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    org: orgValue,
-                    rootOrg: rootOrgValue,
-                    // tslint:disable-next-line: all
-                    'x-authenticated-user-orgid': rootOrgId,
-                    // tslint:disable-next-line: all
-                    'x-authenticated-user-token': extractUserToken(req),
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
-    }
-})
+workflowHandlerApi.get('/historyByApplicationId/:applicationId', getWithHeaders((req) =>
+    API_END_POINTS.historyBasedOnApplicationId(req.params.applicationId)
+))
 
-workflowHandlerApi.post('/v2/transition', async (req, res) => {
-    try {
-        const rootOrgValue = req.headers.rootorg
-        const orgValue = req.headers.org
-        if (!rootOrgValue || !orgValue) {
-            res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
-            return
-        }
-        const response = await axios.post(
-            API_END_POINTS.applicationTransitionV2,
-            req.body,
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    org: orgValue,
-                    rootOrg: rootOrgValue,
-                     // tslint:disable-next-line: all
-                     'x-authenticated-user-token': extractUserToken(req),
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
-    }
-})
+workflowHandlerApi.post('/updateUserProfileWf', postWithOrg(API_END_POINTS.userProfileUpdate))
+
+workflowHandlerApi.post('/userWfSearch', postWithOrg(API_END_POINTS.userWfSearch, widHeader))
+
+workflowHandlerApi.post('/userWFApplicationFieldsSearch', postWithOrg(API_END_POINTS.userWfFieldsSearch, widHeader))
+
+workflowHandlerApi.post('/profileApprovalSearch', postWithOrg(
+    API_END_POINTS.profileApprovalSearch, sessionRootOrgIdHeader
+))
+
+workflowHandlerApi.post('/v2/transition', postWithOrg(API_END_POINTS.applicationTransitionV2))

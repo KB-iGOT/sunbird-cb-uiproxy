@@ -10,7 +10,7 @@ import axios from 'axios'
 import express, { NextFunction, Request, Response } from 'express'
 import supertest from 'supertest'
 import { CONSTANTS } from '../../../../src/utils/env'
-import { getUserRoles, rolesApi } from '../../../../src/protectedApi_v8/user/roles'
+import { getUserRoles, rolesApi, updateRolesV2Mock } from '../../../../src/protectedApi_v8/user/roles'
 
 const mockedAxios = axios as unknown as jest.Mock & { get: jest.Mock; post: jest.Mock }
 
@@ -140,5 +140,28 @@ describe('rolesApi POST /updateRolesV2', () => {
       expect.objectContaining({ action_by: 'admin-1', roles: [] }),
       expect.any(Object)
     )
+  })
+})
+
+describe('updateRolesV2Mock', () => {
+  it('posts the roles update with action_by and returns the response', async () => {
+    mockedAxios.post.mockResolvedValue({ data: 'ok' })
+    await expect(updateRolesV2Mock('admin-1', { roles: ['R'] }, 'igot')).resolves.toEqual({ data: 'ok' })
+    expect(mockedAxios.post).toHaveBeenCalledWith(
+      expect.any(String),
+      { roles: ['R'], action_by: 'admin-1' },
+      expect.objectContaining({ headers: { rootOrg: 'igot' } })
+    )
+  })
+
+  it('rejects without calling upstream when rootOrg is missing', async () => {
+    await expect(updateRolesV2Mock('admin-1', {}, '')).rejects.toThrow('ERROR_NO_ORG_DATA')
+    expect(mockedAxios.post).not.toHaveBeenCalled()
+  })
+
+  it('rethrows the upstream error', async () => {
+    const err = new Error('down')
+    mockedAxios.post.mockRejectedValue(err)
+    await expect(updateRolesV2Mock('admin-1', {}, 'igot')).rejects.toBe(err)
   })
 })

@@ -115,6 +115,6 @@ describe('createSession', () => {
       storeGrant: jest.fn(),
     }
     mockedGetKeyCloakClient.mockReturnValue(keycloakClient)
-    await expect(createSession('a@b.com', { kauth: {} }, {})).rejects.toBe('GOOGLE_CREATE_SESSION_FAILED')
+    await expect(createSession('a@b.com', { kauth: {} }, {})).rejects.toThrow('GOOGLE_CREATE_SESSION_FAILED')
   })
 })

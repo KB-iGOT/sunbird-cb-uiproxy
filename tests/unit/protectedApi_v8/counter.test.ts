@@ -17,7 +17,9 @@ function buildApp() {
 describe('counterApi', () => {
   afterEach(() => {
     // tslint:disable-next-line: no-any
-    (CONSTANTS as any).USE_SERVING_HOST_COUNTER = undefined
+    (CONSTANTS as any).USE_SERVING_HOST_COUNTER = undefined;
+    // tslint:disable-next-line: no-any
+    (CONSTANTS as any).SERVING_HOST_COUNTER_URL = undefined
   })
 
   it('queries CONSTANTS.COUNTER by default', async () => {
@@ -28,12 +30,22 @@ describe('counterApi', () => {
     expect(mockedAxios.get).toHaveBeenCalledWith(`${CONSTANTS.COUNTER}/stats/data/now`, expect.any(Object))
   })
 
-  it('queries the fixed serving-host IP when USE_SERVING_HOST_COUNTER is set', async () => {
+  it('queries SERVING_HOST_COUNTER_URL when USE_SERVING_HOST_COUNTER is set', async () => {
+    // tslint:disable-next-line: no-any
+    (CONSTANTS as any).USE_SERVING_HOST_COUNTER = 'true';
+    // tslint:disable-next-line: no-any
+    (CONSTANTS as any).SERVING_HOST_COUNTER_URL = 'https://counter.example'
+    mockedAxios.get.mockResolvedValue({ data: {}, status: 200 })
+    await supertest(buildApp()).get('/')
+    expect(mockedAxios.get).toHaveBeenCalledWith('https://counter.example/stats/data/now', expect.any(Object))
+  })
+
+  it('falls back to CONSTANTS.COUNTER when the flag is set without SERVING_HOST_COUNTER_URL', async () => {
     // tslint:disable-next-line: no-any
     (CONSTANTS as any).USE_SERVING_HOST_COUNTER = 'true'
     mockedAxios.get.mockResolvedValue({ data: {}, status: 200 })
     await supertest(buildApp()).get('/')
-    expect(mockedAxios.get).toHaveBeenCalledWith('http://10.177.63.164:5903/stats/data/now', expect.any(Object))
+    expect(mockedAxios.get).toHaveBeenCalledWith(`${CONSTANTS.COUNTER}/stats/data/now`, expect.any(Object))
   })
 
   it('forwards the upstream error status/body when the request fails', async () => {

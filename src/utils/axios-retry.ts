@@ -1,15 +1,16 @@
 import axios, { AxiosError } from 'axios'
 import { AxiosRequestConfig } from '../models/axios-request-config.model'
+import { toError } from './errors'
 
 axios.interceptors.response.use(undefined, (err: AxiosError) => {
   const config = err.config as AxiosRequestConfig
 
   // If status code is less than 500 reject
   if (err.response && err.response.status < 500) {
-    return Promise.reject(err)
+    return Promise.reject(toError(err))
   }
   // If config does not exist or the retry option is not set, reject
-  if (!config || !config.retry) return Promise.reject(err)
+  if (!config || !config.retry) return Promise.reject(toError(err))
 
   // Set the variable for keeping track of the retry count
   config.__retryCount = config.__retryCount || 0
@@ -19,7 +20,7 @@ axios.interceptors.response.use(undefined, (err: AxiosError) => {
     // Changing the error code so front end will not call
     err.code = '404'
     // Reject with the error
-    return Promise.reject(err)
+    return Promise.reject(toError(err))
   }
 
   // Increase the retry count

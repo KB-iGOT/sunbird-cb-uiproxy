@@ -24,6 +24,7 @@ import {
   // transformToSbExtUpsertRequest
 } from '../../service/playlist'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { getStringifiedQueryParams } from '../../utils/helpers'
 import { logError } from '../../utils/logger'
 import { ERROR } from '../../utils/message'
@@ -183,11 +184,7 @@ playlistApi.get('/sync/:playlistId', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('SYNC PLAYLIST ERROR >', String(err))
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -227,11 +224,7 @@ playlistApi.get('/recent', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('RECENT PLAYLIST CONTENTS FETCH ERROR >', String(err))
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -266,11 +259,7 @@ playlistApi.post('/accept/:playlistId', async (req, res) => {
     res.status(404).send()
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -298,11 +287,7 @@ playlistApi.post('/reject/:playlistId', async (req, res) => {
     return
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -322,11 +307,7 @@ playlistApi.post('/share/:playlistId', async (req, res) => {
     res.status(response.status).send()
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -354,11 +335,7 @@ playlistApi.get('/:type/:playlistId', async (req, res) => {
     res.status(response.status).send(transformToPlaylistV3(response.data, playlistId))
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -384,11 +361,7 @@ playlistApi.delete('/:playlistId', async (req, res) => {
     res.status(response.status).send(true)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -405,11 +378,7 @@ playlistApi.get('/', async (req, res) => {
 
   if (allPlaylists.error) {
     const err = allPlaylists.error
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
     return
   }
   res.send(allPlaylists.data)
@@ -456,11 +425,7 @@ playlistApi.patch('/:playlistId', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError(String(err))
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -507,11 +472,7 @@ playlistApi.post('/create', async (req, res) => {
     res.status(response1.status).send()
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -600,11 +561,7 @@ playlistApi.post('/:playlistId/:type', async (req, res) => {
     // res.status(500).send()
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -621,10 +578,6 @@ playlistApi.get('/:type', async (req, res) => {
     res.send(playlists)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })

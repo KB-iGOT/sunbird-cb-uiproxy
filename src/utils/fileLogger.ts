@@ -11,7 +11,7 @@ const fileFormat = () => {
 }
 
 const logFile = fs.createWriteStream(fileFormat(), {flags : 'w'})
-export let pino    = require('pino')({},
+export const pino    = require('pino')({},
 {
     [Symbol.for('needsMetadata')]: true,
     // tslint:disable-next-line: no-any

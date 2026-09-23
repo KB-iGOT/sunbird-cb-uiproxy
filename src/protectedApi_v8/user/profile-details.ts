@@ -4,6 +4,7 @@ import * as fs from 'fs'
 import { axiosRequestConfig, axiosRequestConfigLong, axiosRequestConfigVeryLong } from '../../configs/request.config'
 import { IPersonalDetails, ISBUser, ISunbirdbUserResponse } from '../../models/user.model'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { logDebug, logError } from '../../utils/logger'
 import { ERROR } from '../../utils/message'
 import { extractUserIdFromRequest, extractUserToken } from '../../utils/requestExtract'
@@ -530,11 +531,7 @@ profileDeatailsApi.patch('/updateUser', async (req, res) => {
         res.status(response.status).send(response.data)
     } catch (err) {
         logError(failedToUpdateUser + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })
 

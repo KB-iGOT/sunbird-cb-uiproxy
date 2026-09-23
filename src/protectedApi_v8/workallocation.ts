@@ -1,8 +1,9 @@
-import axios from 'axios'
-import { Router } from 'express'
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
+import { Request, Response, Router } from 'express'
 
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 import { logError } from '../utils/logger'
 import { ERROR } from '../utils/message'
 import { extractAuthorizationFromRequest, extractUserId, extractUserToken } from '../utils/requestExtract'
@@ -34,434 +35,137 @@ const userIdFailedMessage = 'NO_USER_ID'
 const workAllocationIdFailedMessage = 'NO_WORK_ALLOCATION_ID'
 const workOrderIdFailedMessage = 'NO_WORKORDER_ID'
 
-workAllocationApi.post('/add', async (req, res) => {
-    try {
+type HeaderBuilder = (req: Request, userId: string) => object
+
+const tokenHeaders = (req: Request) => ({
+    Authorization: CONSTANTS.SB_API_KEY,
+    'x-authenticated-user-token': extractUserToken(req),
+})
+
+const tokenUserHeaders: HeaderBuilder = (req, userId) => ({
+    Authorization: CONSTANTS.SB_API_KEY,
+    userId,
+    'x-authenticated-user-token': extractUserToken(req),
+})
+
+const bearerUserHeaders: HeaderBuilder = (req, userId) => ({
+    Authorization: extractAuthorizationFromRequest(req),
+    userId,
+})
+
+const pdfRequestConfig: AxiosRequestConfig = {
+    headers: { Accept: 'application/pdf' },
+    responseType: 'arraybuffer',
+}
+
+// Relays the upstream response; a call that has already answered (validation failure) resolves to undefined
+const forwardToUpstream = (call: (req: Request, res: Response) => Promise<AxiosResponse | undefined>) =>
+    async (req: Request, res: Response) => {
+        try {
+            const response = await call(req, res)
+            if (response) {
+                res.status(response.status).send(response.data)
+            }
+        } catch (err) {
+            logError(failedToProcess + err)
+            sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
+        }
+    }
+
+// POSTs the request body on behalf of the calling user, rejecting requests without a userId
+const postWithUserId = (endPoint: string, buildHeaders: HeaderBuilder) =>
+    forwardToUpstream(async (req, res) => {
         const userId = extractUserId(req)
         if (!userId) {
             res.status(400).send(userIdFailedMessage)
-            return
+            return undefined
         }
-        const response = await axios.post(
-            API_END_POINTS.addAllocationEndPoint(workallocationV1Path),
-            req.body,
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: extractAuthorizationFromRequest(req),
-                    userId,
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(Error + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
-    }
-})
+        return axios.post(endPoint, req.body, { ...axiosRequestConfig, headers: buildHeaders(req, userId) })
+    })
 
-workAllocationApi.post('/update', async (req, res) => {
-    try {
-        const userId = extractUserId(req)
-        if (!userId) {
-            res.status(400).send(userIdFailedMessage)
-            return
+// GETs a resource identified by a required route param
+const getByParam = (
+    param: string,
+    missingMessage: string,
+    endPoint: (value: string) => string,
+    extraConfig: AxiosRequestConfig = {}
+) =>
+    forwardToUpstream(async (req, res) => {
+        const value = req.params[param]
+        if (!value) {
+            res.status(400).send(missingMessage)
+            return undefined
         }
-        const response = await axios.post(
-            API_END_POINTS.updateAllocationEndPoint,
-            req.body,
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: extractAuthorizationFromRequest(req),
-                    userId,
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
-    }
-})
-
-workAllocationApi.post('/userSearch', async (req, res) => {
-    try {
-        const response = await axios.post(
-            API_END_POINTS.getUsersEndPoint,
-            req.body,
-            {
-                ...axiosRequestConfig,
-                headers: {
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
-    }
-})
-
-workAllocationApi.get('/user/autocomplete/:searchTerm', async (req, res) => {
-    try {
-        const searchTerm = req.params.searchTerm
-        const response = await axios.get(API_END_POINTS.userAutoCompleteEndPoint(searchTerm), {
+        return axios.get(endPoint(value), {
             ...axiosRequestConfig,
-            headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                // tslint:disable-next-line: no-duplicate-string
-                'x-authenticated-user-token': extractUserToken(req),
-            },
+            ...extraConfig,
+            headers: { ...extraConfig.headers, ...tokenHeaders(req) },
         })
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
-    }
-})
+    })
+
+workAllocationApi.post('/add', postWithUserId(
+    API_END_POINTS.addAllocationEndPoint(workallocationV1Path), bearerUserHeaders
+))
+
+workAllocationApi.post('/update', postWithUserId(API_END_POINTS.updateAllocationEndPoint, bearerUserHeaders))
+
+workAllocationApi.post('/userSearch', forwardToUpstream((req) =>
+    axios.post(API_END_POINTS.getUsersEndPoint, req.body, { ...axiosRequestConfig, headers: {} })
+))
+
+workAllocationApi.get('/user/autocomplete/:searchTerm', forwardToUpstream((req) =>
+    axios.get(API_END_POINTS.userAutoCompleteEndPoint(req.params.searchTerm), {
+        ...axiosRequestConfig,
+        headers: tokenHeaders(req),
+    })
+))
 
 // ------------------ Work allocation v2 API'S ----------------------
 
-workAllocationApi.post('/v2/add', async (req, res) => {
-    try {
-        const userId = extractUserId(req)
-        if (!userId) {
-            res.status(400).send(userIdFailedMessage)
-            return
-        }
-        const response = await axios.post(
-            API_END_POINTS.addAllocationEndPoint(workallocationV2Path),
-            req.body,
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    userId,
-                    // tslint:disable-next-line: no-duplicate-string
-                    'x-authenticated-user-token': extractUserToken(req),
+workAllocationApi.post('/v2/add', postWithUserId(
+    API_END_POINTS.addAllocationEndPoint(workallocationV2Path), tokenUserHeaders
+))
 
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(Error + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
-    }
-})
+workAllocationApi.post('/v2/update', postWithUserId(
+    API_END_POINTS.updateWorkAllocationEndPoint(workallocationV2Path), tokenUserHeaders
+))
 
-workAllocationApi.post('/v2/update', async (req, res) => {
-    try {
-        const userId = extractUserId(req)
-        if (!userId) {
-            res.status(400).send(userIdFailedMessage)
-            return
-        }
-        const response = await axios.post(
-            API_END_POINTS.updateWorkAllocationEndPoint(workallocationV2Path),
-            req.body,
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    userId,
-                    // tslint:disable-next-line: no-duplicate-string
-                    'x-authenticated-user-token': extractUserToken(req),
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(Error + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
-    }
-})
-workAllocationApi.post('/add/workorder', async (req, res) => {
-    try {
-        const userId = extractUserId(req)
-        if (!userId) {
-            res.status(400).send(userIdFailedMessage)
-            return
-        }
-        const response = await axios.post(
-            API_END_POINTS.addWorkOrderEndPoint(workallocationV2Path),
-            req.body,
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    userId,
-                    // tslint:disable-next-line: no-duplicate-string
-                    'x-authenticated-user-token': extractUserToken(req),
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(Error + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
-    }
-})
-workAllocationApi.post('/update/workorder', async (req, res) => {
-    try {
-        const userId = extractUserId(req)
-        if (!userId) {
-            res.status(400).send(userIdFailedMessage)
-            return
-        }
-        const response = await axios.post(
-            API_END_POINTS.updateWorkOrder(workallocationV2Path),
-            req.body,
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    userId,
-                    // tslint:disable-next-line: no-duplicate-string
-                    'x-authenticated-user-token': extractUserToken(req),
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(Error + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
-    }
-})
+workAllocationApi.post('/add/workorder', postWithUserId(
+    API_END_POINTS.addWorkOrderEndPoint(workallocationV2Path), tokenUserHeaders
+))
 
-workAllocationApi.post('/getWorkOrders', async (req, res) => {
-    try {
-        const response = await axios.post(
-            API_END_POINTS.getWorkOrders(workallocationV2Path),
-            req.body,
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    // tslint:disable-next-line: no-duplicate-string
-                    'x-authenticated-user-token': extractUserToken(req),
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(Error + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
-    }
-})
+workAllocationApi.post('/update/workorder', postWithUserId(
+    API_END_POINTS.updateWorkOrder(workallocationV2Path), tokenUserHeaders
+))
 
-workAllocationApi.get('/getWorkOrderById/:workOrderId', async (req, res) => {
-    try {
-        const workOrderId = req.params.workOrderId
-        if (!workOrderId) {
-            res.status(400).send(workOrderIdFailedMessage)
-            return
-        }
-        const response = await axios.get(
-            API_END_POINTS.getWorkOrderById(workallocationV2Path, workOrderId),
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    // tslint:disable-next-line: no-duplicate-string
-                    'x-authenticated-user-token': extractUserToken(req),
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(Error + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
-    }
-})
+workAllocationApi.post('/getWorkOrders', forwardToUpstream((req) =>
+    axios.post(API_END_POINTS.getWorkOrders(workallocationV2Path), req.body, {
+        ...axiosRequestConfig,
+        headers: tokenHeaders(req),
+    })
+))
 
-workAllocationApi.get('/getWorkAllocationById/:workAllocationId', async (req, res) => {
-    try {
-        const workAllocationId = req.params.workAllocationId
-        if (!workAllocationId) {
-            res.status(400).send(workAllocationIdFailedMessage)
-            return
-        }
-        const response = await axios.get(
-            API_END_POINTS.getWorkAllocationById(workallocationV2Path, workAllocationId),
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    // tslint:disable-next-line: no-duplicate-string
-                    'x-authenticated-user-token': extractUserToken(req),
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(Error + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
-    }
-})
+workAllocationApi.get('/getWorkOrderById/:workOrderId', getByParam(
+    'workOrderId', workOrderIdFailedMessage, (id) => API_END_POINTS.getWorkOrderById(workallocationV2Path, id)
+))
 
-workAllocationApi.post('/copy/workOrder', async (req, res) => {
-    try {
-        const userId = extractUserId(req)
-        if (!userId) {
-            res.status(400).send(userIdFailedMessage)
-            return
-        }
-        const response = await axios.post(
-            API_END_POINTS.copyWorkOrderEndPoint(workallocationV2Path),
-            req.body,
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    userId,
-                    // tslint:disable-next-line: no-duplicate-string
-                    'x-authenticated-user-token': extractUserToken(req),
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(Error + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
-    }
-})
+workAllocationApi.get('/getWorkAllocationById/:workAllocationId', getByParam(
+    'workAllocationId', workAllocationIdFailedMessage,
+    (id) => API_END_POINTS.getWorkAllocationById(workallocationV2Path, id)
+))
 
-workAllocationApi.get('/getUserBasicInfo/:userId', async (req, res) => {
-    try {
-        const userId = req.params.userId
-        if (!userId) {
-            res.status(400).send(userIdFailedMessage)
-            return
-        }
-        const response = await axios.get(
-            API_END_POINTS.getUserBasicDetails(userId),
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    // tslint:disable-next-line: no-duplicate-string
-                    'x-authenticated-user-token': extractUserToken(req),
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(Error + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
-    }
-})
+workAllocationApi.post('/copy/workOrder', postWithUserId(
+    API_END_POINTS.copyWorkOrderEndPoint(workallocationV2Path), tokenUserHeaders
+))
 
-workAllocationApi.get('/getWOPdf/:workOrderId', async (req, res) => {
-    try {
-        const workOrderId = req.params.workOrderId
-        if (!workOrderId) {
-            res.status(400).send(workOrderIdFailedMessage)
-            return
-        }
-        const response = await axios.get(
-            API_END_POINTS.getPdf(workOrderId),
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Accept: 'application/pdf',
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    // tslint:disable-next-line: no-duplicate-string
-                   'x-authenticated-user-token': extractUserToken(req),
+workAllocationApi.get('/getUserBasicInfo/:userId', getByParam(
+    'userId', userIdFailedMessage, API_END_POINTS.getUserBasicDetails
+))
 
-                },
-                responseType: 'arraybuffer',
+workAllocationApi.get('/getWOPdf/:workOrderId', getByParam(
+    'workOrderId', workOrderIdFailedMessage, API_END_POINTS.getPdf, pdfRequestConfig
+))
 
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(Error + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
-    }
-})
-
-workAllocationApi.get('/getUserCompetencies/:userId', async (req, res) => {
-    try {
-        const userId = req.params.userId
-        if (!userId) {
-            res.status(400).send(userIdFailedMessage)
-            return
-        }
-        const response = await axios.get(
-            API_END_POINTS.getUserCompetenciesDetails(userId),
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    // tslint:disable-next-line: no-duplicate-string
-                    'x-authenticated-user-token': extractUserToken(req),
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(Error + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
-    }
-})
+workAllocationApi.get('/getUserCompetencies/:userId', getByParam(
+    'userId', userIdFailedMessage, API_END_POINTS.getUserCompetenciesDetails
+))

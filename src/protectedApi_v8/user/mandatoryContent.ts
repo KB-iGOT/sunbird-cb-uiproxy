@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { logError } from '../../utils/logger'
 import { ERROR } from '../../utils/message'
 import { extractUserToken } from '../../utils/requestExtract'
@@ -42,10 +43,6 @@ mandatoryContent.get('/checkStatus', async (req, res) => {
         res.status(response.status).send(response.data)
     } catch (err) {
         logError('failed to process the request' + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: 'Failed due to unknown reason',
-            }
-        )
+        sendUpstreamError(res, err, { error: 'Failed due to unknown reason' })
     }
 })

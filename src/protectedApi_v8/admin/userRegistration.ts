@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { cassandraClientOptions } from '../../configs/cassandra.config'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { validateInputWithRegex } from '../../utils/helpers'
 import {
     createKeycloakUser,
@@ -46,8 +47,7 @@ userRegistrationApi.get('/listUsers/:source', async (req, res) => {
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('ERROR ON GET ALL REGISTERED USERS >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 
@@ -64,8 +64,7 @@ userRegistrationApi.post('/deregisterUsers/:source', async (req, res) => {
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('ERROR ON DEREGISTER USERS >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 
@@ -81,8 +80,7 @@ userRegistrationApi.get('/getAllSources', async (req, res) => {
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('ERROR ON GET ALL SOURCES >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 
@@ -98,8 +96,7 @@ userRegistrationApi.get('/getSourceDetail/:id', async (req, res) => {
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('ERROR ON GET SOURCE DETAILS >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 
@@ -117,8 +114,7 @@ userRegistrationApi.get('/checkUserRegistrationContent/:source', async (req, res
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('ERROR ON CHECK SOURCE REGISTRATION STATUS >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 
@@ -140,8 +136,7 @@ userRegistrationApi.post('/register', async (req, res) => {
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('ERROR ON REGISTRATIO USERS >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 
@@ -192,8 +187,7 @@ userRegistrationApi.post('/create-user', async (req, res) => {
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('ERROR ON CREATE USERS >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 
@@ -217,8 +211,7 @@ userRegistrationApi.post('/user/access-path', async (req, res) => {
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('/user/access-path:: ERROR ON access-path >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 
@@ -251,8 +244,7 @@ userRegistrationApi.post('/user/update-access-path', async (req, res) => {
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('/user/update-access-path:: ERROR ON access-path >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 
@@ -341,7 +333,7 @@ userRegistrationApi.post('/bulkUpload', async (req, res) => {
                                 await performNewUserSteps(userId, req, reqToNewUser.body.email, yesRoles)
                                     .catch((err: any) => {
                                         // reportData.push([`\n${email}`, `${err}`])
-                                        msg = `${err}`
+                                        msg = (err && err.message) || `${err}`
                                     })
                                 if (msg) {
                                     reportData.push([`\n${email}`, `success & ${msg} `])
@@ -366,81 +358,74 @@ userRegistrationApi.post('/bulkUpload', async (req, res) => {
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('ERROR ON BULK UPLOAD >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 
 // tslint:disable-next-line: no-any
 export async function createUser(req: any) {
-    return new Promise(async (resolve, reject) => {
-        try {
-            let createKeycloak: void | { id: string }
-            createKeycloak = await createKeycloakUser(req)
-                .catch((err: any) => {
-                    reject(err)
-                })
-            if (createKeycloak && createKeycloak.id) {
-                resolve(createKeycloak.id)
-            }
-        } catch (errAny) {
-            const err = errAny as AxiosError
-            logError('ERROR ON CREATE USERS >', String(err))
-        }
-    })
+    const createKeycloak: void | { id: string } = await createKeycloakUser(req)
+    if (createKeycloak && createKeycloak.id) {
+        return createKeycloak.id
+    }
 }
 
+// Runs every step even if an earlier one fails; rejects with the first failure's message
 // tslint:disable-next-line: no-any
 export async function performNewUserSteps(userId: any, req: any, email: any, roles?: any) {
-    return new Promise(async (resolve, reject) => {
-        await UpdateKeycloakUserPassword(userId, false)
-            .catch((error: any) => {
-                logError('performNewUserSteps:: ERROR ON UpdateKeycloakUserPassword', error)
-                reject('User default password could not be set')
-            })
-        // tslint:disable-next-line: no-identical-functions
-        await getAuthToken(email).then(async (kcaAuthToken) => {
-            logDebug('access_token successfull: ', kcaAuthToken.access_token)
-            if (kcaAuthToken && kcaAuthToken.access_token) {
-                const wTokenResponse = await wTokenApiMock(req, kcaAuthToken.access_token)
-                // tslint:disable-next-line: max-line-length
-                if (wTokenResponse && wTokenResponse.user) {
-                    logDebug('New User Wtoken auth successfull')
-                    logDebug(`User: ${email} -- wid: ${wTokenResponse.user.wid}`)
-                    if (roles && roles.length) {
-                        const updateRolesReq = {
-                            operation: 'add',
-                            roles: [...roles],
-                            users: [`${wTokenResponse.user.wid}`],
-                        }
-                        const actionByWid = extractUserIdFromRequest(req)
-                        const rootOrg = req.header('rootOrg')
-                        logDebug('Updating the roles for wid:', wTokenResponse.user.wid)
-                        await updateRolesV2Mock(actionByWid, updateRolesReq, rootOrg)
-                            .catch((err: any) => {
-                                logError('performNewUserSteps:: ERROR ON updateRolesV2Mock', err)
-                                reject('Roles could not be updated')
-                            })
+    let firstError: Error | undefined
+    const fail = (message: string) => {
+        firstError = firstError || new Error(message)
+    }
+    await UpdateKeycloakUserPassword(userId, false)
+        .catch((error: any) => {
+            logError('performNewUserSteps:: ERROR ON UpdateKeycloakUserPassword', error)
+            fail('User default password could not be set')
+        })
+    // tslint:disable-next-line: no-identical-functions
+    await getAuthToken(email).then(async (kcaAuthToken) => {
+        logDebug('access_token successfull: ', kcaAuthToken.access_token)
+        if (kcaAuthToken && kcaAuthToken.access_token) {
+            const wTokenResponse = await wTokenApiMock(req, kcaAuthToken.access_token)
+            // tslint:disable-next-line: max-line-length
+            if (wTokenResponse && wTokenResponse.user) {
+                logDebug('New User Wtoken auth successfull')
+                logDebug(`User: ${email} -- wid: ${wTokenResponse.user.wid}`)
+                if (roles && roles.length) {
+                    const updateRolesReq = {
+                        operation: 'add',
+                        roles: [...roles],
+                        users: [`${wTokenResponse.user.wid}`],
                     }
+                    const actionByWid = extractUserIdFromRequest(req)
+                    const rootOrg = req.header('rootOrg')
+                    logDebug('Updating the roles for wid:', wTokenResponse.user.wid)
+                    await updateRolesV2Mock(actionByWid, updateRolesReq, rootOrg)
+                        .catch((err: any) => {
+                            logError('performNewUserSteps:: ERROR ON updateRolesV2Mock', err)
+                            fail('Roles could not be updated')
+                        })
                 }
             }
-        }).catch((error) => {
-            logError('ERROR ON getAuthToken', error)
-            reject(' User getAuthToken failed')
-        })
-        await UpdateKeycloakUserPassword(userId, true)
-            // tslint:disable-next-line: no-identical-functions
-            .catch((error: any) => {
-                logError('performNewUserSteps:: ERROR ON UpdateKeycloakUserPassword after getAuthToken', error)
-                reject('User default password could not be set')
-            })
-        await sendActionsEmail(userId)
-            .catch((error: any) => {
-                logError('ERROR ON sendActionsEmail', error)
-                reject('Email could not be sent')
-            })
-        resolve(undefined)
+        }
+    }).catch((error) => {
+        logError('ERROR ON getAuthToken', error)
+        fail(' User getAuthToken failed')
     })
+    await UpdateKeycloakUserPassword(userId, true)
+        // tslint:disable-next-line: no-identical-functions
+        .catch((error: any) => {
+            logError('performNewUserSteps:: ERROR ON UpdateKeycloakUserPassword after getAuthToken', error)
+            fail('User default password could not be set')
+        })
+    await sendActionsEmail(userId)
+        .catch((error: any) => {
+            logError('ERROR ON sendActionsEmail', error)
+            fail('Email could not be sent')
+        })
+    if (firstError) {
+        throw firstError
+    }
 }
 
 // tslint:disable-next-line: no-any
@@ -485,8 +470,7 @@ userRegistrationApi.get('/bulkUploadData', async (req, res) => {
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('ERROR ON bulkUploadData >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 
@@ -510,8 +494,7 @@ userRegistrationApi.get('/bulkUploadReport/:id', async (req, res) => {
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('ERROR ON /bulkUploadReport/:id >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 
@@ -535,8 +518,7 @@ userRegistrationApi.get('/user/department', async (req, res) => {
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('ERROR ON /user/department >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 
@@ -561,7 +543,6 @@ userRegistrationApi.post('/user/department/update', async (req, res) => {
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('ERROR ON /user/department >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })

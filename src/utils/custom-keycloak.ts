@@ -4,6 +4,7 @@ import keycloakConnect from 'keycloak-connect'
 import { URL } from 'url'
 import { getKeycloakConfig } from '../configs/keycloak.config'
 import { CONSTANTS } from './env'
+import { toError } from './errors'
 import { logDebug, logError, logInfo } from './logger'
 import { PERMISSION_HELPER } from './permissionHelper'
 import { request } from './request-adapter'
@@ -64,7 +65,7 @@ export async function deauthenticateKeycloakSession(reqObj: any): Promise<void> 
                   'custom-keycloak deauthenticated: Keycloak backchannel logout request failed with error: ' +
                   JSON.stringify(err)
                 )
-                reject(err)
+                reject(toError(err))
               } else {
                 const statusCode = res ? res.statusCode : 'unknown'
                 logInfo(`custom-keycloak deauthenticated: Keycloak backchannel logout responded with status code: ${statusCode}`)

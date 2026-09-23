@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { ERROR } from '../../utils/message'
 import { extractUserIdFromRequest, extractUserToken } from '../../utils/requestExtract'
 
@@ -50,11 +51,7 @@ evaluateApi.post('/assessment/submit/v2', async (req, res) => {
     })
     res.status(response.status).send(response.data)
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERR_MSG })
   }
 })
 
@@ -79,11 +76,7 @@ evaluateApi.post('/assessment/submit/v3', async (req, res) => {
     })
     res.status(response.status).send(response.data)
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERR_MSG })
   }
 })
 
@@ -106,10 +99,7 @@ evaluateApi.post('/assessment/submit/iap', async (req, res) => {
       res.status(response.status).send(response.data)
     })
     .catch((error) => {
-      res.status((error && error.response && error.response.status) || 500)
-        .send((error && error.response && error.response.data) || {
-          error: GENERAL_ERR_MSG,
-        })
+      sendUpstreamError(res, error, { error: GENERAL_ERR_MSG })
     })
 })
 
@@ -136,11 +126,7 @@ evaluateApi.get('/post-assessment/:contentId', async (req, res) => {
     })
     res.send(response.data)
   } catch (err) {
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERR_MSG })
   }
 })
 
@@ -172,11 +158,7 @@ evaluateApi.post('/assessment/submit/v4', async (req, res) => {
     })
     res.status(response.status).send(response.data)
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERR_MSG })
   }})
 
   evaluateApi.post('/assessment/submit/v5', async (req, res) => {
@@ -207,11 +189,7 @@ evaluateApi.post('/assessment/submit/v4', async (req, res) => {
       })
       res.status(response.status).send(response.data)
     } catch (error) {
-      res.status((error && error.response && error.response.status) || 500).send(
-        (error && error.response && error.response.data) || {
-          error: GENERAL_ERR_MSG,
-        }
-      )
+      sendUpstreamError(res, error, { error: GENERAL_ERR_MSG })
     }
   })
 
@@ -243,11 +221,7 @@ evaluateApi.post('/assessment/submit/v4', async (req, res) => {
       })
       res.status(response.status).send(response.data)
     } catch (error) {
-      res.status((error && error.response && error.response.status) || 500).send(
-        (error && error.response && error.response.data) || {
-          error: GENERAL_ERR_MSG,
-        }
-      )
+      sendUpstreamError(res, error, { error: GENERAL_ERR_MSG })
     }
   })
 
@@ -279,10 +253,6 @@ evaluateApi.post('/assessment/submit/v4', async (req, res) => {
       })
       res.status(response.status).send(response.data)
     } catch (error) {
-      res.status((error && error.response && error.response.status) || 500).send(
-        (error && error.response && error.response.data) || {
-          error: GENERAL_ERR_MSG,
-        }
-      )
+      sendUpstreamError(res, error, { error: GENERAL_ERR_MSG })
     }
   })

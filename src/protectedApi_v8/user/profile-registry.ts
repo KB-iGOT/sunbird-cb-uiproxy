@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig, axiosRequestConfigLong } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { logDebug, logError } from '../../utils/logger'
 import { extractAuthorizationFromRequest,
   extractUserIdFromRequest,
@@ -166,11 +167,7 @@ profileRegistryApi.get('/getMasterNationalities', async (_req, res) => {
     res.send((response.data))
   } catch (err) {
     logError(CONNECTION_ERROR, err)
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: unknown,
-      }
-    )
+    sendUpstreamError(res, err, { error: unknown })
   }
 })
 
@@ -185,11 +182,7 @@ profileRegistryApi.get('/getMasterCountries', async (_req, res) => {
     res.send((response.data))
   } catch (err) {
     logError(CONNECTION_ERROR, err)
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: unknown,
-      }
-    )
+    sendUpstreamError(res, err, { error: unknown })
   }
 })
 
@@ -204,11 +197,7 @@ profileRegistryApi.get('/getMasterLanguages', async (_req, res) => {
     res.send((response.data))
   } catch (err) {
     logError(CONNECTION_ERROR, err)
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: unknown,
-      }
-    )
+    sendUpstreamError(res, err, { error: unknown })
   }
 })
 
@@ -223,11 +212,7 @@ profileRegistryApi.get('/getProfilePageMeta', async (_req, res) => {
     res.send((response.data))
   } catch (err) {
     logError(CONNECTION_ERROR, err)
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: unknown,
-      }
-    )
+    sendUpstreamError(res, err, { error: unknown })
   }
 })
 
@@ -300,25 +285,22 @@ export interface IPosition {
 }
 
 export async function designationMetaFrac(req: IAuthorizedRequest) {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const response = await axios.get(API_END_POINTS.getAllPosition, {
-        ...axiosRequestConfig,
-        headers: {
-            Authorization: extractAuthorizationFromRequest(req),
-        },
-      })
-      if (response.data.responseData) {
-        const result = response.data.responseData.map((item: IPosition) => {
-            return { name : item.name }
-        })
-        resolve(result)
-      } else {
-        reject('Failed to receive response from FRAC API for designations')
-      }
-    } catch (err) {
-      logError('ERROR while calling FRAC API to get Designation')
-      throw err
-    }
+  let response
+  try {
+    response = await axios.get(API_END_POINTS.getAllPosition, {
+      ...axiosRequestConfig,
+      headers: {
+          Authorization: extractAuthorizationFromRequest(req),
+      },
+    })
+  } catch (err) {
+    logError('ERROR while calling FRAC API to get Designation')
+    throw err
+  }
+  if (!response.data.responseData) {
+    throw new Error('Failed to receive response from FRAC API for designations')
+  }
+  return response.data.responseData.map((item: IPosition) => {
+      return { name : item.name }
   })
 }

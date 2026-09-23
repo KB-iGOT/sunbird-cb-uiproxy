@@ -5,6 +5,7 @@ import { IContent } from '../../models/content.model'
 import { IPaginatedApiResponse } from '../../models/paginatedApi.model'
 import { processContent } from '../../utils/contentHelpers'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { getStringifiedQueryParams } from '../../utils/helpers'
 import { logError } from '../../utils/logger'
 import { ERROR } from '../../utils/message'
@@ -28,8 +29,7 @@ shareApi.post('/', async (req, res) => {
     )
     res.status(response.status).json(response.data.result)
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || err)
+    sendUpstreamError(res, err, err)
   }
 })
 
@@ -67,8 +67,7 @@ shareApi.post('/content', async (req, res) => {
     })
     res.status(response.status).json(response.data)
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || err)
+    sendUpstreamError(res, err, err)
   }
 })
 
