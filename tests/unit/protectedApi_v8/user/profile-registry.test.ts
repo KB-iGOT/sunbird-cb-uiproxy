@@ -225,6 +225,6 @@ describe('designationMetaFrac', () => {
   it('rejects when there is no responseData', async () => {
     mockedAxios.get.mockResolvedValue({ data: {} })
     const req = { header: () => undefined, kauth: undefined } as never
-    await expect(designationMetaFrac(req)).rejects.toBe('Failed to receive response from FRAC API for designations')
+    await expect(designationMetaFrac(req)).rejects.toThrow('Failed to receive response from FRAC API for designations')
   })
 })

@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 import { logError } from '../utils/logger'
 import { ERROR } from '../utils/message'
 import { extractUserToken } from '../utils/requestExtract'
@@ -42,11 +43,7 @@ scoringApi.post('/calculate', async (req, res) => {
         res.status(response.status).send(response.data)
     } catch (err) {
         logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })
 
@@ -75,11 +72,7 @@ scoringApi.post('/fetch', async (req, res) => {
         res.status(response.status).send(response.data)
     } catch (err) {
         logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })
 
@@ -105,10 +98,6 @@ scoringApi.get('/getTemplate/:templateId', async (req, res) => {
         res.status(response.status).send(response.data)
     } catch (err) {
         logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })

@@ -5,10 +5,12 @@ jest.mock('../../../../src/utils/discussionHub-helper', () => ({
 }))
 
 import axios from 'axios'
-import express from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 import supertest from 'supertest'
+import { axiosRequestConfig } from '../../../../src/configs/request.config'
 import { getUserUIDBySession, getWriteApiAdminUID } from '../../../../src/utils/discussionHub-helper'
 import { createDiscussionHubUser, writeApi } from '../../../../src/protectedApi_v8/discussionHub/writeApi'
+import { CONSTANTS } from '../../../../src/utils/env'
 
 const mockedAxios = axios as jest.Mocked<typeof axios>
 const mockedGetUserUIDBySession = getUserUIDBySession as jest.Mock
@@ -117,5 +119,129 @@ describe('createDiscussionHubUser', () => {
     mockedAxios.post.mockRejectedValue(new Error('down'))
     const req = { header: () => undefined, kauth: undefined } as never
     await expect(createDiscussionHubUser(req, { username: 'x' })).rejects.toThrow('down')
+  })
+})
+
+describe('writeApi upstream requests', () => {
+  const V2 = `${CONSTANTS.KONG_API_BASE}/nodebb/auth/api/v2`
+  const expectedConfig = {
+    ...axiosRequestConfig,
+    headers: { Authorization: CONSTANTS.SB_API_KEY, 'x-authenticated-user-token': 'tok' },
+  }
+
+  function buildAuthedApp() {
+    const app = express()
+    app.use(express.json())
+    app.use((req: Request & { kauth?: object }, _res: Response, next: NextFunction) => {
+      req.kauth = { grant: { access_token: { content: { sub: 'user-1' }, token: 'tok' } } }
+      next()
+    })
+    app.use('/writeApi', writeApi)
+    return app
+  }
+
+  const bodyRoutes: Array<{ method: 'post' | 'put', path: string, url: string, body: object, usesUid: boolean }> = [
+    { method: 'post', path: '/topics', url: `${V2}/topics`, body: { title: 'T', _uid: 42 }, usesUid: true },
+    { method: 'post', path: '/topics/t1', url: `${V2}/topics/t1`, body: { title: 'T', _uid: 42 }, usesUid: true },
+    { method: 'post', path: '/posts/p1/bookmark', url: `${V2}/posts/p1/bookmark`, body: { _uid: 42 }, usesUid: true },
+    { method: 'post', path: '/posts/p1/vote', url: `${V2}/posts/p1/vote`, body: { title: 'T', _uid: 42 }, usesUid: true },
+    { method: 'put', path: '/topics/t1/follow', url: `${V2}/topics/t1/follow`, body: { _uid: 42 }, usesUid: true },
+    { method: 'put', path: '/topics/t1/tags', url: `${V2}/topics/t1/tags`, body: { title: 'T' }, usesUid: false },
+  ]
+
+  const deleteRoutes = [
+    { path: '/posts/p1/bookmark', url: `${V2}/posts/p1/bookmark?_uid=42` },
+    { path: '/posts/p1/vote', url: `${V2}/posts/p1/vote?_uid=42` },
+  ]
+
+  beforeEach(() => {
+    mockedAxios.post.mockReset()
+    mockedAxios.put.mockReset()
+    mockedAxios.delete.mockReset()
+    mockedGetUserUIDBySession.mockClear()
+  })
+
+  bodyRoutes.forEach(({ method, path, url, body, usesUid }) => {
+    describe(`${method.toUpperCase()} ${path}`, () => {
+      it('sends the expected url, body and headers', async () => {
+        mockedAxios[method].mockResolvedValue({ data: { ok: path }, status: 201 })
+        const res = await supertest(buildAuthedApp())[method](`/writeApi${path}`).send({ title: 'T', _uid: 1 })
+        expect(res.status).toBe(200)
+        expect(res.body).toEqual({ ok: path })
+        expect(mockedAxios[method]).toHaveBeenCalledTimes(1)
+        expect(mockedAxios[method].mock.calls[0][0]).toBe(url)
+        expect(mockedAxios[method].mock.calls[0][1]).toStrictEqual(usesUid ? body : { title: 'T', _uid: 1 })
+        expect(mockedAxios[method].mock.calls[0][2]).toStrictEqual(expectedConfig)
+        expect(mockedGetUserUIDBySession).toHaveBeenCalledTimes(usesUid ? 1 : 0)
+      })
+
+      it('forwards the upstream error status and body', async () => {
+        mockedAxios[method].mockRejectedValue({ response: { data: { error: 'bad' }, status: 409 } })
+        const res = await supertest(buildAuthedApp())[method](`/writeApi${path}`).send({})
+        expect(res.status).toBe(409)
+        expect(res.body).toEqual({ error: 'bad' })
+      })
+
+      it('falls back to 500 with an empty body', async () => {
+        mockedAxios[method].mockRejectedValue(new Error('down'))
+        const res = await supertest(buildAuthedApp())[method](`/writeApi${path}`).send({})
+        expect(res.status).toBe(500)
+        expect(res.body).toEqual({})
+      })
+    })
+  })
+
+  deleteRoutes.forEach(({ path, url }) => {
+    describe(`DELETE ${path}`, () => {
+      it('sends the uid as a query parameter with the token headers', async () => {
+        mockedAxios.delete.mockResolvedValue({ data: { ok: path } })
+        const res = await supertest(buildAuthedApp()).delete(`/writeApi${path}`)
+        expect(res.status).toBe(200)
+        expect(res.body).toEqual({ ok: path })
+        expect(mockedAxios.delete).toHaveBeenCalledTimes(1)
+        expect(mockedAxios.delete.mock.calls[0][0]).toBe(url)
+        expect(mockedAxios.delete.mock.calls[0][1]).toStrictEqual(expectedConfig)
+      })
+
+      it('forwards the upstream error status and body', async () => {
+        mockedAxios.delete.mockRejectedValue({ response: { data: { error: 'bad' }, status: 404 } })
+        const res = await supertest(buildAuthedApp()).delete(`/writeApi${path}`)
+        expect(res.status).toBe(404)
+        expect(res.body).toEqual({ error: 'bad' })
+      })
+
+      it('falls back to 500 with an empty body', async () => {
+        mockedAxios.delete.mockRejectedValue(new Error('down'))
+        const res = await supertest(buildAuthedApp()).delete(`/writeApi${path}`)
+        expect(res.status).toBe(500)
+        expect(res.body).toEqual({})
+      })
+    })
+  })
+
+  it('returns 500 {} when resolving the session uid fails', async () => {
+    mockedGetUserUIDBySession.mockRejectedValueOnce(new Error('no uid'))
+    const res = await supertest(buildAuthedApp()).post('/writeApi/topics').send({})
+    expect(res.status).toBe(500)
+    expect(res.body).toEqual({})
+    expect(mockedAxios.post).not.toHaveBeenCalled()
+  })
+
+  it('POST /users posts the body with the admin uid and relays errors', async () => {
+    mockedAxios.post.mockResolvedValueOnce({ data: { uid: 99 } })
+    let res = await supertest(buildAuthedApp()).post('/writeApi/users').send({ username: 'bob', _uid: 5 })
+    expect(res.status).toBe(200)
+    expect(res.body).toEqual({ uid: 99 })
+    expect(mockedAxios.post.mock.calls[0][0]).toBe(`${V2}/users`)
+    expect(mockedAxios.post.mock.calls[0][1]).toStrictEqual({ username: 'bob', _uid: 1 })
+    expect(mockedAxios.post.mock.calls[0][2]).toStrictEqual(expectedConfig)
+    mockedAxios.post.mockRejectedValueOnce({ response: { data: { error: 'dup' }, status: 409 } })
+    res = await supertest(buildAuthedApp()).post('/writeApi/users').send({})
+    expect(res.status).toBe(409)
+    expect(res.body).toEqual({ error: 'dup' })
+    mockedAxios.post.mockRejectedValueOnce(new Error('down'))
+    res = await supertest(buildAuthedApp()).post('/writeApi/users').send({})
+    expect(res.status).toBe(500)
+    expect(res.body).toEqual({})
   })
 })

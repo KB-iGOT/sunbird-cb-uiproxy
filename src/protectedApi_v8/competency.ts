@@ -3,6 +3,7 @@ import { Router } from 'express'
 
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 import { ERROR } from '../utils/message'
 import { extractAuthorizationFromRequest } from '../utils/requestExtract'
 
@@ -31,11 +32,7 @@ competencyApi.get('/getCompetency', async (req, res) => {
         })
         res.status(response.status).send(response.data)
     } catch (err) {
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })
 
@@ -50,11 +47,7 @@ competencyApi.post('/addCompetency', async (req, res) => {
         })
         res.status(response.status).send(response.data)
     } catch (err) {
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })
 
@@ -69,10 +62,6 @@ competencyApi.post('/searchCompetency', async (req, res) => {
         })
         res.status(response.status).send(response.data)
     } catch (err) {
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })

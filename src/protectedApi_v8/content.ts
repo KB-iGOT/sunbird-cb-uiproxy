@@ -5,6 +5,7 @@ import { ECollectionTypes, IContent, IContentMinimal } from '../models/content.m
 import { IPaginatedApiResponse } from '../models/paginatedApi.model'
 import { getMinimalContent, processContent } from '../utils/contentHelpers'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 import { logError } from '../utils/logger'
 import { ERROR } from '../utils/message'
 import { request } from '../utils/request-adapter'
@@ -114,11 +115,7 @@ contentApi.post('/kb/v3/reorder', async (req, res) => {
     res.send(response.data)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -146,11 +143,7 @@ contentApi.post('/kb/v2/:apiType', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('CONTENT PARENT ERR -> ', String(err))
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -168,11 +161,7 @@ contentApi.get('/multiple/:ids', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('ERROR in MULTI GET CONTENT >', String(err))
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -211,11 +200,7 @@ contentApi.get('/parents/:contentId', async (req, res) => {
     res.json(response)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 export async function getParentDetails(contentId: string) {
@@ -263,11 +248,7 @@ contentApi.get('/next/:contentId', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('WHATS NEXT API ERROR>', String(err))
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -282,11 +263,7 @@ contentApi.post('/likeCount', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('ERROR FETCHING LIKE COUNT -> ', String(err))
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -365,11 +342,7 @@ contentApi.get('/searchAutoComplete', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('SEARCH AUTOCOMPLETE ERR -> ', String(err))
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -408,11 +381,7 @@ contentApi.post('/searchV5', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('SEARCH API ERROR >', String(err))
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -462,11 +431,7 @@ contentApi.post('/searchRegionRecommendation', async (req, res) => {
     res.json(returnResponse)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -494,11 +459,7 @@ contentApi.post('/searchV6', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('SEARCH V6 API ERROR >', String(err))
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -527,11 +488,7 @@ contentApi.post('/setCookie', async (req, res) => {
       .pipe(res)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -546,11 +503,7 @@ contentApi.post('/setImageCookie', async (req, res) => {
     request.post(url, bodyWithConfigRequestOptions).pipe(res)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -564,11 +517,7 @@ contentApi.post('/getWebModuleManifest', async (req, res) => {
     res.json(response.data)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -579,11 +528,7 @@ contentApi.get('/getWebModuleFiles', async (req, res) => {
     res.json(response.data)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -636,11 +581,7 @@ contentApi.get('/collection/:collectionType/:collectionId', async (req, res) => 
     })
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -655,11 +596,7 @@ contentApi.post('/removeSubset', async (req, res) => {
     res.status(response.status).send(response.data)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -682,11 +619,7 @@ contentApi.post('/hierarchy/update', async (req, res) => {
     res.status(response.status).send(response.data)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -712,11 +645,7 @@ contentApi.post('/kb/:updateType', async (req, res) => {
     res.status(response.status).send(response.data)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -745,11 +674,7 @@ contentApi.post('/:contentId', async (req, res) => {
     res.json(response)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -849,11 +774,7 @@ contentApi.get('/external-access/:id', async (req, res) => {
     res.status(response.status).send(response.data)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: 'Failed due to unknown reason',
-      })
+    sendUpstreamError(res, err, { error: 'Failed due to unknown reason' })
   }
 })
 
@@ -879,10 +800,6 @@ contentApi.post('/:contentId/parent', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('CONTENT PARENT ERR -> ', String(err))
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })

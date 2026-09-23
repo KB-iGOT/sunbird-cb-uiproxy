@@ -1,3 +1,4 @@
+import { randomInt } from 'crypto'
 import { IUploadPartialS3Response, IUploadS3Request } from '../../models/response/custom-s3-upload'
 import { uploadToS3 } from '../S3/upload'
 import { IQuiz } from './../../models/quiz'
@@ -59,7 +60,7 @@ function shuffle(length: number) {
   // While there remain elements to shuffle...
   while (0 !== currentIndex) {
     // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex)
+    randomIndex = randomInt(currentIndex)
     currentIndex -= 1
 
     // And swap it with the current element.

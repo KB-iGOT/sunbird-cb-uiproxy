@@ -2,10 +2,12 @@ import axios from 'axios'
 import express from 'express'
 import { UploadedFile } from 'express-fileupload'
 import FormData from 'form-data'
+import { IncomingMessage } from 'http'
 import lodash from 'lodash'
 import { allocationService } from '../authz'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 import { logDebug, logError } from '../utils/logger'
 import {
   ilpProxyCreatorRoute,
@@ -33,6 +35,16 @@ import { contentTranscodeAPIIntegration } from './contentTranscodeAPIIntegration
 import { frameworksApi } from './frameworks'
 import { jwtUserTokenHelper } from './jwtUserTokenHelper'
 import { lookerDashboard } from './lookerIntegration'
+import { fetchBatchUsers, sbAuthHeaders } from './proxyHelpers'
+
+export {
+  ICohortsUser,
+  IEmploymentDetails,
+  IPersonalDetails,
+  IProfessionalDetailsEntity,
+  IUserProfile,
+  IUserProfileDetails,
+} from './proxyHelpers'
 
 const API_END_POINTS = {
   batchParticipantsApi: `${CONSTANTS.KONG_API_BASE}/course/v1/batch/participants/list`,
@@ -40,8 +52,6 @@ const API_END_POINTS = {
   externalContentbatchParticipantsApi: `${CONSTANTS.KONG_API_BASE}/externaltraining/v1/batch/participants/list`,
   kongExtOrgSearch: `${CONSTANTS.KONG_API_BASE}/org/v1/cb/ext/search`,
   kongSearchOrg: `${CONSTANTS.KONG_API_BASE}/org/v1/search`,
-  // tslint:disable-next-line: all
-  kongSearchUser: `${CONSTANTS.KONG_API_BASE}/user/v1/search`,
   orgTypeListEndPoint: `${CONSTANTS.KONG_API_BASE}/data/v1/system/settings/get/orgTypeList`,
 }
 export const proxiesV8 = express.Router()
@@ -60,8 +70,77 @@ const HEADER_USER_ORGNAME = 'x-authenticated-user-orgname'
 const SESSION_ROOT_ORG_ID = 'session.rootOrgId'
 // tslint:disable-next-line: no-duplicate-string
 const SESSION_CHANNEL = 'session.channel'
+const KONG_BASE = `${CONSTANTS.KONG_API_BASE}`
+const KNOWLEDGE_BASE = `${CONSTANTS.KNOWLEDGE_MW_API_BASE}`
 
 const unknownError = 'Failed due to unknown reason'
+
+type ProxyFactory = (route: express.Router, targetUrl: string) => express.Router
+
+// Mounts one fresh `factory` proxy router per path, in the given order, all forwarding to `targetUrl`
+function mountProxies(factory: ProxyFactory, targetUrl: string, ...paths: string[]) {
+  for (const path of paths) {
+    proxiesV8.use(path, factory(express.Router(), targetUrl))
+  }
+}
+
+// Paths forwarded unchanged to the KONG gateway
+function mountKong(...paths: string[]) {
+  mountProxies(proxyCreatorSunbird, KONG_BASE, ...paths)
+}
+
+// Search-style proxies to a fixed KONG endpoint: `[path, kongPath]`, or just `path` when the KONG path is the same
+function mountKongSearch(...routes: Array<string | [string, string]>) {
+  for (const route of routes) {
+    const [path, kongPath] = typeof route === 'string' ? [route, route] : route
+    proxiesV8.use(path, proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}${kongPath}`))
+  }
+}
+
+// Adds an uploaded file to the multipart form under `field`, keeping its name and mime type
+function appendFile(formData: FormData, field: string, file: UploadedFile) {
+  formData.append(field, Buffer.from(file.data), {
+    contentType: file.mimetype,
+    filename: file.name,
+  })
+}
+
+// Org/channel headers taken from the user's session ('' when absent)
+function sessionOrgHeaders(req: express.Request) {
+  const rootOrgId = _.get(req, SESSION_ROOT_ORG_ID) || ''
+  const channel = _.get(req, SESSION_CHANNEL) || ''
+  return {
+    [HEADER_USER_CHANNEL]: encodeURIComponent(channel),
+    [HEADER_USER_ORGID]: rootOrgId,
+    [HEADER_USER_ORGNAME]: encodeURIComponent(channel),
+  }
+}
+
+// Sends req.files.data to content-service at the request path with `prefix` removed
+function submitToContentService(
+  req: express.Request, prefix: string,
+  callback: (err: Error | null, response: IncomingMessage) => void
+) {
+  const formData = new FormData()
+  appendFile(formData, 'file', req.files.data as UploadedFile)
+  formData.submit(
+    {
+      headers: {
+        Authorization: CONSTANTS.SB_API_KEY,
+        org: 'dopt',
+        rootorg: 'igot',
+        // tslint:disable-next-line: no-duplicate-string
+        'x-authenticated-user-token': extractUserToken(req),
+        // tslint:disable-next-line: no-duplicate-string
+        'x-authenticated-userid': extractUserIdFromRequest(req),
+      },
+      host: 'content-service',
+      path: removePrefix(prefix, req.originalUrl),
+      port: 9000,
+    },
+    callback
+  )
+}
 
 /* tslint:disable:no-any */
 function handleFormDataResponse(
@@ -107,31 +186,9 @@ proxiesV8.get('/', (_req, res) => {
 
 proxiesV8.post('/upload/*', (req, res) => {
   if (req.files && req.files.data) {
-    const url = removePrefix('/proxies/v8/upload/action', req.originalUrl)
-    const file: UploadedFile = req.files.data as UploadedFile
-    const formData = new FormData()
-    formData.append('file', Buffer.from(file.data), {
-      contentType: file.mimetype,
-      filename: file.name,
-    })
-    formData.submit(
-      {
-        headers: {
-          // tslint:disable-next-line:max-line-length
-          Authorization: CONSTANTS.SB_API_KEY,
-          org: 'dopt',
-          rootorg: 'igot',
-          // tslint:disable-next-line: all
-          'x-authenticated-user-token': extractUserToken(req),
-          // tslint:disable-next-line: all
-          'x-authenticated-userid': extractUserIdFromRequest(req),
-        },
-        host: 'content-service',
-        path: url,
-        port: 9000,
-      },
-      // tslint:disable-next-line: no-any
-      (err: any, response: any) => handleFormDataResponse('/upload/*', res, err, response)
+    // tslint:disable-next-line: no-any
+    submitToContentService(req, '/proxies/v8/upload/action', (err: any, response: any) =>
+      handleFormDataResponse('/upload/*', res, err, response)
     )
   } else {
     res.send(FILE_NOT_FOUND_ERR)
@@ -140,28 +197,7 @@ proxiesV8.post('/upload/*', (req, res) => {
 
 proxiesV8.post('/private/upload/*', (_req, _res) => {
   if (_req.files && _req.files.data) {
-    const _url = removePrefix('/proxies/v8/private/upload', _req.originalUrl)
-    const _file: UploadedFile = _req.files.data as UploadedFile
-    const _formData = new FormData()
-    _formData.append('file', Buffer.from(_file.data), {
-      contentType: _file.mimetype,
-      filename: _file.name,
-    })
-    _formData.submit(
-      {
-        headers: {
-          // tslint:disable-next-line:max-line-length
-          Authorization: CONSTANTS.SB_API_KEY,
-          org: 'dopt',
-          rootorg: 'igot',
-          // tslint:disable-next-line: all
-          'x-authenticated-user-token': extractUserToken(_req),
-          'x-authenticated-userid': extractUserIdFromRequest(_req),
-        },
-        host: 'content-service',
-        path: _url,
-        port: 9000,
-      },
+    submitToContentService(_req, '/proxies/v8/private/upload',
       (_err, _response) => {
         if (_err || !_response) {
           logError('FormData submit error in /private/upload/*', String(_err))
@@ -190,32 +226,11 @@ proxiesV8.post('/private/upload/*', (_req, _res) => {
   }
 })
 
-proxiesV8.use('/content/v2/discard',
-  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/content/v5/dictionary',
-  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/content/v2/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/content/v4/*',
-  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/content/v1/retirement/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/content/admin/v1/durationSync/*',
-  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-proxiesV8.use('/content/admin/v1/replaceVideo',
-  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+mountProxies(proxyCreatorKnowledge, KONG_BASE, '/content/v2/discard', '/content/v5/dictionary')
+mountKong('/content/v2/*')
+mountProxies(proxyCreatorKnowledge, KONG_BASE, '/content/v4/*')
+mountKong('/content/v1/retirement/*')
+mountProxies(proxyCreatorKnowledge, KONG_BASE, '/content/admin/v1/durationSync/*', '/content/admin/v1/replaceVideo')
 
 proxiesV8.use(
   '/content',
@@ -255,28 +270,13 @@ proxiesV8.use(
   proxyCreatorRoute(express.Router(), CONSTANTS.WEB_HOST_PROXY + '/web-hosted')
 )
 
-proxiesV8.use('/contentsearch/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/content/v1/search`)
+mountKongSearch(
+  ['/contentsearch/*', '/content/v1/search'],
+  ['/sunbirdigot/v4/*', '/composite/v4/search'],
+  ['/sunbirdigot/*', '/composite/v1/search']
 )
 
-proxiesV8.use('/sunbirdigot/v4/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/composite/v4/search`)
-)
-
-proxiesV8.use('/sunbirdigot/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/composite/v1/search`)
-)
-
-proxiesV8.use('/v1/content/retire',
-  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KNOWLEDGE_MW_API_BASE}`)
-)
-
-proxiesV8.use('/v1/content/copy/*',
-  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KNOWLEDGE_MW_API_BASE}`)
-)
+mountProxies(proxyCreatorKnowledge, KNOWLEDGE_BASE, '/v1/content/retire', '/v1/content/copy/*')
 
 proxiesV8.use('/private/content/*',
   proxyContent(express.Router(), `${CONSTANTS.CONTENT_SERVICE_API_BASE}`)
@@ -286,109 +286,24 @@ proxiesV8.use('/learnervm/private/content/*',
   proxyContentLearnerVM(express.Router(), `${CONSTANTS.VM_LEARNING_SERVICE_URL}`)
 )
 
-proxiesV8.use('/content-progres/ngo*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/course/v1/content/state/update/ngo`)
+mountKongSearch(
+  ['/content-progres/ngo*', '/course/v1/content/state/update/ngo'],
+  ['/content-progres/*', '/course/v1/content/state/update'],
+  ['/read/content-progres/ngo/*', '/course/v1/content/state/read/ngo'],
+  ['/read/content-progres/*', '/course/v1/content/state/read'],
+  ['/read/user/insights', '/insights'],
+  ['/trending/content/search', '/trending/search'],
+  '/halloffame/read', '/walloffame/read', '/karmapoints/read', '/karmapoints/user/course/read', '/claimkarmapoints',
+  ['/login/entry*', '/v1/user/login'],
+  '/user/totalkarmapoints', '/halloffame/learnerleaderboard', '/walloffame/learnerleaderboard',
+  '/microsite/read/insights', '/msite/content/aggregation/search'
 )
 
-proxiesV8.use('/content-progres/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/course/v1/content/state/update`)
+mountKong(
+  '/halloffame/top/learners/*', '/halloffame/state/top/learners/*',
+  '/walloffame/top/learners/*', '/walloffame/state/top/learners/*'
 )
 
-proxiesV8.use('/read/content-progres/ngo/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/course/v1/content/state/read/ngo`)
-)
-
-proxiesV8.use('/read/content-progres/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/course/v1/content/state/read`)
-)
-
-proxiesV8.use('/read/user/insights',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/insights`)
-)
-
-proxiesV8.use('/trending/content/search',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/trending/search`)
-)
-
-proxiesV8.use('/halloffame/read',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/halloffame/read`)
-)
-
-proxiesV8.use('/walloffame/read',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/walloffame/read`)
-)
-
-proxiesV8.use('/karmapoints/read',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/karmapoints/read`)
-)
-proxiesV8.use('/karmapoints/user/course/read',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/karmapoints/user/course/read`)
-)
-
-proxiesV8.use('/claimkarmapoints',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/claimkarmapoints`)
-)
-proxiesV8.use('/login/entry*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/v1/user/login`)
-)
-proxiesV8.use('/user/totalkarmapoints',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/user/totalkarmapoints`)
-)
-
-proxiesV8.use('/halloffame/learnerleaderboard',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/halloffame/learnerleaderboard`)
-)
-
-proxiesV8.use('/walloffame/learnerleaderboard',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/walloffame/learnerleaderboard`)
-)
-
-proxiesV8.use('/microsite/read/insights',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/microsite/read/insights`)
-)
-
-proxiesV8.use('/msite/content/aggregation/search',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/msite/content/aggregation/search`)
-)
-
-proxiesV8.use('/halloffame/top/learners/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/halloffame/state/top/learners/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/walloffame/top/learners/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/walloffame/state/top/learners/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-// Dedicated handler for AI assessment generation (multipart/form-data)
 proxiesV8.post('/ai/assessments/v1/generate', (req, res) => {
   const url = removePrefix(PROXIES_V8_PREFIX, req.originalUrl)
   const formData = new FormData()
@@ -404,36 +319,18 @@ proxiesV8.post('/ai/assessments/v1/generate', (req, res) => {
   if (req.files) {
     for (const key of Object.keys(req.files)) {
       const fileOrFiles = req.files[key]
-      if (Array.isArray(fileOrFiles)) {
-        for (const file of fileOrFiles) {
-          formData.append(key, Buffer.from(file.data), {
-            contentType: file.mimetype,
-            filename: file.name,
-          })
-        }
-      } else {
-        const file = fileOrFiles
-        formData.append(key, Buffer.from(file.data), {
-          contentType: file.mimetype,
-          filename: file.name,
-        })
+      for (const file of Array.isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles]) {
+        appendFile(formData, key, file)
       }
     }
   }
-
-  const rootOrgId = _.get(req, SESSION_ROOT_ORG_ID) || ''
-  const channel = _.get(req, SESSION_CHANNEL) || ''
 
   const submitReq = formData.submit(
     {
       headers: {
         Authorization: CONSTANTS.SB_API_KEY,
-        [HEADER_USER_CHANNEL]: encodeURIComponent(channel),
-        [HEADER_USER_ORGID]: rootOrgId,
-        [HEADER_USER_ORGNAME]: encodeURIComponent(channel),
-        // tslint:disable-next-line: no-duplicate-string
+        ...sessionOrgHeaders(req),
         'x-authenticated-user-token': extractUserToken(req),
-        // tslint:disable-next-line: no-duplicate-string
         'x-authenticated-userid': extractUserIdFromRequest(req),
       },
       host: 'kong',
@@ -448,15 +345,7 @@ proxiesV8.post('/ai/assessments/v1/generate', (req, res) => {
 })
 
 // Remaining AI assessment routes (non-form-data) use generic proxy
-proxiesV8.use('/ai/assessments/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/ai/cbp/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+mountKong('/ai/assessments/*', '/ai/cbp/*')
 
 proxiesV8.get(['/api/user/v2/read', '/api/user/v2/read/:id'], async (req, res) => {
   const host = req.get('host')
@@ -473,11 +362,7 @@ proxiesV8.get(['/api/user/v2/read', '/api/user/v2/read/:id'], async (req, res) =
 
   await axios({
     ...axiosRequestConfig,
-    headers: {
-      Authorization: CONSTANTS.SB_API_KEY,
-      // tslint:disable-next-line: all
-      'x-authenticated-user-token': extractUserToken(req),
-    },
+    headers: sbAuthHeaders(req),
     method: 'GET',
     url: `${CONSTANTS.KONG_API_BASE}/user/v2/read/` + userId,
   }).then((response) => {
@@ -523,38 +408,21 @@ proxiesV8.use([
 ],
   proxyCreatorQML(express.Router(), `${CONSTANTS.KONG_API_BASE}`, '/action/')
 )
-proxiesV8.use('/action/content/v3/updateReviewStatus',
-  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+mountProxies(proxyCreatorKnowledge, KONG_BASE,
+  '/action/content/v3/updateReviewStatus', 'private/content/v4/update', 'private/content/v4/system/update',
+  '/action/content/v3/hierarchyUpdate'
 )
-proxiesV8.use('private/content/v4/update',
-  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-proxiesV8.use('private/content/v4/system/update',
-  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-proxiesV8.use('/action/content/v3/hierarchyUpdate',
-  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-proxiesV8.use('/action/*',
-  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KNOWLEDGE_MW_API_BASE}`)
-)
-proxiesV8.use('/mdo/content/*',
-  proxyCreatorKnowledge(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+mountProxies(proxyCreatorKnowledge, KNOWLEDGE_BASE, '/action/*')
+mountProxies(proxyCreatorKnowledge, KONG_BASE, '/mdo/content/*')
 
-proxiesV8.use('/learner/achievement/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+mountKong('/learner/achievement/*')
 
 proxiesV8.use('/learner/*',
   // tslint:disable-next-line: max-line-length
   proxyCreatorLearner(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
-proxiesV8.use('/notification/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+mountKong('/notification/*')
 
 proxiesV8.post('/org/v1/search', async (req, res) => {
   try {
@@ -573,11 +441,7 @@ proxiesV8.post('/org/v1/search', async (req, res) => {
     const searchResponse = await axios({
       ...axiosRequestConfig,
       data: req.body,
-      headers: {
-        Authorization: CONSTANTS.SB_API_KEY,
-        // tslint:disable-next-line: all
-        'x-authenticated-user-token': extractUserToken(req),
-      },
+      headers: sbAuthHeaders(req),
       method: 'POST',
       url: urlPath,
     })
@@ -588,211 +452,95 @@ proxiesV8.post('/org/v1/search', async (req, res) => {
   }
 })
 
-proxiesV8.use('/org/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+mountKong('/org/*', '/dashboard/*')
 
-proxiesV8.use('/dashboard/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+const BULK_UPLOAD_PATHS = [
+  '/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workflow/admin/transition/bulkupdate',
+  '/cloud-services/mlcore/v1/files/upload', '/calendar/v1/bulkUpload', '/storage/orgStoreUpload',
+  '/workflow/admin/v2/bulkupdate/transition', '/user/v2/bulkupload', '/ciosIntegration/v1/loadContentFromExcel/*',
+  '/storage/v1/uploadCiosIcon', '/storage/v1/uploadCiosContract', '/organisation/v1/competencyDesignationMappings/bulkUpload/*',
+  '/template/api/v1/upload', '/designation/v1/orgMapping/bulkUpload/*', '/storage/v1/uploadCiosLogsFile',
+  '/customselfregistration/upload/logo/gcpcontainer', '/ciosIntegration/v1/loadContentProgressFromExcel/*',
+  '/feedDiscussion/uploadFile/*', '/community/v1/fileUpload/*', '/user/v2/event/bulkonboard/*',
+  '/workflow/blendedprogram/bulkApprovalDataFromCsv/*', '/customFields/v1/masterList/*', '/organisation/v1/hierarchy/bulkUpload/*',
+  '/user/v3/bulkupload', '/user/v1/org-migration/bulk-upload/*', '/user/v2/org-migration/bulk-upload/*',
+  '/storage/v1/bp/assignment/answer/*', '/peersurvey/upload', '/externaltraining/v1/bulkupload/*', '/user/v2/event/bulkonboard',
+  '/user/nongovt/v1/bulkupload',
+]
 
-// tslint:disable-next-line:max-line-length
-proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workflow/admin/transition/bulkupdate', '/cloud-services/mlcore/v1/files/upload', '/calendar/v1/bulkUpload', '/storage/orgStoreUpload', '/workflow/admin/v2/bulkupdate/transition', '/user/v2/bulkupload', '/ciosIntegration/v1/loadContentFromExcel/*', '/storage/v1/uploadCiosIcon', '/storage/v1/uploadCiosContract', '/organisation/v1/competencyDesignationMappings/bulkUpload/*', '/template/api/v1/upload', '/designation/v1/orgMapping/bulkUpload/*', '/storage/v1/uploadCiosLogsFile', '/customselfregistration/upload/logo/gcpcontainer', '/ciosIntegration/v1/loadContentProgressFromExcel/*', '/feedDiscussion/uploadFile/*', '/community/v1/fileUpload/*', '/user/v2/event/bulkonboard/*', '/workflow/blendedprogram/bulkApprovalDataFromCsv/*', '/customFields/v1/masterList/*', '/organisation/v1/hierarchy/bulkUpload/*', '/user/v3/bulkupload', '/user/v1/org-migration/bulk-upload/*', '/user/v2/org-migration/bulk-upload/*', '/storage/v1/bp/assignment/answer/*', '/peersurvey/upload', '/externaltraining/v1/bulkupload/*', '/user/v2/event/bulkonboard', '/user/nongovt/v1/bulkupload'], (req, res) => {
-  if (req.files && req.files.data) {
-    const url = removePrefix('/proxies/v8', req.originalUrl)
-    const file: UploadedFile = req.files.data as UploadedFile
-    const formData = new FormData()
-    formData.append('file', Buffer.from(file.data), {
-      contentType: file.mimetype,
-      filename: file.name,
-    })
+// Forwards a bulk-upload file (plus optional metadata / targetorgid) to KONG and relays the response
+function forwardBulkUpload(req: express.Request, res: express.Response, file: UploadedFile) {
+  const url = removePrefix('/proxies/v8', req.originalUrl)
+  const formData = new FormData()
+  appendFile(formData, 'file', file)
 
-    // Forward the metadata parameter
-    if (req.body && req.body.metadata) {
-      formData.append('metadata', req.body.metadata)
-    }
+  // Forward the metadata parameter
+  if (req.body && req.body.metadata) {
+    formData.append('metadata', req.body.metadata)
+  }
 
-    let rootOrgId = _.get(req, 'session.rootOrgId')
-    if (!rootOrgId) {
-      rootOrgId = ''
-    }
-    let channel = _.get(req, 'session.channel')
-    if (!channel) {
-      channel = ''
-    }
-
-    const uploadHeaders: { [key: string]: string } = {
-      // tslint:disable-next-line:max-line-length
-      Authorization: CONSTANTS.SB_API_KEY,
+  const uploadHeaders: { [key: string]: string } = {
+    Authorization: CONSTANTS.SB_API_KEY,
+    ...sessionOrgHeaders(req),
+    'x-authenticated-user-token': extractUserToken(req) || '',
+    'x-authenticated-userid': extractUserIdFromRequest(req),
+  }
+  const targetOrgId = _.get(req, 'body.targetorgid') || _.get(req, 'headers.targetorgid')
+  if (targetOrgId) {
+    uploadHeaders.targetorgid = targetOrgId
+  }
+  formData.submit(
+    {
+      headers: uploadHeaders,
+      host: 'kong',
+      path: url,
+      port: 8000,
+    },
+    (err, response) => {
       // tslint:disable-next-line: all
-      'x-authenticated-user-channel': encodeURIComponent(channel),
-      'x-authenticated-user-orgid': rootOrgId,
-      'x-authenticated-user-orgname': encodeURIComponent(channel),
-      'x-authenticated-user-token': extractUserToken(req) || '',
-      'x-authenticated-userid': extractUserIdFromRequest(req),
-    }
-    const targetOrgId = _.get(req, 'body.targetorgid') || _.get(req, 'headers.targetorgid')
-    if (targetOrgId) {
-      uploadHeaders.targetorgid = targetOrgId
-    }
-    formData.submit(
-      {
-        headers: uploadHeaders,
-        host: 'kong',
-        path: url,
-        port: 8000,
-      },
+      let chunks: Buffer[] = [];
+      response.on('data', (chunk) => chunks.push(chunk))
       // tslint:disable-next-line: all
-      (err, response) => {
-        // tslint:disable-next-line: all
-        let chunks: Buffer[] = [];
-        response.on('data', (chunk) => chunks.push(chunk))
-        // tslint:disable-next-line: all
-        response.on('end', () => {
-          const fullData = Buffer.concat(chunks)
-          if (!err && (response.statusCode === 200 || response.statusCode === 201 || response.statusCode === 406)) {
-            if (response.headers['content-type'] === 'text/csv') {
-              res.setHeader('Content-Type', 'text/csv')
-              res.setHeader('Content-Disposition', 'attachment; filename="report.csv"')
-              res.status(response.statusCode).send(fullData)
-            } else {
-              let parsed
-              try {
-                parsed = JSON.parse(fullData.toString('utf8'))
-                res.status(response.statusCode).json(parsed)
-              } catch (e) {
-                  logDebug('Invalid JSON received as per Json Parse')
-                  res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
-              }
-            }
+      response.on('end', () => {
+        const fullData = Buffer.concat(chunks)
+        if (!err && (response.statusCode === 200 || response.statusCode === 201 || response.statusCode === 406)) {
+          if (response.headers['content-type'] === 'text/csv') {
+            res.setHeader('Content-Type', 'text/csv')
+            res.setHeader('Content-Disposition', 'attachment; filename="report.csv"')
+            res.status(response.statusCode).send(fullData)
           } else {
-            res.status(response.statusCode || 500).send(fullData.toString('utf8'))
-          }
-        })
-        if (err) {
-          res.status((response && response.statusCode) || 500).send(err)
-        }
-      }
-    )
-  } else if (req.files && req.files.file) {
-    const url = removePrefix('/proxies/v8', req.originalUrl)
-    const file: UploadedFile = req.files.file as UploadedFile
-    const formData = new FormData()
-    formData.append('file', Buffer.from(file.data), {
-      contentType: file.mimetype,
-      filename: file.name,
-    })
-
-    // Forward the metadata parameter
-    if (req.body && req.body.metadata) {
-      formData.append('metadata', req.body.metadata)
-    }
-
-    let rootOrgId = _.get(req, 'session.rootOrgId')
-    if (!rootOrgId) {
-      rootOrgId = ''
-    }
-    let channel = _.get(req, 'session.channel')
-    if (!channel) {
-      channel = ''
-    }
-    const uploadHeaders: { [key: string]: string } = {
-      // tslint:disable-next-line:max-line-length
-      Authorization: CONSTANTS.SB_API_KEY,
-      // tslint:disable-next-line: all
-      'x-authenticated-user-channel': encodeURIComponent(channel),
-      'x-authenticated-user-orgid': rootOrgId,
-      'x-authenticated-user-orgname': encodeURIComponent(channel),
-      'x-authenticated-user-token': extractUserToken(req) || '',
-      'x-authenticated-userid': extractUserIdFromRequest(req),
-    }
-    const targetOrgId = _.get(req, 'body.targetorgid') || _.get(req, 'headers.targetorgid')
-    if (targetOrgId) {
-      uploadHeaders.targetorgid = targetOrgId
-    }
-    formData.submit(
-      {
-        headers: uploadHeaders,
-        host: 'kong',
-        path: url,
-        port: 8000,
-      },
-      // tslint:disable-next-line: all
-      (err, response) => {
-        // tslint:disable-next-line: all
-        let chunks: Buffer[] = [];
-        response.on('data', (chunk) => chunks.push(chunk))
-        // tslint:disable-next-line: all
-        response.on('end', () => {
-          const fullData = Buffer.concat(chunks)
-          if (!err && (response.statusCode === 200 || response.statusCode === 201 || response.statusCode === 406)) {
-            if (response.headers['content-type'] === 'text/csv') {
-              res.setHeader('Content-Type', 'text/csv')
-              res.setHeader('Content-Disposition', 'attachment; filename="report.csv"')
-              res.status(response.statusCode).send(fullData)
-            } else {
-              let parsed
-              try {
-                parsed = JSON.parse(fullData.toString('utf8'))
-                res.status(response.statusCode).json(parsed)
-              } catch (e) {
-                   logDebug('Invalid JSON received as per Json Parse')
-                   res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
-              }
+            let parsed
+            try {
+              parsed = JSON.parse(fullData.toString('utf8'))
+              res.status(response.statusCode).json(parsed)
+            } catch (e) {
+                logDebug('Invalid JSON received as per Json Parse')
+                res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
             }
-          } else {
-            res.status(response.statusCode || 500).send(fullData.toString('utf8'))
           }
-        })
-        if (err) {
-          res.status((response && response.statusCode) || 500).send(err)
+        } else {
+          res.status(response.statusCode || 500).send(fullData.toString('utf8'))
         }
+      })
+      if (err) {
+        res.status((response && response.statusCode) || 500).send(err)
       }
-    )
+    }
+  )
+}
+
+proxiesV8.post(BULK_UPLOAD_PATHS, (req, res) => {
+  const file = req.files && (req.files.data || req.files.file)
+  if (file) {
+    forwardBulkUpload(req, res, file as UploadedFile)
   } else {
     res.status(500).send(FILE_NOT_FOUND_ERR)
   }
 })
 
-proxiesV8.use('/user/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/otp/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/event/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/searchBy/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/staff/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/budget/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/orghistory/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/storage/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/forms/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/masterData/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+mountKong(
+  '/user/*', '/otp/*', '/event/*', '/searchBy/*', '/staff/*', '/budget/*', '/orghistory/*', '/storage/*', '/forms/*',
+  '/masterData/*'
 )
 
 // proxiesV8.use('/api/framework/*',
@@ -800,20 +548,9 @@ proxiesV8.use('/masterData/*',
 //   proxyCreatorQML(express.Router(), `${CONSTANTS.KONG_API_BASE}`, '/api/')
 // )
 
-proxiesV8.use('/api/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+mountKong('/api/*', '/dashboard/*')
 
-proxiesV8.use('/dashboard/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/wat/dashboard/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.DASHBOARD_API_BASE}`)
-)
+mountProxies(proxyCreatorSunbird, `${CONSTANTS.DASHBOARD_API_BASE}`, '/wat/dashboard/*')
 
 proxiesV8.get('/data/v1/system/settings/get/orgTypeList', async (req, res) => {
   try {
@@ -822,11 +559,7 @@ proxiesV8.get('/data/v1/system/settings/get/orgTypeList', async (req, res) => {
     logDebug(roleData)
     const response = await axios({
       ...axiosRequestConfig,
-      headers: {
-        Authorization: CONSTANTS.SB_API_KEY,
-        // tslint:disable-next-line: all
-        'x-authenticated-user-token': extractUserToken(req),
-      },
+      headers: sbAuthHeaders(req),
       method: 'GET',
       url: API_END_POINTS.orgTypeListEndPoint,
     })
@@ -850,23 +583,11 @@ proxiesV8.get('/data/v1/system/settings/get/orgTypeList', async (req, res) => {
   }
 })
 
-proxiesV8.use('/data/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/assets/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
 // proxiesV8.use('/discussion/user/v1/create',
 //   // tslint:disable-next-line: max-line-length
 //   proxyCreatorDiscussion(express.Router(), `${CONSTANTS.DISCUSSION_HUB_MIDDLEWARE}`)
 // )
-proxiesV8.use('/discussion/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+mountKong('/data/*', '/assets/*', '/discussion/*')
 
 proxiesV8.use('/assessment/read/*',
   // tslint:disable-next-line: max-line-length
@@ -883,104 +604,11 @@ proxiesV8.use('/cbp/question/list',
   proxyQuestionRead(express.Router(), `${CONSTANTS.KONG_API_BASE}` + '/question/v1/list')
 )
 
-proxiesV8.use('/questionset/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/volunteer/ratings/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/ratings/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/moderatoradmin/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/workflow/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/blendedprogram/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/batchsesion/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/faq/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/curatedprogram/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/openprogram/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/program/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/competency/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/cbplan/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/ehrms/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-proxiesV8.use('/wheebox/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/operationalreports/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/surveys/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/surveySubmissions/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-proxiesV8.use('/cloud-services/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/observations/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/observationSubmissions/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/demand/content/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/playList/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+mountKong(
+  '/questionset/*', '/volunteer/ratings/*', '/ratings/*', '/moderatoradmin/*', '/workflow/*', '/blendedprogram/*',
+  '/batchsesion/*', '/faq/*', '/curatedprogram/*', '/openprogram/*', '/program/*', '/competency/*', '/cbplan/*',
+  '/ehrms/*', '/wheebox/*', '/operationalreports/*', '/surveys/*', '/surveySubmissions/*', '/cloud-services/*',
+  '/observations/*', '/observationSubmissions/*', '/demand/content/*', '/playList/*'
 )
 
 proxiesV8.use('/question/v5/read',
@@ -993,26 +621,7 @@ proxiesV8.use('/assessment/v5/read/*',
   proxyAssessmentReadV2(express.Router(), `${CONSTANTS.KONG_API_BASE}` + '/player/questionset/v5/hierarchy')
 )
 
-proxiesV8.use('/interest/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/assessment/save/',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/assessment/savepoint/',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/announcements/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/cqfquestionset/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+mountKong('/interest/*', '/assessment/save/', '/assessment/savepoint/', '/announcements/*', '/cqfquestionset/*')
 
 proxiesV8.use('/assessment/v7/read/*',
   // tslint:disable-next-line: max-line-length
@@ -1107,129 +716,37 @@ proxiesV8.post('/notifyContentState', async (req, res) => {
   }
 })
 
-proxiesV8.use('/portal/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-// tslint:disable-next-line: all
-function getUsers(userprofile: IUserProfile): ICohortsUser {
-  let designationValue = ''
-  let primaryEmail = ''
-  let mobileNumber = 0
-  const profileDetails = userprofile.hasOwnProperty('profileDetails') ? userprofile.profileDetails : null
-  if (profileDetails != null) {
-    const professionalDetails = profileDetails.hasOwnProperty('professionalDetails') ? profileDetails.professionalDetails : null
-    if (professionalDetails != null) {
-      if (userprofile.profileDetails.professionalDetails[0].designation !== undefined) {
-        designationValue = userprofile.profileDetails.professionalDetails[0].designation
-      } else {
-        designationValue = userprofile.profileDetails.professionalDetails[0].designationOther === undefined ? '' :
-          userprofile.profileDetails.professionalDetails[0].designationOther
-      }
-    }
-    if (userprofile.profileDetails.personalDetails !== undefined) {
-      primaryEmail = userprofile.profileDetails.personalDetails.primaryEmail
-      mobileNumber = userprofile.profileDetails.personalDetails.mobile
-    }
-  }
+mountKong('/portal/*')
 
-  return {
-    city: '',
-    // department: userprofile.channel === undefined ? '' : userprofile.channel,
-    department: userprofile.rootOrgName === undefined ? '' : userprofile.rootOrgName,
-    desc: '',
-    designation: designationValue,
-    email: primaryEmail,
-    first_name: userprofile.firstName,
-    last_name: userprofile.lastName,
-    phone_No: mobileNumber,
-    userLocation: '',
-    user_id: userprofile.id,
+// Lists a batch's participants (from `participantsUrl`) with their profiles and the batch's total count
+function batchParticipantsHandler(participantsUrl: string) {
+  return async (req: express.Request, res: express.Response) => {
+    try {
+      const { batchId, deptName, limit, currentOffSet } = req.body.request.filters
+      const reqBody = {
+        request: {
+          batch: {
+            active: true,
+            batchId,
+            currentOffSet,
+            limit,
+          },
+        },
+      }
+      const { response, userlist } = await fetchBatchUsers(req, participantsUrl, reqBody, deptName)
+      const totalCount = response.data.result.batch.count != null ? response.data.result.batch.count : 0
+      res.status(response.status).send({ userlist, totalCount })
+    } catch (err) {
+      logError(err)
+
+      sendUpstreamError(res, err, { error: unknownError })
+    }
   }
 }
 
-proxiesV8.post('/course/v1/batch/getParticipants', async (req, res) => {
-  try {
-    const { batchId, deptName, limit, currentOffSet } = req.body.request.filters
-    const reqBody = {
-      request: {
-        batch: {
-          active: true,
-          batchId,
-          currentOffSet,
-          limit,
+proxiesV8.post('/course/v1/batch/getParticipants', batchParticipantsHandler(API_END_POINTS.batchParticipantsApi))
 
-        },
-      },
-    }
-    const userlist: ICohortsUser[] = []
-    const response = await axios.post(API_END_POINTS.batchParticipantsApi, reqBody, {
-      ...axiosRequestConfig,
-      headers: {
-        Authorization: CONSTANTS.SB_API_KEY,
-        /* tslint:disable-next-line */
-        'x-authenticated-user-token': extractUserToken(req),
-      },
-    })
-    const totalCount = response.data.result.batch.count != null ? response.data.result.batch.count : 0
-    if ((typeof response.data.result.batch.participants !== 'undefined' && response.data.result.batch.participants.length > 0)) {
-      const searchresponse = await axios({
-        ...axiosRequestConfig,
-        data: { request: { filters: { userId: response.data.result.batch.participants } } },
-        headers: {
-          Authorization: CONSTANTS.SB_API_KEY,
-          // tslint:disable-next-line: all
-          'x-authenticated-user-token': extractUserToken(req),
-        },
-        method: 'POST',
-        // tslint:disable-next-line: all
-        url: API_END_POINTS.kongSearchUser,
-      })
-      if (searchresponse.data.result.response.count > 0) {
-        for (const profileObj of searchresponse.data.result.response.content) {
-          const user: ICohortsUser = getUsers(profileObj)
-          if (!deptName || (profileObj.channel && profileObj.channel === deptName)) {
-            user.department = profileObj.rootOrgName
-            userlist.push(user)
-          }
-        }
-      }
-    }
-    res.status(response.status).send({ userlist, totalCount })
-  } catch (err) {
-    logError(err)
-
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: unknownError,
-      }
-    )
-  }
-})
-
-proxiesV8.use('/course/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/catalog/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/calendar/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/careers/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/orgBookmark/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/cios/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+mountKong('/course/*', '/catalog/*', '/calendar/*', '/careers/*', '/orgBookmark/*', '/cios/*')
 
 proxiesV8.get('/cios/v1/content/read/:contentId', async (req, res) => {
   const contentId = req.params.contentId
@@ -1270,235 +787,47 @@ proxiesV8.get('/cios/v1/content/read/:contentId', async (req, res) => {
   }
 })
 
-proxiesV8.use('/ciosIntegration/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-proxiesV8.use('/tenders/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+mountKong('/ciosIntegration/*', '/tenders/*')
 
 proxiesV8.use('/framework/*', frameworksApi)
 
-proxiesV8.use('/v1/search/competenciesByOrg',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+mountKong(
+  '/v1/search/competenciesByOrg', '/mentoring/*', '/designation/*', '/competencyArea/*', '/competencyTheme/*',
+  '/competencySubTheme/*', '/halloffame/*', '/walloffame/*'
 )
-
-proxiesV8.use('/mentoring/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/designation/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/competencyArea/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/competencyTheme/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/competencySubTheme/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/halloffame/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/walloffame/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-export interface IUserProfile {
-  channel: string
-  firstName: string
-  id: string
-  lastName: string
-  profileDetails: IUserProfileDetails
-  rootOrgName: string
-}
-
-export interface IUserProfileDetails {
-  personalDetails: IPersonalDetails
-  professionalDetails: IProfessionalDetailsEntity[]
-  employmentDetails: IEmploymentDetails
-}
-
-export interface IPersonalDetails {
-  firstname: string
-  middlename: string
-  surname: string
-  dob: string
-  nationality: string
-  domicileMedium: string
-  gender: string
-  maritalStatus: string
-  category: string
-  countryCode: string
-  mobile: number
-  telephone: string
-  primaryEmail: string
-  officialEmail: string
-  personalEmail: string
-}
-
-export interface IEmploymentDetails {
-  departmentName: string
-}
-
-export interface IProfessionalDetailsEntity {
-  description: string
-  industry: string
-  designationOther: string
-  nameOther: string
-  organisationType: string
-  responsibilities: string
-  name: string
-  location: string
-  designation: string
-  industryOther: string
-  completePostalAddress: string
-  doj: string
-}
-
-export interface ICohortsUser {
-  first_name: string
-  last_name: string
-  email: string
-  desc: string
-  user_id: string
-  department: string
-  phone_No: number
-  designation: string
-  userLocation: string
-  city: string
-}
 
 proxiesV8.use('/ext-forms/*',
   // tslint:disable-next-line: max-line-length
   proxyCreatorForms(express.Router())
 )
 
-proxiesV8.use('/cios-enroll/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+mountKong(
+  '/cios-enroll/*', '/contentpartner/*', '/serviceregistry/*', '/comment/*', '/private/mlsurvey/*', '/private/mlcore/*',
+  '/template/*', '/organisation/*'
 )
 
-proxiesV8.use('/contentpartner/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+mountKongSearch('/national/learning/week/insights', '/state/learning/week/insights')
 
-proxiesV8.use('/serviceregistry/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/comment/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/private/mlsurvey/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/private/mlcore/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/template/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/organisation/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/national/learning/week/insights',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/national/learning/week/insights`)
-)
-
-proxiesV8.use('/state/learning/week/insights',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/state/learning/week/insights`)
-)
-
-proxiesV8.use('/eventprogress/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/bp/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/customselfregistration',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/feedDiscussion/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/customselfregistration/listallqrs',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/customselfregistration/isregistrationqractive',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/community/v1/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+mountKong(
+  '/eventprogress/*', '/bp/*', '/customselfregistration', '/feedDiscussion/*', '/customselfregistration/listallqrs',
+  '/customselfregistration/isregistrationqractive', '/community/v1/*'
 )
 
 proxiesV8.use('/looker/dashboard', lookerDashboard)
 
-proxiesV8.use('/courseRecommend/v1/courses',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/courseRecommend/v1/courses`)
-)
+mountKongSearch('/courseRecommend/v1/courses')
 
-proxiesV8.use('/interface/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/courseRecommendation/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+mountKong('/interface/*', '/courseRecommendation/*')
 
 proxiesV8.use('/chatbot/v3/global', chatBotGenericAPIIntegration)
 
 proxiesV8.use('/chatbot/v3', chatBotIntegrationAPI)
 
-proxiesV8.use('/chatbot/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/nlp/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/thumbnail/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+mountKong('/chatbot/*', '/nlp/*', '/thumbnail/*')
 
 proxiesV8.use('/fetchUserToken', jwtUserTokenHelper)
 
-proxiesV8.use('/certificate/dynamic/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/commentTree/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/search/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+mountKong('/certificate/dynamic/*', '/commentTree/*', '/search/*')
 
 proxiesV8.get('/youtube/duration/:videoid', async (req, res) => {
   const { videoid } = req.params  // Get videoid from URL path instead of query params
@@ -1514,202 +843,25 @@ proxiesV8.get('/youtube/duration/:videoid', async (req, res) => {
   }
 })
 
-proxiesV8.use('/extendedprofile/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/masterdata/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/v1/notifications/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/notificationSetting/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/accessSettings*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/customFields/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/connections/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/support/ai/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/collection/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/moderation/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+mountKong(
+  '/extendedprofile/*', '/masterdata/*', '/v1/notifications/*', '/notificationSetting/*', '/accessSettings*',
+  '/customFields/*', '/connections/*', '/support/ai/*', '/collection/*', '/moderation/*'
 )
 
 proxiesV8.use('/pipeline/content/transcode/*', contentTranscodeAPIIntegration)
 
-proxiesV8.use('/assignment/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-proxiesV8.use('/consent/*',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+mountKong(
+  '/assignment/*', '/consent/*', '/v1/notifyAssignment/*', '/promotionalcontent/*', '/sso/*', '/learningpathway/*',
+  '/extended/content/*', '/achievement/dynamic/*', '/knowledge/centre/*', '/peersurvey/*', '/batch/v1/enrollment/qrcode/*'
 )
 
-proxiesV8.use('/v1/notifyAssignment/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
+proxiesV8.post('/externaltraining/v1/batch/getParticipants', batchParticipantsHandler(API_END_POINTS.externalContentbatchParticipantsApi))
+
+mountKong(
+  '/externaltraining/*', '/peervalidation/*', '/badge/*', '/contenthealth/*', '/volunteer/*', '/ai/chatbot/*',
+  '/formsConfig/*'
 )
 
-proxiesV8.use('/promotionalcontent/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+mountKongSearch('/composite/v5/search', '/composite/v4/bp/search')
 
-proxiesV8.use('/sso/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/learningpathway/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/extended/content/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/achievement/dynamic/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/knowledge/centre/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/peersurvey/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/batch/v1/enrollment/qrcode/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.post('/externaltraining/v1/batch/getParticipants', async (req, res) => {
-  try {
-    const { batchId, deptName, limit, currentOffSet } = req.body.request.filters
-    const reqBody = {
-      request: {
-        batch: {
-          active: true,
-          batchId,
-          currentOffSet,
-          limit,
-
-        },
-      },
-    }
-    const userlist: ICohortsUser[] = []
-    const response = await axios.post(API_END_POINTS.externalContentbatchParticipantsApi, reqBody, {
-      ...axiosRequestConfig,
-      headers: {
-        Authorization: CONSTANTS.SB_API_KEY,
-        /* tslint:disable-next-line */
-        'x-authenticated-user-token': extractUserToken(req),
-      },
-    })
-    const totalCount = response.data.result.batch.count != null ? response.data.result.batch.count : 0
-    if ((typeof response.data.result.batch.participants !== 'undefined' && response.data.result.batch.participants.length > 0)) {
-      const searchresponse = await axios({
-        ...axiosRequestConfig,
-        data: { request: { filters: { userId: response.data.result.batch.participants } } },
-        headers: {
-          Authorization: CONSTANTS.SB_API_KEY,
-          // tslint:disable-next-line: all
-          'x-authenticated-user-token': extractUserToken(req),
-        },
-        method: 'POST',
-        // tslint:disable-next-line: all
-        url: API_END_POINTS.kongSearchUser,
-      })
-      if (searchresponse.data.result.response.count > 0) {
-        for (const profileObj of searchresponse.data.result.response.content) {
-          const user: ICohortsUser = getUsers(profileObj)
-          if (!deptName || (profileObj.channel && profileObj.channel === deptName)) {
-            user.department = profileObj.rootOrgName
-            userlist.push(user)
-          }
-        }
-      }
-    }
-    res.status(response.status).send({userlist, totalCount})
-  } catch (err) {
-    logError(err)
-
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: unknownError,
-      }
-    )
-  }
-})
-
-proxiesV8.use('/externaltraining/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/peervalidation/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-proxiesV8.use('/badge/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/contenthealth/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/volunteer/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/ai/chatbot/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/formsConfig/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/composite/v5/search',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/composite/v5/search`)
-)
-
-proxiesV8.use('/composite/v4/bp/search',
-  // tslint:disable-next-line: max-line-length
-  proxyCreatorSunbirdSearch(express.Router(), `${CONSTANTS.KONG_API_BASE}/composite/v4/bp/search`)
-)
-
-proxiesV8.use('/scorm/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/karmawallet/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/usergroup/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
-
-proxiesV8.use('/ca/*',
-  proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
-)
+mountKong('/scorm/*', '/karmawallet/*', '/usergroup/*', '/ca/*')

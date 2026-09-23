@@ -4,6 +4,7 @@ import { axiosRequestConfig } from '../../configs/request.config'
 import { ISubmission } from '../../models/exercise.model'
 import { processUrl } from '../../utils/contentHelpers'
 import { CONSTANTS, RESTRICTED_PYTHON_STMT } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { logError } from '../../utils/logger'
 import { ERROR } from '../../utils/message'
 import { extractUserIdFromRequest } from '../../utils/requestExtract'
@@ -148,11 +149,7 @@ codeApi.post('/execute', async (req, res) => {
     const response = await execute(req.body)
     res.json(response)
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -169,11 +166,7 @@ codeApi.get('/viewLastSubmission/:contentId', async (req, res) => {
     const response = await viewLastSubmission(lexId, uuid, rootOrg)
     res.json(response)
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -198,10 +191,6 @@ codeApi.post('/:group/:action/:contentId', async (req, res) => {
     const response = await verifySubmit(groupAction, lexId, uuid, req.body, rootOrg)
     res.json(response)
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })

@@ -5,6 +5,7 @@ import { IContent } from '../../models/content.model'
 import { IPaginatedApiResponse } from '../../models/paginatedApi.model'
 import { processContent } from '../../utils/contentHelpers'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { getStringifiedQueryParams } from '../../utils/helpers'
 import { logError } from '../../utils/logger'
 import { ERROR } from '../../utils/message'
@@ -38,11 +39,7 @@ userContentApi.post('/contentLikes', async (req, res) => {
     res.status(response.status).send(response.data)
   } catch (err) {
     logError('ERROR FETCHING CONTENT LIKES >', err)
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -58,11 +55,7 @@ userContentApi.get('/like', async (req, res) => {
     res.json(response)
   } catch (err) {
     logError('ERROR FETCHING LIKES >', err)
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 export async function fetchLikedIdsResponse(req: IAuthorizedRequest, rootOrg: string, org: string) {
@@ -102,11 +95,7 @@ userContentApi.get('/like/contents', async (req, res) => {
     res.json(result)
   } catch (err) {
     logError('ERROR in LIKE GET CONTENTS >', err)
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -132,11 +121,7 @@ userContentApi.post('/like/:contentId', async (req, res) => {
     res.json(response.data)
   } catch (err) {
     logError('ERROR LIKING >', err)
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 userContentApi.delete('/unlike/:contentId', async (req, res) => {
@@ -161,11 +146,7 @@ userContentApi.delete('/unlike/:contentId', async (req, res) => {
     res.json(response.data)
   } catch (err) {
     logError('ERROR UN-LIKING >', err)
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 

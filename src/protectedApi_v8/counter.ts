@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 
 const API_END_POINTS = {
   platformPostfixUrl: '/stats/data/now',
@@ -12,8 +13,8 @@ export const counterApi = Router()
 counterApi.get('/', async (_req, res) => {
   try {
     let urlPrefix = CONSTANTS.COUNTER
-    if (CONSTANTS.USE_SERVING_HOST_COUNTER) {
-      urlPrefix = 'http://10.177.63.164:5903'
+    if (CONSTANTS.USE_SERVING_HOST_COUNTER && CONSTANTS.SERVING_HOST_COUNTER_URL) {
+      urlPrefix = CONSTANTS.SERVING_HOST_COUNTER_URL
     }
 
     const response = await axios.get(
@@ -22,10 +23,6 @@ counterApi.get('/', async (_req, res) => {
     )
     res.status(response.status).send(response.data)
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: 'Failed due to unknown reason',
-      }
-    )
+    sendUpstreamError(res, err, { error: 'Failed due to unknown reason' })
   }
 })

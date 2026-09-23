@@ -1,7 +1,15 @@
-import axios, { AxiosError } from 'axios'
-import { Router } from 'express'
+import axios, { AxiosError, AxiosResponse } from 'axios'
+import { Request, Response, Router } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
+import {
+  fetchBatchUsers,
+  getUsers,
+  ICohortsUser,
+  IUserProfile,
+  sbRequestConfig,
+} from '../proxies_v8/proxyHelpers'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 import { logError } from '../utils/logger'
 import { ERROR } from '../utils/message'
 import { extractAuthorizationFromRequest, extractUserIdFromRequest, extractUserToken } from '../utils/requestExtract'
@@ -17,7 +25,6 @@ const API_END_POINTS = {
   hierarchyApiEndPoint: (contentId: string) =>
     `${CONSTANTS.KNOWLEDGE_MW_API_BASE}/action/content/v3/hierarchy/${contentId}?hierarchyType=detail`,
   issueCert: `${CONSTANTS.KONG_API_BASE}/course/batch/cert/v1/issue?reIssue=true`,
-  kongSearchUser: `${CONSTANTS.KONG_API_BASE}/user/v1/search`,
   searchUserRegistry: `${CONSTANTS.NETWORK_HUB_SERVICE_BACKEND}/v1/user/search/profile`,
 }
 const VALID_COHORT_TYPES = new Set([
@@ -31,6 +38,41 @@ const VALID_COHORT_TYPES = new Set([
 const unknownError = 'Failed due to unknown reason'
 
 export const cohortsApi = Router()
+
+// Root org id stored in the session at login, or '' when unavailable
+function sessionRootOrgId(req: Request): string {
+  // tslint:disable-next-line
+  if (typeof req.session != "undefined" && typeof req.session.rootOrgId != "undefined") {
+    // tslint:disable-next-line
+    return req.session.rootOrgId
+  }
+  return ''
+}
+
+// Headers for the cohorts/autoenrollment services: `scope` identifies the resource (e.g. resourceId or courseId)
+function userOrgHeaders(req: Request, scope: { [key: string]: string }, rootOrg: unknown, userUUID: string) {
+  return {
+    Authorization: CONSTANTS.SB_API_KEY,
+    ...scope,
+    rootOrg,
+    userUUID,
+    'x-authenticated-user-orgid': sessionRootOrgId(req),
+    // tslint:disable-next-line: no-duplicate-string
+    'x-authenticated-user-token': extractUserToken(req),
+  }
+}
+
+// Sends the upstream response back as-is, or forwards the upstream error (500 + unknownError when there is none)
+async function forwardResponse(res: Response, request: () => Promise<AxiosResponse>) {
+  try {
+    const response = await request()
+    res.status(response.status).send(response.data)
+  } catch (errAny) {
+    const err = errAny as AxiosError
+    logError(String(err))
+    sendUpstreamError(res, err, { error: unknownError })
+  }
+}
 
 cohortsApi.get('/:cohortType/:contentId', async (req, res) => {
   try {
@@ -46,12 +88,6 @@ cohortsApi.get('/:cohortType/:contentId', async (req, res) => {
       res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
       return
     }
-    let rootOrgId = ''
-    // tslint:disable-next-line
-    if (typeof req.session != "undefined" && typeof req.session.rootOrgId != "undefined") {
-      // tslint:disable-next-line
-      rootOrgId = req.session.rootOrgId
-    }
     if (cohortType === 'authors') {
       const host = req.protocol + '://' + req.get('host')
       const userList = await getAuthorsDetails(host, extractAuthorizationFromRequest(req), contentId)
@@ -60,15 +96,7 @@ cohortsApi.get('/:cohortType/:contentId', async (req, res) => {
       const url = `${API_END_POINTS.cohorts}/user/cohorts/${cohortType}`
       const response = await axios({
         ...axiosRequestConfig,
-        headers: {
-          Authorization: CONSTANTS.SB_API_KEY,
-          resourceId: contentId,
-          rootOrg: rootOrgValue,
-          userUUID: extractUserIdFromRequest(req),
-          'x-authenticated-user-orgid': rootOrgId,
-          // tslint:disable-next-line: no-duplicate-string
-          'x-authenticated-user-token': extractUserToken(req),
-        },
+        headers: userOrgHeaders(req, { resourceId: contentId }, rootOrgValue, extractUserIdFromRequest(req)),
         method: 'GET',
         url,
       })
@@ -76,11 +104,7 @@ cohortsApi.get('/:cohortType/:contentId', async (req, res) => {
     }
   } catch (errAny) {
     const err = errAny as AxiosError
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: unknownError,
-      }
-    )
+    sendUpstreamError(res, err, { error: unknownError })
   }
 })
 
@@ -97,11 +121,7 @@ cohortsApi.get('/:groupId', async (req, res) => {
     res.status(response.status).send(response.data)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: unknownError,
-      }
-    )
+    sendUpstreamError(res, err, { error: unknownError })
   }
 })
 
@@ -151,270 +171,51 @@ export async function getAuthorsDetails(host: string, auth: string, contentId: s
   }
 }
 
-cohortsApi.get('/user/autoenrollment/:courseId', async (req, res) => {
-  try {
-    const courseId = req.params.courseId
-    const wid = req.headers.wid as string
-    const rootOrgValue = req.headers.rootorg
-    let rootOrgId = ''
-    // tslint:disable-next-line
-    if (typeof req.session != "undefined" && typeof req.session.rootOrgId != "undefined") {
-      // tslint:disable-next-line
-      rootOrgId = req.session.rootOrgId
-    }
-    const response = await axios.get(API_END_POINTS.autoenrollment, {
-      ...axiosRequestConfig,
-      headers: {
-        Authorization: CONSTANTS.SB_API_KEY,
-        courseId,
-        rootOrg: rootOrgValue,
-        userUUID: wid,
-        'x-authenticated-user-orgid': rootOrgId,
-        // tslint:disable-next-line: no-duplicate-string
-        'x-authenticated-user-token': extractUserToken(req),
-      },
-      params: req.query,
-    })
-    res.status(response.status).send(response.data)
-  } catch (errAny) {
-    const err = errAny as AxiosError
-    logError(String(err))
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: unknownError,
-      }
-    )
-  }
-})
+cohortsApi.get('/user/autoenrollment/:courseId', (req, res) =>
+  forwardResponse(res, () => axios.get(API_END_POINTS.autoenrollment, {
+    ...axiosRequestConfig,
+    headers: userOrgHeaders(req, { courseId: req.params.courseId }, req.headers.rootorg, req.headers.wid as string),
+    params: req.query,
+  }))
+)
 
-cohortsApi.patch('/course/batch/cert/template/add', async (req, res) => {
-  try {
-    const template = req.body
-    const response = await axios.patch(API_END_POINTS.addTemplate, template, {
-      ...axiosRequestConfig,
-      headers: {
-        Authorization: CONSTANTS.SB_API_KEY,
-        /* tslint:disable-next-line */
-        'x-authenticated-user-token': extractUserToken(req),
-      },
-    })
+cohortsApi.patch('/course/batch/cert/template/add', (req, res) =>
+  forwardResponse(res, () => axios.patch(API_END_POINTS.addTemplate, req.body, sbRequestConfig(req)))
+)
 
-    res.status(response.status).send(response.data)
-  } catch (errAny) {
-    const err = errAny as AxiosError
-    logError(String(err))
+cohortsApi.post('/course/batch/cert/issue', (req, res) =>
+  forwardResponse(res, () => axios.post(API_END_POINTS.issueCert, req.body, sbRequestConfig(req)))
+)
 
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: unknownError,
-      }
-    )
-  }
-})
-
-cohortsApi.post('/course/batch/cert/issue', async (req, res) => {
-  try {
-    const template = req.body
-    const response = await axios.post(API_END_POINTS.issueCert, template, {
-      ...axiosRequestConfig,
-      headers: {
-        Authorization: CONSTANTS.SB_API_KEY,
-        /* tslint:disable-next-line */
-        'x-authenticated-user-token': extractUserToken(req),
-      },
-    })
-
-    res.status(response.status).send(response.data)
-  } catch (errAny) {
-    const err = errAny as AxiosError
-    logError(String(err))
-
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: unknownError,
-      }
-    )
-  }
-})
-
-cohortsApi.get('/course/batch/cert/download/:certId', async (req, res) => {
-  try {
-    const certId = req.params.certId
-    const response = await axios.get(API_END_POINTS.downloadCert(certId), {
-      ...axiosRequestConfig,
-      headers: {
-        Authorization: CONSTANTS.SB_API_KEY,
-        /* tslint:disable-next-line */
-        'x-authenticated-user-token': extractUserToken(req),
-      },
-    })
-
-    res.status(response.status).send(response.data)
-  } catch (errAny) {
-    const err = errAny as AxiosError
-    logError(String(err))
-
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: unknownError,
-      }
-    )
-  }
-})
+cohortsApi.get('/course/batch/cert/download/:certId', (req, res) =>
+  forwardResponse(res, () => axios.get(API_END_POINTS.downloadCert(req.params.certId), sbRequestConfig(req)))
+)
 
 cohortsApi.get('/course/getUsersForBatch/:batchId/:deptName?', async (req, res) => {
   try {
-    const batchId = req.params.batchId
-    const deptName = req.params.deptName
     const reqBody = {
       request: {
         batch: {
           active: true,
-          batchId,
+          batchId: req.params.batchId,
         },
       },
     }
-    const userlist: ICohortsUser[] = []
-    const response = await axios.post(API_END_POINTS.batchParticipantsApi, reqBody, {
-      ...axiosRequestConfig,
-      headers: {
-        Authorization: CONSTANTS.SB_API_KEY,
-        /* tslint:disable-next-line */
-        'x-authenticated-user-token': extractUserToken(req),
-      },
-    })
-    if ((typeof response.data.result.batch.participants !== 'undefined' && response.data.result.batch.participants.length > 0)) {
-      const searchresponse = await axios({
-        ...axiosRequestConfig,
-        data: { request: { filters: { userId: response.data.result.batch.participants } } },
-        headers: {
-          Authorization: CONSTANTS.SB_API_KEY,
-          // tslint:disable-next-line: all
-          'x-authenticated-user-token': extractUserToken(req),
-        },
-        method: 'POST',
-        url: API_END_POINTS.kongSearchUser,
-      })
-      if (searchresponse.data.result.response.count > 0) {
-        for (const profileObj of searchresponse.data.result.response.content) {
-          const user: ICohortsUser = getUsers(profileObj)
-          if (!deptName || (profileObj.channel && profileObj.channel === deptName)) {
-            user.department = profileObj.rootOrgName
-            userlist.push(user)
-          }
-        }
-      }
-    }
+    const { response, userlist } = await fetchBatchUsers(req, API_END_POINTS.batchParticipantsApi, reqBody, req.params.deptName)
     res.status(response.status).send(userlist)
   } catch (errAny) {
     const err = errAny as AxiosError
     logError(String(err))
 
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: unknownError,
-      }
-    )
+    sendUpstreamError(res, err, { error: unknownError })
   }
 })
 
-// tslint:disable-next-line: all
-function getUsers(userprofile: IUserProfile): ICohortsUser {
-  let designationValue = ''
-  let primaryEmail = ''
-  let mobileNumber = 0
-  const profileDetails = userprofile.hasOwnProperty('profileDetails') ? userprofile.profileDetails : null
-  if (profileDetails != null) {
-    const professionalDetails = profileDetails.hasOwnProperty('professionalDetails') ? profileDetails.professionalDetails : null
-    if (professionalDetails != null) {
-      if (userprofile.profileDetails.professionalDetails[0].designation !== undefined) {
-        designationValue = userprofile.profileDetails.professionalDetails[0].designation
-      } else {
-        designationValue = userprofile.profileDetails.professionalDetails[0].designationOther === undefined ? '' :
-          userprofile.profileDetails.professionalDetails[0].designationOther
-      }
-    }
-    if (userprofile.profileDetails.personalDetails !== undefined) {
-      primaryEmail = userprofile.profileDetails.personalDetails.primaryEmail
-      mobileNumber = userprofile.profileDetails.personalDetails.mobile
-    }
-  }
-
-  return {
-    city: '',
-    // department: userprofile.channel === undefined ? '' : userprofile.channel,
-    department: userprofile.rootOrgName === undefined ? '' : userprofile.rootOrgName,
-    desc: '',
-    designation: designationValue,
-    email: primaryEmail,
-    first_name: userprofile.firstName,
-    last_name: userprofile.lastName,
-    phone_No: mobileNumber,
-    userLocation: '',
-    user_id: userprofile.id,
-  }
-}
-
-export interface ICohortsUser {
-  first_name: string
-  last_name: string
-  email: string
-  desc: string
-  user_id: string
-  department: string
-  phone_No: number
-  designation: string
-  userLocation: string
-  city: string
-}
-
-export interface IUserProfile {
-  channel: string
-  firstName: string
-  id: string
-  lastName: string
-  profileDetails: IUserProfileDetails
-  rootOrgName: string
-}
-
-export interface IUserProfileDetails {
-  personalDetails: IPersonalDetails
-  professionalDetails: IProfessionalDetailsEntity[]
-  employmentDetails: IEmploymentDetails
-}
-
-export interface IPersonalDetails {
-  firstname: string
-  middlename: string
-  surname: string
-  dob: string
-  nationality: string
-  domicileMedium: string
-  gender: string
-  maritalStatus: string
-  category: string
-  countryCode: string
-  mobile: number
-  telephone: string
-  primaryEmail: string
-  officialEmail: string
-  personalEmail: string
-}
-
-export interface IEmploymentDetails {
-  departmentName: string
-}
-export interface IProfessionalDetailsEntity {
-  description: string
-  industry: string
-  designationOther: string
-  nameOther: string
-  organisationType: string
-  responsibilities: string
-  name: string
-  location: string
-  designation: string
-  industryOther: string
-  completePostalAddress: string
-  doj: string
-}
+export {
+  ICohortsUser,
+  IEmploymentDetails,
+  IPersonalDetails,
+  IProfessionalDetailsEntity,
+  IUserProfile,
+  IUserProfileDetails,
+} from '../proxies_v8/proxyHelpers'

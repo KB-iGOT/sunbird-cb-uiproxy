@@ -3,6 +3,7 @@ import { Router } from 'express'
 
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 import { logError } from '../utils/logger'
 import { ERROR } from '../utils/message'
 import { extractUserToken } from '../utils/requestExtract'
@@ -45,11 +46,7 @@ contentValidationApi.get('/checkProfanity/:contentId/:userId', async (req, res) 
         res.status(response.status).send(response.data)
     } catch (err) {
         logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })
 
@@ -59,11 +56,7 @@ contentValidationApi.post('/checkTextProfanity', async (req, res) => {
         res.status(response.status).send(response.data)
     } catch (err) {
         logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })
 
@@ -73,11 +66,7 @@ contentValidationApi.post('/validatePdfContent', async (req, res) => {
         res.status(response.status).send(response.data)
     } catch (err) {
         logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })
 
@@ -94,11 +83,7 @@ contentValidationApi.post('/startPdfProfanity', async (req, res) => {
         res.status(response.status).send(response.data)
     } catch (err) {
         logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })
 
@@ -115,11 +100,7 @@ contentValidationApi.post('/getPdfProfanity', async (req, res) => {
         res.status(response.status).send(response.data)
     } catch (err) {
         logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })
 
@@ -142,10 +123,6 @@ contentValidationApi.get('/getPdfProfanityForContent/:contentId', async (req, re
         res.status(response.status).send(response.data)
     } catch (err) {
         logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
+        sendUpstreamError(res, err, { error: unknownError })
     }
 })

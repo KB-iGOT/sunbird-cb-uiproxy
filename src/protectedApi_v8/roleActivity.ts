@@ -1,5 +1,6 @@
 import { Router } from 'express'
 
+import { sendUpstreamError } from '../utils/errors'
 import { logDebug, logError } from '../utils/logger'
 import { ERROR } from '../utils/message'
 
@@ -23,11 +24,7 @@ roleActivityApi.get('/', async (req, res) => {
         }
         res.status(200).send(getAllRoles())
     } catch (err) {
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
+        sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
     }
 })
 
@@ -75,11 +72,7 @@ roleActivityApi.get('/:roleKey', async (req, res) => {
         res.status(200).send(returnRoleList)
     } catch (err) {
         logError('ERROR --> ', err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
+        sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
     }
 })
 

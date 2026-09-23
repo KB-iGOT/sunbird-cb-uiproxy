@@ -2,6 +2,7 @@ import axios from 'axios'
 import express from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 import { createPooledProxy } from '../utils/proxyCreator'
 
 const GENERAL_ERROR_MSG = 'Failed due to unknown reason'
@@ -30,11 +31,7 @@ authContent.all('*', async (req, res) => {
           res.set('Content-Type', 'text/html')
           res.send(response.data)
         } catch (err) {
-          res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-              error: GENERAL_ERROR_MSG,
-            }
-          )
+          sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
         }
       } else {
         proxyCreator.web(req, res, {

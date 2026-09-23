@@ -3,6 +3,7 @@ import { Router } from 'express'
 
 import { axiosRequestConfig } from '../configs/request.config'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 import { logDebug, logError } from '../utils/logger'
 import { ERROR } from '../utils/message'
 import { extractUserId, extractUserToken } from '../utils/requestExtract'
@@ -81,11 +82,7 @@ contentPrivateApi.patch('/update/:id', async (req, res) => {
         }
     } catch (err) {
         logError(Error + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
+        sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
     }
 })
 
@@ -141,11 +138,7 @@ contentPrivateApi.patch('/migratereviewer/:id', async (req, res) => {
         }
     } catch (err) {
         logError(Error + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
+        sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
     }
 })
 
@@ -202,11 +195,7 @@ contentPrivateApi.patch('/migratepublisher/:id', async (req, res) => {
         }
     } catch (err) {
         logError(Error + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: ERROR.GENERAL_ERR_MSG,
-            }
-        )
+        sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
     }
 })
 

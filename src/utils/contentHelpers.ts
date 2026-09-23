@@ -1,3 +1,4 @@
+import { randomInt } from 'crypto'
 import { IContent, IContentMinimal, TContentType } from '../models/content.model'
 const CONTENT_URL_PREFIX_SLICE_REGEX = /http:\/\/private-[^/]+/
 
@@ -33,7 +34,7 @@ export function shuffleContent(array: IContent[]) {
   let temporaryValue: IContent | null = null
   while (0 !== currentIndex) {
     // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex)
+    randomIndex = randomInt(currentIndex)
     currentIndex -= 1
 
     // And swap it with the current element.

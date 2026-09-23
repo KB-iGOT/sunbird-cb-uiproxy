@@ -3,6 +3,7 @@ import { Router } from 'express'
 import { getRootOrg } from '../../authoring/utils/header'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { logDebug, logError } from '../../utils/logger'
 import { extractUserIdFromRequest, extractUserToken} from '../../utils/requestExtract'
 
@@ -31,7 +32,6 @@ postsApi.get('/:term', async (req, res) => {
         res.send(response.data)
     } catch (err) {
         logError('ERROR ON GET postsApi /:term >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })

@@ -8,6 +8,7 @@ import {
     updateUniqueKey,
     updateUUIDMaster,
 } from '../utils/keycloak-user-creation'
+import { sendUpstreamError } from '../utils/errors'
 import { logDebug, logError } from '../utils/logger'
 
 export const signup = Router()
@@ -26,11 +27,11 @@ signup.post('/', async (req, res) => {
         // check into DB, uniqueId if found active, proceded and make the key inactive
         checkUniqueKey(signupReq.uniqueId, async (err, resp) => {
             if (err) {
-                res.status(400).send(`1001: Wrong Code ${signupReq.uniqueId} !!` || {})
+                res.status(400).send(`1001: Wrong Code ${signupReq.uniqueId} !!`)
             }
             if (resp) {
                 if (!resp.active) {
-                    res.status(400).send(`1002: Code ${signupReq.uniqueId} is already is used !!` || {})
+                    res.status(400).send(`1002: Code ${signupReq.uniqueId} is already is used !!`)
                 }
 
                 createKeycloak = await createKeycloakUser(req)
@@ -38,7 +39,7 @@ signup.post('/', async (req, res) => {
                         if (error.response.status === 409) {
                             res.status(400).send(`1005: User with email ${signupReq.email} is already registered !!`)
                         }
-                        res.status(400).send('1003: User could not be create in Keycloack !!' || {})
+                        res.status(400).send('1003: User could not be create in Keycloack !!')
                     })
                 if (createKeycloak && createKeycloak.id) {
                     const id = createKeycloak.id
@@ -47,12 +48,12 @@ signup.post('/', async (req, res) => {
                             await UpdateKeycloakUserPassword(id, false)
                                 .catch((_err) => {
                                     logError('ERROR ON UpdateKeycloakUserPassword', _err)
-                                    res.status(400).send('1003: User default password could not be set !!' || {})
+                                    res.status(400).send('1003: User default password could not be set !!')
                                 })
                             res.json(createKeycloak || {})
                         }
                         if (error) {
-                            res.status(400).send(`1004: active satus of code ${signupReq.uniqueId} failed !!` || {})
+                            res.status(400).send(`1004: active satus of code ${signupReq.uniqueId} failed !!`)
                         }
                     })
                 }
@@ -60,8 +61,7 @@ signup.post('/', async (req, res) => {
         })
     } catch (err) {
         logError('ERROR ON signup USERS >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 
@@ -96,7 +96,7 @@ signup.post('/create/:uniqueId', async (req, res) => {
                     let msg = ''
                     await performNewUserSteps(userId, req, reqToNewUser.body.email)
                         .catch((err) => {
-                            msg = `${err}`
+                            msg = (err && err.message) || `${err}`
                         })
                     await updateUUIDMaster(req.params.uniqueId, result.email)
                     if (msg) {
@@ -114,8 +114,7 @@ signup.post('/create/:uniqueId', async (req, res) => {
         }
     } catch (err) {
         logError('ERROR ON signup with unique ID >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 

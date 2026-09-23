@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 
 const API_END_POINTS = {
   emailToUserId: CONSTANTS.SB_EXT_API_BASE + '/v1/user/finduuid?userEmail=',
@@ -32,10 +33,6 @@ emailToUserIdApi.get('/:emailId', async (req, res) => {
     const data = await getUserId(userEmail)
     res.send(data)
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: 'Failed due to unknown reason',
-      }
-    )
+    sendUpstreamError(res, err, { error: 'Failed due to unknown reason' })
   }
 })

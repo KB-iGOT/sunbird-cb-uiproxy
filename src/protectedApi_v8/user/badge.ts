@@ -5,6 +5,7 @@ import { IBadgeRecent, IBadgeResponse } from '../../models/badge.model'
 import { IUserNotification, IUserNotifications } from '../../models/notification.model'
 import { appendUrl } from '../../utils/contentHelpers'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { extractUserIdFromRequest } from '../../utils/requestExtract'
 const API_END_POINTS = {
   badge: `${CONSTANTS.SB_EXT_API_BASE_2}/v3/users`,
@@ -137,11 +138,7 @@ badgeApi.get('/notification', async (req, res) => {
     res.send(result)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 

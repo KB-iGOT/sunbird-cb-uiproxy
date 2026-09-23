@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Request, Response, Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { AxiosRequestConfig } from '../../models/axios-request-config.model'
+import { sendUpstreamError } from '../../utils/errors'
 import { logError} from '../../utils/logger'
 import { ERROR } from '../../utils/message'
 import { extractUserIdFromRequest , extractUserToken} from '../../utils/requestExtract'
@@ -271,11 +272,7 @@ authApi.get('/readBatch/:batchId', async (req: Request, res: Response) => {
     res.status(response.status).send(response.data)
   } catch (err) {
     logError(failedToProcess + err)
-    res.status((err && err.response && err.response.status) || 500).send(
-        (err && err.response && err.response.data) || {
-            error: ERROR.GENERAL_ERR_MSG,
-        }
-    )
+    sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
   }
 })
 
@@ -331,11 +328,7 @@ authApi.post('/batch/:key', async (req: Request, res: Response) => {
     res.status(response.status).send(response.data)
   } catch (err) {
       logError(failedToProcess + err)
-      res.status((err && err.response && err.response.status) || 500).send(
-          (err && err.response && err.response.data) || {
-              error: ERROR.GENERAL_ERR_MSG,
-          }
-      )
+      sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
   }
 })
 
@@ -369,11 +362,7 @@ authApi.patch('/batch/:key', async (req: Request, res: Response) => {
     res.status(response.status).send(response.data)
   } catch (err) {
       logError(failedToProcess + err)
-      res.status((err && err.response && err.response.status) || 500).send(
-          (err && err.response && err.response.data) || {
-              error: ERROR.GENERAL_ERR_MSG,
-          }
-      )
+      sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
   }
 })
 
@@ -391,11 +380,7 @@ authApi.get('/readCert/:certId', async (req, res) => {
       res.status(response.status).send(response.data)
   } catch (err) {
       logError(failedToProcess + err)
-      res.status((err && err.response && err.response.status) || 500).send(
-          (err && err.response && err.response.data) || {
-              error: ERROR.GENERAL_ERR_MSG,
-          }
-      )
+      sendUpstreamError(res, err, { error: ERROR.GENERAL_ERR_MSG })
   }
 })
 

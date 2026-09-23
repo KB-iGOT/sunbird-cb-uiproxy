@@ -3,6 +3,7 @@ import { Router } from 'express'
 import { getRootOrg } from '../../authoring/utils/header'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { logDebug, logError } from '../../utils/logger'
 import { extractUserIdFromRequest, extractUserToken} from '../../utils/requestExtract'
 
@@ -31,8 +32,7 @@ tagsApi.get('/', async (req, res) => {
         res.send(response.data)
     } catch (err) {
         logError('ERROR ON GET topicsApi /recent >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 tagsApi.get('/:tagName', async (req, res) => {
@@ -54,7 +54,6 @@ tagsApi.get('/:tagName', async (req, res) => {
         res.send(response.data)
     } catch (err) {
         logError('ERROR ON GET topicsApi /by tag >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })

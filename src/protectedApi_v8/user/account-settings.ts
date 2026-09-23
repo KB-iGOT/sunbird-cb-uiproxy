@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { ERROR } from '../../utils/message'
 const API_END_POINTS = {
   accountSettings: `${CONSTANTS.NODE_API_BASE}/userprofiles/pathfinders/upsert`,
@@ -16,9 +17,7 @@ accountSettingsApi.post('/resetPassword', async (_req, res) => {
     const response = await axios.post(resetPasswordUrl, {})
     res.status(response.status).send(response.data)
   } catch (err) {
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || err)
+    sendUpstreamError(res, err, err)
   }
 })
 
@@ -43,8 +42,6 @@ accountSettingsApi.post('/', async (req, res) => {
     })
     res.status(response.status).send(response.data)
   } catch (err) {
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || err)
+    sendUpstreamError(res, err, err)
   }
 })

@@ -2,6 +2,7 @@ import axios, { AxiosError } from 'axios'
 import { Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { logError } from '../../utils/logger'
 import { ERROR } from '../../utils/message'
 import { extractUserIdFromRequest } from '../../utils/requestExtract'
@@ -103,11 +104,7 @@ protectedTnc.get('/status', async (req, res) => {
     res.send(response)
   } catch (errAny) {
     const err = errAny as AxiosError
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -131,11 +128,7 @@ protectedTnc.get('/', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('TNC SEND ERROR', String(err))
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -173,11 +166,7 @@ protectedTnc.post('/accept', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('ERROR WHILE ACCEPTING TNC', String(err))
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -205,11 +194,7 @@ protectedTnc.patch('/postprocessing', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('ERROR WHILE POSTPROCESSING', String(err))
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -228,11 +213,7 @@ protectedTnc.get('/system/settings/:configName', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('Getting error while searching the system config', String(err))
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })
 
@@ -253,10 +234,6 @@ protectedTnc.post('/sbacceptTnc', async (req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError(String(err))
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERROR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERROR_MSG })
   }
 })

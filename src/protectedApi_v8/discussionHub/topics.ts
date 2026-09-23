@@ -4,6 +4,7 @@ import { getRootOrg } from '../../authoring/utils/header'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { getUserUIDBySession } from '../../utils/discussionHub-helper'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { logDebug, logError } from '../../utils/logger'
 import { extractUserIdFromRequest, extractUserToken } from '../../utils/requestExtract'
 
@@ -44,8 +45,7 @@ topicsApi.get('/recent', async (req, res) => {
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('ERROR ON GET topicsApi /recent >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 
@@ -70,8 +70,7 @@ topicsApi.get('/top', async (req, res) => {
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('ERROR ON GET topicsApi /top >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 
@@ -97,8 +96,7 @@ topicsApi.get('/popular', async (req, res) => {
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('ERROR ON GET topicsApi /popular >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 
@@ -124,8 +122,7 @@ topicsApi.get('/unread', async (req, res) => {
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('ERROR ON GET topicsApi /unread >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 
@@ -151,8 +148,7 @@ topicsApi.get('/unread/total', async (req, res) => {
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('ERROR ON GET topicsApi /unread >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
 
@@ -181,7 +177,6 @@ topicsApi.get('/:tid', async (req, res) => {
     } catch (errAny) {
         const err = errAny as AxiosError
         logError('ERROR ON GET topicsApi /:tid >', String(err))
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })

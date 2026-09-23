@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Request, Response, Router } from 'express'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 
 const apiEndPoints = {
   read: `${CONSTANTS.AUTHORING_BACKEND}/action/meta/v1/skills`,
@@ -26,10 +27,6 @@ skillsApi.post('/autocomplete', async (req: Request, res: Response) => {
     })
     res.send(response.data)
   } catch (err) {
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: 'Failed due to unknown reason',
-      }
-    )
+    sendUpstreamError(res, err, { error: 'Failed due to unknown reason' })
   }
 })

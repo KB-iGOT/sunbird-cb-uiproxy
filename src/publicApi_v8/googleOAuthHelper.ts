@@ -78,7 +78,7 @@ export async function createSession(emailId: string, req: any, res: any) {
         keycloakClient.authenticated(req, (error: any) => {
             if (error) {
                 logError('googleauthhelper:createSession error creating session')
-                reject('GOOGLE_CREATE_SESSION_FAILED')
+                reject(new Error('GOOGLE_CREATE_SESSION_FAILED'))
             } else {
                 resolve({access_token: grant.access_token.token, refresh_token: grant.refresh_token.token})
             }

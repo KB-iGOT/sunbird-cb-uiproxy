@@ -1,11 +1,9 @@
-import axios from 'axios'
-import { Router } from 'express'
-import { getRootOrg } from '../../authoring/utils/header'
-import { axiosRequestConfig } from '../../configs/request.config'
+import axios, { AxiosResponse } from 'axios'
+import { Request, Response, Router } from 'express'
 import { getUserUIDBySession, getWriteApiAdminUID} from '../../utils/discussionHub-helper'
 import { CONSTANTS } from '../../utils/env'
 import { logDebug, logError } from '../../utils/logger'
-import { extractUserIdFromRequest, extractUserToken } from '../../utils/requestExtract'
+import { discussionHubHandler, discussionHubRequestConfig, logRequestContext } from './discussionHubRequest'
 
 const API_ENDPOINTS = {
     createTopic: `${CONSTANTS.KONG_API_BASE}/nodebb/auth/api/v2/topics`,
@@ -25,273 +23,99 @@ export const writeApi = Router()
 // tslint:disable-next-line: no-any
 export async function createDiscussionHubUser(req: any , user: any): Promise<any> {
     logDebug('Starting to create new user into NodeBB DiscussionHub...')
-    // tslint:disable-next-line: no-try-promise
+    const request1 = {
+        ...user,
+        _uid: getWriteApiAdminUID(),
+    }
+    const url = API_ENDPOINTS.createUser
     try {
-        const request1 = {
-            ...user,
-            _uid: getWriteApiAdminUID(),
-        }
-        const url = API_ENDPOINTS.createUser
-        return new Promise(async (resolve, reject) => {
-            const response = await axios.post(
-                url,
-                request1,
-                { ...axiosRequestConfig, headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    // tslint:disable-next-line: all
-                    'x-authenticated-user-token': extractUserToken(req)
-                 } }
-            ).catch((err) => {
-                logError('ERROR ON method createDiscussionHubUser api call to nodebb DiscussionHub>', err)
-                reject(err)
-            })
-            resolve(response)
-        })
-
+        return await axios.post(url, request1, discussionHubRequestConfig(req))
     } catch (err) {
-        logError('ERROR ON method createDiscussionHubUser >', err)
-        return err
+        logError('ERROR ON method createDiscussionHubUser api call to nodebb DiscussionHub>', err)
+        throw err
     }
 }
 
-writeApi.post('/topics', async (req, res) => {
-    try {
-        const rootOrg = getRootOrg(req)
-        const userId = extractUserIdFromRequest(req)
-        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
-        const url = API_ENDPOINTS.createTopic
-        const userUid = await getUserUIDBySession(req)
-        const response = await axios.post(
-            url,
-            {
-                ...req.body,
-                _uid: userUid,
-            },
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             } }
-        )
-        if (response && response.data) {
-            res.send(response.data)
-        }
-    } catch (err) {
-        logError('ERROR ON POST writeApi /topics >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
-    }
-})
+type BodyBuilder = (req: Request, userUid: unknown) => object
 
-writeApi.post('/topics/:topicId', async (req, res) => {
-    try {
-        const rootOrg = getRootOrg(req)
-        const userId = extractUserIdFromRequest(req)
-        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
-        const topicId = req.params.topicId
-        const url = API_ENDPOINTS.replyToTopic(topicId)
-        const userUid = await getUserUIDBySession(req)
-        const response = await axios.post(
-            url,
-            {
-                ...req.body,
-                _uid: userUid,
-            },
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             } }
-        )
-        if (response && response.data) {
-            res.send(response.data)
-        }
-    } catch (err) {
-        logError('ERROR ON writeAPI  POST /topics/:topicId >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
-    }
-})
+const bodyWithUid: BodyBuilder = (req, userUid) => ({ ...req.body, _uid: userUid })
+const uidOnly: BodyBuilder = (_req, userUid) => ({ _uid: userUid })
 
-writeApi.post('/users', async (req, res) => {
-    try {
-        const rootOrg = getRootOrg(req)
-        const userId = extractUserIdFromRequest(req)
-        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
-        const response = await createDiscussionHubUser(req, req.body)
+// Only answers when NodeBB returned data (existing behaviour)
+const sendIfData = (res: Response, response: AxiosResponse) => {
+    if (response && response.data) {
         res.send(response.data)
-    } catch (err) {
-        logError('ERROR ON writeAPI POST /users >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
     }
-})
+}
 
-writeApi.post('/posts/:postId/bookmark', async (req, res) => {
-    try {
-        const rootOrg = getRootOrg(req)
-        const userId = extractUserIdFromRequest(req)
-        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
-        const postId = req.params.postId
-        const url = API_ENDPOINTS.bookmarkPost(postId)
+// POSTs/PUTs to NodeBB as the session user
+const writeAsSessionUser = (
+    method: 'post' | 'put',
+    errorLabel: string,
+    endPoint: (req: Request) => string,
+    buildBody: BodyBuilder
+) =>
+    discussionHubHandler(errorLabel, async (req, res) => {
+        logRequestContext(req)
+        const url = endPoint(req)
         const userUid = await getUserUIDBySession(req)
-        const response = await axios.post(
-            url,
-            {
-                _uid: userUid,
-            },
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-            } }
-        )
-        if (response && response.data) {
-            res.send(response.data)
-        }
-    } catch (err) {
-        logError('ERROR ON writeAPI POST /posts/:postId/bookmark >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
-    }
-})
+        const response = await axios[method](url, buildBody(req, userUid), discussionHubRequestConfig(req))
+        sendIfData(res, response)
+    })
 
-writeApi.delete('/posts/:postId/bookmark', async (req, res) => {
-    try {
-        const rootOrg = getRootOrg(req)
-        const userId = extractUserIdFromRequest(req)
-        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
-        const postId = req.params.postId
+// DELETEs on NodeBB as the session user, passing the uid as a query param
+const deleteAsSessionUser = (errorLabel: string, endPoint: (req: Request) => string) =>
+    discussionHubHandler(errorLabel, async (req, res) => {
+        logRequestContext(req)
         const userUid = await getUserUIDBySession(req)
-        const url = API_ENDPOINTS.bookmarkPost(postId) + `?_uid=${userUid}`
-        const response = await axios.delete(
-            url,
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             } }
-        )
-        if (response && response.data) {
-            res.send(response.data)
-        }
-    } catch (err) {
-        logError('ERROR ON writeAPI DELETE /posts/:postId/bookmark >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
-    }
-})
+        const url = endPoint(req) + `?_uid=${userUid}`
+        const response = await axios.delete(url, discussionHubRequestConfig(req))
+        sendIfData(res, response)
+    })
 
-writeApi.post('/posts/:postId/vote', async (req, res) => {
-    try {
-        const rootOrg = getRootOrg(req)
-        const userId = extractUserIdFromRequest(req)
-        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
-        const postId = req.params.postId
-        const url = API_ENDPOINTS.votePost(postId)
-        const userUid = await getUserUIDBySession(req)
-        const response = await axios.post(
-            url,
-            {
-                ...req.body,
-                _uid: userUid,
-            },
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-            } }
-        )
-        if (response && response.data) {
-            res.send(response.data)
-        }
-    } catch (err) {
-        logError('ERROR ON writeAPI POST /posts/:postId/vote >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
-    }
-})
+const topicUrl = (endPoint: (topicId: string) => string) => (req: Request) => endPoint(req.params.topicId)
+const postUrl = (endPoint: (postId: string) => string) => (req: Request) => endPoint(req.params.postId)
 
-writeApi.delete('/posts/:postId/vote', async (req, res) => {
-    try {
-        const rootOrg = getRootOrg(req)
-        const userId = extractUserIdFromRequest(req)
-        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
-        const postId = req.params.postId
-        const userUid = await getUserUIDBySession(req)
-        const url = API_ENDPOINTS.votePost(postId) + `?_uid=${userUid}`
-        const response = await axios.delete(
-            url,
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             } }
-        )
-        if (response && response.data) {
-            res.send(response.data)
-        }
-    } catch (err) {
-        logError('ERROR ON writeAPI Delete /posts/:postId/vote >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
-    }
-})
+writeApi.post('/topics', writeAsSessionUser(
+    'post', 'ERROR ON POST writeApi /topics >', () => API_ENDPOINTS.createTopic, bodyWithUid
+))
 
-writeApi.put('/topics/:topicId/follow', async (req, res) => {
-    try {
-        const rootOrg = getRootOrg(req)
-        const userId = extractUserIdFromRequest(req)
-        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
-        const topicId = req.params.topicId
-        const url = API_ENDPOINTS.followTopic(topicId)
-        const userUid = await getUserUIDBySession(req)
-        const response = await axios.put(
-            url,
-            {
-                // TODO :
-                _uid: userUid,
-            },
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             } }
-        )
-        if (response && response.data) {
-            res.send(response.data)
-        }
-    } catch (err) {
-        logError('ERROR ON writeAPI  PUT /topics/:topicId/follow >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
-    }
-})
+writeApi.post('/topics/:topicId', writeAsSessionUser(
+    'post', 'ERROR ON writeAPI  POST /topics/:topicId >', topicUrl(API_ENDPOINTS.replyToTopic), bodyWithUid
+))
 
-writeApi.put('/topics/:topicId/tags', async (req, res) => {
-    try {
-        const rootOrg = getRootOrg(req)
-        const userId = extractUserIdFromRequest(req)
-        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
-        const topicId = req.params.topicId
-        const url = API_ENDPOINTS.createOrUpdateTags(topicId)
-        const response = await axios.put(
-            url,
-            {
-                ...req.body,
-            },
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-            } }
-        )
-        if (response && response.data) {
-            res.send(response.data)
-        }
-    } catch (err) {
-        logError('ERROR ON writeAPI  PUT /topics/:topicId/tags >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+writeApi.post('/users', discussionHubHandler('ERROR ON writeAPI POST /users >', async (req, res) => {
+    logRequestContext(req)
+    const response = await createDiscussionHubUser(req, req.body)
+    res.send(response.data)
+}))
+
+writeApi.post('/posts/:postId/bookmark', writeAsSessionUser(
+    'post', 'ERROR ON writeAPI POST /posts/:postId/bookmark >', postUrl(API_ENDPOINTS.bookmarkPost), uidOnly
+))
+
+writeApi.delete('/posts/:postId/bookmark', deleteAsSessionUser(
+    'ERROR ON writeAPI DELETE /posts/:postId/bookmark >', postUrl(API_ENDPOINTS.bookmarkPost)
+))
+
+writeApi.post('/posts/:postId/vote', writeAsSessionUser(
+    'post', 'ERROR ON writeAPI POST /posts/:postId/vote >', postUrl(API_ENDPOINTS.votePost), bodyWithUid
+))
+
+writeApi.delete('/posts/:postId/vote', deleteAsSessionUser(
+    'ERROR ON writeAPI Delete /posts/:postId/vote >', postUrl(API_ENDPOINTS.votePost)
+))
+
+writeApi.put('/topics/:topicId/follow', writeAsSessionUser(
+    'put', 'ERROR ON writeAPI  PUT /topics/:topicId/follow >', topicUrl(API_ENDPOINTS.followTopic), uidOnly
+))
+
+// Tags are written without a session uid
+writeApi.put('/topics/:topicId/tags', discussionHubHandler('ERROR ON writeAPI  PUT /topics/:topicId/tags >',
+    async (req, res) => {
+        logRequestContext(req)
+        const url = API_ENDPOINTS.createOrUpdateTags(req.params.topicId)
+        const response = await axios.put(url, { ...req.body }, discussionHubRequestConfig(req))
+        sendIfData(res, response)
     }
-})
+))

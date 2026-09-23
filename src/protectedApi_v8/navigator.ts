@@ -5,6 +5,7 @@ import { IFsData, IGroup, ILpData, INsoData, IOfferings, IProfile, IRole, IVaria
 import { filterOnTopics, findRoleVariant, transformNsoData } from '../service/navigator'
 import { appendProxiesUrl } from '../utils/contentHelpers'
 import { CONSTANTS } from '../utils/env'
+import { sendUpstreamError } from '../utils/errors'
 import { logError } from '../utils/logger'
 import { ERROR } from '../utils/message'
 
@@ -39,11 +40,7 @@ navigatorApi.get('/roles', async (_req, res) => {
   } catch (errAny) {
     const err = errAny as AxiosError
     logError('ERR FETCHING NSODATA -> ', String(err))
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: 'Failed due to unknown reason',
-      }
-    )
+    sendUpstreamError(res, err, { error: 'Failed due to unknown reason' })
   }
 })
 

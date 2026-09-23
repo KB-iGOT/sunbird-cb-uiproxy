@@ -1,11 +1,9 @@
 import axios from 'axios'
-import { Router } from 'express'
-import { getRootOrg } from '../../authoring/utils/header'
-import { axiosRequestConfig } from '../../configs/request.config'
+import { Request, Router } from 'express'
 import { getUserSlug, getUserUIDBySession} from '../../utils/discussionHub-helper'
 import { CONSTANTS } from '../../utils/env'
 import { logDebug, logError } from '../../utils/logger'
-import { extractUserIdFromRequest, extractUserToken} from '../../utils/requestExtract'
+import { discussionHubHandler, discussionHubRequestConfig, logRequestContext } from './discussionHubRequest'
 
 const API_ENDPOINTS = {
     getUserBookmarks: (slug: string) => `${CONSTANTS.KONG_API_BASE}/nodebb/auth/api/user/${slug}/bookmarks`,
@@ -23,299 +21,77 @@ const API_ENDPOINTS = {
 
 export const usersApi = Router()
 
-usersApi.get('/:slug/bookmarks', async (req, res) => {
-    try {
-        const rootOrg = getRootOrg(req)
-        const userId = extractUserIdFromRequest(req)
-        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
-        const slug = req.params.slug
-        const userUid = await getUserUIDBySession(req)
-        const url = API_ENDPOINTS.getUserBookmarks(slug) + `?_uid=${userUid}`
-        const response = await axios.get(
-            url,
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                rootOrg,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             } }
-        )
-        res.send(response.data)
-    } catch (err) {
-        logError('ERROR ON GET topicsApi /:slug/bookmarks >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
-    }
-})
+const slugFromParams = (req: Request) => req.params.slug
 
-usersApi.get('/:slug/downvoted', async (req, res) => {
-    try {
-        const rootOrg = getRootOrg(req)
-        const userId = extractUserIdFromRequest(req)
-        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
-        const slug = req.params.slug
+// GETs a NodeBB user resource for the resolved slug, as the session user, forwarding rootOrg
+const userResourceHandler = (
+    errorLabel: string,
+    endPoint: (slug: string) => string,
+    resolveSlug: (req: Request, userId: string) => string | Promise<string> = slugFromParams
+) =>
+    discussionHubHandler(errorLabel, async (req, res) => {
+        const { rootOrg, userId } = logRequestContext(req)
+        const slug = await resolveSlug(req, userId)
         const userUid = await getUserUIDBySession(req)
-        const url = API_ENDPOINTS.getUserDownvotedPosts(slug) + `?_uid=${userUid}`
-        const response = await axios.get(
-            url,
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                rootOrg,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             } }
-        )
+        const url = endPoint(slug) + `?_uid=${userUid}`
+        const response = await axios.get(url, discussionHubRequestConfig(req, { rootOrg }))
         res.send(response.data)
-    } catch (err) {
-        logError('ERROR ON GET topicsApi /:slug/downvoted >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
-    }
-})
+    })
 
-usersApi.get('/:slug/groups', async (req, res) => {
-    try {
-        const rootOrg = getRootOrg(req)
-        const userId = extractUserIdFromRequest(req)
-        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
-        const slug = req.params.slug
-        const userUid = await getUserUIDBySession(req)
-        const url = API_ENDPOINTS.getUserGroups(slug) + `?_uid=${userUid}`
-        const response = await axios.get(
-            url,
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                rootOrg,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             } }
-        )
-        res.send(response.data)
-    } catch (err) {
-        logError('ERROR ON GET topicsApi /:slug/groups >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
-    }
-})
+const slugResourceHandler = (segment: string, endPoint: (slug: string) => string) =>
+    userResourceHandler(`ERROR ON GET topicsApi /:slug/${segment} >`, endPoint)
 
-usersApi.get('/:slug/info', async (req, res) => {
-    try {
-        const rootOrg = getRootOrg(req)
-        const userId = extractUserIdFromRequest(req)
-        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
-        const slug = req.params.slug
-        const userUid = await getUserUIDBySession(req)
-        const url = API_ENDPOINTS.getUserInfo(slug) + `?_uid=${userUid}`
-        const response = await axios.get(
-            url,
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                rootOrg,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             } }
-        )
-        res.send(response.data)
-    } catch (err) {
-        logError('ERROR ON GET topicsApi /:slug/info >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
-    }
-})
+usersApi.get('/:slug/bookmarks', slugResourceHandler('bookmarks', API_ENDPOINTS.getUserBookmarks))
 
-usersApi.get('/me', async (req, res) => {
-    try {
-        const rootOrg = getRootOrg(req)
-        const userId = extractUserIdFromRequest(req)
-        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
-        const userSlug = await getUserSlug(req, userId)
-        const userUid = await getUserUIDBySession(req)
-        const url = API_ENDPOINTS.getUserProfile(userSlug) + `?_uid=${userUid}`
-        const response = await axios.get(
-            url,
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                rootOrg,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             } }
-        )
-        res.send(response.data)
-    } catch (err) {
-        logError('ERROR ON GET User Profile /me >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
-    }
-})
+usersApi.get('/:slug/downvoted', slugResourceHandler('downvoted', API_ENDPOINTS.getUserDownvotedPosts))
 
-usersApi.get('/:slug/posts', async (req, res) => {
-    try {
-        const rootOrg = getRootOrg(req)
-        const userId = extractUserIdFromRequest(req)
-        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
-        const slug = req.params.slug
-        const userUid = await getUserUIDBySession(req)
-        const url = API_ENDPOINTS.getUserPosts(slug) + `?_uid=${userUid}`
-        const response = await axios.get(
-            url,
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                rootOrg,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             } }
-        )
-        res.send(response.data)
-    } catch (err) {
-        logError('ERROR ON GET topicsApi /:slug/posts >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
-    }
-})
+usersApi.get('/:slug/groups', slugResourceHandler('groups', API_ENDPOINTS.getUserGroups))
 
-usersApi.get('/:slug/upvoted', async (req, res) => {
-    try {
-        const rootOrg = getRootOrg(req)
-        const userId = extractUserIdFromRequest(req)
-        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
-        const slug = req.params.slug
-        const userUid = await getUserUIDBySession(req)
-        const url = API_ENDPOINTS.getUserUpvotedPosts(slug) + `?_uid=${userUid}`
-        const response = await axios.get(
-            url,
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                rootOrg,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             } }
-        )
-        res.send(response.data)
-    } catch (err) {
-        logError('ERROR ON GET topicsApi /:slug/upvoted >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
-    }
-})
+usersApi.get('/:slug/info', slugResourceHandler('info', API_ENDPOINTS.getUserInfo))
 
-usersApi.get('/:slug/watched', async (req, res) => {
-    try {
-        const rootOrg = getRootOrg(req)
-        const userId = extractUserIdFromRequest(req)
-        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
-        const slug = req.params.slug
-        const userUid = await getUserUIDBySession(req)
-        const url = API_ENDPOINTS.getUsersWatchedTopics(slug) + `?_uid=${userUid}`
-        const response = await axios.get(
-            url,
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                rootOrg,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             } }
-        )
-        res.send(response.data)
-    } catch (err) {
-        logError('ERROR ON GET topicsApi /:slug/watched >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
-    }
-})
+usersApi.get('/me', userResourceHandler('ERROR ON GET User Profile /me >', API_ENDPOINTS.getUserProfile, getUserSlug))
 
-usersApi.get('/email/:email', async (req, res) => {
-    try {
-        const rootOrg = getRootOrg(req)
-        const userId = extractUserIdFromRequest(req)
-        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
-        const email = req.params.email
-        const response = await getUserByEmail(req, email)
-        res.send(response.data)
-    } catch (err) {
-        logError('ERROR ON GET topicsApi /email/:email >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
-    }
-})
+usersApi.get('/:slug/posts', slugResourceHandler('posts', API_ENDPOINTS.getUserPosts))
 
-usersApi.get('/:slug/about', async (req, res) => {
-    try {
-        const rootOrg = getRootOrg(req)
-        const userId = extractUserIdFromRequest(req)
-        logDebug(`UserId: ${userId}, rootOrg: ${rootOrg}`)
-        const slug = req.params.slug
-        const userUid = await getUserUIDBySession(req)
-        logDebug('called /:slug/about slug=> ', slug)
-        const url = API_ENDPOINTS.getUserProfile(slug) + `?_uid=${userUid}`
-        logDebug('called /:slug/about url=> ', url)
-        const response = await axios.get(
-            url,
-            { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-             } }
-        )
-        res.send(response.data)
-    } catch (err) {
-        logError('ERROR ON GET topicsApi /:slug/about >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
-    }
-})
+usersApi.get('/:slug/upvoted', slugResourceHandler('upvoted', API_ENDPOINTS.getUserUpvotedPosts))
+
+usersApi.get('/:slug/watched', slugResourceHandler('watched', API_ENDPOINTS.getUsersWatchedTopics))
+
+usersApi.get('/email/:email', discussionHubHandler('ERROR ON GET topicsApi /email/:email >', async (req, res) => {
+    logRequestContext(req)
+    const response = await getUserByEmail(req, req.params.email)
+    res.send(response.data)
+}))
+
+usersApi.get('/:slug/about', discussionHubHandler('ERROR ON GET topicsApi /:slug/about >', async (req, res) => {
+    logRequestContext(req)
+    const slug = req.params.slug
+    const userUid = await getUserUIDBySession(req)
+    logDebug('called /:slug/about slug=> ', slug)
+    const url = API_ENDPOINTS.getUserProfile(slug) + `?_uid=${userUid}`
+    logDebug('called /:slug/about url=> ', url)
+    const response = await axios.get(url, discussionHubRequestConfig(req))
+    res.send(response.data)
+}))
 
 // tslint:disable-next-line: no-any
-export async function getUserByEmail(req: any , email: any): Promise<any> {
+async function fetchDiscussionHubUser(req: any, url: string, methodName: string): Promise<any> {
     logDebug('Finding user in NodeBB DiscussionHub...')
-    // tslint:disable-next-line: no-try-promise
     try {
-        const url = API_ENDPOINTS.getUserByEmail(email)
-        return new Promise(async (resolve, reject) => {
-            const response = await axios.get(
-                url,
-                { ...axiosRequestConfig, headers: {
-                Authorization: CONSTANTS.SB_API_KEY,
-                // tslint:disable-next-line: all
-                'x-authenticated-user-token': extractUserToken(req)
-                }}
-            ).catch((err) => {
-                logError('ERROR ON method getUserByEmail api call to nodebb DiscussionHub >', err)
-                reject(err)
-            })
-            resolve(response)
-        })
-
+        return await axios.get(url, discussionHubRequestConfig(req))
     } catch (err) {
-        logError('ERROR ON method getUserByEmail >', err)
-        return err
+        logError(`ERROR ON method ${methodName} api call to nodebb DiscussionHub >`, err)
+        throw err
     }
 }
 
 // tslint:disable-next-line: no-any
-export async function getUserByUsername(req: any , username: any): Promise<any> {
-    logDebug('Finding user in NodeBB DiscussionHub...')
-    // tslint:disable-next-line: no-try-promise
-    try {
-        const url = API_ENDPOINTS.getUserByUsername(username)
-        return new Promise(async (resolve, reject) => {
-            const response = await axios.get(
-                url,
-                { ...axiosRequestConfig , headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    // tslint:disable-next-line: all
-                    'x-authenticated-user-token': extractUserToken(req)
-                    }}
-            ).catch((err) => {
-                logError('ERROR ON method getUserByUsername api call to nodebb DiscussionHub >', err)
-                reject(err)
-            })
-            if (response && response.data) {
-                resolve(response.data)
-            }
-        })
+export async function getUserByEmail(req: any , email: any): Promise<any> {
+    return fetchDiscussionHubUser(req, API_ENDPOINTS.getUserByEmail(email), 'getUserByEmail')
+}
 
-    } catch (err) {
-        logError('ERROR ON method getUserByUsername >', err)
-        return err
-    }
+// tslint:disable-next-line: no-any
+export async function getUserByUsername(req: any , username: any): Promise<any> {
+    const response = await fetchDiscussionHubUser(req, API_ENDPOINTS.getUserByUsername(username), 'getUserByUsername')
+    return response && response.data
 }

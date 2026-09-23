@@ -7,6 +7,7 @@ import { axiosRequestConfig } from '../../configs/request.config'
 import { ISubmission } from '../../models/exercise.model'
 import { processUrl } from '../../utils/contentHelpers'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { logError } from '../../utils/logger'
 import { extractUserIdFromRequest } from '../../utils/requestExtract'
 
@@ -38,11 +39,7 @@ exerciseApi.get('/getSubmissions', async (req, res) => {
     res.json(response.data)
   } catch (err) {
     logError(err)
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: GENERAL_ERR_MSG,
-      }
-    )
+    sendUpstreamError(res, err, { error: GENERAL_ERR_MSG })
   }
 })
 
@@ -58,11 +55,7 @@ exerciseApi.post('/postsubmission/:contentId', async (req, res) => {
     res.send(response.data)
   } catch (err) {
     logError('ERROR CREATE CONTENT DIRECTORY ->', err)
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERR_MSG })
   }
 })
 
@@ -77,11 +70,7 @@ exerciseApi.post('/createContentDirectory/:contentId', async (req, res) => {
     res.status(response.status)
   } catch (err) {
     logError('ERROR CREATE CONTENT DIRECTORY ->', err)
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERR_MSG })
   }
 })
 
@@ -113,10 +102,6 @@ exerciseApi.post('/uploadFileToContentDirectory/:contentId', async (req, res) =>
     }
   } catch (err) {
     logError('ERROR UPLOAD FILE TO CONTENT DIRECTORY ->', err)
-    res
-      .status((err && err.response && err.response.status) || 500)
-      .send((err && err.response && err.response.data) || {
-        error: GENERAL_ERR_MSG,
-      })
+    sendUpstreamError(res, err, { error: GENERAL_ERR_MSG })
   }
 })

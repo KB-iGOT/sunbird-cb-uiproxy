@@ -4,6 +4,7 @@ import { getRootOrg } from '../../authoring/utils/header'
 import { axiosRequestConfig } from '../../configs/request.config'
 import { getUserUIDBySession} from '../../utils/discussionHub-helper'
 import { CONSTANTS } from '../../utils/env'
+import { sendUpstreamError } from '../../utils/errors'
 import { logDebug, logError } from '../../utils/logger'
 import { extractUserIdFromRequest , extractUserToken} from '../../utils/requestExtract'
 
@@ -31,7 +32,6 @@ notificationsApi.get('/', async (req, res) => {
         res.send(response.data)
     } catch (err) {
         logError('ERROR ON GET topicsApi /recent >', err)
-        res.status((err && err.response && err.response.status) || 500)
-            .send(err && err.response && err.response.data || {})
+        sendUpstreamError(res, err)
     }
 })
