@@ -8391,6 +8391,14 @@ export const API_LIST = {
                 ROLE.AI_ASSESSMENT_CREATOR,
             ],
         },
+        '/proxies/v8/v1/content/ca/retire': {
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+            ROLE.MDO_LEADER,
+            ROLE.MDO_ADMIN,
+          ],
+        },
     },
     URL_PATTERN:
         [
@@ -9440,5 +9448,6 @@ export const API_LIST = {
             '/proxies/v8/ai/assessments/v1/questions/update/:id',
             '/proxies/v8/ai/assessments/v1/questions/delete/:id',
             '/proxies/v8/ai/assessments/v1/questions/order/:id',
+            '/proxies/v8/v1/content/ca/retire',
         ],
 }
