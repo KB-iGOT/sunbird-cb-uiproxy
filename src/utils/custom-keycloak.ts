@@ -170,7 +170,10 @@ export class CustomKeycloak {
         ' protocol=' + logoutProtocol +
         ' url=' + req.url
       )
-
+      logDebug('[logout] headers=' + JSON.stringify(req.headers))
+      logDebug('[logout] query=' + JSON.stringify(req.query))
+      logDebug('[logout] cookies=' + JSON.stringify(req.cookies))
+      logDebug('[logout] referer=' + req.headers.referer)
       // Derive the final destination the browser lands on after KC clears its SSO session.
       // Always use https:// — req.protocol is 'http' inside K8s pods (TLS terminated at ingress).
       // Keycloak rejects http:// post_logout_redirect_uri values that only have https:// registered.
@@ -189,6 +192,10 @@ export class CustomKeycloak {
         .replace(/^https?:\/\//, '')
         .toLowerCase()
       let postLogoutRedirect = 'https://' + logoutHost + '/'
+      logInfo(
+            '[logout] New log added--->iiidem-portal host, redirecting to IIIDEM_PORTAL_HOST' + iimPortalHost +
+            ' -> postLogoutRedirect=' + postLogoutRedirect
+          )
       try {
         const hostParts = logoutHost.split('.')
         if (iimPortalHost && logoutHost.toLowerCase() === iimPortalHost) {
