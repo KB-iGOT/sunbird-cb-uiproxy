@@ -334,6 +334,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
                 ROLE.SPV_ADMIN,
                 ROLE.SPV_PUBLISHER,
                 ROLE.CONTENT_PUBLISHER,
@@ -447,6 +448,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
                 ROLE.SPV_ADMIN,
                 ROLE.SPV_PUBLISHER,
                 ROLE.CONTENT_PUBLISHER,
@@ -459,6 +461,8 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.CONTENT_CREATOR,
                 ROLE.EDITOR,
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
             ],
         },
         '/proxies/v8/action/content/v3/copy/:do_id': {
@@ -509,6 +513,7 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
                 ROLE.SPV_PUBLISHER,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
                 ROLE.PROGRAM_INSTRUCTOR,
             ],
         },
@@ -552,6 +557,7 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
                 ROLE.CBP_ADMIN,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/user/private/v1/assign/role': {
@@ -587,6 +593,7 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
                 ROLE.CBP_ADMIN,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/org/v1/read': {
@@ -602,6 +609,7 @@ export const API_LIST = {
                 ROLE.CONTENT_REVIEWER,
                 ROLE.CONTENT_PUBLISHER,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
                 ROLE.CBP_ADMIN,
                 ROLE.SPV_PUBLISHER,
                 ROLE.PROGRAM_INSTRUCTOR,
@@ -800,6 +808,17 @@ export const API_LIST = {
                 ROLE.STATE_ADMIN,
             ],
         },
+        '/proxies/v8/user/private/v2/migrate': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.CBC_ADMIN,
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
+            ],
+        },
         '/proxies/v8/user/private/v1/assign/role/userrole': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -914,6 +933,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.VOLUNTEER
             ],
         },
         '/protected/v8/scrom/get/:id': {
@@ -1265,6 +1285,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/protected/v8/scroing/getTemplate/:templateId': {
@@ -1743,6 +1764,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/authApi/readCert/:certId': {
@@ -1916,6 +1938,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.CONTENT_CREATOR,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/discussion/v2/categories': {
@@ -2378,6 +2401,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.PROGRAM_COORDINATOR,
@@ -2390,6 +2414,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/workflow/blendedprogram/searchv2/mdo': {
@@ -2412,6 +2437,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/workflow/blendedprogram/update/mdo': {
@@ -2435,6 +2461,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/workflow/blendedprogram/v1/stats': {
@@ -2443,6 +2470,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.CBP_ADMIN,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/storage/v1/report/:reportType/:date/:orgId/:fileName': {
@@ -2453,6 +2481,7 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
                 ROLE.CBP_ADMIN,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
                 ROLE.CONTENT_CREATOR,
             ],
         },
@@ -2476,6 +2505,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/workflow/blendedprogram/remove/pc': {
@@ -2483,6 +2513,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/workflow/blendedprogram/remove/mdo': {
@@ -2505,6 +2536,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/user/v1/feed/:userId': {
@@ -2579,6 +2611,7 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
                 ROLE.CBP_ADMIN,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
                 ROLE.CONTENT_CREATOR,
             ],
         },
@@ -2587,6 +2620,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
                 ROLE.CBP_ADMIN,
                 ROLE.MDO_ADMIN,
                 ROLE.CONTENT_CREATOR,
@@ -2705,6 +2739,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/cbplan/v1/archive': {
@@ -2772,6 +2807,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.CONTENT_CREATOR,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
             ],
@@ -2782,6 +2818,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.CONTENT_CREATOR,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/claimkarmapoints': {
@@ -2864,6 +2901,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
                 ROLE.CONTENT_CREATOR,
             ],
         },
@@ -5032,6 +5070,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/bp/v1/generate/report': {
@@ -5041,6 +5080,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/bp/v1/bpreport/download/:orgId/:courseId/:batchId/:fileName': {
@@ -5050,6 +5090,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/customselfregistration': {
@@ -5896,6 +5937,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
             ],
@@ -5905,6 +5947,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
             ],
@@ -6524,6 +6567,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/pipeline/content/transcode/process/:id': {
@@ -6602,6 +6646,16 @@ export const API_LIST = {
             ],
         },
         '/proxies/v8/user/v1/org-migration/bulk-upload/:orgHierarchyFrameworkId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+                ROLE.SPV_ADMIN,
+                ROLE.STATE_ADMIN,
+            ],
+        },
+        '/proxies/v8/user/v2/org-migration/bulk-upload/:orgHierarchyFrameworkId': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -6746,6 +6800,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
             ],
@@ -6763,6 +6818,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/user/v2/assignedcourses': {
@@ -6786,6 +6842,7 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.CBP_ADMIN,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
                 ROLE.CONTENT_CREATOR,
                 ROLE.CONTENT_REVIEWER,
                 ROLE.CONTENT_PUBLISHER,
@@ -7393,6 +7450,7 @@ export const API_LIST = {
                 ROLE.CONTENT_REVIEWER,
                 ROLE.CONTENT_PUBLISHER,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
                 ROLE.PROGRAM_INSTRUCTOR,
                 ROLE.STATE_ADMIN,
                 ROLE.CBP_ADMIN,
@@ -7412,6 +7470,7 @@ export const API_LIST = {
                 ROLE.CONTENT_REVIEWER,
                 ROLE.CONTENT_PUBLISHER,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
                 ROLE.PROGRAM_INSTRUCTOR,
                 ROLE.STATE_ADMIN,
                 ROLE.CBP_ADMIN,
@@ -7567,6 +7626,7 @@ export const API_LIST = {
                 ROLE.CONTENT_PUBLISHER,
                 ROLE.SPV_PUBLISHER,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
                 ROLE.PROGRAM_INSTRUCTOR,
                 ROLE.CBP_ADMIN,
             ],
@@ -7586,6 +7646,7 @@ export const API_LIST = {
                 ROLE.CONTENT_REVIEWER,
                 ROLE.CONTENT_PUBLISHER,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
                 ROLE.PROGRAM_INSTRUCTOR,
                 ROLE.SPV_PUBLISHER,
                 ROLE.CBP_ADMIN,
@@ -7662,6 +7723,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/bp/v2/bpreport/status': {
@@ -7671,6 +7733,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/content/v5/dictionary': {
@@ -7755,6 +7818,7 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/learner/course/v4/user/ngo/enrollment/list': {
@@ -7963,6 +8027,7 @@ export const API_LIST = {
         // tslint:disable-next-line: object-literal-sort-keys
         ROLE_CHECK: [
             ROLE.PROGRAM_COORDINATOR,
+            ROLE.BP_PROGRAM_TRAINER,
         ],
       },
       '/proxies/v8/program/coordinator/list/:do_id': {
@@ -7970,6 +8035,7 @@ export const API_LIST = {
         // tslint:disable-next-line: object-literal-sort-keys
         ROLE_CHECK: [
             ROLE.PROGRAM_COORDINATOR,
+            ROLE.BP_PROGRAM_TRAINER,
             ROLE.CONTENT_CREATOR,
             ROLE.CONTENT_REVIEWER,
             ROLE.CONTENT_PUBLISHER,
@@ -7981,6 +8047,7 @@ export const API_LIST = {
         // tslint:disable-next-line: object-literal-sort-keys
         ROLE_CHECK: [
             ROLE.PROGRAM_COORDINATOR,
+            ROLE.BP_PROGRAM_TRAINER,
         ],
       },
       '/proxies/v8/batch/v1/enrollment/qrcode/download/:do_id/:batch_id': {
@@ -7988,6 +8055,7 @@ export const API_LIST = {
         // tslint:disable-next-line: object-literal-sort-keys
         ROLE_CHECK: [
             ROLE.PROGRAM_COORDINATOR,
+            ROLE.BP_PROGRAM_TRAINER,
         ],
       },
       '/proxies/v8/batch/v1/enrollment/qrcode/status/:do_id/:batch_id': {
@@ -7995,6 +8063,7 @@ export const API_LIST = {
         // tslint:disable-next-line: object-literal-sort-keys
         ROLE_CHECK: [
             ROLE.PROGRAM_COORDINATOR,
+            ROLE.BP_PROGRAM_TRAINER,
         ],
       },
       '/proxies/v8/composite/v4/bp/search': {
@@ -8002,6 +8071,7 @@ export const API_LIST = {
         // tslint:disable-next-line: object-literal-sort-keys
         ROLE_CHECK: [
             ROLE.PROGRAM_COORDINATOR,
+            ROLE.BP_PROGRAM_TRAINER,
         ],
       },
       '/proxies/v8/formsConfig/v2/create': {
@@ -8048,6 +8118,7 @@ export const API_LIST = {
         // tslint:disable-next-line: object-literal-sort-keys
         ROLE_CHECK: [
             ROLE.PROGRAM_COORDINATOR,
+            ROLE.BP_PROGRAM_TRAINER,
             ROLE.CONTENT_CREATOR,
             ROLE.SPV_PUBLISHER,
             ROLE.CONTENT_PUBLISHER,
@@ -8277,20 +8348,47 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/ca/v1/autoenrollment/:caId': {
-          checksNeeded: [CHECK.ROLE],
-          // tslint:disable-next-line: object-literal-sort-keys
-          ROLE_CHECK: [
-            ROLE.PUBLIC,
-            ROLE.VOLUNTEER,
-          ],
-        }
         '/proxies/v8/user/v2/content/info': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
                 ROLE.VOLUNTEER,
+            ],
+        },
+        '/proxies/v8/user/profile/v2/getAdditionalFields': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/ai/assessments/v1/questions/create/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.AI_ASSESSMENT_CREATOR,
+            ],
+        },
+        '/proxies/v8/ai/assessments/v1/questions/update/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.AI_ASSESSMENT_CREATOR,
+            ],
+        },
+        '/proxies/v8/ai/assessments/v1/questions/delete/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.AI_ASSESSMENT_CREATOR,
+            ],
+        },
+        '/proxies/v8/ai/assessments/v1/questions/order/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.AI_ASSESSMENT_CREATOR,
             ],
         },
     },
@@ -8380,6 +8478,7 @@ export const API_LIST = {
             '/proxies/v8/user/v1/autocomplete/:key',
             '/proxies/v8/user/v1/migrate',
             '/proxies/v8/user/private/v1/migrate',
+            '/proxies/v8/user/private/v2/migrate',
             '/proxies/v8/user/private/v1/assign/role/userrole',
             '/proxies/v8/learnervm/private/content/v3/retire/',
             '/proxies/v8/private/content/v3/update/:do_id',
@@ -9124,6 +9223,7 @@ export const API_LIST = {
             '/proxies/v8/user/v3/bulkupload',
             '/proxies/v8/user/v1/org-migration/sample-file/:orgHierarchyFrameworkId',
             '/proxies/v8/user/v1/org-migration/bulk-upload/:orgHierarchyFrameworkId',
+            '/proxies/v8/user/v2/org-migration/bulk-upload/:orgHierarchyFrameworkId',
             '/proxies/v8/user/v1/org-migration/bulk-upload/progress/:orgId',
             '/proxies/v8/user/v1/org-migration/bulk-upload/result/:fileName',
             '/proxies/v8/assignment/v1/create',
@@ -9335,6 +9435,10 @@ export const API_LIST = {
             '/proxies/v8/ca/questionset/v1/publish/:id',
             '/proxies/v8/cbplan/v4/user/dictionary',
             '/proxies/v8/user/v2/content/info',
-            '/proxies/v8/ca/v1/autoenrollment/:caId',
+            '/proxies/v8/program/admin/coordinator/upsert/:do_id',
+            '/proxies/v8/ai/assessments/v1/questions/create/:id',
+            '/proxies/v8/ai/assessments/v1/questions/update/:id',
+            '/proxies/v8/ai/assessments/v1/questions/delete/:id',
+            '/proxies/v8/ai/assessments/v1/questions/order/:id',
         ],
 }

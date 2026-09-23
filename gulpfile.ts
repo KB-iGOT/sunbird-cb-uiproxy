@@ -28,7 +28,7 @@ export class Gulpfile {
 
   @Task('compile-project')
   compileProject() {
-    const tsResult = gulp.src('src/**/*.ts').pipe(project())
+    const tsResult = gulp.src(['src/**/*.ts', '!src/**/*.test.ts']).pipe(project())
     tsResult.on('error', () => {
       /* suppress errors */
     })
