@@ -8348,14 +8348,6 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/ca/v1/autoenrollment/:caId': {
-          checksNeeded: [CHECK.ROLE],
-          // tslint:disable-next-line: object-literal-sort-keys
-          ROLE_CHECK: [
-            ROLE.PUBLIC,
-            ROLE.VOLUNTEER,
-          ],
-        },
         '/proxies/v8/user/v2/content/info': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -8368,7 +8360,7 @@ export const API_LIST = {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
-            ROLE.PUBLIC,
+                ROLE.PUBLIC,
             ],
         },
         '/proxies/v8/ai/assessments/v1/questions/create/:id': {
@@ -8398,6 +8390,14 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.AI_ASSESSMENT_CREATOR,
             ],
+        },
+        '/proxies/v8/v1/content/ca/retire': {
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+            ROLE.MDO_LEADER,
+            ROLE.MDO_ADMIN,
+          ],
         },
     },
     URL_PATTERN:
@@ -9443,11 +9443,11 @@ export const API_LIST = {
             '/proxies/v8/ca/questionset/v1/publish/:id',
             '/proxies/v8/cbplan/v4/user/dictionary',
             '/proxies/v8/user/v2/content/info',
-            '/proxies/v8/ca/v1/autoenrollment/:caId',
             '/proxies/v8/program/admin/coordinator/upsert/:do_id',
             '/proxies/v8/ai/assessments/v1/questions/create/:id',
             '/proxies/v8/ai/assessments/v1/questions/update/:id',
             '/proxies/v8/ai/assessments/v1/questions/delete/:id',
             '/proxies/v8/ai/assessments/v1/questions/order/:id',
+            '/proxies/v8/v1/content/ca/retire',
         ],
 }
