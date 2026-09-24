@@ -8399,6 +8399,39 @@ export const API_LIST = {
             ROLE.MDO_ADMIN,
           ],
         },
+        '/proxies/v8/ca/questionset/v1/create': {
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+            ROLE.MDO_ADMIN,
+            ROLE.MDO_LEADER,
+          ],
+        },
+        '/proxies/v8/ca/questionset/v1/update/:id': {
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+            ROLE.MDO_ADMIN,
+            ROLE.MDO_LEADER,
+          ],
+        },
+        '/proxies/v8/action/content/ca/v1/create': {
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+            ROLE.MDO_ADMIN,
+            ROLE.MDO_LEADER,
+          ],
+        },
+        '/proxies/v8/action/content/ca/v1/update/:do_id': {
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+            ROLE.MDO_ADMIN,
+            ROLE.MDO_LEADER,
+          ],
+        },
+
     },
     URL_PATTERN:
         [
@@ -9449,5 +9482,9 @@ export const API_LIST = {
             '/proxies/v8/ai/assessments/v1/questions/delete/:id',
             '/proxies/v8/ai/assessments/v1/questions/order/:id',
             '/proxies/v8/v1/content/ca/retire',
+            '/proxies/v8/ca/questionset/v1/update/:id',
+            '/proxies/v8/ca/questionset/v1/create',
+            '/proxies/v8/action/content/ca/v1/create',
+            '/proxies/v8/action/content/ca/v1/update/:do_id',
         ],
 }
