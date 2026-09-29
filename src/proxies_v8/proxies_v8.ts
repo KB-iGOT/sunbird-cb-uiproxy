@@ -68,7 +68,7 @@ function handleFormDataResponse(
   routeLabel: string, res: any, err: any,
   response: any
 ) {
-/* tslint:enable:no-any */
+  /* tslint:enable:no-any */
   if (err || !response) {
     logError(`FormData submit error in ${routeLabel}`, String(err))
     if (!res.headersSent) {
@@ -661,8 +661,8 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
                 parsed = JSON.parse(fullData.toString('utf8'))
                 res.status(response.statusCode).json(parsed)
               } catch (e) {
-                  logDebug('Invalid JSON received as per Json Parse')
-                  res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
+                logDebug('Invalid JSON received as per Json Parse')
+                res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
               }
             }
           } else {
@@ -736,8 +736,8 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
                 parsed = JSON.parse(fullData.toString('utf8'))
                 res.status(response.statusCode).json(parsed)
               } catch (e) {
-                   logDebug('Invalid JSON received as per Json Parse')
-                   res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
+                logDebug('Invalid JSON received as per Json Parse')
+                res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
               }
             }
           } else {
@@ -1376,6 +1376,21 @@ export interface ICohortsUser {
   city: string
 }
 
+export interface ICohortsUserBP {
+  first_name: string
+  last_name: string
+  email: string
+  desc: string
+  user_id: string
+  department: string
+  phone_No: number
+  designation: string
+  userLocation: string
+  city: string,
+  active: boolean
+}
+
+
 proxiesV8.use('/ext-forms/*',
   // tslint:disable-next-line: max-line-length
   proxyCreatorForms(express.Router())
@@ -1649,7 +1664,7 @@ proxiesV8.post('/externaltraining/v1/batch/getParticipants', async (req, res) =>
         }
       }
     }
-    res.status(response.status).send({userlist, totalCount})
+    res.status(response.status).send({ userlist, totalCount })
   } catch (err) {
     logError(err)
 
@@ -1713,3 +1728,90 @@ proxiesV8.use('/usergroup/*',
 proxiesV8.use('/ca/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
+
+proxiesV8.post('/course/v2/batch/getParticipants', async (req, res) => {
+  try {
+    const { batchId, deptName, limit, currentOffSet } = req.body.request.filters
+    const reqBody = {
+      request: {
+        batch: {
+          // active: true,
+          batchId,
+          currentOffSet,
+          limit,
+
+        },
+      },
+    }
+    const userlist: ICohortsUser[] = []
+    const response = await axios.post(API_END_POINTS.batchParticipantsApi, reqBody, {
+      ...axiosRequestConfig,
+      headers: {
+        Authorization: CONSTANTS.SB_API_KEY,
+        /* tslint:disable-next-line */
+        'x-authenticated-user-token': extractUserToken(req),
+      },
+    })
+    const totalCount = response.data.result.batch.count != null ? response.data.result.batch.count : 0
+    if ((typeof response.data.result.batch.participants !== 'undefined' && response.data.result.batch.participants.length > 0)) {
+
+      const participants = response.data.result.batch.participants
+      const activeStatusMap: { [key: string]: boolean } = {}
+      const userIds: string[] = []
+      for (const participant of participants) {
+        if (typeof participant === 'string') {
+          userIds.push(participant)
+        } else if (participant && typeof participant === 'object') {
+          const userId = participant.userId || participant.userid
+          if (userId) {
+            userIds.push(userId)
+            if (typeof participant.active === 'undefined') {
+              activeStatusMap[userId] = participant.active
+            }
+          }
+        }
+      }
+
+      if (userIds.length > 0) {
+        const searchresponse = await axios({
+          ...axiosRequestConfig,
+          data: { request: { filters: { userId: userIds } } },
+          headers: {
+            Authorization: CONSTANTS.SB_API_KEY,
+            // tslint:disable-next-line: all
+            'x-authenticated-user-token': extractUserToken(req),
+          },
+          method: 'POST',
+          // tslint:disable-next-line: all
+          url: API_END_POINTS.kongSearchUser,
+        })
+        if (searchresponse.data.result.response.count > 0) {
+          for (const profileObj of searchresponse.data.result.response.content) {
+            const existingUser = getUsers(profileObj)
+            if (!deptName || (profileObj.channel && profileObj.channel === deptName)) {
+
+              const user: ICohortsUserBP = {
+                ...existingUser,
+                department: profileObj.rootOrgName,
+                active: profileObj.userId
+                  ? activeStatusMap[profileObj.userId]
+                  : undefined,
+              }
+
+              userlist.push(user)
+            }
+          }
+        }
+      }
+    }
+    res.status(response.status).send({ userlist, totalCount })
+  } catch (err) {
+    logError(err)
+
+    res.status((err && err.response && err.response.status) || 500).send(
+      (err && err.response && err.response.data) || {
+        error: unknownError,
+      }
+    )
+  }
+})
