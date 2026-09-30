@@ -8053,6 +8053,22 @@ export const API_LIST = {
             ROLE.CONTENT_CREATOR,
         ],
       },
+      '/proxies/v8/program/coordinator/bulk-upload/:do_id': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+            ROLE.PROGRAM_COORDINATOR,
+            ROLE.BP_PROGRAM_TRAINER,
+        ],
+      },
+      '/proxies/v8/program/coordinator/bulk-upload/:do_id/status/:identifier': {
+        checksNeeded: [CHECK.ROLE],
+        // tslint:disable-next-line: object-literal-sort-keys
+        ROLE_CHECK: [
+            ROLE.PROGRAM_COORDINATOR,
+            ROLE.BP_PROGRAM_TRAINER,
+        ],
+      },
       '/proxies/v8/batch/v1/enrollment/qrcode/download/:do_id/:batch_id': {
         checksNeeded: [CHECK.ROLE],
         // tslint:disable-next-line: object-literal-sort-keys
@@ -9456,6 +9472,8 @@ export const API_LIST = {
             '/proxies/v8/program/coordinator/:do_id',
             '/proxies/v8/program/coordinator/list/:do_id',
             '/proxies/v8/program/coordinator/roles',
+            '/proxies/v8/program/coordinator/bulk-upload/:do_id',
+            '/proxies/v8/program/coordinator/bulk-upload/:do_id/status/:identifier',
             '/proxies/v8/batch/v1/enrollment/qrcode/download/:do_id/:batch_id',
             '/proxies/v8/batch/v1/enrollment/qrcode/status/:do_id/:batch_id',
             '/proxies/v8/composite/v4/bp/search',
