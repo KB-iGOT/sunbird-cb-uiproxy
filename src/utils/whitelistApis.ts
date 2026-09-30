@@ -8049,7 +8049,8 @@ export const API_LIST = {
             ROLE.PROGRAM_COORDINATOR,
             ROLE.BP_PROGRAM_TRAINER,
             ROLE.SPV_PUBLISHER,
-            ROLE.CONTENT_PUBLISHER
+            ROLE.CONTENT_PUBLISHER,
+            ROLE.CONTENT_CREATOR,
         ],
       },
       '/proxies/v8/batch/v1/enrollment/qrcode/download/:do_id/:batch_id': {
