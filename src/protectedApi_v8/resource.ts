@@ -7,7 +7,7 @@ export const userAuthKeyCloakEcApi = Router()
 export const userAuthKeyCloakAssessmentLoginApi = Router()
 const LOCALHOST = 'localhost'
 const COOKIE_NAME = 'connect.sid'
-const SAME_SITE_NONE = 'None'
+const SAME_SITE_NONE = 'none'
 const LOG_RECEIVED_QUERY = 'Received query param: '
 const LOG_REDIRECT_URL = 'Received redirectUrl value : '
 const LOG_AUTH = 'User is authenticated.. Updating Cookie with Secure and SameSite flags'
@@ -36,10 +36,8 @@ userAuthKeyCloakApi.get('/', (req, res) => {
             httpOnly: true,
             secure: true,
         }
-       res.clearCookie(COOKIE_NAME_NEW, {
-                        COOKIE_OPTIONS,
-          })
-       res.cookie(COOKIE_NAME_NEW, req.cookies[COOKIE_NAME_NEW], { domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
+        res.clearCookie(COOKIE_NAME_NEW, COOKIE_OPTIONS)
+        res.cookie(COOKIE_NAME_NEW, req.cookies[COOKIE_NAME_NEW], { domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
           sameSite: SAME_SITE_NONE, ...COOKIE_OPTIONS })
 
         // res.cookie('express.sid', req.cookies['express.sid'], {
@@ -97,9 +95,7 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
             httpOnly: true,
             secure: true,
         }
-        res.clearCookie(COOKIE_NAME_EC, {
-                        COOKIE_OPTIONS_EC,
-          })
+        res.clearCookie(COOKIE_NAME_EC, COOKIE_OPTIONS_EC)
         res.cookie(COOKIE_NAME_EC, req.cookies[COOKIE_NAME_EC], { domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
           sameSite: SAME_SITE_NONE, ...COOKIE_OPTIONS_EC })
 
@@ -111,13 +107,13 @@ userAuthKeyCloakEcApi.get('/', (req, res) => {
         // })
     }
     if (!_.isEmpty(req.query)) {
-        queryParam = req.query.q
+        queryParam = req.query.q as string
         if (queryParam && queryParam.includes(LOCALHOST)) {
             isLocal = 1
         }
         if (req.query.redirect_uri) {
             logDebug(LOG_REDIRECT_URL + req.query.redirect_uri)
-            res.redirect(req.query.redirect_uri)
+            res.redirect(req.query.redirect_uri as string)
             return
         }
     }
@@ -166,9 +162,7 @@ userAuthKeyCloakAssessmentLoginApi.get('/', (req, res) => {
                 httpOnly: true,
                 secure: true,
             }
-        res.clearCookie(COOKIE_NAME_ASSESSMENT, {
-                        COOKIE_OPTIONS_ASSESSMENT,
-          })
+        res.clearCookie(COOKIE_NAME_ASSESSMENT, COOKIE_OPTIONS_ASSESSMENT)
         res.cookie(COOKIE_NAME_ASSESSMENT, req.cookies[COOKIE_NAME_ASSESSMENT], { domain, maxAge: CONSTANTS.KEYCLOAK_SESSION_TTL,
           sameSite: SAME_SITE_NONE, ...COOKIE_OPTIONS_ASSESSMENT })
 
@@ -180,13 +174,13 @@ userAuthKeyCloakAssessmentLoginApi.get('/', (req, res) => {
         // })
     }
     if (!_.isEmpty(req.query)) {
-        queryParam = req.query.q
+        queryParam = req.query.q as string
         if (queryParam && queryParam.includes(LOCALHOST)) {
             isLocal = 1
         }
         if (req.query.redirect_uri) {
             logDebug(LOG_REDIRECT_URL + req.query.redirect_uri)
-            res.redirect(req.query.redirect_uri)
+            res.redirect(req.query.redirect_uri as string)
             return
         }
     }
