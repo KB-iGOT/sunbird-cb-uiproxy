@@ -1765,7 +1765,7 @@ proxiesV8.post('/course/v2/batch/getParticipants', async (req, res) => {
           const userId = participant.userId || participant.userid
           if (userId) {
             userIds.push(userId)
-            if (typeof participant.active === 'undefined') {
+            if (typeof participant.active !== 'undefined') {
               activeStatusMap[userId] = participant.active
             }
           }
