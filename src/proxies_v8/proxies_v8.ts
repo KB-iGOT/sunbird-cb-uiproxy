@@ -1742,7 +1742,7 @@ proxiesV8.post('/course/v2/batch/getParticipants', async (req, res) => {
         },
       },
     }
-    const userlist: ICohortsUser[] = []
+    const userlist: ICohortsUserBP[] = []
     const response = await axios.post(API_END_POINTS.batchParticipantsApi, reqBody, {
       ...axiosRequestConfig,
       headers: {
