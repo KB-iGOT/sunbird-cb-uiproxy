@@ -2003,6 +2003,8 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.PUBLIC,
                 ROLE.VOLUNTEER,
+                ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/cbp/question/list': {
@@ -2034,6 +2036,8 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.SPV_PUBLISHER,
+                ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
             checksNeeded: [CHECK.ROLE],
         },
@@ -2101,6 +2105,8 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
                 ROLE.MDO_LEADER,
                 ROLE.SPV_PUBLISHER,
+                ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
             checksNeeded: [CHECK.ROLE],
         },
@@ -3441,6 +3447,8 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
+                ROLE.PROGRAM_COORDINATOR,
+                ROLE.BP_PROGRAM_TRAINER,
             ],
         },
         '/proxies/v8/interest/v1/create': {
