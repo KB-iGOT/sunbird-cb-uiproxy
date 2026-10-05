@@ -36,6 +36,7 @@ import { lookerDashboard } from './lookerIntegration'
 
 const API_END_POINTS = {
   batchParticipantsApi: `${CONSTANTS.KONG_API_BASE}/course/v1/batch/participants/list`,
+  batchParticipantsApiV2: `${CONSTANTS.KONG_API_BASE}/course/v2/batch/participants/list`,
   contentNotificationEmail: `${CONSTANTS.NOTIFICATION_SERVIC_API_BASE}/v1/notification/send/sync`,
   externalContentbatchParticipantsApi: `${CONSTANTS.KONG_API_BASE}/externaltraining/v1/batch/participants/list`,
   kongExtOrgSearch: `${CONSTANTS.KONG_API_BASE}/org/v1/cb/ext/search`,
@@ -1743,7 +1744,7 @@ proxiesV8.post('/course/v2/batch/getParticipants', async (req, res) => {
       },
     }
     const userlist: ICohortsUserBP[] = []
-    const response = await axios.post(API_END_POINTS.batchParticipantsApi, reqBody, {
+    const response = await axios.post(API_END_POINTS.batchParticipantsApiV2, reqBody, {
       ...axiosRequestConfig,
       headers: {
         Authorization: CONSTANTS.SB_API_KEY,
