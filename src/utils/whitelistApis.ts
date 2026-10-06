@@ -933,7 +933,7 @@ export const API_LIST = {
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.PUBLIC,
-                ROLE.VOLUNTEER
+                ROLE.VOLUNTEER,
             ],
         },
         '/protected/v8/scrom/get/:id': {
@@ -3064,6 +3064,13 @@ export const API_LIST = {
             ],
         },
         '/proxies/v8/course/v1/batch/getParticipants': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/course/v2/batch/getParticipants': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
@@ -8853,6 +8860,7 @@ export const API_LIST = {
             '/proxies/v8/observations/mlsurvey/v1/entities',
             '/proxies/v8/cloud-services/mlcore/v1/files/upload',
             '/proxies/v8/course/v1/batch/getParticipants',
+            '/proxies/v8/course/v2/batch/getParticipants',
             '/proxies/v8/catalog/v1/sector',
             '/proxies/v8/content/v2/discard/:id',
             '/proxies/v8/catalog/v1/sector/read/:sectorId',
