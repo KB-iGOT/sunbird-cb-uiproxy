@@ -4,8 +4,16 @@ jest.mock('../../../src/utils/whitelistApis', () => ({
       '/apis/no-checks': { checksNeeded: [] },
       '/apis/pattern/:id': { checksNeeded: [] },
       '/apis/role-check': { checksNeeded: ['ROLE_CHECK'], ROLE_CHECK: ['MDO_ADMIN'] },
+      '/apis/coordinator/:do_id': {
+        checksNeeded: ['ROLE_CHECK'],
+        ROLE_CHECK: ['PROGRAM_COORDINATOR'],
+      },
+      '/apis/coordinator/roles': {
+        checksNeeded: ['ROLE_CHECK'],
+        ROLE_CHECK: ['MDO_ADMIN', 'MDO_LEADER', 'CONTENT_CREATOR'],
+      },
     },
-    URL_PATTERN: ['/apis/pattern/:id'],
+    URL_PATTERN: ['/apis/pattern/:id', '/apis/coordinator/:do_id', '/apis/coordinator/roles'],
   },
 }))
 
@@ -108,6 +116,42 @@ describe('isAllowed', () => {
     expect(next).not.toHaveBeenCalled()
     expect(res.status).toHaveBeenCalledWith(403)
   })
+
+  it('prefers exact match over parameterized pattern for /coordinator/roles', async () => {
+    const next = jest.fn()
+    const req = buildReq('/apis/coordinator/roles', { session: { userRoles: ['MDO_LEADER'] } })
+    middleware(req, buildRes(), next)
+    await new Promise((resolve) => setImmediate(resolve))
+    expect(next).toHaveBeenCalledTimes(1)
+  })
+
+  it('rejects /coordinator/roles when session has only the parameterized route role', async () => {
+    const next = jest.fn()
+    const res = buildRes()
+    const req = buildReq('/apis/coordinator/roles', { session: { userRoles: ['PROGRAM_COORDINATOR'] } })
+    middleware(req, res, next)
+    await new Promise((resolve) => setImmediate(resolve))
+    expect(next).not.toHaveBeenCalled()
+    expect(res.status).toHaveBeenCalledWith(403)
+  })
+
+  it('still uses pattern match for parameterized paths like /coordinator/do_123', async () => {
+    const next = jest.fn()
+    const req = buildReq('/apis/coordinator/do_123', { session: { userRoles: ['PROGRAM_COORDINATOR'] } })
+    middleware(req, buildRes(), next)
+    await new Promise((resolve) => setImmediate(resolve))
+    expect(next).toHaveBeenCalledTimes(1)
+  })
+
+  it('rejects parameterized path when session lacks the parameterized route role', async () => {
+    const next = jest.fn()
+    const res = buildRes()
+    const req = buildReq('/apis/coordinator/do_123', { session: { userRoles: ['MDO_LEADER'] } })
+    middleware(req, res, next)
+    await new Promise((resolve) => setImmediate(resolve))
+    expect(next).not.toHaveBeenCalled()
+    expect(res.status).toHaveBeenCalledWith(403)
+  })
 })
 
 describe('apiWhiteListLogger', () => {
@@ -167,5 +211,19 @@ describe('apiWhiteListLogger', () => {
     await middleware(req, res, next)
     expect(next).not.toHaveBeenCalled()
     expect(res.status).toHaveBeenCalledWith(403)
+  })
+
+  it('validates exact route /coordinator/roles instead of pattern /:do_id', async () => {
+    const next = jest.fn()
+    const req = buildReq('/apis/coordinator/roles', { session: { userRoles: ['MDO_LEADER'] } })
+    await middleware(req, buildRes(), next)
+    expect(next).toHaveBeenCalledTimes(1)
+  })
+
+  it('validates parameterized route /coordinator/do_123 via pattern match', async () => {
+    const next = jest.fn()
+    const req = buildReq('/apis/coordinator/do_123', { session: { userRoles: ['PROGRAM_COORDINATOR'] } })
+    await middleware(req, buildRes(), next)
+    expect(next).toHaveBeenCalledTimes(1)
   })
 })
