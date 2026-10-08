@@ -249,6 +249,7 @@ profileDeatailsApi.post('/createUser', async (req, res) => {
         const sbtags_ = req.body.personalDetails.tags || []
         const isNgo_ = req.body.personalDetails.isNgo || false
         const additionalProperties_ = req.body.personalDetails.additionalProperties || {}
+        const bpCoTrainer_ = req.body.personalDetails.bpCoTrainer || ''
         let sbUserProfile: Partial<ISBUser> = {
             channel: sbChannel, email: sbemail_, emailVerified: sbemailVerified_,
             firstName: sbfirstName_, phone: sbphone_,
@@ -277,6 +278,10 @@ profileDeatailsApi.post('/createUser', async (req, res) => {
 
         sbUserProfile.profileDetails = sbUserProfile.profileDetails || {
             personalDetails: {},
+        }
+
+        if (bpCoTrainer_ !== undefined && bpCoTrainer_ !== '') {
+            sbUserProfile.profileDetails.bpCoTrainer = bpCoTrainer_
         }
 
         if (sbphone_ === undefined || sbphone_ === '') {
