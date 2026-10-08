@@ -2531,6 +2531,13 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/course/v1/batch/public/read/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
         '/proxies/v8/blendedprogram/v1/getUserContentProgress': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -8784,6 +8791,7 @@ export const API_LIST = {
             '/proxies/v8/workflow/blendedprogram/remove/pc',
             '/proxies/v8/workflow/blendedprogram/remove/mdo',
             '/proxies/v8/course/v1/batch/read/:id',
+            '/proxies/v8/course/v1/batch/public/read/:id',
             '/proxies/v8/blendedprogram/v1/getUserContentProgress',
             '/proxies/v8/user/v1/feed/:userId',
             '/proxies/v8/user/feed/v1/create',
