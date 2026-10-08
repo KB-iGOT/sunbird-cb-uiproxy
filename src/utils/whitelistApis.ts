@@ -8066,6 +8066,8 @@ export const API_LIST = {
             ROLE.SPV_PUBLISHER,
             ROLE.CONTENT_PUBLISHER,
             ROLE.CONTENT_CREATOR,
+            ROLE.MDO_ADMIN,
+            ROLE.MDO_LEADER
         ],
       },
       '/proxies/v8/program/coordinator/bulk-upload/:do_id': {
