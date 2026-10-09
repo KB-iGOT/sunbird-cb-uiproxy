@@ -929,6 +929,94 @@ proxiesV8.use('/openprogram/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
 
+proxiesV8.post('/program/v1/batch/getParticipants', async (req, res) => {
+  try {
+    const { batchId, deptName, limit, currentOffSet } = req.body.request.filters
+    const reqBody = {
+      request: {
+        batch: {
+          batchId,
+          currentOffSet,
+          limit,
+
+        },
+      },
+    }
+    const userlist: ICohortsUserBP[] = []
+    const response = await axios.post(API_END_POINTS.programBatchParticipantsApi, reqBody, {
+      ...axiosRequestConfig,
+      headers: {
+        Authorization: CONSTANTS.SB_API_KEY,
+        /* tslint:disable-next-line */
+        'x-authenticated-user-token': extractUserToken(req),
+      },
+    })
+    const totalCount = response.data.result.batch.count != null ? response.data.result.batch.count : 0
+    const activeTrueCount = response.data.result.batch.activeCount != null ? response.data.result.batch.activeCount : 0
+    const activeFalseCount = response.data.result.batch.inactiveCount != null ? response.data.result.batch.inactiveCount : 0
+    if ((typeof response.data.result.batch.participants !== 'undefined' && response.data.result.batch.participants.length > 0)) {
+
+      const participants = response.data.result.batch.participants
+      const activeStatusMap: { [key: string]: boolean } = {}
+      const userIds: string[] = []
+      for (const participant of participants) {
+        if (typeof participant === 'string') {
+          userIds.push(participant)
+        } else if (participant && typeof participant === 'object') {
+          const userId = participant.userId || participant.userid
+          if (userId) {
+            userIds.push(userId)
+            if (typeof participant.active !== 'undefined') {
+              activeStatusMap[userId] = participant.active
+            }
+          }
+        }
+      }
+
+      if (userIds.length > 0) {
+        const searchresponse = await axios({
+          ...axiosRequestConfig,
+          data: { request: { filters: { userId: userIds } } },
+          headers: {
+            Authorization: CONSTANTS.SB_API_KEY,
+            // tslint:disable-next-line: all
+            'x-authenticated-user-token': extractUserToken(req),
+          },
+          method: 'POST',
+          // tslint:disable-next-line: all
+          url: API_END_POINTS.kongSearchUser,
+        })
+        if (searchresponse.data.result.response.count > 0) {
+          for (const profileObj of searchresponse.data.result.response.content) {
+            const existingUser = getUsers(profileObj)
+            if (!deptName || (profileObj.channel && profileObj.channel === deptName)) {
+
+              const user: ICohortsUserBP = {
+                ...existingUser,
+                department: profileObj.rootOrgName,
+                active: profileObj.userId
+                  ? activeStatusMap[profileObj.userId]
+                  : undefined,
+              }
+
+              userlist.push(user)
+            }
+          }
+        }
+      }
+    }
+    res.status(response.status).send({ userlist, totalCount, activeCount: activeTrueCount, inactiveCount: activeFalseCount })
+  } catch (err) {
+    logError(err)
+
+    res.status((err && err.response && err.response.status) || 500).send(
+      (err && err.response && err.response.data) || {
+        error: unknownError,
+      }
+    )
+  }
+})
+
 proxiesV8.use('/program/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
@@ -1197,94 +1285,6 @@ proxiesV8.post(['/course/v1/batch/getParticipants', '/course/v1/batch/admin/getP
       }
     }
     res.status(response.status).send({ userlist, totalCount })
-  } catch (err) {
-    logError(err)
-
-    res.status((err && err.response && err.response.status) || 500).send(
-      (err && err.response && err.response.data) || {
-        error: unknownError,
-      }
-    )
-  }
-})
-
-proxiesV8.post('/program/v1/batch/getParticipants', async (req, res) => {
-  try {
-    const { batchId, deptName, limit, currentOffSet } = req.body.request.filters
-    const reqBody = {
-      request: {
-        batch: {
-          batchId,
-          currentOffSet,
-          limit,
-
-        },
-      },
-    }
-    const userlist: ICohortsUserBP[] = []
-    const response = await axios.post(API_END_POINTS.programBatchParticipantsApi, reqBody, {
-      ...axiosRequestConfig,
-      headers: {
-        Authorization: CONSTANTS.SB_API_KEY,
-        /* tslint:disable-next-line */
-        'x-authenticated-user-token': extractUserToken(req),
-      },
-    })
-    const totalCount = response.data.result.batch.count != null ? response.data.result.batch.count : 0
-    const activeTrueCount = response.data.result.batch.activeCount != null ? response.data.result.batch.activeCount : 0
-    const activeFalseCount = response.data.result.batch.inactiveCount != null ? response.data.result.batch.inactiveCount : 0
-    if ((typeof response.data.result.batch.participants !== 'undefined' && response.data.result.batch.participants.length > 0)) {
-
-      const participants = response.data.result.batch.participants
-      const activeStatusMap: { [key: string]: boolean } = {}
-      const userIds: string[] = []
-      for (const participant of participants) {
-        if (typeof participant === 'string') {
-          userIds.push(participant)
-        } else if (participant && typeof participant === 'object') {
-          const userId = participant.userId || participant.userid
-          if (userId) {
-            userIds.push(userId)
-            if (typeof participant.active !== 'undefined') {
-              activeStatusMap[userId] = participant.active
-            }
-          }
-        }
-      }
-
-      if (userIds.length > 0) {
-        const searchresponse = await axios({
-          ...axiosRequestConfig,
-          data: { request: { filters: { userId: userIds } } },
-          headers: {
-            Authorization: CONSTANTS.SB_API_KEY,
-            // tslint:disable-next-line: all
-            'x-authenticated-user-token': extractUserToken(req),
-          },
-          method: 'POST',
-          // tslint:disable-next-line: all
-          url: API_END_POINTS.kongSearchUser,
-        })
-        if (searchresponse.data.result.response.count > 0) {
-          for (const profileObj of searchresponse.data.result.response.content) {
-            const existingUser = getUsers(profileObj)
-            if (!deptName || (profileObj.channel && profileObj.channel === deptName)) {
-
-              const user: ICohortsUserBP = {
-                ...existingUser,
-                department: profileObj.rootOrgName,
-                active: profileObj.userId
-                  ? activeStatusMap[profileObj.userId]
-                  : undefined,
-              }
-
-              userlist.push(user)
-            }
-          }
-        }
-      }
-    }
-    res.status(response.status).send({ userlist, totalCount, activeCount: activeTrueCount, inactiveCount: activeFalseCount })
   } catch (err) {
     logError(err)
 
