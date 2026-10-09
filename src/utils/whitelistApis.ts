@@ -3070,11 +3070,19 @@ export const API_LIST = {
                 ROLE.PUBLIC,
             ],
         },
-        '/proxies/v8/course/v2/batch/getParticipants': {
+        '/proxies/v8/program/v1/batch/getParticipants': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
-                ROLE.PUBLIC,
+                ROLE.MDO_ADMIN,
+                ROLE.MDO_LEADER,
+                ROLE.PROGRAM_COORDINATOR,
+                ROLE.PROGRAM_INSTRUCTOR,
+                ROLE.BP_PROGRAM_TRAINER,
+                ROLE.CBP_ADMIN,
+                ROLE.CONTENT_CREATOR,
+                ROLE.CONTENT_REVIEWER,
+                ROLE.CONTENT_PUBLISHER,
             ],
         },
         '/proxies/v8/catalog/v1/sector': {
@@ -8067,7 +8075,7 @@ export const API_LIST = {
             ROLE.CONTENT_PUBLISHER,
             ROLE.CONTENT_CREATOR,
             ROLE.MDO_ADMIN,
-            ROLE.MDO_LEADER
+            ROLE.MDO_LEADER,
         ],
       },
       '/proxies/v8/program/coordinator/bulk-upload/:do_id': {
@@ -8870,7 +8878,7 @@ export const API_LIST = {
             '/proxies/v8/observations/mlsurvey/v1/entities',
             '/proxies/v8/cloud-services/mlcore/v1/files/upload',
             '/proxies/v8/course/v1/batch/getParticipants',
-            '/proxies/v8/course/v2/batch/getParticipants',
+            '/proxies/v8/program/v1/batch/getParticipants',
             '/proxies/v8/catalog/v1/sector',
             '/proxies/v8/content/v2/discard/:id',
             '/proxies/v8/catalog/v1/sector/read/:sectorId',
