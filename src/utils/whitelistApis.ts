@@ -8043,6 +8043,11 @@ export const API_LIST = {
         ROLE_CHECK: [
             ROLE.PROGRAM_COORDINATOR,
             ROLE.BP_PROGRAM_TRAINER,
+            ROLE.SPV_PUBLISHER,
+            ROLE.CONTENT_PUBLISHER,
+            ROLE.CONTENT_CREATOR,
+            ROLE.MDO_ADMIN,
+            ROLE.MDO_LEADER
         ],
       },
       '/proxies/v8/program/coordinator/list/:do_id': {
