@@ -68,7 +68,7 @@ function handleFormDataResponse(
   routeLabel: string, res: any, err: any,
   response: any
 ) {
-/* tslint:enable:no-any */
+  /* tslint:enable:no-any */
   if (err || !response) {
     logError(`FormData submit error in ${routeLabel}`, String(err))
     if (!res.headersSent) {
@@ -661,8 +661,8 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
                 parsed = JSON.parse(fullData.toString('utf8'))
                 res.status(response.statusCode).json(parsed)
               } catch (e) {
-                  logDebug('Invalid JSON received as per Json Parse')
-                  res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
+                logDebug('Invalid JSON received as per Json Parse')
+                res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
               }
             }
           } else {
@@ -736,8 +736,8 @@ proxiesV8.post(['/user/v1/bulkupload', '/storage/profilePhotoUpload/*', '/workfl
                 parsed = JSON.parse(fullData.toString('utf8'))
                 res.status(response.statusCode).json(parsed)
               } catch (e) {
-                   logDebug('Invalid JSON received as per Json Parse')
-                   res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
+                logDebug('Invalid JSON received as per Json Parse')
+                res.status(response.statusCode).type('application/json').send(fullData.toString('utf8'))
               }
             }
           } else {
@@ -1148,7 +1148,7 @@ function getUsers(userprofile: IUserProfile): ICohortsUser {
   }
 }
 
-proxiesV8.post('/course/v1/batch/getParticipants', async (req, res) => {
+proxiesV8.post(['/course/v1/batch/getParticipants', '/course/v1/batch/admin/getParticipants'], async (req, res) => {
   try {
     const { batchId, deptName, limit, currentOffSet } = req.body.request.filters
     const reqBody = {
@@ -1649,7 +1649,7 @@ proxiesV8.post('/externaltraining/v1/batch/getParticipants', async (req, res) =>
         }
       }
     }
-    res.status(response.status).send({userlist, totalCount})
+    res.status(response.status).send({ userlist, totalCount })
   } catch (err) {
     logError(err)
 
