@@ -1,10 +1,10 @@
-FROM node:20 AS build
+FROM node:24.22.1 AS build
 
 COPY --chown=node:node . .
 RUN npm install --legacy-peer-deps
 RUN npm run build
 
-FROM node:20
+FROM node:24.22.1
 
 WORKDIR /usr/src/app
 
