@@ -8537,14 +8537,28 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
             ],
         },
-      '/proxies/v8/formsConfig/v2/admin/read/:id': {
-        checksNeeded: [CHECK.ROLE],
-        // tslint:disable-next-line: object-literal-sort-keys
-        ROLE_CHECK: [
-          ROLE.PUBLIC,
-          ROLE.VOLUNTEER,
-        ],
-      },
+        '/proxies/v8/formsConfig/v2/admin/read/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
+            ],
+        },
+        '/proxies/v8/contentpartner/v2/create': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+              ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/contentpartner/v2/update': {
+              checksNeeded: [CHECK.ROLE],
+              // tslint:disable-next-line: object-literal-sort-keys
+              ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+              ],
+        },      
 
     },
     URL_PATTERN:
@@ -9611,5 +9625,7 @@ export const API_LIST = {
             '/proxies/v8/action/content/ca/v1/create',
             '/proxies/v8/action/content/ca/v1/update/:do_id',
             '/proxies/v8/action/content/ca/v1/hierarchy/update',
+            '/proxies/v8/contentpartner/v2/update',
+            '/proxies/v8/contentpartner/v2/create',
         ],
 }
