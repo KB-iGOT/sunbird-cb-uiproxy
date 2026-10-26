@@ -8537,12 +8537,20 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
             ],
         },
+        '/proxies/v8/formsConfig/v2/admin/read/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
+            ],
+        },
         '/proxies/v8/contentpartner/v2/create': {
-               checksNeeded: [CHECK.ROLE],
+            checksNeeded: [CHECK.ROLE],
                // tslint:disable-next-line: object-literal-sort-keys
-               ROLE_CHECK: [
-                  ROLE.PUBLIC,
-               ],
+            ROLE_CHECK: [
+              ROLE.PUBLIC,
+            ],
         },
         '/proxies/v8/contentpartner/v2/update': {
              checksNeeded: [CHECK.ROLE],
