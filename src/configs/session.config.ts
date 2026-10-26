@@ -10,6 +10,7 @@ const consistency = getConsistencyLevel(CONSTANTS.PORTAL_CASSANDRA_CONSISTENCY_L
 
 const cassandraClientOptions: cassandraDriver.ClientOptions = {
   contactPoints: getIPList(),
+  localDataCenter: CONSTANTS.CASSANDRA_LOCAL_DATACENTER,
   keyspace: 'portal',
   queryOptions: {
     consistency,

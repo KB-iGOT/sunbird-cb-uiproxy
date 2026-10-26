@@ -4,7 +4,7 @@ import { CONSTANTS } from '../utils/env'
 export const cassandraClientOptions: cassandraDriver.ClientOptions = {
     contactPoints: getIPList(),
     keyspace: CONSTANTS.CASSANDRA_KEYSPACE,
-    localDataCenter: 'datacenter1',
+    localDataCenter: CONSTANTS.CASSANDRA_LOCAL_DATACENTER,
     queryOptions: {
         prepare: true,
     },
