@@ -36,12 +36,15 @@ export function resolvePostLogoutRedirect(logoutHost: string): string {
     ' dedicatedTargets=' + JSON.stringify(targets) +
     ' LOGOUT_PUBLIC_HOME_HOSTS=' + CONSTANTS.LOGOUT_PUBLIC_HOME_HOSTS)
   const dedicated = targets.find((t) => t.portalHost && t.portalHost === lowerHost)
+  logInfo('[logout] resolvePostLogoutRedirect lowerHost=' + lowerHost +
+    ' dedicated=' + JSON.stringify(dedicated))
   if (dedicated) {
     const result = 'https://' + dedicated.destinationHost + '/'
     logInfo('[logout] resolvePostLogoutRedirect matched dedicated portal ' + dedicated.portalHost + ' -> ' + result)
     return result
   }
   const hostParts = logoutHost.split('.')
+  logInfo('[logout] resolvePostLogoutRedirect hostParts=' + JSON.stringify(hostParts))
   if (hostParts.length > 2 && hostParts[0].toLowerCase() === 'portal') {
     const result = 'https://' + hostParts.slice(1).join('.') + '/'
     logInfo('[logout] resolvePostLogoutRedirect portal.* host, stripped first subdomain -> ' + result)
@@ -51,13 +54,15 @@ export function resolvePostLogoutRedirect(logoutHost: string): string {
     .split(',')
     .map((h: string) => h.trim().toLowerCase())
     .filter(Boolean)
+  logInfo('[logout] resolvePostLogoutRedirect publicHomeHosts=' + JSON.stringify(publicHomeHosts) +
+    ' includesLowerHost=' + publicHomeHosts.includes(lowerHost))
   if (publicHomeHosts.includes(lowerHost)) {
     const result = 'https://' + logoutHost + '/public/home'
     logInfo('[logout] resolvePostLogoutRedirect matched public-home host -> ' + result)
     return result
   }
   const fallback = 'https://' + logoutHost + '/'
-  logInfo('[logout] resolvePostLogoutRedirect no rule matched, fallback -> ' + fallback)
+  logInfo('[logout] resolvePostLogoutRedirect no rule matched, fallback=' + fallback)
   return fallback
 }
 
