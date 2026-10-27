@@ -27,7 +27,7 @@
   "dependencies": {
     "@keycloak/keycloak-admin-client": "^26.0.0",
     "@project-sunbird/ext-framework-server": "^0.1.28",
-    "@project-sunbird/form-service": "0.0.15",
+    "@project-sunbird/form-service": "git+https://github.com/KB-iGOT/sunbird-ext-framework.git#cbrelease-4.8.41",
     "@types/cors": "^2.8.6",
     "@types/ioredis": "^4.28.10",
     "@types/jwt-decode": "^2.2.1",
