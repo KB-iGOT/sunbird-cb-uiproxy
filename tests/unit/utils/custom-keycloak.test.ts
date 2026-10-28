@@ -14,14 +14,22 @@ jest.mock('../../../src/utils/request-adapter', () => ({
   request: { get: jest.fn(), post: jest.fn() },
 }))
 
+jest.mock('../../../src/utils/logger', () => ({
+  logDebug: jest.fn(),
+  logError: jest.fn(),
+  logInfo: jest.fn(),
+}))
+
 import { CustomKeycloak, deauthenticateKeycloakSession, resolvePostLogoutRedirect } from '../../../src/utils/custom-keycloak'
 import { CONSTANTS } from '../../../src/utils/env'
 import { PERMISSION_HELPER } from '../../../src/utils/permissionHelper'
+import { logInfo } from '../../../src/utils/logger'
 import { request } from '../../../src/utils/request-adapter'
 
 const mockedGetCurrentUserRoles = PERMISSION_HELPER.getCurrentUserRoles as jest.Mock
 const mockedRequestPost = request.post as jest.Mock
 const mockedRequestGet = request.get as jest.Mock
+const mockedLogInfo = logInfo as jest.Mock
 
 function buildKeycloak() {
   return new CustomKeycloak({ resave: false, saveUninitialized: false, secret: 'test' })
@@ -86,6 +94,38 @@ describe('resolvePostLogoutRedirect', () => {
 
   it('falls back to the host root when no rule matches', () => {
     expect(resolvePostLogoutRedirect('other.example.net')).toBe('https://other.example.net/')
+  })
+
+  describe('logging', () => {
+    const logged = () => mockedLogInfo.mock.calls.map((c) => String(c[0]))
+
+    beforeEach(() => mockedLogInfo.mockClear())
+
+    it('logs lowerHost, undefined dedicated, hostParts, publicHomeHosts and fallback', () => {
+      constants.LOGOUT_PUBLIC_HOME_HOSTS = 'spv.uat.example.net'
+      resolvePostLogoutRedirect('Other.Example.net')
+      const logs = logged()
+      expect(logs).toContainEqual(expect.stringContaining('lowerHost=other.example.net dedicated=undefined'))
+      expect(logs).toContainEqual(expect.stringContaining('hostParts=["Other","Example","net"]'))
+      expect(logs).toContainEqual(expect.stringContaining(
+        'publicHomeHosts=["spv.uat.example.net"] includesLowerHost=false'))
+      expect(logs).toContainEqual(expect.stringContaining('fallback=https://Other.Example.net/'))
+    })
+
+    it('logs the matched dedicated target as JSON', () => {
+      constants.MNRE_PORTAL_HOST = 'https://mnre-portal.uat.example.net'
+      constants.MNRE_DESTINATION_PORTAL_HOST = 'mnre.example.gov.in'
+      resolvePostLogoutRedirect('MNRE-Portal.uat.example.net')
+      const line = logged().find((l) => l.includes('lowerHost=mnre-portal.uat.example.net dedicated='))
+      expect(line).toContain('mnre.example.gov.in')
+      expect(line).not.toContain('dedicated=undefined')
+    })
+
+    it('logs includesLowerHost=true when the host is a public-home host', () => {
+      constants.LOGOUT_PUBLIC_HOME_HOSTS = 'spv.uat.example.net'
+      resolvePostLogoutRedirect('spv.uat.example.net')
+      expect(logged()).toContainEqual(expect.stringContaining('includesLowerHost=true'))
+    })
   })
 })
 
