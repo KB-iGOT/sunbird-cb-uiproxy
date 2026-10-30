@@ -14,7 +14,7 @@ jest.mock('../../../src/utils/request-adapter', () => ({
   request: { get: jest.fn(), post: jest.fn() },
 }))
 
-import { CustomKeycloak, deauthenticateKeycloakSession } from '../../../src/utils/custom-keycloak'
+import { CustomKeycloak, deauthenticateKeycloakSession, resolvePostLogoutRedirect } from '../../../src/utils/custom-keycloak'
 import { CONSTANTS } from '../../../src/utils/env'
 import { PERMISSION_HELPER } from '../../../src/utils/permissionHelper'
 import { request } from '../../../src/utils/request-adapter'
@@ -50,6 +50,44 @@ function buildReq(overrides: any = {}): any {
     ...overrides,
   }
 }
+
+describe('resolvePostLogoutRedirect', () => {
+  const keys = [
+    'IIM_PORTAL_HOST', 'IIIDEM_PORTAL_HOST', 'ADI_PORTAL_HOST', 'ADIKARMAYOGI_PORTAL_HOST',
+    'MNRE_PORTAL_HOST', 'MNRE_DESTINATION_PORTAL_HOST', 'LOGOUT_PUBLIC_HOME_HOSTS',
+  ]
+  // tslint:disable-next-line: no-any
+  const constants = CONSTANTS as any
+  // tslint:disable-next-line: no-any
+  const saved: any = {}
+
+  beforeEach(() => {
+    keys.forEach((k) => { saved[k] = constants[k]; constants[k] = '' })
+  })
+
+  afterEach(() => {
+    keys.forEach((k) => { constants[k] = saved[k] })
+  })
+
+  it('maps a dedicated portal host to its destination host', () => {
+    constants.MNRE_PORTAL_HOST = 'https://mnre-portal.uat.example.net'
+    constants.MNRE_DESTINATION_PORTAL_HOST = 'mnre.example.gov.in'
+    expect(resolvePostLogoutRedirect('MNRE-Portal.uat.example.net')).toBe('https://mnre.example.gov.in/')
+  })
+
+  it('strips the leading portal subdomain', () => {
+    expect(resolvePostLogoutRedirect('portal.uat.example.net')).toBe('https://uat.example.net/')
+  })
+
+  it('appends /public/home for hosts in LOGOUT_PUBLIC_HOME_HOSTS', () => {
+    constants.LOGOUT_PUBLIC_HOME_HOSTS = 'spv.uat.example.net, Other.example.net'
+    expect(resolvePostLogoutRedirect('spv.uat.example.net')).toBe('https://spv.uat.example.net/public/home')
+  })
+
+  it('falls back to the host root when no rule matches', () => {
+    expect(resolvePostLogoutRedirect('other.example.net')).toBe('https://other.example.net/')
+  })
+})
 
 describe('getKeyCloakObject', () => {
   it('falls back to the "common" keycloak instance when there is no matching tenant', () => {
@@ -189,6 +227,25 @@ describe('middleware', () => {
       expect(mockedRequestPost).not.toHaveBeenCalled()
     })
 
+    it('redirects the MNRE portal host to the MNRE destination host on logout', () => {
+      const originalHost = CONSTANTS.MNRE_PORTAL_HOST
+      const originalDestination = CONSTANTS.MNRE_DESTINATION_PORTAL_HOST
+      CONSTANTS.MNRE_PORTAL_HOST = 'https://mnre-portal.example.gov.in'
+      CONSTANTS.MNRE_DESTINATION_PORTAL_HOST = 'mnre.example.gov.in'
+      try {
+        const keycloak = buildKeycloak()
+        const req = buildReq({ hostname: 'mnre-portal.example.gov.in', path: '/logout' })
+        const res = buildLogoutRes()
+
+        keycloak.middleware(req, res, jest.fn())
+
+        expect(res.redirect).toHaveBeenCalledWith('https://mnre.example.gov.in/')
+      } finally {
+        CONSTANTS.MNRE_PORTAL_HOST = originalHost
+        CONSTANTS.MNRE_DESTINATION_PORTAL_HOST = originalDestination
+      }
+    })
+
     it('strips the leading "portal" subdomain for the default post-logout redirect', () => {
       const keycloak = buildKeycloak()
       const req = buildReq({ hostname: 'portal.dev.example.net', path: '/logout' })
@@ -287,6 +344,112 @@ describe('middleware', () => {
       keycloak.middleware(req, res, jest.fn())
 
       expect(res.redirect).toHaveBeenCalledWith('https://app.example.com/')
+    })
+
+    it('ignores a redirect_uri query param that is not a valid URL', () => {
+      const keycloak = buildKeycloak()
+      const req = buildReq({
+        hostname: 'app.example.com',
+        path: '/logout',
+        query: { redirect_uri: 'not a url' },
+      })
+      const res = buildLogoutRes()
+
+      keycloak.middleware(req, res, jest.fn())
+
+      expect(res.redirect).toHaveBeenCalledWith('https://app.example.com/')
+    })
+
+    it('ignores a non-string redirect_uri query param', () => {
+      const keycloak = buildKeycloak()
+      const req = buildReq({
+        hostname: 'app.example.com',
+        path: '/logout',
+        query: { redirect_uri: ['https://a.example.com', 'https://b.example.com'] },
+      })
+      const res = buildLogoutRes()
+
+      keycloak.middleware(req, res, jest.fn())
+
+      expect(res.redirect).toHaveBeenCalledWith('https://app.example.com/')
+    })
+
+    it('uses a single-label host as its own base domain for redirect_uri validation', () => {
+      const keycloak = buildKeycloak()
+      const req = buildReq({
+        hostname: 'intranet',
+        path: '/logout',
+        query: { redirect_uri: 'https://intranet/landing' },
+      })
+      const res = buildLogoutRes()
+
+      keycloak.middleware(req, res, jest.fn())
+
+      expect(res.redirect).toHaveBeenCalledWith('https://intranet/landing')
+    })
+
+    it.each([
+      ['localhost', 'localhost'],
+      ['portal.dev.example.net', '.dev.example.net'],
+      ['example', 'example'],
+    ])('clears the session cookie for the right domain when host is %s', (host, expectedDomain) => {
+      const keycloak = buildKeycloak()
+      const req = buildReq({ get: jest.fn().mockReturnValue(host), hostname: 'app.example.com', path: '/logout' })
+      const res = buildLogoutRes()
+
+      keycloak.middleware(req, res, jest.fn())
+
+      expect(res.clearCookie).toHaveBeenCalledWith(
+        'connect.sid',
+        expect.objectContaining({ domain: expectedDomain })
+      )
+    })
+
+    it('clears the session cookie with an empty domain when the host header is missing', () => {
+      const keycloak = buildKeycloak()
+      const req = buildReq({ get: jest.fn().mockReturnValue(undefined), hostname: 'app.example.com', path: '/logout' })
+      const res = buildLogoutRes()
+
+      keycloak.middleware(req, res, jest.fn())
+
+      expect(res.clearCookie).toHaveBeenCalledWith('connect.sid', expect.objectContaining({ domain: '' }))
+    })
+
+    it('redirects to the post-logout destination when the keycloak object has no logoutUrl helper', async () => {
+      const keycloak = buildKeycloak()
+      const kc = keycloak.getKeyCloakObject(buildReq()) as any
+      const original = kc.logoutUrl
+      kc.logoutUrl = undefined
+      jest.spyOn(keycloak, 'deauthenticated').mockResolvedValue(undefined as never)
+      const req = buildReq({
+        hostname: 'app.example.com',
+        path: '/logout',
+        session: buildSession({ idToken: 'id-token-1' }),
+      })
+      const res = buildLogoutRes()
+
+      keycloak.middleware(req, res, jest.fn())
+      await new Promise((resolve) => setImmediate(resolve))
+
+      expect(res.redirect).toHaveBeenCalledWith('https://app.example.com/')
+      kc.logoutUrl = original
+    })
+
+    it('still redirects via the KC logout URL when deauthenticated rejects', async () => {
+      const keycloak = buildKeycloak()
+      jest.spyOn(keycloak, 'deauthenticated').mockRejectedValue(new Error('boom') as never)
+      const req = buildReq({
+        hostname: 'app.example.com',
+        path: '/logout',
+        session: buildSession({ idToken: 'id-token-1' }),
+      })
+      const res = buildLogoutRes()
+
+      keycloak.middleware(req, res, jest.fn())
+      await new Promise((resolve) => setImmediate(resolve))
+
+      expect(res.clearCookie).toHaveBeenCalled()
+      expect(res.redirect).toHaveBeenCalledTimes(1)
     })
   })
 })
