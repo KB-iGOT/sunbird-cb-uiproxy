@@ -6867,6 +6867,59 @@ export const API_LIST = {
                 ROLE.VOLUNTEER,
             ],
         },
+        '/proxies/v8/survey/v2/createForm': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/survey/v2/updateForm': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
+        '/proxies/v8/survey/v2/getFormById': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
+            ],
+        },
+        '/proxies/v8/survey/v2/saveFormSubmit': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
+            ],
+        },
+        '/proxies/v8/survey/v2/getApplicationsById': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
+            ],
+        },
+        '/proxies/v8/survey/v2/bulkGetApplicationsById': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
+            ],
+        },
+        '/proxies/v8/survey/v2/submissions/search': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+            ],
+        },
         '/proxies/v8/workflow/blendedprogram/nominate': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -9417,6 +9470,13 @@ export const API_LIST = {
             '/proxies/v8/v1/notifyAssignment/evaluate',
             '/proxies/v8/workflow/blendedprogram/remove/approved/user',
             '/proxies/v8/forms/v2/bulkGetApplicationsById',
+            '/proxies/v8/survey/v2/createForm',
+            '/proxies/v8/survey/v2/updateForm',
+            '/proxies/v8/survey/v2/getFormById',
+            '/proxies/v8/survey/v2/saveFormSubmit',
+            '/proxies/v8/survey/v2/getApplicationsById',
+            '/proxies/v8/survey/v2/bulkGetApplicationsById',
+            '/proxies/v8/survey/v2/submissions/search',
             '/proxies/v8/workflow/blendedprogram/nominate',
             '/proxies/v8/promotionalcontent/v1/assignedto/users',
             '/proxies/v8/storage/v1/report/form/:reportType/:date/:formId/:fileName',
