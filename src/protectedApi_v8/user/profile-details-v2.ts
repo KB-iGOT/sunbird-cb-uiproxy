@@ -491,7 +491,7 @@ async function maybeCreateNodeBBUser(req: any, sbUserReadResponse: any, sbUserId
             url: API_END_POINTS.createNodeBBUser,
         })
     } catch (nodeBBerr) {
-        logError('Failed to create NodeBB account for user: ' + sbUserId)
+        logError('Failed to create NodeBB account for user: ' + sbUserId, nodeBBerr)
     }
 }
 
