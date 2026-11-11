@@ -63,8 +63,10 @@ const ORG_HIERARCHY_ROUTES: IOrgHierarchyRouteCase[] = [
 
 function buildApp(userRoles: string[]) {
   const app = express()
-  app.use((req: express.Request & { session?: { userRoles: string[] } }, _res, next) => {
-    req.session = { userRoles }
+  app.use((req, _res, next) => {
+    // tslint:disable-next-line: no-any
+    const mutableReq = req as any
+    mutableReq.session = { userRoles }
     next()
   })
   app.use(isAllowed())

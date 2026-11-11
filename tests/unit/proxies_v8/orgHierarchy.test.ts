@@ -20,7 +20,7 @@ jest.mock('http-proxy', () => {
 })
 
 import { EventEmitter } from 'events'
-import express, { NextFunction, Request, Response } from 'express'
+import express, { NextFunction, Request, RequestHandler, Response } from 'express'
 import fileUpload from 'express-fileupload'
 import FormData from 'form-data'
 import supertest from 'supertest'
@@ -35,9 +35,11 @@ const mockedFormDataCtor = FormData as unknown as jest.Mock
 function buildApp(sessionOverrides: Record<string, any> = {}) {
   const app = express()
   app.use(express.json())
-  app.use(fileUpload())
-  app.use((req: Request & { kauth?: object; session?: object }, _res: Response, next: NextFunction) => {
-    req.kauth = {
+  app.use(fileUpload() as unknown as RequestHandler)
+  app.use((req: Request, _res: Response, next: NextFunction) => {
+    // tslint:disable-next-line: no-any
+    const mutableReq = req as any
+    mutableReq.kauth = {
       grant: {
         access_token: {
           content: { sub: 'f:kc-realm:user-123' },
@@ -45,7 +47,7 @@ function buildApp(sessionOverrides: Record<string, any> = {}) {
         },
       },
     }
-    req.session = {
+    mutableReq.session = {
       channel: 'TN Dept',
       rootOrgId: 'root-org-1',
       userRoles: ['MDO_ADMIN'],
