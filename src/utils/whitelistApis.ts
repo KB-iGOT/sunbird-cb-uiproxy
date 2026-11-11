@@ -8614,6 +8614,84 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
             ],
         },
+        // --- Org Hierarchy v2 APIs ---
+        '/proxies/v8/org/v2/hierarchy/:orgId/complete': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.STATE_ADMIN,
+                ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER,
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/org/v2/hierarchy/read/:orgId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.STATE_ADMIN,
+                ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER,
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+          ],
+        },
+        '/proxies/v8/org/v2/hierarchy/link': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.STATE_ADMIN,
+                ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER,
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/org/v2/hierarchy/unlink': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.STATE_ADMIN,
+                ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER,
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/org/v2/hierarchy/move': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.STATE_ADMIN,
+                ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER,
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/org/v2/hierarchy/bulk/link/:rootOrgId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.STATE_ADMIN,
+                ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER,
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/org/v2/hierarchy/levels/:rootOrgId': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.STATE_ADMIN,
+                ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER,
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
 
     },
     URL_PATTERN:
@@ -9689,5 +9767,12 @@ export const API_LIST = {
             '/proxies/v8/action/content/ca/v1/create',
             '/proxies/v8/action/content/ca/v1/update/:do_id',
             '/proxies/v8/action/content/ca/v1/hierarchy/update',
+            '/proxies/v8/org/v2/hierarchy/:orgId/complete',
+            '/proxies/v8/org/v2/hierarchy/read/:orgId',
+            '/proxies/v8/org/v2/hierarchy/link',
+            '/proxies/v8/org/v2/hierarchy/unlink',
+            '/proxies/v8/org/v2/hierarchy/move',
+            '/proxies/v8/org/v2/hierarchy/bulk/link/:rootOrgId',
+            '/proxies/v8/org/v2/hierarchy/levels/:rootOrgId',
         ],
 }
