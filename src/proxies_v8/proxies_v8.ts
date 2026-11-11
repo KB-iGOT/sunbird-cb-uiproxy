@@ -600,8 +600,8 @@ proxiesV8.post('/org/v2/hierarchy/bulk/link/*', (req, res) => {
       filename: file.name,
     })
 
-    const rootOrgId = lodash.get(req, 'session.rootOrgId') || ''
-    const channel = lodash.get(req, 'session.channel') || ''
+    const rootOrgId = lodash.get(req, 'session.rootOrgId') ?? ''
+    const channel = lodash.get(req, 'session.channel') ?? ''
 
     const uploadHeaders: { [key: string]: string } = {
       Authorization: CONSTANTS.SB_API_KEY,
