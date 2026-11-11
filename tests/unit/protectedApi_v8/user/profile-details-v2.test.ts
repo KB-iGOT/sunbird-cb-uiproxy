@@ -1,11 +1,27 @@
-jest.mock('axios', () => jest.fn())
+jest.mock('axios', () => {
+  // tslint:disable-next-line: no-any
+  const fn: any = jest.fn()
+  fn.get = jest.fn()
+  fn.post = jest.fn()
+  fn.patch = jest.fn()
+  return fn
+})
+jest.mock('fs', () => ({
+  ...jest.requireActual('fs'),
+  readFile: jest.fn(),
+}))
 
 import axios from 'axios'
 import express, { NextFunction, Request, Response } from 'express'
+import * as fs from 'fs'
 import supertest from 'supertest'
 import { profileDeatailsApi } from '../../../../src/protectedApi_v8/user/profile-details-v2'
 
 const mockedAxios = axios as unknown as jest.Mock
+const mockedAxiosGet = axios.get as jest.Mock
+const mockedAxiosPost = axios.post as jest.Mock
+const mockedAxiosPatch = axios.patch as jest.Mock
+const mockedReadFile = fs.readFile as unknown as jest.Mock
 
 function buildApp(router: express.Router = profileDeatailsApi) {
   const app = express()
@@ -63,6 +79,13 @@ const basePersonalDetails = {
   phone: '6161616161',
   roles: ['PUBLIC'],
 }
+
+beforeEach(() => {
+  mockedAxios.mockReset()
+  mockedAxiosGet.mockReset()
+  mockedAxiosPost.mockReset()
+  mockedAxiosPatch.mockReset()
+})
 
 describe('POST /createUser', () => {
   beforeEach(() => {
@@ -416,5 +439,463 @@ describe('POST /createUser', () => {
     const res = await supertest(buildApp(isolatedApi)).post('/createUser').send({ personalDetails: basePersonalDetails })
 
     expect(res.status).toBe(200)
+  })
+})
+
+describe('POST /createUserRegistry', () => {
+  it('creates a user registry', async () => {
+    mockedAxiosPost.mockResolvedValue({ status: 200, data: { result: 'ok' } })
+    const res = await supertest(buildApp()).post('/createUserRegistry').send({ firstname: 'A' })
+    expect(res.status).toBe(200)
+  })
+
+  it('returns 500 on failure', async () => {
+    mockedAxiosPost.mockRejectedValue(new Error('down'))
+    const res = await supertest(buildApp()).post('/createUserRegistry').send({})
+    expect(res.status).toBe(500)
+  })
+})
+
+describe('GET /getUserRegistry', () => {
+  it('returns the registry', async () => {
+    mockedAxiosPost.mockResolvedValue({ status: 200, data: { result: 'ok' } })
+    const res = await supertest(buildApp()).get('/getUserRegistry')
+    expect(res.status).toBe(200)
+  })
+
+  it('returns 500 on failure', async () => {
+    mockedAxiosPost.mockRejectedValue(new Error('down'))
+    const res = await supertest(buildApp()).get('/getUserRegistry')
+    expect(res.status).toBe(500)
+  })
+})
+
+describe('GET /getUserRegistryById/:id', () => {
+  it('returns the registry for the given id', async () => {
+    mockedAxiosPost.mockResolvedValue({ status: 200, data: { result: 'ok' } })
+    const res = await supertest(buildApp()).get('/getUserRegistryById/other-id')
+    expect(res.status).toBe(200)
+  })
+
+  it('returns 500 on failure', async () => {
+    mockedAxiosPost.mockRejectedValue(new Error('down'))
+    const res = await supertest(buildApp()).get('/getUserRegistryById/other-id')
+    expect(res.status).toBe(500)
+  })
+})
+
+describe('GET /userProfileStatus', () => {
+  it('returns 400 when org/rootOrg headers are missing', async () => {
+    const res = await supertest(buildApp()).get('/userProfileStatus')
+    expect(res.status).toBe(400)
+  })
+
+  it('returns the profile status', async () => {
+    mockedAxiosPost.mockResolvedValue({ status: 200, data: { status: true } })
+    const res = await supertest(buildApp()).get('/userProfileStatus').set('org', 'dopt').set('rootOrg', 'igot')
+    expect(res.status).toBe(200)
+  })
+
+  it('returns 500 on failure', async () => {
+    mockedAxiosPost.mockRejectedValue(new Error('down'))
+    const res = await supertest(buildApp()).get('/userProfileStatus').set('org', 'dopt').set('rootOrg', 'igot')
+    expect(res.status).toBe(500)
+  })
+})
+
+describe('POST /setUserProfileStatus', () => {
+  it('sets the profile status', async () => {
+    mockedAxiosPost.mockResolvedValue({ status: 200, data: { status: true } })
+    const res = await supertest(buildApp()).post('/setUserProfileStatus').send({})
+    expect(res.status).toBe(200)
+  })
+
+  it('returns 500 on failure', async () => {
+    mockedAxiosPost.mockRejectedValue(new Error('down'))
+    const res = await supertest(buildApp()).post('/setUserProfileStatus').send({})
+    expect(res.status).toBe(500)
+  })
+})
+
+describe('GET /getMasterLanguages', () => {
+  it('returns the languages list', async () => {
+    mockedAxiosGet.mockResolvedValue({ status: 200, data: ['English'] })
+    const res = await supertest(buildApp()).get('/getMasterLanguages')
+    expect(res.status).toBe(200)
+  })
+
+  it('returns 500 on failure', async () => {
+    mockedAxiosGet.mockRejectedValue(new Error('down'))
+    const res = await supertest(buildApp()).get('/getMasterLanguages')
+    expect(res.status).toBe(500)
+  })
+})
+
+describe('GET /getMasterNationalities', () => {
+  it('returns the nationalities list', async () => {
+    mockedAxiosGet.mockResolvedValue({ status: 200, data: ['India'] })
+    const res = await supertest(buildApp()).get('/getMasterNationalities')
+    expect(res.status).toBe(200)
+  })
+
+  it('returns 500 on failure', async () => {
+    mockedAxiosGet.mockRejectedValue(new Error('down'))
+    const res = await supertest(buildApp()).get('/getMasterNationalities')
+    expect(res.status).toBe(500)
+  })
+})
+
+describe('GET /getProfilePageMeta', () => {
+  it('returns the profile page meta', async () => {
+    mockedAxiosGet.mockResolvedValue({ status: 200, data: { sections: [] } })
+    const res = await supertest(buildApp()).get('/getProfilePageMeta')
+    expect(res.status).toBe(200)
+  })
+
+  it('returns 500 on failure', async () => {
+    mockedAxiosGet.mockRejectedValue(new Error('down'))
+    const res = await supertest(buildApp()).get('/getProfilePageMeta')
+    expect(res.status).toBe(500)
+  })
+})
+
+describe('GET /migrateRegistry', () => {
+  afterEach(() => {
+    mockedReadFile.mockReset()
+  })
+
+  it('migrates the registry when the file reads successfully', async () => {
+    // tslint:disable-next-line: no-any
+    mockedReadFile.mockImplementation(((_path: any, cb: any) => {
+      cb(null, JSON.stringify({ widList: ['w1'] }))
+      // tslint:disable-next-line: no-any
+    }) as any)
+    mockedAxiosPost.mockResolvedValue({ status: 200, data: { result: 'ok' } })
+
+    const res = await supertest(buildApp()).get('/migrateRegistry')
+    expect(res.status).toBe(200)
+  })
+
+  it('returns 500 when the file read fails', async () => {
+    // tslint:disable-next-line: no-any
+    mockedReadFile.mockImplementation(((_path: any, cb: any) => {
+      cb(new Error('no file'), null)
+      // tslint:disable-next-line: no-any
+    }) as any)
+
+    const res = await supertest(buildApp()).get('/migrateRegistry')
+    expect(res.status).toBe(500)
+  })
+})
+
+describe('PATCH /updateUser', () => {
+  it('updates the user profile', async () => {
+    mockedAxiosPatch.mockResolvedValue({ status: 200, data: { updated: true } })
+    const res = await supertest(buildApp()).patch('/updateUser').send({})
+    expect(res.status).toBe(200)
+  })
+
+  it('returns a fallback error body when the failure has no response data', async () => {
+    mockedAxiosPatch.mockRejectedValue(new Error('down'))
+    const res = await supertest(buildApp()).patch('/updateUser').send({})
+    expect(res.status).toBe(500)
+    expect(res.body.error).toBeDefined()
+  })
+
+  it('passes through the response data from a failed update', async () => {
+    mockedAxiosPatch.mockRejectedValue({ response: { status: 400, data: { error: 'bad' } } })
+    const res = await supertest(buildApp()).patch('/updateUser').send({})
+    expect(res.status).toBe(400)
+    expect(res.body.error).toBe('bad')
+  })
+})
+
+describe('POST /createUserV2WithRegistry', () => {
+  it('returns 400 when channel is missing', async () => {
+    const res = await supertest(buildApp()).post('/createUserV2WithRegistry').send({ personalDetails: {} })
+    expect(res.status).toBe(400)
+  })
+
+  it('returns 400 when the email already exists', async () => {
+    // tslint:disable-next-line: no-any
+    mockedAxios.mockImplementation((config: any) => {
+      if (config.url.includes('private/user/v1/search')) {
+        return Promise.resolve({ data: { result: { response: { count: 1 } } } })
+      }
+      return Promise.resolve({ data: {} })
+    })
+    const res = await supertest(buildApp())
+      .post('/createUserV2WithRegistry')
+      .send({ personalDetails: { channel: 'Dept', email: 'a@b.com', firstName: 'A', lastName: 'B' } })
+    expect(res.status).toBe(400)
+  })
+
+  it('creates the user and registry on success', async () => {
+    // tslint:disable-next-line: no-any
+    mockedAxios.mockImplementation((config: any) => {
+      if (config.url.includes('private/user/v1/search')) {
+        return Promise.resolve({ data: { result: { response: { count: 0 } } } })
+      }
+      if (config.url.includes('user/v3/create')) {
+        return Promise.resolve({ data: { result: { userId: 'u1' } } })
+      }
+      if (config.url.includes('v1/user/read/')) {
+        return Promise.resolve({ data: { params: { status: 'SUCCESS' }, result: { response: { userName: 'uname' } } } })
+      }
+      if (config.url.includes('v1/user/create/profile')) {
+        return Promise.resolve({ data: { osid: 'os1' } })
+      }
+      return Promise.resolve({ data: {} })
+    })
+    const res = await supertest(buildApp())
+      .post('/createUserV2WithRegistry')
+      .send({ personalDetails: { channel: 'Dept', email: 'a@b.com', firstName: 'A', lastName: 'B' } })
+    expect(res.status).toBe(200)
+    expect(res.body.userId).toBe('u1')
+  })
+
+  it('returns 400 when Kong create responds with CLIENT_ERROR', async () => {
+    // tslint:disable-next-line: no-any
+    mockedAxios.mockImplementation((config: any) => {
+      if (config.url.includes('private/user/v1/search')) {
+        return Promise.resolve({ data: { result: { response: { count: 0 } } } })
+      }
+      if (config.url.includes('user/v3/create')) {
+        return Promise.resolve({ data: { responseCode: 'CLIENT_ERROR' } })
+      }
+      return Promise.resolve({ data: {} })
+    })
+    const res = await supertest(buildApp())
+      .post('/createUserV2WithRegistry')
+      .send({ personalDetails: { channel: 'Dept', email: 'a@b.com', firstName: 'A', lastName: 'B' } })
+    expect(res.status).toBe(400)
+  })
+
+  it('returns 500 when the created-user read fails', async () => {
+    // tslint:disable-next-line: no-any
+    mockedAxios.mockImplementation((config: any) => {
+      if (config.url.includes('private/user/v1/search')) {
+        return Promise.resolve({ data: { result: { response: { count: 0 } } } })
+      }
+      if (config.url.includes('user/v3/create')) {
+        return Promise.resolve({ data: { result: { userId: 'u1' } } })
+      }
+      if (config.url.includes('v1/user/read/')) {
+        return Promise.resolve({ data: { params: { status: 'FAILED' } } })
+      }
+      return Promise.resolve({ data: {} })
+    })
+    const res = await supertest(buildApp())
+      .post('/createUserV2WithRegistry')
+      .send({ personalDetails: { channel: 'Dept', email: 'a@b.com', firstName: 'A', lastName: 'B' } })
+    expect(res.status).toBe(500)
+  })
+
+  it('returns 500 when the registry could not be created in OpenSaber', async () => {
+    // tslint:disable-next-line: no-any
+    mockedAxios.mockImplementation((config: any) => {
+      if (config.url.includes('private/user/v1/search')) {
+        return Promise.resolve({ data: { result: { response: { count: 0 } } } })
+      }
+      if (config.url.includes('user/v3/create')) {
+        return Promise.resolve({ data: { result: { userId: 'u1' } } })
+      }
+      if (config.url.includes('v1/user/read/')) {
+        return Promise.resolve({ data: { params: { status: 'SUCCESS' }, result: { response: { userName: 'uname' } } } })
+      }
+      if (config.url.includes('v1/user/create/profile')) {
+        return Promise.resolve({ data: null })
+      }
+      return Promise.resolve({ data: {} })
+    })
+    const res = await supertest(buildApp())
+      .post('/createUserV2WithRegistry')
+      .send({ personalDetails: { channel: 'Dept', email: 'a@b.com', firstName: 'A', lastName: 'B' } })
+    expect(res.status).toBe(500)
+  })
+})
+
+describe('POST /createUserV2WithoutRegistry', () => {
+  it('returns 400 when channel is missing', async () => {
+    const res = await supertest(buildApp()).post('/createUserV2WithoutRegistry').send({ personalDetails: {} })
+    expect(res.status).toBe(400)
+  })
+
+  it('returns 400 when the email already exists', async () => {
+    // tslint:disable-next-line: no-any
+    mockedAxios.mockImplementation((config: any) => {
+      if (config.url.includes('private/user/v1/search')) {
+        return Promise.resolve({ data: { result: { response: { count: 1 } } } })
+      }
+      return Promise.resolve({ data: {} })
+    })
+    const res = await supertest(buildApp())
+      .post('/createUserV2WithoutRegistry')
+      .send({ personalDetails: { channel: 'Dept', email: 'a@b.com', firstName: 'A', lastName: 'B' } })
+    expect(res.status).toBe(400)
+  })
+
+  it('creates the user on success', async () => {
+    // tslint:disable-next-line: no-any
+    mockedAxios.mockImplementation((config: any) => {
+      if (config.url.includes('private/user/v1/search')) {
+        return Promise.resolve({ data: { result: { response: { count: 0 } } } })
+      }
+      if (config.url.includes('user/v3/create')) {
+        return Promise.resolve({ data: { result: { userId: 'u1' } } })
+      }
+      if (config.url.includes('v1/user/read/')) {
+        return Promise.resolve({ data: { params: { status: 'SUCCESS' } } })
+      }
+      return Promise.resolve({ data: {} })
+    })
+    const res = await supertest(buildApp())
+      .post('/createUserV2WithoutRegistry')
+      .send({ personalDetails: { channel: 'Dept', email: 'a@b.com', firstName: 'A', lastName: 'B' } })
+    expect(res.status).toBe(200)
+    expect(res.body.userId).toBe('u1')
+  })
+
+  it('returns 400 when Kong create responds with CLIENT_ERROR', async () => {
+    // tslint:disable-next-line: no-any
+    mockedAxios.mockImplementation((config: any) => {
+      if (config.url.includes('private/user/v1/search')) {
+        return Promise.resolve({ data: { result: { response: { count: 0 } } } })
+      }
+      if (config.url.includes('user/v3/create')) {
+        return Promise.resolve({ data: { responseCode: 'CLIENT_ERROR' } })
+      }
+      return Promise.resolve({ data: {} })
+    })
+    const res = await supertest(buildApp())
+      .post('/createUserV2WithoutRegistry')
+      .send({ personalDetails: { channel: 'Dept', email: 'a@b.com', firstName: 'A', lastName: 'B' } })
+    expect(res.status).toBe(400)
+  })
+
+  it('returns 500 when the created-user read fails', async () => {
+    // tslint:disable-next-line: no-any
+    mockedAxios.mockImplementation((config: any) => {
+      if (config.url.includes('private/user/v1/search')) {
+        return Promise.resolve({ data: { result: { response: { count: 0 } } } })
+      }
+      if (config.url.includes('user/v3/create')) {
+        return Promise.resolve({ data: { result: { userId: 'u1' } } })
+      }
+      if (config.url.includes('v1/user/read/')) {
+        return Promise.resolve({ data: { params: { status: 'FAILED' } } })
+      }
+      return Promise.resolve({ data: {} })
+    })
+    const res = await supertest(buildApp())
+      .post('/createUserV2WithoutRegistry')
+      .send({ personalDetails: { channel: 'Dept', email: 'a@b.com', firstName: 'A', lastName: 'B' } })
+    expect(res.status).toBe(500)
+  })
+})
+
+describe('POST /createUserWithoutInvitationEmail', () => {
+  it('returns 400 when channel is missing', async () => {
+    const res = await supertest(buildApp()).post('/createUserWithoutInvitationEmail').send({ personalDetails: {} })
+    expect(res.status).toBe(400)
+  })
+
+  it('returns 400 when the email already exists', async () => {
+    // tslint:disable-next-line: no-any
+    mockedAxios.mockImplementation((config: any) => {
+      if (config.url.includes('user/v1/search')) {
+        return Promise.resolve({ data: { result: { response: { count: 1 } } } })
+      }
+      return Promise.resolve({ data: {} })
+    })
+    const res = await supertest(buildApp())
+      .post('/createUserWithoutInvitationEmail')
+      .send({ personalDetails: { channel: 'Dept', email: 'a@b.com', firstName: 'A', lastName: 'B' } })
+    expect(res.status).toBe(400)
+    expect(res.body.responseCode).toBe('USR_EMAIL_EXISTS')
+  })
+
+  it('creates the user and updates the profile on success', async () => {
+    // tslint:disable-next-line: no-any
+    mockedAxios.mockImplementation((config: any) => {
+      if (config.url.includes('user/v1/search')) {
+        return Promise.resolve({ data: { result: { response: { count: 0 } } } })
+      }
+      if (config.url.includes('user/v5/create')) {
+        return Promise.resolve({ data: { result: { userId: 'u1' } } })
+      }
+      if (config.url.includes('user/v2/read/')) {
+        return Promise.resolve({ data: { params: { status: 'SUCCESS' } } })
+      }
+      if (config.url.includes('private/v1/update')) {
+        return Promise.resolve({ data: { responseCode: 'OK' } })
+      }
+      return Promise.resolve({ data: {} })
+    })
+    const res = await supertest(buildApp())
+      .post('/createUserWithoutInvitationEmail')
+      .send({ personalDetails: { channel: 'Dept', email: 'a@b.com', firstName: 'A', lastName: 'B' } })
+    expect(res.status).toBe(200)
+    expect(res.body.userId).toBe('u1')
+  })
+
+  it('returns 400 when Kong create responds with CLIENT_ERROR', async () => {
+    // tslint:disable-next-line: no-any
+    mockedAxios.mockImplementation((config: any) => {
+      if (config.url.includes('user/v1/search')) {
+        return Promise.resolve({ data: { result: { response: { count: 0 } } } })
+      }
+      if (config.url.includes('user/v5/create')) {
+        return Promise.resolve({ data: { responseCode: 'CLIENT_ERROR' } })
+      }
+      return Promise.resolve({ data: {} })
+    })
+    const res = await supertest(buildApp())
+      .post('/createUserWithoutInvitationEmail')
+      .send({ personalDetails: { channel: 'Dept', email: 'a@b.com', firstName: 'A', lastName: 'B' } })
+    expect(res.status).toBe(400)
+  })
+
+  it('returns 500 when the created-user read fails', async () => {
+    // tslint:disable-next-line: no-any
+    mockedAxios.mockImplementation((config: any) => {
+      if (config.url.includes('user/v1/search')) {
+        return Promise.resolve({ data: { result: { response: { count: 0 } } } })
+      }
+      if (config.url.includes('user/v5/create')) {
+        return Promise.resolve({ data: { result: { userId: 'u1' } } })
+      }
+      if (config.url.includes('user/v2/read/')) {
+        return Promise.resolve({ data: { params: { status: 'FAILED' } } })
+      }
+      return Promise.resolve({ data: {} })
+    })
+    const res = await supertest(buildApp())
+      .post('/createUserWithoutInvitationEmail')
+      .send({ personalDetails: { channel: 'Dept', email: 'a@b.com', firstName: 'A', lastName: 'B' } })
+    expect(res.status).toBe(500)
+  })
+
+  it('returns 400 when the profile update responds with CLIENT_ERROR', async () => {
+    // tslint:disable-next-line: no-any
+    mockedAxios.mockImplementation((config: any) => {
+      if (config.url.includes('user/v1/search')) {
+        return Promise.resolve({ data: { result: { response: { count: 0 } } } })
+      }
+      if (config.url.includes('user/v5/create')) {
+        return Promise.resolve({ data: { result: { userId: 'u1' } } })
+      }
+      if (config.url.includes('user/v2/read/')) {
+        return Promise.resolve({ data: { params: { status: 'SUCCESS' } } })
+      }
+      if (config.url.includes('private/v1/update')) {
+        return Promise.resolve({ data: { responseCode: 'CLIENT_ERROR' } })
+      }
+      return Promise.resolve({ data: {} })
+    })
+    const res = await supertest(buildApp())
+      .post('/createUserWithoutInvitationEmail')
+      .send({ personalDetails: { channel: 'Dept', email: 'a@b.com', firstName: 'A', lastName: 'B' } })
+    expect(res.status).toBe(400)
   })
 })

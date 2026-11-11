@@ -69,7 +69,7 @@ profileDeatailsApi.post('/createUserRegistry', async (req, res) => {
         res.status(response.status).json(response.data)
     } catch (err) {
         logError('ERROR CREATING USER REGISTRY >', err)
-        res.status((err && err.response && err.response.status) || 500).send(err)
+        res.status(err?.response?.status ?? 500).send(err)
     }
 })
 
@@ -84,7 +84,7 @@ profileDeatailsApi.get('/getUserRegistry', async (req, res) => {
         res.status(response.status).send(response.data)
     } catch (err) {
         logError('ERROR FETCHING USER REGISTRY >', err)
-        res.status((err && err.response && err.response.status) || 500).send(err)
+        res.status(err?.response?.status ?? 500).send(err)
     }
 })
 
@@ -103,7 +103,7 @@ profileDeatailsApi.get('/getUserRegistryById/:id', async (req, res) => {
         res.status(response.status).send(response.data)
     } catch (err) {
         logError('ERROR FETCHING USER REGISTRY >', err)
-        res.status((err && err.response && err.response.status) || 500).send(err)
+        res.status(err?.response?.status ?? 500).send(err)
     }
 })
 
@@ -123,7 +123,7 @@ profileDeatailsApi.get('/userProfileStatus', async (req, res) => {
         res.status(response.status).send(response.data)
     } catch (err) {
         logError('ERROR FETCHING USER PROFILE STATUS >', err)
-        res.status((err && err.response && err.response.status) || 500).send(err)
+        res.status(err?.response?.status ?? 500).send(err)
     }
 })
 
@@ -137,7 +137,7 @@ profileDeatailsApi.post('/setUserProfileStatus', async (req, res) => {
         res.status(response.status).send(response.data)
     } catch (err) {
         logError('ERROR SETTING USER PROFILE STATUS >', err)
-        res.status((err && err.response && err.response.status) || 500).send(err)
+        res.status(err?.response?.status ?? 500).send(err)
     }
 })
 
@@ -149,7 +149,7 @@ profileDeatailsApi.get('/getMasterLanguages', async (_req, res) => {
         res.status(response.status).send(response.data)
     } catch (err) {
         logError('ERROR FETCHING MASTER LANGUAGES >', err)
-        res.status((err && err.response && err.response.status) || 500).send(err)
+        res.status(err?.response?.status ?? 500).send(err)
     }
 })
 
@@ -162,7 +162,7 @@ profileDeatailsApi.get('/getMasterNationalities', async (_req, res) => {
         res.status(response.status).send(response.data)
     } catch (err) {
         logError('ERROR FETCHING MASTER NATIONALITIES >', err)
-        res.status((err && err.response && err.response.status) || 500).send(err)
+        res.status(err?.response?.status ?? 500).send(err)
     }
 })
 
@@ -174,7 +174,7 @@ profileDeatailsApi.get('/getProfilePageMeta', async (_req, res) => {
         res.status(response.status).send(response.data)
     } catch (err) {
         logError('ERROR FETCHING MASTER NATIONALITIES >', err)
-        res.status((err && err.response && err.response.status) || 500).send(err)
+        res.status(err?.response?.status ?? 500).send(err)
     }
 })
 
@@ -204,7 +204,7 @@ profileDeatailsApi.get('/migrateRegistry', async (req, res) => {
         })
     } catch (err) {
         logError('ERROR CREATING USER REGISTRY >', err)
-        res.status((err && err.response && err.response.status) || 500).send(err)
+        res.status(err?.response?.status ?? 500).send(err)
     }
 })
 
@@ -651,8 +651,8 @@ profileDeatailsApi.patch('/updateUser', async (req, res) => {
         res.status(response.status).send(response.data)
     } catch (err) {
         logError(failedToUpdateUser + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
+        res.status(err?.response?.status ?? 500).send(
+            err?.response?.data ?? {
                 error: unknownError,
             }
         )
@@ -744,7 +744,7 @@ profileDeatailsApi.post('/createUserV2WithRegistry', async (req, res) => {
         }
     } catch (err) {
         logError(createUserFailed, err)
-        res.status((err && err.response && err.response.status) || 500).send(err)
+        res.status(err?.response?.status ?? 500).send(err)
     }
 })
 
@@ -814,7 +814,7 @@ profileDeatailsApi.post('/createUserV2WithoutRegistry', async (req, res) => {
         }
     } catch (err) {
         logError(createUserFailed, err)
-        res.status((err && err.response && err.response.status) || 500).send(err)
+        res.status(err?.response?.status ?? 500).send(err)
     }
 })
 
@@ -935,7 +935,7 @@ profileDeatailsApi.post('/createUserWithoutInvitationEmail', async (req, res) =>
         }
     } catch (err) {
         logError(createUserFailed, err)
-        res.status((err && err.response && err.response.status) || 500).send(err)
+        res.status(err?.response?.status ?? 500).send(err)
     }
 })
 
