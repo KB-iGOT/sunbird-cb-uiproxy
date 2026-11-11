@@ -32,20 +32,22 @@ const { __mockWeb } = require('http-proxy') as { __mockWeb: jest.Mock }
 const mockedFormDataCtor = FormData as unknown as jest.Mock
 
 // tslint:disable-next-line: no-any
-function buildApp(sessionOverrides: Record<string, any> = {}) {
+function buildApp(sessionOverrides: Record<string, any> = {}, includeKauth = true) {
   const app = express()
   app.use(express.json())
   app.use(fileUpload() as unknown as RequestHandler)
   app.use((req: Request, _res: Response, next: NextFunction) => {
     // tslint:disable-next-line: no-any
     const mutableReq = req as any
-    mutableReq.kauth = {
-      grant: {
-        access_token: {
-          content: { sub: 'f:kc-realm:user-123' },
-          token: 'user-jwt-token',
+    if (includeKauth) {
+      mutableReq.kauth = {
+        grant: {
+          access_token: {
+            content: { sub: 'f:kc-realm:user-123' },
+            token: 'user-jwt-token',
+          },
         },
-      },
+      }
     }
     mutableReq.session = {
       channel: 'TN Dept',
@@ -100,6 +102,44 @@ describe('proxiesV8 org hierarchy bulk link upload route', () => {
 
     expect(res.status).toBe(500)
     expect(res.text).toBe('File not found in the request')
+  })
+
+  it('returns 500 when multipart upload contains neither file nor data field', async () => {
+    const res = await supertest(buildApp())
+      .post('/proxies/v8/org/v2/hierarchy/bulk/link/root-org-1')
+      .attach('other', Buffer.from('a,b'), 'links.csv')
+
+    expect(res.status).toBe(500)
+    expect(res.text).toBe('File not found in the request')
+  })
+
+  it('falls back to empty header values when session org/channel and kauth token are absent', async () => {
+    const mockFormInstance = mockFormDataSubmit((_opts, cb) => {
+      const fakeResponse = createFakeStreamResponse(200)
+      cb(null, fakeResponse)
+      fakeResponse.emit('data', Buffer.from(JSON.stringify({ ok: true })))
+      fakeResponse.emit('end')
+    })
+
+    const res = await supertest(buildApp({ channel: undefined, rootOrgId: undefined }, false))
+      .post('/proxies/v8/org/v2/hierarchy/bulk/link/root-org-1')
+      .set('wid', 'wid-user-1')
+      .attach('file', Buffer.from('a,b'), 'links.csv')
+
+    expect(res.status).toBe(200)
+    expect(mockFormInstance.submit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        headers: {
+          Authorization: CONSTANTS.SB_API_KEY,
+          'x-authenticated-user-channel': '',
+          'x-authenticated-user-orgid': '',
+          'x-authenticated-user-orgname': '',
+          'x-authenticated-user-token': '',
+          'x-authenticated-userid': 'wid-user-1',
+        },
+      }),
+      expect.any(Function)
+    )
   })
 
   it('forwards multipart file uploads to kong:8000 with expected headers and parses 200 JSON response', async () => {
