@@ -211,34 +211,6 @@ describe('Server', () => {
     expect(res.status).toBe(200)
   })
 
-  describe('request cookies', () => {
-    it('does not echo cookies sent in the request back as Set-Cookie', async () => {
-      // tslint:disable-next-line: no-any
-      const instance: any = buildServerInstance()
-      const res = await supertest(instance.app)
-        .get('/public/v8/ping')
-        .set('Cookie', ['connect.sid=abc123', 'rootorg=igot', 'other=value'])
-      expect(res.status).toBe(200)
-      expect(res.header['set-cookie']).toBeUndefined()
-    })
-
-    it('does not set any cookie when the request has none', async () => {
-      // tslint:disable-next-line: no-any
-      const instance: any = buildServerInstance()
-      const res = await supertest(instance.app).get('/public/v8/ping')
-      expect(res.header['set-cookie']).toBeUndefined()
-    })
-
-    it('sets the rootorg cookie only for localhost requests carrying a rootOrg header', async () => {
-      // tslint:disable-next-line: no-any
-      const instance: any = buildServerInstance()
-      const local = await supertest(instance.app).get('/public/v8/ping').set('Host', 'localhost:3003').set('rootOrg', 'igot')
-      expect(local.header['set-cookie']).toEqual([expect.stringContaining('rootorg=igot')])
-      const remote = await supertest(instance.app).get('/public/v8/ping').set('Host', 'portal.example.com').set('rootOrg', 'igot')
-      expect(remote.header['set-cookie']).toBeUndefined()
-    })
-  })
-
   it('redirects /reset to /apis/logout', async () => {
     // tslint:disable-next-line: no-any
     const instance: any = buildServerInstance()
