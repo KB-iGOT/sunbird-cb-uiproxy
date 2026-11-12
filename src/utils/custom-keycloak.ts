@@ -11,6 +11,8 @@ const async = require('async')
 
 const composable = require('composable-middleware')
 
+const LOGIN_CALLBACK_PATH = '/protected/v8/resource'
+
 const stripProtocol = (host: string | undefined): string =>
   (host || '').replace(/^https?:\/\//, '').toLowerCase()
 
@@ -297,6 +299,31 @@ export class CustomKeycloak {
         logout: '/logout',
       })
     )
+    // Hop reduction: after a successful code exchange keycloak-connect (post-auth) redirects to the same
+    // path without the callback params, and that second request is what finally redirects the user to the
+    // target page. Instead of sending that intermediate 302 to the browser, continue the chain in this same
+    // request: the grant and session are already set, so the resource handler issues the final redirect.
+    if (req.query && req.query.auth_callback && req.query.code && req.path.startsWith(LOGIN_CALLBACK_PATH)) {
+      const originalRedirect = res.redirect.bind(res)
+      const callbackPath = req.path
+      let continued = false
+      // tslint:disable-next-line: no-any
+      ;(res as any).redirect = (...args: any[]) => {
+        const target = args.find((a) => typeof a === 'string') as string | undefined
+        // tslint:disable-next-line: no-any
+        const authenticated = !!(req.session && (req.session as any).authenticated)
+        if (!continued && authenticated && target && target.split('?')[0] === callbackPath) {
+          continued = true
+          res.redirect = originalRedirect
+          logDebug('[callback] skipping intermediate redirect to ' + target + ', continuing in same request')
+          next()
+          return
+        }
+        res.redirect = originalRedirect
+        // tslint:disable-next-line: no-any
+        return (originalRedirect as any)(...args)
+      }
+    }
     middleware(req, res, next)
   }
 

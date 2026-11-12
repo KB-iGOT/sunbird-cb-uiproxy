@@ -236,6 +236,79 @@ describe('middleware', () => {
     expect(next).toHaveBeenCalledTimes(1)
   })
 
+  describe('login callback hop reduction', () => {
+    const callbackQuery = { auth_callback: '1', code: 'abc', state: 's', session_state: 'ss', iss: 'https://kc' }
+
+    // Simulates keycloak-connect post-auth: after the code exchange it redirects to the clean callback URL
+    // tslint:disable-next-line: no-any
+    function setup(reqOverrides: any, redirectTarget: string) {
+      const keycloak = buildKeycloak()
+      const req = buildReq({ path: '/protected/v8/resource/', ...reqOverrides })
+      // tslint:disable-next-line: no-any
+      const instance = keycloak.getKeyCloakObject(req) as any
+      const originalRedirect = jest.fn()
+      const res = { redirect: originalRedirect }
+      instance.middleware.mockReturnValue((_req: unknown, r: typeof res, _next: () => void) => {
+        r.redirect(redirectTarget)
+      })
+      const next = jest.fn()
+      return { keycloak, req, res, next, originalRedirect }
+    }
+
+    it('continues in the same request instead of sending the intermediate redirect', () => {
+      const { keycloak, req, res, next, originalRedirect } = setup(
+        { query: callbackQuery, session: buildSession({ authenticated: true }) },
+        '/protected/v8/resource/?iss=https%3A%2F%2Fkc'
+      )
+      keycloak.middleware(req, res as never, next)
+      expect(next).toHaveBeenCalledTimes(1)
+      expect(originalRedirect).not.toHaveBeenCalled()
+      // the original redirect is restored for the downstream handler
+      res.redirect('/page/home')
+      expect(originalRedirect).toHaveBeenCalledWith('/page/home')
+    })
+
+    it('performs the redirect normally when the session is not authenticated', () => {
+      const { keycloak, req, res, next, originalRedirect } = setup(
+        { query: callbackQuery, session: buildSession({ authenticated: false }) },
+        '/protected/v8/resource/?iss=https%3A%2F%2Fkc'
+      )
+      keycloak.middleware(req, res as never, next)
+      expect(next).not.toHaveBeenCalled()
+      expect(originalRedirect).toHaveBeenCalledWith('/protected/v8/resource/?iss=https%3A%2F%2Fkc')
+    })
+
+    it('performs the redirect normally when the target is a different path', () => {
+      const { keycloak, req, res, next, originalRedirect } = setup(
+        { query: callbackQuery, session: buildSession({ authenticated: true }) },
+        '/some/other/path'
+      )
+      keycloak.middleware(req, res as never, next)
+      expect(next).not.toHaveBeenCalled()
+      expect(originalRedirect).toHaveBeenCalledWith('/some/other/path')
+    })
+
+    it('does not intercept when the request is not a login callback', () => {
+      const { keycloak, req, res, next, originalRedirect } = setup(
+        { query: {}, session: buildSession({ authenticated: true }) },
+        '/protected/v8/resource/'
+      )
+      keycloak.middleware(req, res as never, next)
+      expect(next).not.toHaveBeenCalled()
+      expect(originalRedirect).toHaveBeenCalledWith('/protected/v8/resource/')
+    })
+
+    it('does not intercept callbacks on other paths', () => {
+      const { keycloak, req, res, next, originalRedirect } = setup(
+        { path: '/other/', query: callbackQuery, session: buildSession({ authenticated: true }) },
+        '/other/'
+      )
+      keycloak.middleware(req, res as never, next)
+      expect(next).not.toHaveBeenCalled()
+      expect(originalRedirect).toHaveBeenCalledWith('/other/')
+    })
+  })
+
   describe('/logout', () => {
     // tslint:disable-next-line: no-any
     function buildLogoutRes(): any {
