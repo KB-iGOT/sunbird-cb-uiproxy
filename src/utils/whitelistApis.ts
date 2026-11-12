@@ -8614,6 +8614,35 @@ export const API_LIST = {
                 ROLE.MDO_LEADER,
             ],
         },
+        '/proxies/v8/formsConfig/v2/admin/read/:id': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.PUBLIC,
+                ROLE.VOLUNTEER,
+            ],
+        },
+        '/proxies/v8/contentpartner/v2/create': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+              ROLE.SPV_ADMIN,
+            ],
+        },
+        '/proxies/v8/contentpartner/v2/update': {
+              checksNeeded: [CHECK.ROLE],
+              // tslint:disable-next-line: object-literal-sort-keys
+              ROLE_CHECK: [
+                ROLE.SPV_ADMIN,
+              ],
+        },
+        '/proxies/v8/ciosIntegration/lti/ssotest/:partnerCode': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.SPV_ADMIN,
+            ],
+        },
 
     },
     URL_PATTERN:
@@ -9612,6 +9641,7 @@ export const API_LIST = {
             '/proxies/v8/formsConfig/v1/readFormDetails/portal',
             '/proxies/v8/formsConfig/v1/readFormDetails/mobile',
             '/proxies/v8/formsConfig/v1/update',
+            '/proxies/v8/formsConfig/v2/admin/read/:id',
             '/proxies/v8/org/v1/status/update',
             '/proxies/v8/course/v2/unenroll',
             '/proxies/v8/course/v1/reenroll',
@@ -9689,5 +9719,8 @@ export const API_LIST = {
             '/proxies/v8/action/content/ca/v1/create',
             '/proxies/v8/action/content/ca/v1/update/:do_id',
             '/proxies/v8/action/content/ca/v1/hierarchy/update',
+            '/proxies/v8/contentpartner/v2/update',
+            '/proxies/v8/contentpartner/v2/create',
+            '/proxies/v8/ciosIntegration/lti/ssotest/:partnerCode',
         ],
 }
