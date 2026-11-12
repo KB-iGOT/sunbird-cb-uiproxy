@@ -10,6 +10,9 @@ const ENV_KEYS = [
   'MNRE_PORTAL_HOST',
   'MNRE_REDIRECT_PATH',
   'MNRE_DESTINATION_PORTAL_HOST',
+  'SSM_PORTAL_HOST',
+  'SSM_REDIRECT_PATH',
+  'SSM_DESTINATION_PORTAL_HOST',
 ]
 
 const originalEnv: Record<string, string | undefined> = {}
@@ -120,6 +123,38 @@ describe('CONSTANTS env overrides', () => {
   it('uses a finite UPSTREAM_MAX_CONNECTIONS when configured', () => {
     process.env.UPSTREAM_MAX_CONNECTIONS = '128'
     expect(loadEnvModule().CONSTANTS.UPSTREAM_MAX_CONNECTIONS).toBe(128)
+  })
+})
+
+describe('SSM portal configuration', () => {
+  it('falls back to the SSM defaults when no SSM_* env vars are set', () => {
+    ENV_KEYS.forEach((key) => delete process.env[key])
+    const { CONSTANTS } = loadEnvModule()
+    expect(CONSTANTS.SSM_PORTAL_HOST).toBe('https://ssm-portal.igotkarmayogi.gov.in')
+    expect(CONSTANTS.SSM_REDIRECT_PATH).toBe('/page/home')
+    expect(CONSTANTS.SSM_DESTINATION_PORTAL_HOST).toBe('ssm.igotkarmayogi.gov.in')
+  })
+
+  it('reads SSM_PORTAL_HOST, SSM_REDIRECT_PATH and SSM_DESTINATION_PORTAL_HOST from env', () => {
+    process.env.SSM_PORTAL_HOST = 'https://ssm-portal.uat.example.net'
+    process.env.SSM_REDIRECT_PATH = '/page/learn'
+    process.env.SSM_DESTINATION_PORTAL_HOST = 'ssm.uat.example.net'
+    const { CONSTANTS } = loadEnvModule()
+    expect(CONSTANTS.SSM_PORTAL_HOST).toBe('https://ssm-portal.uat.example.net')
+    expect(CONSTANTS.SSM_REDIRECT_PATH).toBe('/page/learn')
+    expect(CONSTANTS.SSM_DESTINATION_PORTAL_HOST).toBe('ssm.uat.example.net')
+  })
+
+  it('does not inherit MNRE_* env values for the SSM settings', () => {
+    ENV_KEYS.forEach((key) => delete process.env[key])
+    process.env.MNRE_PORTAL_HOST = 'https://mnre-portal.uat.example.net'
+    process.env.MNRE_REDIRECT_PATH = '/page/mnre'
+    process.env.MNRE_DESTINATION_PORTAL_HOST = 'mnre.uat.example.net'
+    const { CONSTANTS } = loadEnvModule()
+    expect(CONSTANTS.MNRE_PORTAL_HOST).toBe('https://mnre-portal.uat.example.net')
+    expect(CONSTANTS.SSM_PORTAL_HOST).toBe('https://ssm-portal.igotkarmayogi.gov.in')
+    expect(CONSTANTS.SSM_REDIRECT_PATH).toBe('/page/home')
+    expect(CONSTANTS.SSM_DESTINATION_PORTAL_HOST).toBe('ssm.igotkarmayogi.gov.in')
   })
 })
 

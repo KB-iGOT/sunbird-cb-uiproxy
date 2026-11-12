@@ -10,6 +10,12 @@ export const CONSTANTS = {
   ATTENDANCE_API_BASE: env.ATTENDANCE_API_BASE || env.SB_EXT_API_BASE_2,
   AUTHORING_BACKEND: env.SUNBIRD_BACKEND || 'http://localhost:3011',
   BADGE_API_BASE: env.BADGE_API_BASE || env.SB_EXT_API_BASE_2,
+  CAMPAIGN_MOBILE_REDIS_KEY:
+    env.CAMPAIGN_MOBILE_REDIS_KEY ||
+    'sankalp_2026_campaign_mobile',
+  CAMPAIGN_PORTAL_REDIS_KEY:
+    env.CAMPAIGN_PORTAL_REDIS_KEY ||
+    'sankalp_2026_campaign_portal',
   NETWORK_HUB_SERVICE_BACKEND: env.NETWORK_HUB_SERVICE_BACKEND || 'http://localhost:3013',
 
   CASSANDRA_IP: env.CASSANDRA_IP || '10.177.157.30',
@@ -265,6 +271,9 @@ export const CONSTANTS = {
   MNRE_PORTAL_HOST: env.MNRE_PORTAL_HOST || 'https://mnre-portal.igotkarmayogi.gov.in',
   MNRE_REDIRECT_PATH: env.MNRE_REDIRECT_PATH || '/page/home',
   MNRE_DESTINATION_PORTAL_HOST: env.MNRE_DESTINATION_PORTAL_HOST || 'mnre.igotkarmayogi.gov.in',
+  SSM_PORTAL_HOST: env.SSM_PORTAL_HOST || 'https://ssm-portal.igotkarmayogi.gov.in',
+  SSM_REDIRECT_PATH: env.SSM_REDIRECT_PATH || '/page/home',
+  SSM_DESTINATION_PORTAL_HOST: env.SSM_DESTINATION_PORTAL_HOST || 'ssm.igotkarmayogi.gov.in',
 }
 
 export const RESTRICTED_PYTHON_STMT: string[] = process.env.RESTRICTED_CHARACTERS

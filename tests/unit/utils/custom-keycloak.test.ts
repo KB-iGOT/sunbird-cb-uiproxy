@@ -54,7 +54,8 @@ function buildReq(overrides: any = {}): any {
 describe('resolvePostLogoutRedirect', () => {
   const keys = [
     'IIM_PORTAL_HOST', 'IIIDEM_PORTAL_HOST', 'ADI_PORTAL_HOST', 'ADIKARMAYOGI_PORTAL_HOST',
-    'MNRE_PORTAL_HOST', 'MNRE_DESTINATION_PORTAL_HOST', 'LOGOUT_PUBLIC_HOME_HOSTS',
+    'MNRE_PORTAL_HOST', 'MNRE_DESTINATION_PORTAL_HOST', 'SSM_PORTAL_HOST', 'SSM_DESTINATION_PORTAL_HOST',
+    'LOGOUT_PUBLIC_HOME_HOSTS',
   ]
   // tslint:disable-next-line: no-any
   const constants = CONSTANTS as any
@@ -73,6 +74,32 @@ describe('resolvePostLogoutRedirect', () => {
     constants.MNRE_PORTAL_HOST = 'https://mnre-portal.uat.example.net'
     constants.MNRE_DESTINATION_PORTAL_HOST = 'mnre.example.gov.in'
     expect(resolvePostLogoutRedirect('MNRE-Portal.uat.example.net')).toBe('https://mnre.example.gov.in/')
+  })
+
+  it('maps the SSM portal host to the SSM destination host', () => {
+    constants.SSM_PORTAL_HOST = 'https://ssm-portal.uat.example.net'
+    constants.SSM_DESTINATION_PORTAL_HOST = 'ssm.example.gov.in'
+    expect(resolvePostLogoutRedirect('SSM-Portal.uat.example.net')).toBe('https://ssm.example.gov.in/')
+  })
+
+  it('accepts an SSM portal host configured without a protocol', () => {
+    constants.SSM_PORTAL_HOST = 'ssm-portal.uat.example.net'
+    constants.SSM_DESTINATION_PORTAL_HOST = 'ssm.example.gov.in'
+    expect(resolvePostLogoutRedirect('ssm-portal.uat.example.net')).toBe('https://ssm.example.gov.in/')
+  })
+
+  it('keeps SSM and MNRE mappings independent of each other', () => {
+    constants.MNRE_PORTAL_HOST = 'https://mnre-portal.uat.example.net'
+    constants.MNRE_DESTINATION_PORTAL_HOST = 'mnre.example.gov.in'
+    constants.SSM_PORTAL_HOST = 'https://ssm-portal.uat.example.net'
+    constants.SSM_DESTINATION_PORTAL_HOST = 'ssm.example.gov.in'
+    expect(resolvePostLogoutRedirect('ssm-portal.uat.example.net')).toBe('https://ssm.example.gov.in/')
+    expect(resolvePostLogoutRedirect('mnre-portal.uat.example.net')).toBe('https://mnre.example.gov.in/')
+  })
+
+  it('does not match the SSM mapping when SSM_PORTAL_HOST is not configured', () => {
+    constants.SSM_DESTINATION_PORTAL_HOST = 'ssm.example.gov.in'
+    expect(resolvePostLogoutRedirect('ssm-portal.uat.example.net')).toBe('https://ssm-portal.uat.example.net/')
   })
 
   it('strips the leading portal subdomain', () => {
@@ -243,6 +270,27 @@ describe('middleware', () => {
       } finally {
         CONSTANTS.MNRE_PORTAL_HOST = originalHost
         CONSTANTS.MNRE_DESTINATION_PORTAL_HOST = originalDestination
+      }
+    })
+
+    it('redirects the SSM portal host to the SSM destination host on logout', () => {
+      const originalHost = CONSTANTS.SSM_PORTAL_HOST
+      const originalDestination = CONSTANTS.SSM_DESTINATION_PORTAL_HOST
+      CONSTANTS.SSM_PORTAL_HOST = 'https://ssm-portal.example.gov.in'
+      CONSTANTS.SSM_DESTINATION_PORTAL_HOST = 'ssm.example.gov.in'
+      try {
+        const keycloak = buildKeycloak()
+        const req = buildReq({ hostname: 'ssm-portal.example.gov.in', path: '/logout' })
+        const res = buildLogoutRes()
+
+        keycloak.middleware(req, res, jest.fn())
+
+        expect(res.clearCookie).toHaveBeenCalled()
+        expect(res.redirect).toHaveBeenCalledWith('https://ssm.example.gov.in/')
+        expect(mockedRequestPost).not.toHaveBeenCalled()
+      } finally {
+        CONSTANTS.SSM_PORTAL_HOST = originalHost
+        CONSTANTS.SSM_DESTINATION_PORTAL_HOST = originalDestination
       }
     })
 

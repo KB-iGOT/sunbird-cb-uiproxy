@@ -20,6 +20,7 @@ const dedicatedPortalLogoutTargets = (): Array<{ portalHost: string, destination
   { portalHost: stripProtocol(CONSTANTS.IIM_PORTAL_HOST), destinationHost: CONSTANTS.IIIDEM_PORTAL_HOST },
   { portalHost: stripProtocol(CONSTANTS.ADI_PORTAL_HOST), destinationHost: CONSTANTS.ADIKARMAYOGI_PORTAL_HOST },
   { portalHost: stripProtocol(CONSTANTS.MNRE_PORTAL_HOST), destinationHost: CONSTANTS.MNRE_DESTINATION_PORTAL_HOST },
+  { portalHost: stripProtocol(CONSTANTS.SSM_PORTAL_HOST), destinationHost: CONSTANTS.SSM_DESTINATION_PORTAL_HOST },
 ]
 
 // Derive the final destination the browser lands on after KC clears its SSO session.

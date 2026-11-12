@@ -1,6 +1,7 @@
 import axios from 'axios'
 import express, { Request } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
+import { campaignMicrositeConfigHandler } from '../utils/campaignMicrositeConfig'
 import { CONSTANTS } from '../utils/env'
 import { logError } from '../utils/logger'
 import { proxyCreatorRoute } from '../utils/proxyCreator'
@@ -77,6 +78,14 @@ publicApiV8.post('/course/batch/cert/download/mobile', async (req, res) => {
       }
     )
   }
+})
+
+publicApiV8.get('/campaign-microsite/config/portal', (_req, res) => {
+  void campaignMicrositeConfigHandler('portal', res)
+})
+
+publicApiV8.get('/campaign-microsite/config/mobile', (_req, res) => {
+  void campaignMicrositeConfigHandler('mobile', res)
 })
 
 publicApiV8.use('/assets',
