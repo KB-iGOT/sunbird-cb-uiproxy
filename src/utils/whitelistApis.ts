@@ -8353,7 +8353,7 @@ export const API_LIST = {
             ],
         },
         '/proxies/v8/usergroup/v1/search': {
-            checkgit merge FETCH_HEADsNeeded: [CHECK.ROLE],
+            checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.MDO_ADMIN,
