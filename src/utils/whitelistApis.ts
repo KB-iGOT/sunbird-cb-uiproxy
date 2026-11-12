@@ -8353,7 +8353,7 @@ export const API_LIST = {
             ],
         },
         '/proxies/v8/usergroup/v1/search': {
-            checksNeeded: [CHECK.ROLE],
+            checkgit merge FETCH_HEADsNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
             ROLE_CHECK: [
                 ROLE.MDO_ADMIN,
@@ -8558,7 +8558,14 @@ export const API_LIST = {
               ROLE_CHECK: [
                 ROLE.SPV_ADMIN,
               ],
-        },      
+        },
+        '/proxies/v8/ciosIntegration/lti/ssotest/:partnerCode': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+               ROLE.SPV_ADMIN,
+            ],
+        },
 
     },
     URL_PATTERN:
@@ -9546,6 +9553,9 @@ export const API_LIST = {
             '/proxies/v8/ai/chatbot/v1/sessions/turn/:id',
             '/proxies/v8/formsConfig/v1/create',
             '/proxies/v8/formsConfig/v1/read',
+            '/proxies/v8/formsConfig/v1/readById/:id',
+            '/proxies/v8/formsConfig/v1/readFormDetails/portal',
+            '/proxies/v8/formsConfig/v1/readFormDetails/mobile',
             '/proxies/v8/formsConfig/v1/update',
             '/proxies/v8/formsConfig/v2/admin/read/:id',
             '/proxies/v8/org/v1/status/update',
@@ -9627,5 +9637,6 @@ export const API_LIST = {
             '/proxies/v8/action/content/ca/v1/hierarchy/update',
             '/proxies/v8/contentpartner/v2/update',
             '/proxies/v8/contentpartner/v2/create',
+            '/proxies/v8/ciosIntegration/lti/ssotest/:partnerCode',
         ],
 }
