@@ -590,6 +590,43 @@ proxiesV8.post('/org/v1/search', async (req, res) => {
   }
 })
 
+proxiesV8.post('/org/v2/hierarchy/bulk/link/*', (req, res) => {
+  if (req.files && (req.files.file || req.files.data)) {
+    const url = removePrefix('/proxies/v8', req.originalUrl)
+    const file: UploadedFile = (req.files.file || req.files.data) as UploadedFile
+    const formData = new FormData()
+    formData.append('file', Buffer.from(file.data), {
+      contentType: file.mimetype,
+      filename: file.name,
+    })
+
+    const rootOrgId = lodash.get(req, 'session.rootOrgId') ?? ''
+    const channel = lodash.get(req, 'session.channel') ?? ''
+
+    const uploadHeaders: { [key: string]: string } = {
+      Authorization: CONSTANTS.SB_API_KEY,
+      'x-authenticated-user-channel': encodeURIComponent(channel),
+      'x-authenticated-user-orgid': rootOrgId,
+      'x-authenticated-user-orgname': encodeURIComponent(channel),
+      'x-authenticated-user-token': extractUserToken(req) || '',
+      'x-authenticated-userid': extractUserIdFromRequest(req),
+    }
+
+    formData.submit(
+      {
+        headers: uploadHeaders,
+        host: 'kong',
+        path: url,
+        port: 8000,
+      },
+      // tslint:disable-next-line: no-any
+      (err: any, response: any) => handleFormDataResponse('/org/v2/hierarchy/bulk/link/*', res, err, response)
+    )
+  } else {
+    res.status(500).send(FILE_NOT_FOUND_ERR)
+  }
+})
+
 proxiesV8.use('/org/*',
   proxyCreatorSunbird(express.Router(), `${CONSTANTS.KONG_API_BASE}`)
 )
