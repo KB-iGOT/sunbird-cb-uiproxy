@@ -59,6 +59,16 @@ const ORG_HIERARCHY_ROUTES: IOrgHierarchyRouteCase[] = [
     pattern: '/proxies/v8/org/v2/hierarchy/levels/:rootOrgId',
     samplePath: '/proxies/v8/org/v2/hierarchy/levels/root-org-1',
   },
+  {
+    method: 'get',
+    pattern: '/proxies/v8/org/v2/hierarchy/bulk/link/:rootOrgId/sample',
+    samplePath: '/proxies/v8/org/v2/hierarchy/bulk/link/root-org-1/sample',
+  },
+  {
+    method: 'get',
+    pattern: '/proxies/v8/org/v2/hierarchy/bulk/link/:rootOrgId/export',
+    samplePath: '/proxies/v8/org/v2/hierarchy/bulk/link/root-org-1/export',
+  },
 ]
 
 function buildApp(userRoles: string[]) {
@@ -98,7 +108,7 @@ describe('org hierarchy whitelist and isAllowed middleware', () => {
     mutableConstants.PORTAL_API_WHITELIST_CHECK = originalWhitelistCheck
   })
 
-  it('registers all 7 org hierarchy endpoints in API_LIST.URL and API_LIST.URL_PATTERN', () => {
+  it('registers all 9 org hierarchy endpoints in API_LIST.URL and API_LIST.URL_PATTERN', () => {
     const urlMap = API_LIST.URL as Record<string, { ROLE_CHECK: string[], checksNeeded: string[] }>
 
     ORG_HIERARCHY_ROUTES.forEach((route) => {
@@ -110,7 +120,7 @@ describe('org hierarchy whitelist and isAllowed middleware', () => {
     })
   })
 
-  it('allows each configured org hierarchy role to access all 7 endpoints', async () => {
+  it('allows each configured org hierarchy role to access all 9 endpoints', async () => {
     for (const route of ORG_HIERARCHY_ROUTES) {
       for (const role of ALLOWED_ROLES) {
         const res = await sendRequest(buildApp([role]), route.method, route.samplePath)
@@ -120,7 +130,7 @@ describe('org hierarchy whitelist and isAllowed middleware', () => {
     }
   })
 
-  it('rejects PUBLIC role and empty roles with 403 for all 7 endpoints', async () => {
+  it('rejects PUBLIC role and empty roles with 403 for all 9 endpoints', async () => {
     for (const route of ORG_HIERARCHY_ROUTES) {
       for (const userRoles of [[ROLE.PUBLIC], [] as string[]]) {
         const res = await sendRequest(buildApp(userRoles), route.method, route.samplePath)

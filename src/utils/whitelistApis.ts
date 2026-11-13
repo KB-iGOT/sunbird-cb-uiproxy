@@ -8692,6 +8692,28 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
             ],
         },
+        '/proxies/v8/org/v2/hierarchy/bulk/link/:rootOrgId/sample': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.STATE_ADMIN,
+                ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER,
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/org/v2/hierarchy/bulk/link/:rootOrgId/export': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.STATE_ADMIN,
+                ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER,
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
 
     },
     URL_PATTERN:
@@ -9774,5 +9796,7 @@ export const API_LIST = {
             '/proxies/v8/org/v2/hierarchy/move',
             '/proxies/v8/org/v2/hierarchy/bulk/link/:rootOrgId',
             '/proxies/v8/org/v2/hierarchy/levels/:rootOrgId',
+            '/proxies/v8/org/v2/hierarchy/bulk/link/:rootOrgId/sample',
+            '/proxies/v8/org/v2/hierarchy/bulk/link/:rootOrgId/export',
         ],
 }
