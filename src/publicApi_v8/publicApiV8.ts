@@ -63,13 +63,18 @@ publicApiV8.get('/waitTest', (req, res) => {
   const timer = setTimeout(() => {
     const waitedMs = Date.now() - startTime
     logInfo(`waitTest: responding after ${waitedMs} ms`)
-    res.status(200).json({ message: 'Wait completed', waitedMs })
+    res.status(200).json({
+      message: `Request held for ${waitSeconds} seconds and completed without timing out`,
+      requestedSeconds: waitSeconds,
+      waitedMs,
+    })
   }, waitSeconds * 1000)
   // Stop the timer if the client/gateway drops the connection (e.g. on a 504)
   res.on('close', () => {
     if (!res.headersSent) {
       clearTimeout(timer)
-      logInfo(`waitTest: client disconnected after ${Date.now() - startTime} ms`)
+      logInfo(`waitTest: connection closed by client/gateway after ${Date.now() - startTime} ms `
+        + `(requested ${waitSeconds} s) - likely an upstream timeout`)
     }
   })
 })
