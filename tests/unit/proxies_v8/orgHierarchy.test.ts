@@ -286,6 +286,16 @@ describe('proxiesV8 org hierarchy pass-through routes under /org/*', () => {
       method: 'patch',
       proxyPath: '/proxies/v8/org/v2/hierarchy/levels/root-org-1',
     },
+    {
+      kongPath: '/org/v2/hierarchy/bulk/link/root-org-1/sample',
+      method: 'get',
+      proxyPath: '/proxies/v8/org/v2/hierarchy/bulk/link/root-org-1/sample',
+    },
+    {
+      kongPath: '/org/v2/hierarchy/bulk/link/root-org-1/export',
+      method: 'get',
+      proxyPath: '/proxies/v8/org/v2/hierarchy/bulk/link/root-org-1/export',
+    },
   ]
 
   it('forwards non-bulk org hierarchy endpoints to KONG_API_BASE with injected proxy headers', async () => {
