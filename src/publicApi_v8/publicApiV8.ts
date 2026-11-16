@@ -3,7 +3,7 @@ import express, { Request } from 'express'
 import { axiosRequestConfig } from '../configs/request.config'
 import { campaignMicrositeConfigHandler } from '../utils/campaignMicrositeConfig'
 import { CONSTANTS } from '../utils/env'
-import { logError, logInfo } from '../utils/logger'
+import { logError } from '../utils/logger'
 import { proxyCreatorRoute } from '../utils/proxyCreator'
 import { redis } from '../utils/redis'
 import { chatBotTranscoderAPIIntegration } from './chatBotTranscoderAPIIntegration'
@@ -45,37 +45,6 @@ publicApiV8.get('/', (_req, res) => {
 publicApiV8.get('/systemDate', (_req, res) => {
   res.json({
     systemDate: new Date().getTime(),
-  })
-})
-
-// Test API for 504 issue: waits the given seconds (default 75) before responding
-// Usage: /public/v8/waitTest?seconds=30
-const DEFAULT_WAIT_SECONDS = 75
-publicApiV8.get('/waitTest', (req, res) => {
-  const secondsParam = req.query.seconds
-  const waitSeconds = secondsParam ? Number(secondsParam) : DEFAULT_WAIT_SECONDS
-  if (!(waitSeconds >= 0)) {
-    res.status(400).json({ message: 'seconds must be a non-negative number' })
-    return
-  }
-  const startTime = Date.now()
-  logInfo(`waitTest: waiting ${waitSeconds} seconds`)
-  const timer = setTimeout(() => {
-    const waitedMs = Date.now() - startTime
-    logInfo(`waitTest: responding after ${waitedMs} ms`)
-    res.status(200).json({
-      message: `Request held for ${waitSeconds} seconds and completed without timing out`,
-      requestedSeconds: waitSeconds,
-      waitedMs,
-    })
-  }, waitSeconds * 1000)
-  // Stop the timer if the client/gateway drops the connection (e.g. on a 504)
-  res.on('close', () => {
-    if (!res.headersSent) {
-      clearTimeout(timer)
-      logInfo(`waitTest: connection closed by client/gateway after ${Date.now() - startTime} ms `
-        + `(requested ${waitSeconds} s) - likely an upstream timeout`)
-    }
   })
 })
 
