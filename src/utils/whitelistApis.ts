@@ -8649,7 +8649,7 @@ export const API_LIST = {
                 ROLE.SPV_PUBLISHER,
                 ROLE.MDO_LEADER,
                 ROLE.MDO_ADMIN,
-          ],
+            ],
         },
         '/proxies/v8/org/v2/hierarchy/link': {
             checksNeeded: [CHECK.ROLE],
@@ -8791,7 +8791,29 @@ export const API_LIST = {
             ROLE_CHECK: [
                 ROLE.SPV_ADMIN,
             ],
-        },            
+        },
+        '/proxies/v8/org/v2/hierarchy/org-lookup': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.STATE_ADMIN,
+                ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER,
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
+        '/proxies/v8/org/v2/hierarchy/unmapped-orgs': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+                ROLE.STATE_ADMIN,
+                ROLE.SPV_ADMIN,
+                ROLE.SPV_PUBLISHER,
+                ROLE.MDO_LEADER,
+                ROLE.MDO_ADMIN,
+            ],
+        },
 
     },
     URL_PATTERN:
@@ -9886,5 +9908,7 @@ export const API_LIST = {
             '/proxies/v8/accessSettings/provider/v1/read/:partnerId',
             '/proxies/v8/accessSettings/provider/v1/notification/upsert',
             '/proxies/v8/accessSettings/provider/v1/notification/read/:partnerId',
+            '/proxies/v8/org/v2/hierarchy/org-lookup',
+            '/proxies/v8/org/v2/hierarchy/unmapped-orgs',
         ],
 }

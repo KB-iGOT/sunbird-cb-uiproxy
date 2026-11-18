@@ -296,6 +296,18 @@ describe('proxiesV8 org hierarchy pass-through routes under /org/*', () => {
       method: 'get',
       proxyPath: '/proxies/v8/org/v2/hierarchy/bulk/link/root-org-1/export',
     },
+    {
+      body: { request: { filters: { identifier: 'root-org-1' }, page: 0, limit: 50 } },
+      kongPath: '/org/v2/hierarchy/org-lookup',
+      method: 'post',
+      proxyPath: '/proxies/v8/org/v2/hierarchy/org-lookup',
+    },
+    {
+      body: { request: { filters: { ministryOrStateId: 's1', status: 1 }, page: 0, limit: 50 } },
+      kongPath: '/org/v2/hierarchy/unmapped-orgs',
+      method: 'post',
+      proxyPath: '/proxies/v8/org/v2/hierarchy/unmapped-orgs',
+    },
   ]
 
   it('forwards non-bulk org hierarchy endpoints to KONG_API_BASE with injected proxy headers', async () => {
