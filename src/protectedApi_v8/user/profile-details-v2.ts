@@ -1,0 +1,996 @@
+import axios from 'axios'
+import { Router } from 'express'
+import * as fs from 'fs'
+import { axiosRequestConfig, axiosRequestConfigLong, axiosRequestConfigVeryLong } from '../../configs/request.config'
+import { IPersonalDetails, ISBUser, ISunbirdbUserResponse } from '../../models/user.model'
+import { CONSTANTS } from '../../utils/env'
+import { logDebug, logError } from '../../utils/logger'
+import { ERROR } from '../../utils/message'
+import { extractUserIdFromRequest, extractUserToken } from '../../utils/requestExtract'
+
+const _                 = require('lodash')
+const uuidv1            = require('uuid/v1')
+const dateFormat        = require('dateformat')
+
+const API_END_POINTS = {
+    createOSUserRegistry: (userId: string) => `${CONSTANTS.NETWORK_HUB_SERVICE_BACKEND}/v1/user/create/profile?userId=${userId}`,
+    createSb: `${CONSTANTS.KONG_API_BASE}/user/v3/create`,
+    createUserRegistry: `${CONSTANTS.USER_PROFILE_API_BASE}/public/v8/profileDetails/createUserRegistry`,
+    // tslint:disable-next-line: object-literal-sort-keys
+    createNodeBBUser: `${CONSTANTS.KONG_API_BASE}/discussion/user/v1/create`,
+    getMasterLanguages: `${CONSTANTS.USER_PROFILE_API_BASE}/public/v8/profileDetails/getMasterLanguages`,
+    getMasterNationalities: `${CONSTANTS.USER_PROFILE_API_BASE}/public/v8/profileDetails/getMasterNationalities`,
+    getOSUserRegistryById: (userId: string) => `${CONSTANTS.NETWORK_HUB_SERVICE_BACKEND}/v1/user/search/profile?userId=${userId}`,
+    getProfilePageMeta: `${CONSTANTS.USER_PROFILE_API_BASE}/public/v8/profileDetails/getProfilePageMeta`,
+    getUserRegistry: `${CONSTANTS.USER_PROFILE_API_BASE}/public/v8/profileDetails/getUserRegistry`,
+    getUserRegistryById: `${CONSTANTS.USER_PROFILE_API_BASE}/public/v8/profileDetails/getUserRegistryById`,
+    kongCreateUser: `${CONSTANTS.KONG_API_BASE}/user/v5/create`,
+    kongSearchUser: `${CONSTANTS.KONG_API_BASE}/user/v1/search`,
+    kongSendWelcomeEmail: `${CONSTANTS.KONG_API_BASE}/private/user/v1/notification/email`,
+    kongUpdateUser: `${CONSTANTS.KONG_API_BASE}/super/user/private/v1/update`,
+    kongUserRead: (userId: string) => `${CONSTANTS.KONG_API_BASE}/user/v2/read/${userId}`,
+    kongUserResetPassword: `${CONSTANTS.KONG_API_BASE}/private/user/v1/password/reset`,
+    // tslint:disable-next-line: object-literal-sort-keys
+    migrateRegistry: `${CONSTANTS.USER_PROFILE_API_BASE}/public/v8/profileDetails/migrateRegistry`,
+    resetPassword: `${CONSTANTS.LEARNER_SERVICE_API_BASE}/private/user/v1/password/reset`,
+    searchSb: `${CONSTANTS.LEARNER_SERVICE_API_BASE}/private/user/v1/search`,
+    sendWelcomeEmail: `${CONSTANTS.LEARNER_SERVICE_API_BASE}/private/user/v1/notification/email`,
+    setUserProfileStatus: `${CONSTANTS.USER_PROFILE_API_BASE}/public/v8/profileDetails/setUserProfileStatus`,
+    updateOSUserRegistry: (userId: string) => `${CONSTANTS.NETWORK_HUB_SERVICE_BACKEND}/v1/user/update/profile?userId=${userId}`,
+    userProfileStatus: `${CONSTANTS.USER_PROFILE_API_BASE}/public/v8/profileDetails/userProfileStatus`,
+    userRead: (userId: string) => `${CONSTANTS.LEARNER_SERVICE_API_BASE}/v1/user/read/${userId}`,
+}
+
+export async function getUserProfileStatus(wid: string) {
+    try {
+        const response = await axios.post(API_END_POINTS.userProfileStatus, { wid }, {
+            ...axiosRequestConfig,
+        })
+        if (response.data.status) {
+            return true
+        } else {
+            return false
+        }
+    } catch (err) {
+        logError('ERROR GETTING USER PROFILE STATUS FROM  ${API_END_POINTS.userProfileStatus} >', err)
+        return false
+    }
+}
+
+export const profileDeatailsApi = Router()
+
+profileDeatailsApi.post('/createUserRegistry', async (req, res) => {
+    try {
+        const userId = extractUserIdFromRequest(req)
+        logDebug('Create user registry for', userId)
+        const response = await axios.post(API_END_POINTS.createUserRegistry, { ...req.body, userId }, {
+            ...axiosRequestConfigLong,
+        })
+        res.status(response.status).json(response.data)
+    } catch (err) {
+        logError('ERROR CREATING USER REGISTRY >', err)
+        res.status(err?.response?.status ?? 500).send(err)
+    }
+})
+
+// tslint:disable-next-line: no-identical-functions
+profileDeatailsApi.get('/getUserRegistry', async (req, res) => {
+    try {
+        const userId = extractUserIdFromRequest(req)
+        logDebug('Get user registry for', userId)
+        const response = await axios.post(API_END_POINTS.getUserRegistry, { userId }, {
+            ...axiosRequestConfig,
+        })
+        res.status(response.status).send(response.data)
+    } catch (err) {
+        logError('ERROR FETCHING USER REGISTRY >', err)
+        res.status(err?.response?.status ?? 500).send(err)
+    }
+})
+
+// tslint:disable-next-line: no-identical-functions
+profileDeatailsApi.get('/getUserRegistryById/:id', async (req, res) => {
+    try {
+        let userId = req.params.id
+        if (!userId) {
+            userId = extractUserIdFromRequest(req)
+        }
+        logDebug('Get user registry for', userId)
+
+        const response = await axios.post(API_END_POINTS.getUserRegistry, { userId }, {
+            ...axiosRequestConfig,
+        })
+        res.status(response.status).send(response.data)
+    } catch (err) {
+        logError('ERROR FETCHING USER REGISTRY >', err)
+        res.status(err?.response?.status ?? 500).send(err)
+    }
+})
+
+profileDeatailsApi.get('/userProfileStatus', async (req, res) => {
+    try {
+        const org = req.header('org')
+        const rootOrg = req.header('rootOrg')
+        if (!org || !rootOrg) {
+            res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
+            return
+        }
+        req.body.wid = extractUserIdFromRequest(req)
+        const response = await axios.post(API_END_POINTS.userProfileStatus, req, {
+            ...axiosRequestConfig,
+            headers: { rootOrg },
+        })
+        res.status(response.status).send(response.data)
+    } catch (err) {
+        logError('ERROR FETCHING USER PROFILE STATUS >', err)
+        res.status(err?.response?.status ?? 500).send(err)
+    }
+})
+
+profileDeatailsApi.post('/setUserProfileStatus', async (req, res) => {
+    try {
+        req.body.wid = extractUserIdFromRequest(req)
+        const response = await axios.post(API_END_POINTS.setUserProfileStatus, req, {
+            ...axiosRequestConfig,
+            headers: req.headers,
+        })
+        res.status(response.status).send(response.data)
+    } catch (err) {
+        logError('ERROR SETTING USER PROFILE STATUS >', err)
+        res.status(err?.response?.status ?? 500).send(err)
+    }
+})
+
+profileDeatailsApi.get('/getMasterLanguages', async (_req, res) => {
+    try {
+        const response = await axios.get(API_END_POINTS.getMasterLanguages, {
+            ...axiosRequestConfig,
+        })
+        res.status(response.status).send(response.data)
+    } catch (err) {
+        logError('ERROR FETCHING MASTER LANGUAGES >', err)
+        res.status(err?.response?.status ?? 500).send(err)
+    }
+})
+
+// tslint:disable-next-line: no-identical-functions
+profileDeatailsApi.get('/getMasterNationalities', async (_req, res) => {
+    try {
+        const response = await axios.get(API_END_POINTS.getMasterNationalities, {
+            ...axiosRequestConfig,
+        })
+        res.status(response.status).send(response.data)
+    } catch (err) {
+        logError('ERROR FETCHING MASTER NATIONALITIES >', err)
+        res.status(err?.response?.status ?? 500).send(err)
+    }
+})
+
+profileDeatailsApi.get('/getProfilePageMeta', async (_req, res) => {
+    try {
+        const response = await axios.get(API_END_POINTS.getProfilePageMeta, {
+            ...axiosRequestConfig,
+        })
+        res.status(response.status).send(response.data)
+    } catch (err) {
+        logError('ERROR FETCHING MASTER NATIONALITIES >', err)
+        res.status(err?.response?.status ?? 500).send(err)
+    }
+})
+
+// Api to migrate data from eagleUser opensaber  to new userProfile opensaber
+profileDeatailsApi.get('/migrateRegistry', async (req, res) => {
+    const filePath = CONSTANTS.USER_BULK_UPLOAD_DIR || process.cwd() + '/user_upload/'
+    try {
+        // tslint:disable-next-line: no-any
+        fs.readFile(filePath + 'migrateRegistry.json', async (err: any, json: any) => {
+            if (!err) {
+                const obj = JSON.parse(json)
+                const widList = obj.widList
+                const userId = extractUserIdFromRequest(req)
+
+                logDebug('migrating the registry')
+                const response = await axios.post(
+                    API_END_POINTS.migrateRegistry,
+                    { ...req.body, userId, widList },
+                    {
+                        ...axiosRequestConfigVeryLong,
+                    }
+                )
+                res.status(response.status).json(response.data)
+            } else {
+                res.status(500).send(err)
+            }
+        })
+    } catch (err) {
+        logError('ERROR CREATING USER REGISTRY >', err)
+        res.status(err?.response?.status ?? 500).send(err)
+    }
+})
+
+const channelParamMissing = 'Channel param is missing in personalDetails. Use DeptName as Channel value.'
+const emailAdressExist = 'Email address already exist'
+const failedToCreateUser = 'Not able to create User in SunBird'
+const failedToReadUser = 'Failed to read newly created user details.'
+const failedToCreateUserInOpenSaber = 'Not able to create User Registry in Opensaber'
+const createUserFailed = 'ERROR CREATING USER >'
+const failedToUpdateUser = 'Failed to update user profile data.'
+const unknownError = 'Failed due to unknown reason'
+const errorMDOLeaderExist = 'MDO_LDEADER already exist in org. Can not add another MDO_LEADER.'
+const verifiedStatus = 'VERIFIED'
+const notVerifiedStatus = 'NOT-VERIFIED'
+
+const hasValue = (value: unknown) => value !== undefined && value !== ''
+
+// tslint:disable-next-line: max-classes-per-file
+class HttpError extends Error {
+    status: number
+    body: unknown
+    constructor(status: number, body: unknown) {
+        super(typeof body === 'string' ? body : JSON.stringify(body))
+        this.status = status
+        this.body = body
+    }
+}
+
+// tslint:disable-next-line: all
+function extractFlatPersonalDetails(personalDetails: any) {
+    return {
+        additionalProperties_: personalDetails.additionalProperties ?? {},
+        isEmailRequired: personalDetails.isEmailRequired ?? true,
+        isNgo_: personalDetails.isNgo ?? false,
+        sbcategory_: personalDetails.category,
+        sbdesignation_: personalDetails.designation,
+        sbdob_: personalDetails.dob,
+        sbdomicileMedium_: personalDetails.domicileMedium,
+        sbemail_: personalDetails.email,
+        sbemailVerified_: true,
+        sbfirstName_: personalDetails.firstName,
+        sbgender_: personalDetails.gender,
+        sbgroup_: personalDetails.group,
+        sbphone_: personalDetails.phone,
+        sbphoneVerified_: false,
+        sbpincode_: personalDetails.pincode,
+        sbtags_: personalDetails.tags ?? [],
+        userRoles: personalDetails.roles ?? undefined,
+    }
+}
+
+// Fields the server derives from the flat personalDetails block. Only set a key here
+// when the flat source actually provided a value for it - otherwise leave whatever
+// the client sent under profileDetails.personalDetails untouched (incl. defaults like
+// additionalProperties/tags/isNgo, which would otherwise always clobber incoming data).
+// tslint:disable-next-line: all
+function computePersonalDetailsOverrides(reqPersonalDetails: any, flat: any): Record<string, unknown> {
+    const overrides: Record<string, unknown> = {
+        firstname: flat.sbfirstName_,
+        primaryEmail: flat.sbemail_,
+    }
+    if (hasValue(flat.sbphone_)) {
+        overrides.mobile = Number(flat.sbphone_)
+        overrides.phoneVerified = flat.sbphoneVerified_
+    }
+    if (hasValue(flat.sbdob_)) {
+        overrides.dob = flat.sbdob_
+    }
+    if (hasValue(flat.sbdomicileMedium_)) {
+        overrides.domicileMedium = flat.sbdomicileMedium_
+    }
+    if (hasValue(flat.sbgender_)) {
+        overrides.gender = flat.sbgender_
+    }
+    if (hasValue(flat.sbcategory_)) {
+        overrides.category = flat.sbcategory_
+    }
+    if (hasValue(flat.sbpincode_)) {
+        overrides.pincode = flat.sbpincode_
+    }
+    if (reqPersonalDetails.tags) {
+        overrides.tags = flat.sbtags_
+    }
+    if (reqPersonalDetails.isNgo !== undefined) {
+        overrides.isNgo = flat.isNgo_
+    }
+    if (reqPersonalDetails.additionalProperties) {
+        overrides.additionalProperties = flat.additionalProperties_
+    }
+    return overrides
+}
+
+// professionalDetails: designation/group may arrive flat (personalDetails) or nested
+// (profileDetails.professionalDetails[0]). If both are present they must agree.
+// tslint:disable-next-line: all
+function mergeProfessionalDetails(incomingProfileDetails: any, sbdesignation_: string, sbgroup_: string) {
+    const incomingProfessionalDetails = Array.isArray(incomingProfileDetails.professionalDetails)
+        ? incomingProfileDetails.professionalDetails
+        : []
+    const incomingProfessionalEntry = incomingProfessionalDetails[0] ?? {}
+
+    if (sbdesignation_ && incomingProfessionalEntry.designation && sbdesignation_ !== incomingProfessionalEntry.designation) {
+        const designationConflictMsg =
+            'Conflicting designation values received in personalDetails.designation and profileDetails.professionalDetails'
+        return { conflict: { errmsg: designationConflictMsg } }
+    }
+    if (sbgroup_ && incomingProfessionalEntry.group && sbgroup_ !== incomingProfessionalEntry.group) {
+        const groupConflictMsg = 'Conflicting group values received in personalDetails.group and profileDetails.professionalDetails'
+        return { conflict: { errmsg: groupConflictMsg } }
+    }
+
+    const designation = hasValue(sbdesignation_) ? sbdesignation_ : incomingProfessionalEntry.designation
+    const group = hasValue(sbgroup_) ? sbgroup_ : incomingProfessionalEntry.group
+
+    let professionalDetails
+    if (designation || group) {
+        let mergedEntry = { ...incomingProfessionalEntry, designation, group }
+        if (!designation) {
+            mergedEntry = _.omit(mergedEntry, 'designation')
+        }
+        if (!group) {
+            mergedEntry = _.omit(mergedEntry, 'group')
+        }
+        professionalDetails = [mergedEntry, ...incomingProfessionalDetails.slice(1)]
+    } else if (incomingProfessionalDetails.length) {
+        professionalDetails = incomingProfessionalDetails
+    }
+
+    return { designation, group, professionalDetails }
+}
+
+// Retains whatever profileDetails the client sent and only fills in the pieces the
+// server derives from the flat personalDetails block, instead of rebuilding it from scratch.
+// tslint:disable-next-line: all
+function buildMergedProfileDetails(req: any, flat: any) {
+    const incomingProfileDetails = req.body.profileDetails ?? {}
+    const incomingPersonalDetails = incomingProfileDetails.personalDetails ?? {}
+
+    const overrides = computePersonalDetailsOverrides(req.body.personalDetails, flat)
+    const mergedPersonalDetails = { ...incomingPersonalDetails, ...overrides }
+    if (mergedPersonalDetails.isNgo === undefined) {
+        mergedPersonalDetails.isNgo = false
+    }
+    if (mergedPersonalDetails.additionalProperties === undefined) {
+        mergedPersonalDetails.additionalProperties = {}
+    }
+
+    const professional = mergeProfessionalDetails(incomingProfileDetails, flat.sbdesignation_, flat.sbgroup_)
+    if (professional.conflict) {
+        return { conflict: professional.conflict }
+    }
+
+    // additionalProperties (profileDetails-level, tag list): recompute tag from flat
+    // personalDetails.tags when present, otherwise retain whatever the client sent.
+    let mergedAdditionalProperties = incomingProfileDetails.additionalProperties
+    if (req.body.personalDetails.tags) {
+        mergedAdditionalProperties = { ...mergedAdditionalProperties, tag: req.body.personalDetails.tags }
+    }
+
+    const isVerified = Boolean(professional.designation) && Boolean(professional.group)
+
+    return {
+        profileDetails: {
+            ...incomingProfileDetails,
+            additionalProperties: mergedAdditionalProperties,
+            // employmentDetails is never derived by the server today, so simply retain it as-is.
+            employmentDetails: incomingProfileDetails.employmentDetails,
+            mandatoryFieldsExists: false,
+            personalDetails: mergedPersonalDetails,
+            professionalDetails: professional.professionalDetails,
+            profileDesignationStatus: isVerified ? verifiedStatus : notVerifiedStatus,
+            profileGroupStatus: isVerified ? verifiedStatus : notVerifiedStatus,
+            profileStatus: isVerified ? verifiedStatus : notVerifiedStatus,
+        },
+    }
+}
+
+// tslint:disable-next-line: all
+async function checkMdoLeaderConflict(req: any, sbChannel: string, userRoles: string[]) {
+    if (!isMdoLeaderExist(userRoles, 'MDO_LEADER')) {
+        return null
+    }
+    const roleCheckResp = await axios({
+        ...axiosRequestConfig,
+        data: {
+            request: {
+                filters: {
+                    channel: sbChannel,
+                    'organisations.roles': ['MDO_LEADER'],
+                    status: 1,
+                },
+                limit: 0,
+            },
+        },
+        headers: {
+            Authorization: CONSTANTS.SB_API_KEY,
+            // tslint:disable-next-line: all
+            'x-authenticated-user-token': extractUserToken(req),
+        },
+        method: 'POST',
+        url: API_END_POINTS.kongSearchUser,
+    })
+    if (roleCheckResp?.data?.responseCode === 'CLIENT_ERROR') {
+        return roleCheckResp.data
+    }
+    const existingCount = roleCheckResp?.data?.result?.response?.count ?? 0
+    if (existingCount > 0) {
+        roleCheckResp.data.params.errmsg = errorMDOLeaderExist
+        roleCheckResp.data.params.status = 'FAILED'
+        roleCheckResp.data.responseCode = 'CLIENT_ERROR'
+        roleCheckResp.data.result = {}
+        return roleCheckResp.data
+    }
+    return null
+}
+
+// tslint:disable-next-line: all
+async function createUserV5(req: any, sbUserProfile: any) {
+    let userCreateResponse
+    try {
+        userCreateResponse = await axios({
+            ...axiosRequestConfig,
+            data: { request: sbUserProfile },
+            headers: {
+                Authorization: CONSTANTS.SB_API_KEY,
+                // tslint:disable-next-line: all
+                'x-authenticated-user-token': extractUserToken(req),
+            },
+            method: 'POST',
+            url: API_END_POINTS.kongCreateUser,
+        })
+    } catch (createErr) {
+        const errMsg = createErr?.response?.data?.params?.errmsg
+        const errStatus = createErr?.response?.data?.responseCode === 'CLIENT_ERROR' ? 400 : 500
+        logError('Failed to create User, error msg : ' + errMsg)
+        throw new HttpError(errStatus, createErr.response.data)
+    }
+    if (userCreateResponse?.data?.responseCode === 'CLIENT_ERROR') {
+        throw new HttpError(400, userCreateResponse.data)
+    }
+    return userCreateResponse
+}
+
+// tslint:disable-next-line: all
+async function readCreatedUser(req: any, sbUserId: string) {
+    const sbUserReadResponse = await axios({
+        ...axiosRequestConfig,
+        headers: {
+            Authorization: CONSTANTS.SB_API_KEY,
+            // tslint:disable-next-line: all
+            'x-authenticated-user-token': extractUserToken(req),
+        },
+        method: 'GET',
+        url: API_END_POINTS.kongUserRead(sbUserId),
+    })
+    if (sbUserReadResponse?.data?.params?.status?.toUpperCase() !== 'SUCCESS') {
+        throw new HttpError(500, failedToReadUser)
+    }
+    return sbUserReadResponse
+}
+
+// tslint:disable-next-line: all
+async function maybeCreateNodeBBUser(req: any, sbUserReadResponse: any, sbUserId: string) {
+    if (CONSTANTS.PORTAL_CREATE_NODEBB_USER !== 'true') {
+        return
+    }
+    try {
+        // tslint:disable-next-line: no-commented-code
+        const nodebbPayload = {
+            username: sbUserReadResponse.data.result.response.userName,
+            // tslint:disable-next-line: object-literal-sort-keys
+            identifier: sbUserReadResponse.data.result.response.identifier,
+            fullname: sbUserReadResponse.data.result.response.firstName,
+        }
+        await axios({
+            ...axiosRequestConfig,
+            data: { request: nodebbPayload },
+            headers: {
+                Authorization: CONSTANTS.SB_API_KEY,
+                // tslint:disable-next-line: all
+                'x-authenticated-user-token': extractUserToken(req),
+            },
+            method: 'POST',
+            url: API_END_POINTS.createNodeBBUser,
+        })
+    } catch (nodeBBerr) {
+        logError('Failed to create NodeBB account for user: ' + sbUserId, nodeBBerr)
+    }
+}
+
+// tslint:disable-next-line: all
+async function sendWelcomeEmailFlow(sbUserId: string, sbUserProfile: any, sbChannel: string, sbemail_: string) {
+    const passwordResetRequest = {
+        key: 'email',
+        type: 'email',
+        userId: sbUserId,
+    }
+    const passwordResetResponse = await axios({
+        ...axiosRequestConfig,
+        data: { request: passwordResetRequest },
+        headers: {
+            Authorization: CONSTANTS.SB_API_KEY,
+        },
+        method: 'POST',
+        url: API_END_POINTS.kongUserResetPassword,
+    })
+    if (passwordResetResponse?.data?.params?.status?.toUpperCase() !== 'SUCCESS') {
+        throw new HttpError(500, 'Failed to reset the password for user.')
+    }
+    const welcomeMailRequest = {
+        allowedLoging: 'You can use your email to Login',
+        body: 'Hello',
+        discoverLink: CONSTANTS.HTTPS_HOST + '/page/learn',
+        emailTemplateType: 'iGotWelcome_v4',
+        firstName: sbUserProfile.firstName,
+        link: passwordResetResponse.data.result.link,
+        meetingLink: CONSTANTS.NINE_TO_FIVE_MEETING_LINK,
+        mode: 'email',
+        orgName: sbChannel,
+        profileUpdateLink: CONSTANTS.HTTPS_HOST + CONSTANTS.PROFILE_UPDATE_LINK_PATH,
+        recipientEmails: [sbemail_],
+        setPasswordLink: true,
+        signinLink: CONSTANTS.HTTPS_HOST + '/protected/v8/resource',
+        subject: 'Welcome to iGOT Karmayogi... Activate your account now!',
+        welcomeMessage: 'Hello',
+    }
+    const welcomeMailResponse = await axios({
+        ...axiosRequestConfig,
+        data: { request: welcomeMailRequest },
+        headers: {
+            Authorization: CONSTANTS.SB_API_KEY,
+        },
+        method: 'POST',
+        url: API_END_POINTS.kongSendWelcomeEmail,
+    })
+    if (welcomeMailResponse?.data?.params?.status?.toUpperCase() !== 'SUCCESS') {
+        throw new HttpError(500, 'Failed to send Welcome Email.')
+    }
+}
+
+// Runs an async task, forwarding any HttpError straight to the response.
+// Returns { ok: false } (after already responding) on failure so callers can bail out with a single check.
+// tslint:disable-next-line: all
+async function runOrSendError(res: any, task: () => Promise<any>) {
+    try {
+        return { ok: true, value: await task() }
+    } catch (err) {
+        res.status(err.status).send(err.body)
+        return { ok: false, value: undefined }
+    }
+}
+
+// Applies the phone/roles omissions and the MDO_LEADER conflict check to the built profile.
+// tslint:disable-next-line: all
+async function applyRoleHandling(req: any, sbUserProfile: any, sbChannel: string, flat: any) {
+    let profile = sbUserProfile
+    if (!hasValue(flat.sbphone_)) {
+        profile = _.omit(profile, 'phone')
+    }
+    if (flat.userRoles === undefined) {
+        return { conflict: null, sbUserProfile: _.omit(profile, 'roles') }
+    }
+    return { conflict: await checkMdoLeaderConflict(req, sbChannel, flat.userRoles), sbUserProfile: profile }
+}
+
+// tslint:disable-next-line: all
+profileDeatailsApi.post('/createUser', async (req, res) => {
+    try {
+        const sbChannel = req.body.personalDetails.channel
+        if (!sbChannel) {
+            res.status(400).send(channelParamMissing)
+            return
+        }
+        logDebug('Incoming Request Body for createUser:', JSON.stringify(req.body, null, 2))
+        const flat = extractFlatPersonalDetails(req.body.personalDetails)
+        const reqProfileDetails = _.get(req.body, 'profileDetails')
+        const bpCoTrainer_ = (!_.isEmpty(reqProfileDetails) && reqProfileDetails.bpCoTrainer)
+            || _.get(req.body, 'personalDetails.bpCoTrainer') || ''
+
+        const merged = buildMergedProfileDetails(req, flat)
+        if (merged.conflict) {
+            res.status(400).send({ params: merged.conflict })
+            return
+        }
+
+        let sbUserProfile: Partial<ISBUser> = {
+            channel: sbChannel, email: flat.sbemail_, emailVerified: flat.sbemailVerified_,
+            firstName: flat.sbfirstName_, phone: flat.sbphone_,
+            profileDetails: merged.profileDetails,
+            roles: flat.userRoles,
+        }
+        if (hasValue(bpCoTrainer_)) {
+            sbUserProfile.profileDetails.bpCoTrainer = bpCoTrainer_
+        }
+
+        const roleResult = await applyRoleHandling(req, sbUserProfile, sbChannel, flat)
+        if (roleResult.conflict) {
+            res.status(400).send(roleResult.conflict)
+            return
+        }
+        sbUserProfile = roleResult.sbUserProfile
+
+        const createResult = await runOrSendError(res, () => createUserV5(req, sbUserProfile))
+        if (!createResult.ok) {
+            return
+        }
+
+        const sbUserId = createResult.value.data.result.userId
+        const readResult = await runOrSendError(res, () => readCreatedUser(req, sbUserId))
+        if (!readResult.ok) {
+            return
+        }
+        const sbUserReadResponse = readResult.value
+
+        await maybeCreateNodeBBUser(req, sbUserReadResponse, sbUserId)
+
+        if (flat.isEmailRequired) {
+            const emailResult = await runOrSendError(res, () => sendWelcomeEmailFlow(sbUserId, sbUserProfile, sbChannel, flat.sbemail_))
+            if (!emailResult.ok) {
+                return
+            }
+        }
+
+        const sbUserProfileResponse: Partial<ISunbirdbUserResponse> = {
+            email: flat.sbemail_, firstName: flat.sbfirstName_,
+            userId: sbUserId,
+            userOrgId: sbUserReadResponse.data.result.response.rootOrgId,
+        }
+        res.send(sbUserProfileResponse)
+    } catch (err) {
+        logError('test1 --> ' + createUserFailed, err)
+        res.status(err?.response?.status ?? 500).send(err)
+    }
+})
+
+profileDeatailsApi.patch('/updateUser', async (req, res) => {
+    try {
+        const response = await axios.patch(API_END_POINTS.kongUpdateUser, req.body, {
+            ...axiosRequestConfig,
+            headers: {
+                Authorization: CONSTANTS.SB_API_KEY,
+            },
+        })
+        res.status(response.status).send(response.data)
+    } catch (err) {
+        logError(failedToUpdateUser + err)
+        res.status(err?.response?.status ?? 500).send(
+            err?.response?.data ?? {
+                error: unknownError,
+            }
+        )
+    }
+})
+
+profileDeatailsApi.post('/createUserV2WithRegistry', async (req, res) => {
+    try {
+        const sbChannel = req.body.personalDetails.channel
+        if (!sbChannel) {
+            res.status(400).send(channelParamMissing)
+            return
+        }
+        const sbemail_ = req.body.personalDetails.email
+        const sbemailVerified_ = true
+        const sbfirstName_ = req.body.personalDetails.firstName
+        const sblastName_ = req.body.personalDetails.lastName
+        let statusString = ''
+        const searchresponse = await axios({
+            ...axiosRequestConfig,
+            data: { request: { query: '', filters: { email: sbemail_.toLowerCase() } } },
+            method: 'POST',
+            url: API_END_POINTS.searchSb,
+        })
+        if (searchresponse.data.result.response.count > 0) {
+            res.status(400).send(emailAdressExist)
+            return
+        } else {
+            const sbUserProfile: Partial<ISBUser> = {
+                channel: sbChannel, email: sbemail_, emailVerified: sbemailVerified_, firstName: sbfirstName_,
+                lastName: sblastName_,
+            }
+            const response = await axios({
+                ...axiosRequestConfig,
+                data: { request: sbUserProfile },
+                headers: {
+                    Authorization: CONSTANTS.SB_API_KEY,
+                    // tslint:disable-next-line: all
+                    'x-authenticated-user-token': extractUserToken(req),
+                },
+                method: 'POST',
+                url: API_END_POINTS.createSb,
+            })
+            if (response.data.responseCode === 'CLIENT_ERROR') {
+                res.status(400).send(failedToCreateUser)
+                return
+            } else {
+                const sbUserId = response.data.result.userId
+                const sbUserReadResponse = await axios({
+                    ...axiosRequestConfig,
+                    headers: {
+                        Authorization: CONSTANTS.SB_API_KEY,
+                        'x-authenticated-user-token': extractUserToken(req),
+                    },
+                    method: 'GET',
+                    url: API_END_POINTS.userRead(sbUserId),
+                })
+                statusString = sbUserReadResponse.data.params.status
+                if (statusString.toUpperCase() !== 'SUCCESS') {
+                    res.status(500).send(failedToReadUser)
+                    return
+                }
+                const personalDetailsRegistry: IPersonalDetails = {
+                    firstname: sbfirstName_,
+                    primaryEmail: sbemail_,
+                    surname: sblastName_,
+                    userName: sbUserReadResponse.data.result.response.userName,
+                }
+                const userRegistry = getUserRegistry(personalDetailsRegistry, sbChannel)
+                const userRegistryResponse = await axios({
+                    ...axiosRequestConfig,
+                    data: userRegistry,
+                    headers: {
+                        wid: sbUserId,
+                    },
+                    method: 'POST',
+                    url: API_END_POINTS.createOSUserRegistry(sbUserId),
+                })
+                if (userRegistryResponse.data === null) {
+                    res.status(500).send(failedToCreateUserInOpenSaber)
+                } else {
+                    const sbUserProfileResponse: Partial<ISunbirdbUserResponse> = {
+                        email: sbemail_, firstName: sbfirstName_, lastName: sblastName_,
+                        userId: sbUserId,
+                    }
+                    res.send(sbUserProfileResponse)
+                }
+            }
+        }
+    } catch (err) {
+        logError(createUserFailed, err)
+        res.status(err?.response?.status ?? 500).send(err)
+    }
+})
+
+profileDeatailsApi.post('/createUserV2WithoutRegistry', async (req, res) => {
+    try {
+        const sbChannel = req.body.personalDetails.channel
+        if (!sbChannel) {
+            res.status(400).send(channelParamMissing)
+            return
+        }
+        const sbemail_ = req.body.personalDetails.email
+        const sbemailVerified_ = true
+        const sbfirstName_ = req.body.personalDetails.firstName
+        const sblastName_ = req.body.personalDetails.lastName
+        let statusString = ''
+        const searchresponse = await axios({
+            ...axiosRequestConfig,
+            data: { request: { query: '', filters: { email: sbemail_.toLowerCase() } } },
+            method: 'POST',
+            url: API_END_POINTS.searchSb,
+        })
+        if (searchresponse.data.result.response.count > 0) {
+            res.status(400).send(emailAdressExist)
+            return
+        } else {
+            const sbUserProfile: Partial<ISBUser> = {
+                channel: sbChannel, email: sbemail_, emailVerified: sbemailVerified_, firstName: sbfirstName_,
+                lastName: sblastName_,
+            }
+            const response = await axios({
+                ...axiosRequestConfig,
+                data: { request: sbUserProfile },
+                headers: {
+                    Authorization: CONSTANTS.SB_API_KEY,
+                    // tslint:disable-next-line: all
+                    'x-authenticated-user-token': extractUserToken(req),
+                },
+                method: 'POST',
+                url: API_END_POINTS.createSb,
+            })
+            if (response.data.responseCode === 'CLIENT_ERROR') {
+                res.status(400).send(failedToCreateUser)
+                return
+            } else {
+                const sbUserId = response.data.result.userId
+                const sbUserReadResponse = await axios({
+                    ...axiosRequestConfig,
+                    headers: {
+                        Authorization: CONSTANTS.SB_API_KEY,
+                        'x-authenticated-user-token': extractUserToken(req),
+                    },
+                    method: 'GET',
+                    url: API_END_POINTS.userRead(sbUserId),
+                })
+                statusString = sbUserReadResponse.data.params.status
+                if (statusString.toUpperCase() !== 'SUCCESS') {
+                    res.status(500).send(failedToReadUser)
+                    return
+                } else {
+                    const sbUserProfileResponse: Partial<ISunbirdbUserResponse> = {
+                        email: sbemail_, firstName: sbfirstName_, lastName: sblastName_,
+                        userId: sbUserId,
+                    }
+                    res.send(sbUserProfileResponse)
+                }
+            }
+        }
+    } catch (err) {
+        logError(createUserFailed, err)
+        res.status(err?.response?.status ?? 500).send(err)
+    }
+})
+
+// tslint:disable-next-line
+profileDeatailsApi.post('/createUserWithoutInvitationEmail', async (req, res) => {
+    try {
+        const sbChannel = req.body.personalDetails.channel
+        if (!sbChannel) {
+            res.status(400).send(channelParamMissing)
+            return
+        }
+        const sbemail_ = req.body.personalDetails.email
+        const sbemailVerified_ = true
+        const sbfirstName_ = req.body.personalDetails.firstName
+        const sblastName_ = req.body.personalDetails.lastName
+        let statusString = ''
+        const searchresponse = await axios({
+            ...axiosRequestConfig,
+            data: { request: { query: '', filters: { email: sbemail_.toLowerCase() } } },
+            headers: {
+                Authorization: CONSTANTS.SB_API_KEY,
+                // tslint:disable-next-line: all
+                'x-authenticated-user-token': extractUserToken(req),
+            },
+            method: 'POST',
+            url: API_END_POINTS.kongSearchUser,
+        })
+        if (searchresponse.data.result.response.count > 0) {
+            res.status(400).send({
+                id: 'api.error.createUser',
+                ver: '1.0',
+                // tslint:disable-next-line: object-literal-sort-keys
+                ts: dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss:lo'),
+                params:
+                {
+                    resmsgid: uuidv1(),
+                    // tslint:disable-next-line: object-literal-sort-keys
+                    msgid: null,
+                    status: 'failed',
+                    err: 'USR_EMAIL_EXISTS',
+                    errmsg: emailAdressExist,
+                },
+                responseCode: 'USR_EMAIL_EXISTS',
+                result: {},
+            })
+            return
+        } else {
+            const sbUserProfile: Partial<ISBUser> = {
+                channel: sbChannel, email: sbemail_, emailVerified: sbemailVerified_, firstName: sbfirstName_,
+                lastName: sblastName_,
+            }
+            const response = await axios({
+                ...axiosRequestConfig,
+                data: { request: sbUserProfile },
+                 headers: {
+                    Authorization: CONSTANTS.SB_API_KEY,
+                    // tslint:disable-next-line: all
+                    'x-authenticated-user-token': extractUserToken(req),
+                },
+                method: 'POST',
+                url: API_END_POINTS.kongCreateUser,
+            })
+            if (response.data.responseCode === 'CLIENT_ERROR') {
+                res.status(400).send(failedToCreateUser)
+                return
+            } else {
+                const sbUserId = response.data.result.userId
+                const sbUserReadResponse = await axios({
+                    ...axiosRequestConfig,
+                    headers: {
+                        Authorization: CONSTANTS.SB_API_KEY,
+                        // tslint:disable-next-line: all
+                        'x-authenticated-user-token': extractUserToken(req),
+                    },
+                    method: 'GET',
+                    url: API_END_POINTS.kongUserRead(sbUserId),
+                })
+                statusString = sbUserReadResponse.data.params.status
+                if (statusString.toUpperCase() !== 'SUCCESS') {
+                    res.status(500).send(failedToReadUser)
+                    return
+                }
+
+                const sbProfileUpdateReq = {
+                    profileDetails: {
+                        employmentDetails: {
+                            departmentName: sbChannel,
+                        },
+                        personalDetails: {
+                            firstname: sbfirstName_,
+                            primaryEmail: sbemail_,
+                            surname: sblastName_,
+                        },
+                    },
+                    userId: sbUserId,
+                }
+
+                const sbUserProfileUpdateResp = await axios({
+                    ...axiosRequestConfig,
+                    data: { request: sbProfileUpdateReq },
+                    headers: {
+                        Authorization: CONSTANTS.SB_API_KEY,
+                    },
+                    method: 'PATCH',
+                    url: API_END_POINTS.kongUpdateUser,
+                })
+                if (sbUserProfileUpdateResp.data.responseCode === 'CLIENT_ERROR') {
+                    res.status(400).send(failedToUpdateUser)
+                    return
+                } else {
+                    const sbUserProfileResponse: Partial<ISunbirdbUserResponse> = {
+                        email: sbemail_, firstName: sbfirstName_, lastName: sblastName_,
+                        userId: sbUserId,
+                    }
+                    res.send(sbUserProfileResponse)
+                }
+            }
+        }
+    } catch (err) {
+        logError(createUserFailed, err)
+        res.status(err?.response?.status ?? 500).send(err)
+    }
+})
+
+function getUserRegistry(personalDetailsRegistry: IPersonalDetails, deptName: string) {
+    return {
+        academics: [
+            {
+                nameOfInstitute: '',
+                nameOfQualification: '',
+                type: 'X_STANDARD',
+                yearOfPassing: '',
+            },
+            {
+                nameOfInstitute: '',
+                nameOfQualification: '',
+                type: 'XII_STANDARD',
+                yearOfPassing: '',
+            },
+        ],
+        employmentDetails: {
+            allotmentYearOfService: '',
+            cadre: '',
+            civilListNo: '',
+            departmentName: deptName,
+            dojOfService: '',
+            employeeCode: '',
+            officialPostalAddress: '',
+            payType: '',
+            pinCode: '',
+            service: '',
+        },
+        interests: {
+            hobbies: [],
+            professional: [],
+        },
+        personalDetails: personalDetailsRegistry,
+        professionalDetails: [
+            {
+                name: '',
+            },
+        ],
+        skills: {
+            additionalSkills: '',
+            certificateDetails: '',
+        },
+    }
+}
+
+// tslint:disable-next-line: all
+function isMdoLeaderExist(array: any, mdoRole: string) {
+    if (array === null || array === undefined || !Array.isArray(array)) {
+        logDebug('MDO_LEADER role is not exist.')
+        return false
+    }
+
+    // Check if every element in the array is a string
+    return array.includes(mdoRole)
+}
