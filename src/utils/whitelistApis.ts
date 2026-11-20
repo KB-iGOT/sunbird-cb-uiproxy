@@ -8650,7 +8650,14 @@ export const API_LIST = {
             ROLE.PUBLIC,
           ],
         },
-
+        '/proxies/v8/ciosIntegration/lti/deeplinking/initiate/:partnerCode': {
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+            ROLE.SPV_ADMIN,
+            ROLE.SPV_PUBLISHER,
+          ],
+        },
     },
     URL_PATTERN:
         [
@@ -9730,5 +9737,6 @@ export const API_LIST = {
             '/proxies/v8/contentpartner/v2/create',
             '/proxies/v8/ciosIntegration/lti/ssotest/:partnerCode',
             '/proxies/v8/cios-enroll/lti/redirect/:providerId/:courseId',
+            '/proxies/v8/ciosIntegration/lti/deeplinking/initiate/:partnerCode',
         ],
 }
