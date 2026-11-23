@@ -61,4 +61,34 @@ describe('whitelistApis API_LIST', () => {
       expect(API_LIST.URL_PATTERN).toContain('/proxies/v8/ciosIntegration/lti/deeplinking/initiate/:partnerCode')
     })
   })
+
+  describe('cios v2 LTI onboardContent', () => {
+    it('whitelists the route with SPV_ADMIN, CBP_ADMIN and SPV_PUBLISHER role checks', () => {
+      const entry = API_LIST.URL['/proxies/v8/cios/v2/LTI/onboardContent']
+      expect(entry).toBeDefined()
+      expect(entry.checksNeeded).toEqual(['ROLE_CHECK'])
+      expect(entry.ROLE_CHECK).toEqual([ROLE.SPV_ADMIN, ROLE.CBP_ADMIN, ROLE.SPV_PUBLISHER])
+    })
+
+    it('is not open to PUBLIC users', () => {
+      expect(API_LIST.URL['/proxies/v8/cios/v2/LTI/onboardContent'].ROLE_CHECK).not.toContain(ROLE.PUBLIC)
+    })
+
+    it('registers the route as a URL_PATTERN entry', () => {
+      expect(API_LIST.URL_PATTERN).toContain('/proxies/v8/cios/v2/LTI/onboardContent')
+    })
+  })
+
+  describe('ciosIntegration lti deeplink return', () => {
+    it('whitelists the route with a PUBLIC role check', () => {
+      const entry = API_LIST.URL['/proxies/v8/ciosIntegration/lti/deeplink/return']
+      expect(entry).toBeDefined()
+      expect(entry.checksNeeded).toEqual(['ROLE_CHECK'])
+      expect(entry.ROLE_CHECK).toEqual([ROLE.PUBLIC])
+    })
+
+    it('registers the route as a URL_PATTERN entry', () => {
+      expect(API_LIST.URL_PATTERN).toContain('/proxies/v8/ciosIntegration/lti/deeplink/return')
+    })
+  })
 })
