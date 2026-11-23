@@ -82,6 +82,11 @@ export function createPooledProxy(opts: Record<string, any> = {}) {
   // tslint:disable-next-line: no-any
   instance.web = (req: any, res: any, options: any = {}, ...args: any[]) => {
     const target = options.target || ''
+    // Kong-bound calls authenticate via the injected headers; the browser cookies only bloat
+    // the request and push it past the header limits of the services behind Kong (→ 502).
+    if (typeof target === 'string' && target.startsWith(CONSTANTS.KONG_API_BASE)) {
+      delete req.headers.cookie
+    }
     options.agent = pickAgent(typeof target === 'string' ? target : '')
     return originalWeb(req, res, options, ...args)
   }

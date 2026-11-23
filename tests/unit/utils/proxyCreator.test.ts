@@ -144,4 +144,19 @@ describe('createPooledProxy', () => {
       expect.objectContaining({ target: 'https://example.com', agent: expect.anything() })
     )
   })
+
+  it('drops the browser cookie header for Kong targets only', () => {
+    // tslint:disable-next-line: no-var-requires
+    const { CONSTANTS } = require('../../../src/utils/env')
+    const pooled = createPooledProxy({})
+
+    const kongReq = { headers: { cookie: 'connect.sid=abc; other=1', authorization: 'key' } }
+    pooled.web(kongReq as never, {} as never, { target: `${CONSTANTS.KONG_API_BASE}/org/v1/read` } as never)
+    expect(kongReq.headers.cookie).toBeUndefined()
+    expect(kongReq.headers.authorization).toBe('key')
+
+    const otherReq = { headers: { cookie: 'connect.sid=abc' } }
+    pooled.web(otherReq as never, {} as never, { target: 'https://example.com/content' } as never)
+    expect(otherReq.headers.cookie).toBe('connect.sid=abc')
+  })
 })
