@@ -8764,6 +8764,14 @@ export const API_LIST = {
               ROLE.PUBLIC,
             ],
         },
+        '/proxies/v8/ciosIntegration/lti/deeplinking/initiate/:partnerCode': {
+            checksNeeded: [CHECK.ROLE],
+            // tslint:disable-next-line: object-literal-sort-keys
+            ROLE_CHECK: [
+              ROLE.SPV_ADMIN,
+              ROLE.SPV_PUBLISHER,
+            ],
+        },
         '/proxies/v8/accessSettings/provider/v1/upsert': {
             checksNeeded: [CHECK.ROLE],
             // tslint:disable-next-line: object-literal-sort-keys
@@ -8814,7 +8822,15 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
             ],
         },
-
+        '/proxies/v8/cios/v2/LTI/onboardContent': {
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+            ROLE.SPV_ADMIN,
+            ROLE.CBP_ADMIN,
+            ROLE.SPV_PUBLISHER,
+          ],
+        },
     },
     URL_PATTERN:
         [
@@ -9904,11 +9920,13 @@ export const API_LIST = {
             '/proxies/v8/contentpartner/v2/create',
             '/proxies/v8/ciosIntegration/lti/ssotest/:partnerCode',
             '/proxies/v8/cios-enroll/lti/redirect/:providerId/:courseId',
+            '/proxies/v8/ciosIntegration/lti/deeplinking/initiate/:partnerCode',
             '/proxies/v8/accessSettings/provider/v1/upsert',
             '/proxies/v8/accessSettings/provider/v1/read/:partnerId',
             '/proxies/v8/accessSettings/provider/v1/notification/upsert',
             '/proxies/v8/accessSettings/provider/v1/notification/read/:partnerId',
             '/proxies/v8/org/v2/hierarchy/org-lookup',
             '/proxies/v8/org/v2/hierarchy/unmapped-orgs',
+            '/proxies/v8/cios/v2/LTI/onboardContent',
         ],
 }
