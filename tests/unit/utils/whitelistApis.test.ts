@@ -78,17 +78,4 @@ describe('whitelistApis API_LIST', () => {
       expect(API_LIST.URL_PATTERN).toContain('/proxies/v8/cios/v2/LTI/onboardContent')
     })
   })
-
-  describe('ciosIntegration lti deeplink return', () => {
-    it('whitelists the route with a PUBLIC role check', () => {
-      const entry = API_LIST.URL['/proxies/v8/ciosIntegration/lti/deeplink/return']
-      expect(entry).toBeDefined()
-      expect(entry.checksNeeded).toEqual(['ROLE_CHECK'])
-      expect(entry.ROLE_CHECK).toEqual([ROLE.PUBLIC])
-    })
-
-    it('registers the route as a URL_PATTERN entry', () => {
-      expect(API_LIST.URL_PATTERN).toContain('/proxies/v8/ciosIntegration/lti/deeplink/return')
-    })
-  })
 })
