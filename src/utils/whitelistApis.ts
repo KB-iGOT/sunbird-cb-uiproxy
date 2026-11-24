@@ -8822,7 +8822,15 @@ export const API_LIST = {
                 ROLE.MDO_ADMIN,
             ],
         },
-
+        '/proxies/v8/cios/v2/LTI/onboardContent': {
+          checksNeeded: [CHECK.ROLE],
+          // tslint:disable-next-line: object-literal-sort-keys
+          ROLE_CHECK: [
+            ROLE.SPV_ADMIN,
+            ROLE.CBP_ADMIN,
+            ROLE.SPV_PUBLISHER,
+          ],
+        },
     },
     URL_PATTERN:
         [
@@ -9919,5 +9927,6 @@ export const API_LIST = {
             '/proxies/v8/accessSettings/provider/v1/notification/read/:partnerId',
             '/proxies/v8/org/v2/hierarchy/org-lookup',
             '/proxies/v8/org/v2/hierarchy/unmapped-orgs',
+            '/proxies/v8/cios/v2/LTI/onboardContent',
         ],
 }
