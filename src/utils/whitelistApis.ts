@@ -8831,13 +8831,6 @@ export const API_LIST = {
             ROLE.SPV_PUBLISHER,
           ],
         },
-        '/proxies/v8/ciosIntegration/lti/deeplink/return': {
-          checksNeeded: [CHECK.ROLE],
-          // tslint:disable-next-line: object-literal-sort-keys
-          ROLE_CHECK: [
-            ROLE.PUBLIC,
-          ],
-        },
     },
     URL_PATTERN:
         [
@@ -9935,6 +9928,5 @@ export const API_LIST = {
             '/proxies/v8/org/v2/hierarchy/org-lookup',
             '/proxies/v8/org/v2/hierarchy/unmapped-orgs',
             '/proxies/v8/cios/v2/LTI/onboardContent',
-            '/proxies/v8/ciosIntegration/lti/deeplink/return',
         ],
 }
