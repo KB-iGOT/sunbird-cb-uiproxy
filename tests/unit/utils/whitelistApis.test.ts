@@ -81,15 +81,29 @@ describe('whitelistApis API_LIST', () => {
 })
 
 describe('CB Plan V4 Admin User Dictionary', () => {
-  it('whitelists the route with PUBLIC role check', () => {
+  it('whitelists the route with the required admin role checks', () => {
     const entry = API_LIST.URL['/proxies/v8/cbplan/v4/admin/user/dictionary']
 
     expect(entry).toBeDefined()
     expect(entry.checksNeeded).toContain('ROLE_CHECK')
-    expect(entry.ROLE_CHECK).toEqual([ROLE.PUBLIC])
+    expect(entry.ROLE_CHECK).toEqual([
+      ROLE.SPV_ADMIN,
+      ROLE.STATE_ADMIN,
+      ROLE.MDO_LEADER,
+      ROLE.MDO_ADMIN,
+      ROLE.IGOT_SUPPORT_ADMIN
+    ])
+  })
+
+  it('does not allow PUBLIC users', () => {
+    const entry = API_LIST.URL['/proxies/v8/cbplan/v4/admin/user/dictionary']
+
+    expect(entry.ROLE_CHECK).not.toContain(ROLE.PUBLIC)
   })
 
   it('registers the route as a URL_PATTERN entry', () => {
-    expect(API_LIST.URL_PATTERN).toContain('/proxies/v8/cbplan/v4/admin/user/dictionary')
+    expect(API_LIST.URL_PATTERN).toContain(
+      '/proxies/v8/cbplan/v4/admin/user/dictionary'
+    )
   })
 })
